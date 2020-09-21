@@ -3,6 +3,8 @@ import { Language } from 'src/app/models/language';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { Court } from 'src/app/models/court';
 import { Interpreter } from 'src/app/models/interpreter';
+import { InterpretersService } from 'src/app/services/interpreters/interpreters.service';
+import { CodesService } from 'src/app/services/codes/codes.service';
 
 @Component({
   selector: 'app-interpreters',
@@ -19,19 +21,11 @@ import { Interpreter } from 'src/app/models/interpreter';
 
 export class InterpretersComponent implements OnInit {
 
-  languages: Language[] = [
-    {id: `farsi`, name: `Farsi`},
-    {id: `french`, name: `French`},
-    {id: `italian`, name: `Italian`}
-  ];
+  dataSource: Interpreter[] = [];
+  languages: Language[] = [];
+  courtLocations: Court[] = [];
 
-  courtLocations: Court[] = [
-    {id: `victoria`, name: `Victoria`},
-    {id: `vancouver`, name: `Vancouver`},
-    {id: `nanaimo`, name: `Nanaimo`}
-  ];
-
-  dataSource: Interpreter[] = ELEMENT_DATA;
+  expandedElement: Interpreter | null;
   columnsToDisplay = ['name', 'level', 'phone', 'emailAddress', 'bookingsInTheLastDays'];
   tableDef: Array<any> = [
     {
@@ -50,58 +44,22 @@ export class InterpretersComponent implements OnInit {
       key: 'bookingsInTheLastDays',
       header: 'Bookings in the last 30 days',
     },
-  ]
-  expandedElement: Interpreter | null;
+  ];
 
-  constructor() { }
+  constructor(private interpretersService: InterpretersService, private codesService: CodesService) { }
 
   ngOnInit(): void {
+    this.fetchAllInterpreters();
+    this.fetchCodes();
+  }
+
+  async fetchAllInterpreters(): Promise<void> {
+    this.dataSource = await this.interpretersService.getInterpreters();
+  }
+
+  async fetchCodes(): Promise<void> {
+    this.courtLocations = await this.codesService.getCourts();
+    this.languages = await this.codesService.getLanguages();
   }
 
 }
-
-const ELEMENT_DATA: Interpreter[] = [
-  {
-    id: '1',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '2',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '3',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '4',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '5',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '6',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  },
-];

@@ -1,12 +1,167 @@
 <div class="container-fluid page-title-row">
-    <!-- Header -->
-   <div class="container">
-       <div class="row">
-           <div class="col-12">
-             <h1 class="page-title center animate__animated animate__fadeIn">
-                Upcoming Bookings
-             </h1>
-           </div>
-         </div>
-   </div>
+  <!-- Header -->
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="page-title center animate__animated animate__fadeIn">
+          Upcoming Bookings
+        </h1>
+      </div>
+    </div>
+  </div>
 </div> <!-- // Header -->
+
+<div class="container">
+  <div class="row search">
+    <!-- Search -->
+    <div class="col-md-6 col-lg-3 col-12">
+      <!-- Date -->
+      <h4>Date</h4>
+      <mat-form-field appearance="outline">
+        <input matInput readonly [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div> <!-- // Date -->
+    <div class="col-md-6 col-lg-3 col-12">
+      <h4>Interpreter</h4>
+      <mat-form-field appearance="outline">
+        <input matInput>
+      </mat-form-field>
+    </div>
+    <div class="col-md-6 col-lg-3 col-12">
+      <!-- Court Location -->
+      <h4>Court Location</h4>
+      <mat-form-field appearance="outline">
+        <!-- <mat-label>Court Location</mat-label> -->
+        <mat-select>
+          <mat-option *ngFor="let courtLocation of courtLocations" [value]="courtLocation.name">
+            {{courtLocation.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div> <!-- // Court Location -->
+    <div class="col-md-6 col-lg-3 col-12">
+      <h4>Case Number</h4>
+      <mat-form-field appearance="outline">
+        <input matInput>
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+      <button mat-raised-button color="primary">Search</button>
+    </div>
+  </div> <!-- // Search -->
+
+
+
+  <div class="row">
+    <!-- Search Results -->
+    <div class="col-12">
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z0">
+        <!-- <ng-container matColumnDef="{{column.key}}" *ngFor="let column of tableDef">
+          <th mat-header-cell *matHeaderCellDef> {{column.header}} </th>
+          <td mat-cell *matCellDef="let element"> {{element[column.key]}} </td>
+        </ng-container> -->
+
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="date-top">{{element.date | date:'EEE, MMM d'}} </div>
+            <div class="date-bottom">{{element.date | date:'shortTime'}} </div>
+          </td>
+        </ng-container>
+
+        <!-- Court File Number -->
+        <ng-container matColumnDef="courtFileNumber">
+          <th mat-header-cell *matHeaderCellDef> Court File Number </th>
+          <td mat-cell *matCellDef="let element"> {{element.courtFileNumber}} </td>
+        </ng-container>
+
+        <!-- Case Name -->
+        <ng-container matColumnDef="caseName">
+          <th mat-header-cell *matHeaderCellDef> Case Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.caseName}} </td>
+        </ng-container>
+
+        <!-- Interpreter -->
+        <ng-container matColumnDef="interpreterName">
+          <th mat-header-cell *matHeaderCellDef> Interpreter </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="interpreter-col" (click)="showInterpreter(element)">{{element.interpreterName}}</div>
+          </td>
+        </ng-container>
+
+        <!-- status -->
+        <ng-container matColumnDef="isBooked">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="!element.isBooked" class="pending-status status-card">Pending</div>
+            <div *ngIf="element.isBooked" class="booked-status status-card">Booked</div>
+          </td>
+        </ng-container>
+
+        <!-- Comments -->
+        <ng-container matColumnDef="comments">
+          <th mat-header-cell class="hidden-sm" *matHeaderCellDef> Comments </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="comment-col">{{element.comments}}</div>
+          </td>
+        </ng-container>
+
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+            <div class="booking-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+              <div class="container-fluid">
+
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="booking-element-row"
+          [class.example-expanded-row]="expandedElement === element"
+          (click)="expandedElement = expandedElement === element ? null : element">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="booking-detail-row"></tr>
+      </table>
+    </div> <!-- // Search Results -->
+  </div>
+</div>
+
+<div class="interpreter-detail">
+
+</div>
+
+<div class="custom-modal" *ngIf="showInterpreterDetail" role="dialog">\
+  <div class="interpreter-modal-container container">
+    <div class="row">
+      <div class="col-10">
+        <h2>{{ interpreterToShow.name }}</h2>
+      </div>
+      <div class="col-2">
+        <button type="button" class="close" (click)="closeInterpreter()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    <div class="row card-row">
+      <div class="col-6 row-header">
+        Phone
+      </div>
+      <div class="col-6">
+        {{ interpreterToShow.phone }}
+      </div>
+    </div>
+    <div class="row card-row">
+      <div class="col-6 row-header">
+        Email Address
+      </div>
+      <div class="col-6">
+        {{ interpreterToShow.emailAddress }}
+      </div>
+    </div>
+
+  </div>

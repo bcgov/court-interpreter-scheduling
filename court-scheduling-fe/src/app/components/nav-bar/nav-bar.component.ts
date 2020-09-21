@@ -9,6 +9,10 @@ import { RouterService } from 'src/app/services/router.service';
 })
 export class NavBarComponent implements OnInit {
 
+  get selectedIndex(): number {
+     return this.tabIndex();
+ }
+
   constructor(private routerService: RouterService) { }
 
   ngOnInit(): void {
@@ -44,5 +48,22 @@ export class NavBarComponent implements OnInit {
 
   goToClerks(): void {
     this.routerService.navigateTo(AppRoutes.Clerks);
+  }
+
+  tabIndex(): number {
+    switch (this.routerService.current) {
+      case AppRoutes.Bookings: {
+        return 0;
+      }
+      case AppRoutes.Interpreters: {
+        return 1;
+      }
+      case AppRoutes.Clerks: {
+        return 2;
+      }
+      default: {
+        return 0;
+      }
+    }
   }
 }

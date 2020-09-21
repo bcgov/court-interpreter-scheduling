@@ -15,7 +15,7 @@
 <nav class="navbar nav-bar-bottom">
     <div class="container">
            <div class="col-12">
-            <mat-tab-group (selectedTabChange)="navigateTo($event)">
+            <mat-tab-group (selectedTabChange)="navigateTo($event)" [selectedIndex]="selectedIndex">
                 <mat-tab label="Bookings"></mat-tab>
                 <mat-tab label="Interpreteres"></mat-tab>
                 <mat-tab label="Clerks"></mat-tab>

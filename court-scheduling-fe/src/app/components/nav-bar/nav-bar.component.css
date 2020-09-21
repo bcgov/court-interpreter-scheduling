@@ -72,6 +72,7 @@
     height: 148px;
   }
 }
+
 @media screen and (max-width: 330px) {
   .nav-bar {
     height: 178px;

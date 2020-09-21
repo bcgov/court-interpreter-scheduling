@@ -1,0 +1,210 @@
+.search {
+  margin-top: 16px;
+}
+
+h4 {
+  margin-bottom: 0;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+/* Table */
+table {
+  width: 100%;
+}
+
+tr.booking-detail-row {
+  height: 0;
+}
+
+tr.booking-element-row:not(.booking-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.booking-element-row:not(.booking-expanded-row):active {
+  background: #efefef;
+}
+
+.booking-element-row td {
+  border-bottom-width: 0;
+}
+
+.booking-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  border-bottom: 1px solid #DFECFF;
+  border-radius: 8px;
+}
+
+td.mat-cell {
+  padding: 8px 0;
+  border: none;
+}
+
+tr.mat-row.booking-element-row {
+  border: 1px solid #DFECFF;
+  border-radius: 8px;
+  height: 71px;
+}
+
+.date-bottom {
+  color: #333333;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: 22px;
+}
+
+.date-top {
+  color: #333333;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0;
+  line-height: 22px;
+}
+
+.interpreter-col{
+  color: #1A5A96;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0;
+  line-height: 18.4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.comment-col {
+  height: 90px;
+  white-space: pre-wrap;
+  /* CSS3 */
+  white-space: -moz-pre-wrap;
+  /* Firefox */
+  white-space: -pre-wrap;
+  /* Opera <7 */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
+  word-wrap: break-word;
+  overflow: scroll;
+}
+
+.status-card {
+  height: 32px;
+  width: 83px;
+  border-radius: 4px;
+  color: #333333;
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 32px;
+  text-align: center;
+  margin-right: 16px;
+  vertical-align: middle;
+}
+
+.booked-status {
+  background-color: #58CB7D;
+  
+}
+
+.pending-status {
+  background-color: #FF8686;
+}
+
+.mat-column-date {
+  width: 120px;
+}
+
+.mat-column-isBooked {
+  width: 78px;
+}
+
+.mat-column-comments {
+  width: 211px;
+}
+
+.mat-column-interpreterName {
+  width: 140px;
+}
+
+/* // Screen size based columns */
+
+@media screen and (min-width: 768px) {
+  .mat-column-courtFileNumber {
+    width: 130px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mat-column-comments {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .mat-column-caseName {
+    display: none;
+  }
+
+  .mat-column-comments {
+    display: none;
+  }
+
+  .mat-column-courtFileNumber {
+    width: 70px;
+    white-space: pre-wrap;
+    /* CSS3 */
+    white-space: -moz-pre-wrap;
+    /* Firefox */
+    white-space: -pre-wrap;
+    /* Opera <7 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    overflow: scroll;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .mat-column-caseName {
+    display: none;
+  }
+
+  .mat-column-comments {
+    display: none;
+  }
+
+  .mat-column-courtFileNumber {
+    display: none;
+  }
+}
+
+/* // Screen size based columns */
+/* // Table */
+
+.interpreter-modal-container {
+  box-sizing: border-box;
+  height: 301px;
+  width: 362px;
+  border: 1px solid #DFECFF;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 20px 0 #DFECFF;
+  animation: bounceInUp;
+  animation-duration: 0.5s;
+  padding-top: 32px;
+}
+
+.row-header {
+  font-weight: bold;
+}
+
+.card-row {
+  padding-top: 32px;
+}
