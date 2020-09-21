@@ -1,0 +1,87 @@
+version: "3"
+
+services:
+  application:
+    image: court-nest-api:dev
+    container_name: court-nest-api
+    build:
+      context: ./app
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=123_JWT_SECRET!
+      - NODE_ENV=development
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=nest_api_dev
+      - DB_USERNAME=court_nestapi
+      - DB_PASSWORD=court_nest123
+      - DB_TEST_DATABASE=nest_api_test
+      - DEPLOY_ENV=node-api-dev
+      - MERGE_BRANCH=dev
+      - KEYCLOAK_PORT=8080
+      - KEYCLOAK_REALM=vaping-test
+      - KEYCLOAK_CLIENT=vaping-node
+      - KEYCLOAK_AUTH_URL=https://keycloak.freshworks.club/auth/
+      - KEYCLOAK_SECRET=ec20f143-7ef8-44a2-9dfa-a09f1633d20e
+    expose:
+      - "4000"
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - postgres
+      # - keycloak
+    networks:
+      - backend
+
+  postgres:
+    image: court-nest-api-postgres:dev
+    container_name: court-nest-api-postgres
+    build:
+      context: ./.docker/postgres
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations"
+      - POSTGRES_USER=court_nestapi
+      - POSTGRES_PASSWORD=court_nest123
+    volumes:
+      - ./.docker/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:latest
+  #   environment:
+  #     DB_VENDOR: POSTGRES
+  #     DB_ADDR: postgres
+  #     DB_DATABASE: nest_api_dev
+  #     DB_USER: court_nestapi
+  #     DB_PASSWORD: court_nest123
+  #     KEYCLOAK_USER: admin
+  #     KEYCLOAK_PASSWORD: password
+  #     KEYCLOAK_IMPORT: /tmp/testrealm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+  #   healthcheck:
+  #     test: ['CMD', 'curl', '-f', 'http://localhost:8080/auth/realms/th-common-idm/']
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #   volumes:
+  #     - ./.docker/keycloak/testrealm.json:/tmp/testrealm.json
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - backend
+
+networks:
+  backend:
+    driver: "bridge"
+
+volumes:
+  postgres:
