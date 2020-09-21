@@ -190,12 +190,11 @@ tr.mat-row.booking-element-row {
 
 .interpreter-modal-container {
   box-sizing: border-box;
-  height: 301px;
+  height: 250px;
   width: 362px;
-  border: 1px solid #DFECFF;
   border-radius: 4px;
   background-color: #FFFFFF;
-  box-shadow: 0 0 20px 0 #DFECFF;
+  box-shadow: 0 0 10px 0 #DFECFF;
   animation: bounceInUp;
   animation-duration: 0.5s;
   padding-top: 32px;

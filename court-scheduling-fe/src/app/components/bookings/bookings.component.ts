@@ -72,12 +72,12 @@ export class BookingsComponent implements OnInit {
     this.languages = await this.codesService.getLanguages();
   }
 
-  async showInterpreter(forBooking: Booking) {
+  async showInterpreter(forBooking: Booking): Promise<void>  {
     this.interpreterToShow = await this.intepreterService.getInterpreter(forBooking.interpreterId);
     this.showInterpreterDetail = true;
   }
 
-  closeInterpreter() {
+  closeInterpreter(): void {
     this.showInterpreterDetail = false;
   }
 
