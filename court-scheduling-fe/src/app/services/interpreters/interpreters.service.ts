@@ -10,8 +10,7 @@ export class InterpretersService {
   constructor(private dummy: DummyService) { }
 
   public async getInterpreters(): Promise<Interpreter[]> {
-
-    return this.dummy.interpreters;
+    return this.dummy.interpreters(10);
   }
 
   public async getInterpreter(id: string): Promise<Interpreter> {

@@ -10,52 +10,6 @@ import * as faker from 'faker';
 })
 export class DummyService {
 
-  interpreters: Interpreter[] = [
-    {
-      id: '1',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '5'
-    }, {
-      id: '2',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '2'
-    }, {
-      id: '3',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '1'
-    }, {
-      id: '4',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '0'
-    }, {
-      id: '5',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '12'
-    }, {
-      id: '6',
-      name: 'Ella Beck',
-      level: '2',
-      phone: '+1604.333.4567',
-      emailAddress: 'ella_beck@cameron.net',
-      bookingsInTheLastDays: '3'
-    },
-  ];
-
   languages: Language[] = [
     { id: `farsi`, name: `Farsi` },
     { id: `french`, name: `French` },
@@ -72,7 +26,6 @@ export class DummyService {
 
   bookings(n: number): Booking[] {
     let random: Booking[] = [];
-    console.log('generating...');
     for (let i = 0; i < n; i++) {
       const id: string = '' + i;
       const date: Date = faker.date.future();
@@ -84,7 +37,20 @@ export class DummyService {
       const isBooked: boolean = faker.random.boolean();
       random.push(new Booking(id, date, interpreterId, interpreterName, courtFileNumber, caseName, comments, isBooked));
     }
-    console.log('generated');
+    return random;
+  }
+
+  interpreters(n: number): Interpreter[] {
+    let random: Interpreter[] = [];
+    for (let i = 0; i < n; i++) {
+      const id: string = '' + i;
+      const name: string = faker.name.findName();
+      const phone: string = faker.phone.phoneNumber();
+      const email: string = faker.internet.email();
+      const level: number = faker.random.number(4);
+      const bookings: number = faker.random.number(15);
+      random.push(new Interpreter(id, name, level, phone, email, bookings));
+    }
     return random;
   }
 }
