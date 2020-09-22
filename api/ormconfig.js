@@ -1,5 +1,16 @@
 const { join } = require('path');
 
+const entities =
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === 'production'
+    ? join(__dirname, 'src/**/**.entity{.ts,.js}')
+    : 'dist/**/*.entity{ .ts,.js}';
+const synchronize =
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === 'production'
+    ? false
+    : false;
+
 module.exports = {
   type: 'postgres',
   host: process.env.DB_HOST,
@@ -10,12 +21,12 @@ module.exports = {
     process.env.NODE_ENV !== 'test'
       ? process.env.DB_DATABASE
       : process.env.DB_TEST_DATABASE,
-  entities: [join(__dirname, '../**/**.entity{.ts,.js}')],
-  migrations: [join(__dirname, './migrations/**{.ts,.js}')],
+  entities: [entities],
+  migrations: ['dist/migrations/*{.ts,.js}'],
   cli: {
-    migrationsDir: './migrations',
+    migrationsDir: 'src/migrations',
   },
-  synchronize: false,
+  synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
   dropSchema: true,
 };

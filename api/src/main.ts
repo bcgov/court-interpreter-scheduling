@@ -4,10 +4,12 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 
 import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
+import { documentation } from './common/common.documentation';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+  documentation(app);
   if (process.env.NODE_ENV !== 'production') {
     global['nestAppServer'] = app.getHttpServer();
   }
