@@ -1,6 +1,4 @@
-import { InterpretersService } from '../services/interpreters/interpreters.service';
 import { Interpreter } from './interpreter';
-
 export class InterpreterRequest {
     editable: boolean;
     date: Date;
