@@ -38,7 +38,7 @@ objects:
     creationTimestamp: null
     generation: 0
     labels: null
-    name: ${NAME}$
+    name: ${NAME}
   spec:
     replicas: "${{REPLICAS}}"
     revisionHistoryLimit: 10
