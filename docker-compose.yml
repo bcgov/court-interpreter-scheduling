@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  ### API #############################
+  api:
+    image: court-nest-api:dev
+    container_name: court-nest
+    stdin_open: true
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=123_JWT_SECRET!
+      - NODE_ENV=development
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=nest_api_dev
+      - DB_USERNAME=court_nestapi
+      - DB_PASSWORD=court_nest123
+      - DB_TEST_DATABASE=nest_api_test
+      - DEPLOY_ENV=node-api-dev
+      - MERGE_BRANCH=dev
+    expose:
+      - "4000"
+    volumes:
+      # Binds the application folder from the host inside the container for fast changes
+      - ./api:/usr/src/app
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /usr/src/app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  ### Database #############################
+  postgres:
+    image: court-nest-api-postgres:dev
+    container_name: court-nest-api-database
+    build:
+      context: ./.docker/postgres
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations"
+      - POSTGRES_USER=court_nestapi
+      - POSTGRES_PASSWORD=court_nest123
+    volumes:
+      - ./.docker/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
+
+volumes:
+  postgres:

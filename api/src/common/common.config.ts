@@ -6,8 +6,8 @@ export const CONFIG = {
     patch: 1,
   },
   general: {
-    title: 'Vape Regulation Backend',
-    description: 'NodeJS/NextJS API for Vaping regulation in BC',
+    title: 'Court Scheduling Api',
+    description: 'NodeJS/NextJS API for Court Schduling in BC',
   },
   pagination: {
     size: 24,
