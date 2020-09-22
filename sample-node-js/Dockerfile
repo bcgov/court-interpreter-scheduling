@@ -31,9 +31,9 @@ WORKDIR ${HOME}
 COPY ./package*.json ./
 RUN pwd
 RUN ls -a
-RUN ping -c 4 registry.npmjs.org
 RUN npm config set registry https://registry.npmjs.org/
 RUN npm config get registry
+RUN ping -c 4 registry.npmjs.org
 RUN npm ci --loglevel verbose
 
 # If you are building your code for production, copy all files
