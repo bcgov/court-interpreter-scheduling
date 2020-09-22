@@ -30,7 +30,7 @@ WORKDIR ${HOME}
 # RUN npm install --only=production
 COPY ./package*.json ./
 RUN pwd
-RUN ls
+RUN ls -a
 RUN npm config set registry https://registry.npmjs.org/
 RUN npm config get registry
 RUN npm ci --loglevel verbose
