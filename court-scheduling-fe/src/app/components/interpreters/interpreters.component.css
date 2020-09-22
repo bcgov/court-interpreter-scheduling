@@ -12,10 +12,6 @@
   width: 100%;
 }
 
-.interpreters-container {
-  padding: 16px;
-}
-
 h4 {
   margin-bottom: 0;
 }
@@ -44,61 +40,6 @@ h4 {
   height: 50px;
 }
 
-.interpreter-request-modal-fields-container {
-  padding: 32px;
-}
-
-.interpreter-request-modal-container {
-  box-sizing: border-box;
-  height: 90%;
-  width: 90%;
-  border-radius: 4px;
-  background-color: #FFFFFF;
-  box-shadow: 0 0 10px 0 #DFECFF;
-  animation: bounceInUp;
-  animation-duration: 0.5s;
-  overflow: scroll;
-}
-
-.request-header {
-  color: #1A5A96;
-  font-size: 33px;
-  font-weight: bold;
-  letter-spacing: 0;
-  line-height: 37.95px;
-}
-
-.request-interpreter-name {
-  color: #4A4A4A;
-  font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 0;
-  line-height: 32.2px;
-}
-
-.request-form-fields {
-  margin-top: 32px;
-}
-
-.cancel-btn {
-  width: 226px;
-  height: 50px;
-}
-
-.save-btn {
-  width: 226px;
-  height: 50px;
-  float: right;
-}
-
-.custom-modal {
-  padding-top: 5%;
-}
-
-.close {
-  float: right;
-}
-
 /* Table */
 table {
   width: 100%;
@@ -124,37 +65,10 @@ tr.interpreter-element-row:not(.interpreter-expanded-row):active {
   overflow: hidden;
   display: flex;
 }
-/*
-.interpreter-element-diagram {
-  min-width: 80px;
-  border: 2px solid black;
-  padding: 8px;
-  font-weight: lighter;
-}
-
-.interpreter-element-symbol {
-  font-weight: bold;
-  font-size: 40px;
-  line-height: normal;
-}
-
-.interpreter-element-description {
-  padding: 16px;
-}
-
-.interpreter-element-description-attribution {
-  opacity: 0.5;
-} */
-
 
  table {
   border-collapse: collapse;
 }
-
-/* .parent-cell {
-  border: 1px solid #DFECFF;
-  border-radius: 8px;
-} */
 
 th {
   /* row border */
@@ -173,44 +87,4 @@ tr.mat-row.interpreter-element-row {
   border: 1px solid #DFECFF;
   border-radius: 8px;
   height: 71px;
-}
-
-
-.date-element-container {
-  box-sizing: border-box;
-  height: 46px;
-  width: 100%;
-  border: 2px solid #979797;
-  border-radius: 4px;
-  background-color: #FFFFFF;
-}
-
-.date-element-row {
-  height: 46px;
-  align-items: center;
-}
-
-@media screen and (min-width: 768px) {
-  .date-element-row {
-    padding-right: 8px;
-    padding-left: 8px;
-  }
-}
-
-
-.nav-bar {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 99;
-  backdrop-filter: saturate(180%) blur(8px);
-}
-
-:not(html, .nav-bar) {
-  -webkit-transform: translate3d(0, 0, 0); 
-  transform: translate3d(0, 0, 0) 
-}
-
-.nav-bar:after {
-  background-color: rgba(21, 74, 136, 0.2);
 }

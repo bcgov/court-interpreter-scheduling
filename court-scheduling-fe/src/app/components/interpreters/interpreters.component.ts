@@ -30,10 +30,6 @@ export class InterpretersComponent implements OnInit {
   languages: Language[] = [];
   courtLocations: Court[] = [];
 
-  // Request Modal
-  creatingRequest = false;
-  requestedInterpreter: Interpreter = null;
-
   // Table
   dataSource: Interpreter[] = [];
   expandedElement: Interpreter | null;
@@ -68,9 +64,6 @@ export class InterpretersComponent implements OnInit {
 
   async fetchAllInterpreters(): Promise<void> {
     this.dataSource = await this.interpretersService.getInterpreters();
-    // TODO: Temp - remove
-    // this.requestedInterpreter = this.dataSource[0];
-    // this.creatingRequest = true;
   }
 
   async fetchCodes(): Promise<void> {
@@ -79,12 +72,6 @@ export class InterpretersComponent implements OnInit {
   }
 
   showRequestForm(forInterpreter: Interpreter): void {
-    // this.requestedInterpreter = forInterpreter;
-    // this.creatingRequest = true;
     this.requestService.showNewRequestForm(forInterpreter, this.selectedDate);
-  }
-
-  closeRequest(): void {
-    this.creatingRequest = false;
   }
 }

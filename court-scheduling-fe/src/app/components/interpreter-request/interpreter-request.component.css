@@ -1,7 +1,22 @@
 .mat-form-field {
-    width: 100%;
-  }
+  width: 100%;
+}
 
+h4 {
+  margin-bottom: 0;
+}
+
+.divider {
+  margin-left: 0;
+  margin-right: 0;
+  height: 1px;
+  width: 100%;
+  border: 1px solid #EEEEEE;
+}
+
+.mat-radio-button~.mat-radio-button {
+  margin-left: 16px;
+}
 
 .interpreter-request-modal-fields-container {
   padding: 32px;
@@ -79,13 +94,13 @@
   }
 }
 
-
 .nav-bar {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 99;
-  backdrop-filter: saturate(180%) blur(8px);
+  backdrop-filter: saturate(180%) blur(12px);
+  padding-bottom: 0 !important;
 }
 
 :not(html, .nav-bar) {
