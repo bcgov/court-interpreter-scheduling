@@ -22,7 +22,7 @@ console.dir({
 module.exports = {
   type: 'postgres',
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT) || 5432,
+  port: 5432,
   username: process.env.POSTGRESQL_USER,
   password: process.env.POSTGRESQL_PASSWORD,
   database:
