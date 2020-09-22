@@ -25,10 +25,6 @@ parameters:
     value: "3030-tcp"
   - name: APP_PORT_OTHER
     value: "8080-tcp"
-  - name: HOST
-    description: Host name of the application
-    required: true
-    value: ""
   - name: DB_SERVICE
     value: "postgresqlfw"
   - description: Username for PostgreSQL user that will be used for accessing the database.
@@ -78,14 +74,14 @@ objects:
                   value: "${POSTGRESQL_USER}"
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
-                  secretKeyRef:
-                    key: database-password
-                    name: "${DB_SERVICE}"
+                    secretKeyRef:
+                      key: database-password
+                      name: "${DB_SERVICE}"
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
-                  secretKeyRef:
-                    key: database-name
-                    name: "${DB_SERVICE}"
+                    secretKeyRef:
+                      key: database-name
+                      name: "${DB_SERVICE}"
               image: " "
               imagePullPolicy: Always
               name: api
