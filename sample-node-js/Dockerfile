@@ -9,6 +9,8 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
+RUN npm config rm proxy
+RUN npm config rm https-proxy
 USER 1001
 
 # Setting Path
@@ -27,11 +29,8 @@ WORKDIR ${HOME}
 # where available (npm@5+)
 # RUN npm install --only=production
 COPY ./package*.json ./
-
-RUN npm config rm proxy
-RUN npm config rm https-proxy
-
-RUN npm install
+RUN npm config set registry https://registry.npmjs.org/
+RUN npm ci
 
 # If you are building your code for production, copy all files
 COPY ./ .
