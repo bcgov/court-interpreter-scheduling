@@ -28,6 +28,9 @@ WORKDIR ${HOME}
 # RUN npm install --only=production
 COPY ./package*.json ./
 
+RUN npm config rm proxy
+RUN npm config rm https-proxy
+
 RUN npm install
 
 # If you are building your code for production, copy all files
