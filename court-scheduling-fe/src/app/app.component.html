@@ -1,3 +1,4 @@
 <app-nav-bar></app-nav-bar>
 <!-- Current route  -->
-<router-outlet></router-outlet>
+<router-outlet *ngIf="!interpreterRequest"></router-outlet>
+<app-interpreter-request *ngIf="interpreterRequest" [request]="interpreterRequest"></app-interpreter-request>

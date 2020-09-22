@@ -14,7 +14,7 @@ export class InterpretersService {
   }
 
   public async getInterpreter(id: string): Promise<Interpreter> {
-    return this.dummy.interpreters[0];
+    return this.dummy.interpreters(1)[0];
   }
 
 }

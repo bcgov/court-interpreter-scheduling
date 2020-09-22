@@ -55,6 +55,7 @@
   background: rgb(0,51,101);
   background: linear-gradient(39deg, rgba(0,51,101,0.93) 0%, rgba(1,44,87,1) 100%);
 }
+
 @media screen and (min-width: 768px) {
   .nav-bar {
     height: 68px;

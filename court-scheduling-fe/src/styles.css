@@ -79,10 +79,18 @@ body {
   color: #003365;
 }
 
+/* style fields */
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  /* padding-bottom: 16px; */
+}
+
+/* .mat-form-field-appearance-outline .mat-form-field-infix {
+  height: 42px;
+  padding: 0;
+} */
 .custom-modal {
   position: fixed; /* Stay in place */
   z-index: 100; /* Sit on top */
-  padding-top: 150px; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */

@@ -5,6 +5,7 @@ import { Court } from 'src/app/models/court';
 import { Interpreter } from 'src/app/models/interpreter';
 import { InterpretersService } from 'src/app/services/interpreters/interpreters.service';
 import { CodesService } from 'src/app/services/codes/codes.service';
+import { RequestService } from 'src/app/services/request/request.service';
 
 @Component({
   selector: 'app-interpreters',
@@ -21,10 +22,20 @@ import { CodesService } from 'src/app/services/codes/codes.service';
 
 export class InterpretersComponent implements OnInit {
 
-  dataSource: Interpreter[] = [];
+  // Variables
+  selectedDate: Date = new Date();
+
+  // Dropdowns
+  statuses: string[] = ['Booked', 'Pending'];
   languages: Language[] = [];
   courtLocations: Court[] = [];
 
+  // Request Modal
+  creatingRequest = false;
+  requestedInterpreter: Interpreter = null;
+
+  // Table
+  dataSource: Interpreter[] = [];
   expandedElement: Interpreter | null;
   columnsToDisplay = ['name', 'level', 'phone', 'emailAddress', 'bookingsInTheLastDays'];
   tableDef: Array<any> = [
@@ -46,7 +57,9 @@ export class InterpretersComponent implements OnInit {
     },
   ];
 
-  constructor(private interpretersService: InterpretersService, private codesService: CodesService) { }
+  constructor(private interpretersService: InterpretersService,
+              private codesService: CodesService,
+              private requestService: RequestService) { }
 
   ngOnInit(): void {
     this.fetchAllInterpreters();
@@ -55,6 +68,9 @@ export class InterpretersComponent implements OnInit {
 
   async fetchAllInterpreters(): Promise<void> {
     this.dataSource = await this.interpretersService.getInterpreters();
+    // TODO: Temp - remove
+    // this.requestedInterpreter = this.dataSource[0];
+    // this.creatingRequest = true;
   }
 
   async fetchCodes(): Promise<void> {
@@ -62,4 +78,13 @@ export class InterpretersComponent implements OnInit {
     this.languages = await this.codesService.getLanguages();
   }
 
+  showRequestForm(forInterpreter: Interpreter): void {
+    // this.requestedInterpreter = forInterpreter;
+    // this.creatingRequest = true;
+    this.requestService.showNewRequestForm(forInterpreter, this.selectedDate);
+  }
+
+  closeRequest(): void {
+    this.creatingRequest = false;
+  }
 }

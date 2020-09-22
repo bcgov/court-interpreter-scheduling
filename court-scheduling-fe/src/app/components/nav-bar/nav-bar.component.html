@@ -1,27 +1,25 @@
 <nav class="navbar nav-bar">
-    <div class="container">
-            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 col-12" id="icon-container">
-                <img id="logo" src="../../../assets/brand/bclogo.png" alt="Government of British Columbia">
-            </div>
-            <div class="col-xs-8 col-sm-6 col-md-7 col-lg-8 col-10" id="site-name">
-                <h3 class="nav-item">Court Services Branch Scheduling System</h3>
-            </div>
-            <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 col-2" id="admin-actions" class="nav-item">
-                <h3>Admin</h3>
-            </div>
+  <div class="container">
+    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 col-12" id="icon-container">
+      <img id="logo" src="../../../assets/brand/bclogo.png" alt="Government of British Columbia">
     </div>
+    <div class="col-xs-8 col-sm-6 col-md-7 col-lg-8 col-10" id="site-name">
+      <h3 class="nav-item">Court Services Branch Scheduling System</h3>
+    </div>
+    <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 col-2" id="admin-actions" class="nav-item">
+      <h3>Admin</h3>
+    </div>
+  </div>
 </nav>
 <div class="divider"></div>
 <nav class="navbar nav-bar-bottom">
-    <div class="container">
-           <div class="col-12">
-            <mat-tab-group (selectedTabChange)="navigateTo($event)" [selectedIndex]="selectedIndex">
-                <mat-tab label="Bookings"></mat-tab>
-                <mat-tab label="Interpreteres"></mat-tab>
-                <mat-tab label="Clerks"></mat-tab>
-              </mat-tab-group>
-           </div>
+  <div class="container">
+    <div class="col-12">
+      <mat-tab-group (selectedTabChange)="navigateTo($event)" [selectedIndex]="selectedIndex">
+        <mat-tab label="Bookings"></mat-tab>
+        <mat-tab label="Interpreteres"></mat-tab>
+        <mat-tab label="Clerks"></mat-tab>
+      </mat-tab-group>
     </div>
+  </div>
 </nav>
-
-
