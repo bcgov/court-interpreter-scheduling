@@ -29,7 +29,7 @@ WORKDIR ${HOME}
 # where available (npm@5+)
 # RUN npm install --only=production
 COPY ./package*.json ./
-RUN npm config set registry http://104.16.16.35
+RUN npm config set registry http://registry.npmjs.org/
 RUN npm config get registry
 RUN npm ci --loglevel verbose
 
