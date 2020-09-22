@@ -29,6 +29,13 @@ parameters:
     description: Host name of the application
     required: true
     value: ""
+  - name: DB_SERVICE
+    value: "postgresqlfw"
+  - description: Username for PostgreSQL user that will be used for accessing the database.
+    displayName: PostgreSQL Connection Username
+    name: POSTGRESQL_USER
+    required: true
+    value: "developer"
 objects:
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
@@ -66,7 +73,19 @@ objects:
           containers:
             - env:
                 - name: DB_HOST
-                  value: "NONE"
+                  value: "${DB_SERVICE}"
+                - name: POSTGRESQL_USER
+                  value: "${POSTGRESQL_USER}"
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                  secretKeyRef:
+                    key: database-password
+                    name: "${DB_SERVICE}"
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                  secretKeyRef:
+                    key: database-name
+                    name: "${DB_SERVICE}"
               image: " "
               imagePullPolicy: Always
               name: api
