@@ -50,6 +50,7 @@ export class NavBarComponent implements OnInit {
     this.routerService.navigateTo(AppRoutes.Interpreters);
   }
 
+  // TODO: clerks tab is not in scope yet
   goToClerks(): void {
     this.routerService.navigateTo(AppRoutes.Clerks);
   }
