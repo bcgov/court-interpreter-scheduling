@@ -23,6 +23,7 @@ h4 {
   box-shadow: 0 0 10px 0 #DFECFF;
   animation: bounceInUp;
   animation-duration: 0.5s;
+  border-radius: 10px;
   overflow: scroll;
 }
 
@@ -110,6 +111,14 @@ h4 {
   }
 }
 
+@media screen and (min-width: 768px) {
+  #federal {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 32px;
+  }
+}
+
 /*  Nav */
 .close {
   float: right;
@@ -130,6 +139,7 @@ h4 {
   z-index: 99;
   backdrop-filter: saturate(170%) blur(14px);
   padding-bottom: 0 !important;
+  padding-top: 32px;
 }
 
 :not(html, .nav-bar) {

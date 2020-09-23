@@ -126,7 +126,7 @@
 </div>
 
 <!-- Interpreter detail modal -->
-<div class="custom-modal" *ngIf="showInterpreterDetail" role="dialog">\
+<div class="custom-modal" *ngIf="showInterpreterDetail" role="dialog" (click)="closeInterpreter()">
   <div class="interpreter-modal-container container">
     <div class="row">
       <div class="col-10">

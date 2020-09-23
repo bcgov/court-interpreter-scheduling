@@ -88,3 +88,12 @@ tr.mat-row.interpreter-element-row {
   border-radius: 8px;
   height: 71px;
 }
+
+.book-btn {
+  float: right;
+}
+
+.expanded-cell {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}

@@ -212,6 +212,7 @@ tr.mat-row.booking-element-row {
   animation: bounceInUp;
   animation-duration: 0.5s;
   padding-top: 32px;
+  border-radius: 10px;
 }
 
 .custom-modal {
