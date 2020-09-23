@@ -68,6 +68,8 @@ objects:
         spec:
           containers:
             - env:
+                - name: APPLICATION_PORT
+                  value: "${PORT}"
                 - name: DB_HOST
                   value: "${DB_SERVICE}"
                 - name: POSTGRESQL_USER
@@ -98,7 +100,7 @@ objects:
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /
+                  path: /healthcheck
                   port: "${{PORT}}"
                   scheme: HTTP
                 initialDelaySeconds: 140
@@ -108,7 +110,7 @@ objects:
               livenessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /
+                  path: /healthcheck
                   port: "${{PORT}}"
                   scheme: HTTP
                 initialDelaySeconds: 90
