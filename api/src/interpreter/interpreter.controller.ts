@@ -29,16 +29,16 @@ export class InterpreterController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.interpreterService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<InterpreterEntity> {
+    return await this.interpreterService.findOne(+id);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateInterpreterDto: UpdateInterpreterDto,
-  ) {
-    return this.interpreterService.update(+id, updateInterpreterDto);
+  ): Promise<void> {
+    await this.interpreterService.update(+id, updateInterpreterDto);
   }
 
   @Delete(':id')
