@@ -11,12 +11,10 @@ export class CodesService {
   constructor(private dummy: DummyService) { }
 
   public async getLanguages(): Promise<Language[]> {
-
     return this.dummy.languages;
   }
 
   public async getCourts(): Promise<Court[]> {
-
     return this.dummy.courts;
   }
 

@@ -74,7 +74,6 @@ export class BookingsComponent implements OnInit {
 
   async showInterpreter(forBooking: Booking): Promise<void>  {
     this.interpreterToShow = await this.intepreterService.getInterpreter(forBooking.interpreterId);
-    console.log(this.interpreterToShow);
     this.showInterpreterDetail = true;
   }
 

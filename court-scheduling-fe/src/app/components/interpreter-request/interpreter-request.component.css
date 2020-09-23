@@ -22,7 +22,7 @@ h4 {
   background-color: #FFFFFF;
   box-shadow: 0 0 10px 0 #DFECFF;
   animation: bounceInUp;
-  animation-duration: 0.5s;
+  animation-duration: 0.35s;
   border-radius: 10px;
   overflow: scroll;
 }
@@ -137,7 +137,7 @@ h4 {
   position: sticky;
   top: 0;
   z-index: 99;
-  backdrop-filter: saturate(170%) blur(14px);
+  backdrop-filter: saturate(170%) blur(16px);
   padding-bottom: 0 !important;
   padding-top: 32px;
 }

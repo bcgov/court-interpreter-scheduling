@@ -9,7 +9,7 @@ import { RequestService } from './services/request/request.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent  implements OnInit, OnDestroy {
-  title = 'court-scheduling-fe';
+  title = 'Court Scheduling';
 
 
   public interpreterRequest: Request;
@@ -26,6 +26,9 @@ export class AppComponent  implements OnInit, OnDestroy {
     this.unSubscribeToRequestService();
   }
 
+  /**
+   * Subsribe to requestService to be notified when the request modal should be shown.
+   */
   private subscribeToRequestService(): void {
     this.requsestSubscription = this.requestService.getObservable().subscribe(request => {
       if (request) {

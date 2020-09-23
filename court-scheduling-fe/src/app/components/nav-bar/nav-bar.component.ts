@@ -18,6 +18,10 @@ export class NavBarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  /**
+   * Called when tab value changes to navigate to appropriate route
+   * @param $event containing index
+   */
   navigateTo($event): void {
     switch ($event.index) {
       case 0: {
@@ -50,6 +54,9 @@ export class NavBarComponent implements OnInit {
     this.routerService.navigateTo(AppRoutes.Clerks);
   }
 
+  /**
+   * Convert current route to corresponding tab index
+   */
   tabIndex(): number {
     switch (this.routerService.current) {
       case AppRoutes.Bookings: {

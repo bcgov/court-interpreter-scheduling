@@ -10,7 +10,6 @@ export class BookingsService {
   constructor(private dummy: DummyService) { }
 
   public async getBookings(): Promise<Booking[]> {
-
     return this.dummy.bookings(10);
   }
 

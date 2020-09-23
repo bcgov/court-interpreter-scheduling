@@ -53,7 +53,8 @@ export class InterpretersComponent implements OnInit {
     },
   ];
 
-  constructor(private interpretersService: InterpretersService,
+  constructor(
+              private interpretersService: InterpretersService,
               private codesService: CodesService,
               private requestService: RequestService) { }
 

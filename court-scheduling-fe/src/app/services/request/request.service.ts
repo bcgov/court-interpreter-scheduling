@@ -29,7 +29,7 @@ export class RequestService {
   }
 
   /**
-   * Emit notification to observers (app-component) that a request should be shown
+   * Emit notification to observers (app-component) that a request should be shown / removed
    */
   private emit(request: InterpreterRequest): void {
     this.subject.next(request);
