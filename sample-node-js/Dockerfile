@@ -6,7 +6,7 @@ ENV HOME /opt/app-root/src/app
 
 # Creating HOME
 USER 0
-RUN apt install dnsutils
+RUN apt-get install dnsutils
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
