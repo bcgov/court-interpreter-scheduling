@@ -9,7 +9,6 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
-RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
 USER 1001
 
 # Setting Path
@@ -28,15 +27,17 @@ WORKDIR ${HOME}
 # where available (npm@5+)
 # RUN npm install --only=production
 COPY ./package*.json ./
-RUN pwd
-RUN ls -a
+COPY ./ .
+USER 0
+RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
+RUN npm config set registry registry.npmjs.com
+USER 1001
 RUN cat /etc/hosts
 RUN ping -c 2 registry.npmjs.org
-RUN ping -c 2 google.com
+RUN ping -c 2 registry.npmjs.com
 RUN npm ci --loglevel verbose
 
 # If you are building your code for production, copy all files
-COPY ./ .
 
 # Cleaning any existing generated file
 RUN rm -rf ./dist-server
