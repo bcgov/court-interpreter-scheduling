@@ -28,6 +28,7 @@ WORKDIR ${HOME}
 # RUN npm install --only=production
 
 USER 0
+RUN dnf install bind-utils
 RUN dig +trace registry.npmjs.org
 # If you are building your code for production, copy all files
 
