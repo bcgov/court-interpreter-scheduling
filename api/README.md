@@ -2,7 +2,88 @@
 
 This project was bootstrapped with [NestJS](https://docs.nestjs.com/first-steps).
 
-## Commands
+![](https://i.imgur.com/PUVE1kA.png)
+
+<h3 align="center">Court Scheduling Backend</h3>
+
+<div align="center">
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]() [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+</div>
+
+---
+
+<p align="center"> Few lines describing your project.
+    <br> 
+</p>
+
+## 📝 Table of Contents
+
+- [About](#about)
+- [Deployment](#deployment)
+- [Built Using](#built_using)
+
+## 🧐 About <a name = "about"></a>
+
+Backend for Court Scheduling
+
+## 🏁 Getting Started <a name = "getting_started"></a>
+
+### Installing
+
+#### Local
+
+In root folder:
+
+- Start Database in docker first
+
+```
+docker-compose up postgres
+```
+
+- Application
+
+```
+$ cp api/.config/.env.example api
+$ cd api
+$ npm i // first time
+$ npm run start:dev
+```
+
+#### Docker
+
+```
+docker-compose up
+```
+
+### SchemaSpy
+
+![](https://i.imgur.com/yAFthhm.png)
+
+## 🔧 Running the tests <a name = "tests"></a>
+
+Explain how to run the automated tests for this system.
+
+### Break down into end to end tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+### And coding style tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## 🎈 Usage <a name="usage"></a>
+
+### Commands
 
 In the project directory, you can run:
 
@@ -43,6 +124,16 @@ See the section about [testing](https://docs.nestjs.com/fundamentals/testing) fo
 ### `npm run db*`
 
 These scripts run actions against the database.
+
+## 🚀 Deployment <a name = "deployment"></a>
+
+Add additional notes about how to deploy this on a live system.
+
+## ⛏️ Built Using <a name = "built_using"></a>
+
+- [Postgres](https://www.postgresql.org/) - Database
+- [NestJs](https://nestjs.com/) - Server Environment
+- [Schemaspy](http://schemaspy.org/) - Display Schema of database
 
 ## Learn More
 
