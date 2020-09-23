@@ -6,14 +6,6 @@ h4 {
   margin-bottom: 0;
 }
 
-.divider {
-  margin-left: 0;
-  margin-right: 0;
-  height: 1px;
-  width: 100%;
-  border: 1px solid #EEEEEE;
-}
-
 .mat-radio-button~.mat-radio-button {
   margin-left: 16px;
 }
@@ -34,48 +26,55 @@ h4 {
   overflow: scroll;
 }
 
-.request-header {
-  color: #1A5A96;
-  font-size: 33px;
-  font-weight: bold;
-  letter-spacing: 0;
-  line-height: 37.95px;
-}
-
-.request-interpreter-name {
-  color: #4A4A4A;
-  font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 0;
-  line-height: 32.2px;
-}
-
 .request-form-fields {
   margin-top: 32px;
 }
 
-.cancel-btn {
-  width: 226px;
-  height: 50px;
+@media screen and (min-width: 768px) {
+  .cancel-btn {
+    width: 226px;
+    height: 50px;
+  }
+  
+  .save-btn {
+    width: 226px;
+    height: 50px;
+    float: right;
+  }
 }
 
-.save-btn {
-  width: 226px;
-  height: 50px;
-  float: right;
+@media screen and (max-width: 768px) {
+  .cancel-btn {
+    width: 180px;
+    height: 42px;
+  }
+  
+  .save-btn {
+    width: 180px;
+    height: 42px;
+    float: right;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .cancel-btn {
+    width: 95%;
+    height: 42px;
+  }
+  
+  .save-btn {
+    width: 95%;
+    height: 42px;
+    float: right;
+  }
 }
 
 .custom-modal {
   padding-top: 5%;
 }
 
-.close {
-  float: right;
-}
-
 .date-element-container {
   box-sizing: border-box;
-  height: 46px;
   width: 100%;
   border: 2px solid #979797;
   border-radius: 4px;
@@ -83,7 +82,6 @@ h4 {
 }
 
 .date-element-row {
-  height: 46px;
   align-items: center;
 }
 
@@ -94,12 +92,43 @@ h4 {
   }
 }
 
+@media screen and (min-width: 540px) {
+  .date-element-container {
+    height: 46px;
+  }
+  .date-element-row {
+    height: 46px;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .date-element-container {
+    height: 76px;
+  }
+  .date-element-row {
+    height: 76px;
+  }
+}
+
+/*  Nav */
+.close {
+  float: right;
+}
+
+.divider {
+  margin-left: 0;
+  margin-right: 0;
+  height: 1px;
+  width: 100%;
+  border: 1px solid #EEEEEE;
+}
+
 .nav-bar {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 99;
-  backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(170%) blur(14px);
   padding-bottom: 0 !important;
 }
 
@@ -111,3 +140,51 @@ h4 {
 .nav-bar:after {
   background-color: rgba(21, 74, 136, 0.2);
 }
+
+.request-header {
+  color: #1A5A96;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+.request-interpreter-name {
+  color: #4A4A4A;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+@media screen and (min-width: 768px) {
+  .request-interpreter-name {
+    font-size: 28px;
+    line-height: 32.2px;
+  }
+
+  .request-header {
+    font-size: 33px;
+    line-height: 37.95px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .request-interpreter-name {
+    font-size: 23px;
+    line-height: 27px;
+  }
+
+  .request-header {
+    font-size: 28px;
+    line-height: 32px;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .request-interpreter-name {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .request-header {
+    font-size: 23px;
+    line-height: 27px;
+  }
+}
+/*  // Nav */

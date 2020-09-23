@@ -36,21 +36,29 @@
           <h4 class="field-header">Date</h4>
           <div class="date-element-container container">
             <div class="row date-element-row">
-              <div class="col-1">
-                <span class="material-icons">
-                  calendar_today
-                </span>
+              <div class="col-6">
+                <div class="row">
+                  <div class="col-2">
+                    <span class="material-icons">
+                      calendar_today
+                    </span>
+                  </div>
+                  <div class="col-10">
+                    <div class="date-val">{{request.date| date:'EEE, MMM d'}} </div>
+                  </div>
+                </div>
               </div>
-              <div class="col-5">
-                <div class="date-val">{{request.date| date:'EEE, MMM d'}} </div>
-              </div>
-              <div class="col-1">
-                <span class="material-icons">
-                  access_time
-                </span>
-              </div>
-              <div class="col-5">
-                <div class="date-bottom">{{request.date | date:'shortTime'}} </div>
+              <div class="col-6">
+                <div class="row">
+                  <div class="col-2">
+                    <span class="material-icons">
+                      access_time
+                    </span>
+                  </div>
+                  <div class="col-10">
+                    <div class="date-bottom">{{request.date | date:'shortTime'}} </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
