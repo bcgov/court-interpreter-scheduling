@@ -28,7 +28,6 @@ WORKDIR ${HOME}
 # RUN npm install --only=production
 
 USER 0
-RUN apt update
 RUN apt install dig
 RUN dig +trace registry.npmjs.org
 # If you are building your code for production, copy all files
