@@ -21,9 +21,9 @@ export class InterpreterService {
     const interpreter = new InterpreterEntity();
     interpreter.name = createInterpreterDto.name;
     let language: LanguageEntity;
-    if (createInterpreterDto.languageId) {
+    if (createInterpreterDto.language) {
       language = await this.languageRepository.findOne({
-        id: createInterpreterDto.languageId,
+        id: createInterpreterDto.language,
       });
       interpreter.language = language;
     }
@@ -44,11 +44,13 @@ export class InterpreterService {
     id: number,
     updateInterpreterDto: UpdateInterpreterDto,
   ): Promise<void> {
-    console.log(updateInterpreterDto);
     await this.interpreterRepository.update(id, updateInterpreterDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} interpreter`;
+  async remove(id: number): Promise<void> {
+    const interpreter = await this.interpreterRepository.findOneOrFail({
+      id,
+    });
+    await this.interpreterRepository.remove(interpreter);
   }
 }

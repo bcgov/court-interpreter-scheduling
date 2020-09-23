@@ -42,7 +42,7 @@ export class InterpreterController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.interpreterService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.interpreterService.remove(+id);
   }
 }

@@ -31,7 +31,7 @@ export class CreateInterpreterDto {
     example: faker.random.uuid(),
   })
   @IsOptional()
-  languageId: string;
+  language: any;
 
   @ApiProperty({
     description: 'Interpreter phone number',
