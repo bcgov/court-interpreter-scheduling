@@ -25,7 +25,7 @@ export class NavBarComponent implements OnInit {
         break;
       }
       case 1: {
-        this.goToInterpreteres();
+        this.goToInterpreters();
         break;
       }
       case 2: {
@@ -42,7 +42,7 @@ export class NavBarComponent implements OnInit {
     this.routerService.navigateTo(AppRoutes.Bookings);
   }
 
-  goToInterpreteres(): void {
+  goToInterpreters(): void {
     this.routerService.navigateTo(AppRoutes.Interpreters);
   }
 

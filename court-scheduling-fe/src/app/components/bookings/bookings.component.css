@@ -23,6 +23,11 @@ h4 {
   width: 100%;
 }
 
+.search-btn {
+  width: 100%;
+  height: 50px;
+}
+
 /* Table */
 table {
   width: 100%;
