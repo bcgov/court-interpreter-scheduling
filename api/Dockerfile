@@ -1,5 +1,4 @@
-FROM node:10
-
+FROM node:12.18.3-slim
 
 ENV PORT 3030
 ENV HOME /opt/app-root/src/app
