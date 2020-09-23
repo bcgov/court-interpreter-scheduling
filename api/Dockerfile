@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:10
 
 ENV PORT 3030
 ENV HOME /opt/app-root/src/app
