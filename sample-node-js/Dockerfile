@@ -9,8 +9,6 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
-RUN npm config rm proxy
-RUN npm config rm https-proxy
 USER 1001
 
 # Setting Path
@@ -31,8 +29,6 @@ WORKDIR ${HOME}
 COPY ./package*.json ./
 RUN pwd
 RUN ls -a
-RUN npm config set registry https://registry.npmjs.org/
-RUN npm config get registry
 RUN ping -c 4 registry.npmjs.org
 RUN npm ci --loglevel verbose
 
