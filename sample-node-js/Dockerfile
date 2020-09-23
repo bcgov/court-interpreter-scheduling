@@ -9,6 +9,7 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
+RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
 USER 1001
 
 # Setting Path
