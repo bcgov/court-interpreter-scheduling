@@ -1,5 +1,6 @@
 FROM node:10
 
+
 ENV PORT 3030
 ENV HOME /opt/app-root/src/app
 
@@ -8,8 +9,6 @@ USER 0
 RUN mkdir -p ${HOME}
 RUN chmod -R 777 ${HOME}
 RUN chown -R 1001 ${HOME}
-RUN npm config rm proxy
-RUN npm config rm https-proxy
 USER 1001
 
 # Setting Path
@@ -28,15 +27,16 @@ WORKDIR ${HOME}
 # where available (npm@5+)
 # RUN npm install --only=production
 COPY ./package*.json ./
-RUN pwd
-RUN ls -a
-RUN npm config set registry https://registry.npmjs.org/
-RUN npm config get registry
-RUN ping -c 4 registry.npmjs.org
+COPY ./ .
+USER 0
+RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
+RUN echo "104.16.21.35 registry.npmjs.com" >> /etc/hosts
+RUN npm config set registry registry.npmjs.com
+USER 1001
+RUN cat /etc/hosts
 RUN npm ci --loglevel verbose
 
 # If you are building your code for production, copy all files
-COPY ./ .
 
 # Cleaning any existing generated file
 RUN rm -rf ./dist-server
