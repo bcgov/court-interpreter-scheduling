@@ -1,15 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateLanguageDto } from './dto/create-language.dto';
 import { UpdateLanguageDto } from './dto/update-language.dto';
+import { LanguageEntity } from './entities/language.entity';
 
 @Injectable()
 export class LanguageService {
-  create(createLanguageDto: CreateLanguageDto) {
-    return 'This action adds a new language';
+  constructor(
+    @InjectRepository(LanguageEntity)
+    private readonly languageRepository: Repository<LanguageEntity>,
+  ) {}
+
+  async create(createLanguageDto: CreateLanguageDto): Promise<LanguageEntity> {
+    const language = this.languageRepository.create(createLanguageDto);
+    return await this.languageRepository.save(language);
   }
 
-  findAll() {
-    return `This action returns all language`;
+  async findAll(): Promise<LanguageEntity[]> {
+    return await this.languageRepository.find();
   }
 
   findOne(id: number) {

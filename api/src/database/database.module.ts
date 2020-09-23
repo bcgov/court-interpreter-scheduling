@@ -9,22 +9,15 @@ dotenv.config();
 const entities =
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'production'
-    ? join(__dirname, 'src/**/**.entity{.ts,.js}')
+    ? join(__dirname, '../**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
+
 const synchronize =
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'production'
-    ? false
+    ? true
     : false;
-console.dir({
-  host: process.env.DB_HOST,
-  username: process.env.POSTGRESQL_USER,
-  password: process.env.POSTGRESQL_PASSWORD,
-  database:
-    process.env.NODE_ENV !== 'test'
-      ? process.env.POSTGRESQL_DATABASE
-      : process.env.DB_TEST_DATABASE,
-});
+
 const option: any = {
   type: 'postgres',
   host: process.env.DB_HOST,
@@ -42,7 +35,7 @@ const option: any = {
   },
   synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
-  dropSchema: true,
+  dropSchema: false,
 };
 
 @Module({

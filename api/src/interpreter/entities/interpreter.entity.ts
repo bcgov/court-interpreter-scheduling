@@ -1,9 +1,11 @@
+import { LanguageEntity } from 'src/language/entities/language.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 
 import { Level } from '../enums/level.enum';
@@ -24,14 +26,23 @@ export class InterpreterEntity {
   })
   level: Level;
 
-  @Column()
-  language: string;
+  @ManyToOne(
+    type => LanguageEntity,
+    (language: LanguageEntity) => language.id,
+  )
+  language: LanguageEntity;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
+
+  @Column({
+    type: 'decimal',
+    nullable: true,
+  })
+  distance: number;
 
   @CreateDateColumn()
   created_at: Date;

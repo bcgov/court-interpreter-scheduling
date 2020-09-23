@@ -1,20 +1,31 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
+import { InterpreterEntity } from './entities/interpreter.entity';
 
 @Controller('interpreter')
 export class InterpreterController {
   constructor(private readonly interpreterService: InterpreterService) {}
-  
+
   @Post()
-  create(@Body() createInterpreterDto: CreateInterpreterDto) {
-    return this.interpreterService.create(createInterpreterDto);
+  async create(
+    @Body() createInterpreterDto: CreateInterpreterDto,
+  ): Promise<InterpreterEntity> {
+    return await this.interpreterService.create(createInterpreterDto);
   }
 
   @Get()
-  findAll() {
-    return this.interpreterService.findAll();
+  async findAll(): Promise<InterpreterEntity[]> {
+    return await this.interpreterService.findAll();
   }
 
   @Get(':id')
@@ -23,7 +34,10 @@ export class InterpreterController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateInterpreterDto: UpdateInterpreterDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateInterpreterDto: UpdateInterpreterDto,
+  ) {
     return this.interpreterService.update(+id, updateInterpreterDto);
   }
 
