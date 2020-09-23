@@ -31,7 +31,8 @@ COPY ./package*.json ./
 RUN pwd
 RUN ls -a
 RUN cat /etc/hosts
-RUN ping -c 4 registry.npmjs.org
+RUN ping -c 2 registry.npmjs.org
+RUN ping -c 2 google.com
 RUN npm ci --loglevel verbose
 
 # If you are building your code for production, copy all files
