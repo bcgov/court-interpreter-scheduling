@@ -26,18 +26,9 @@ WORKDIR ${HOME}
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 # RUN npm install --only=production
-COPY ./package*.json ./
-COPY ./ .
-USER 0
-RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
-RUN echo "104.16.21.35 registry.npmjs.com" >> /etc/hosts
-RUN npm config set registry registry.npmjs.com
-USER 1001
-RUN cat /etc/hosts
-RUN ping -c 2 registry.npmjs.org
-RUN ping -c 2 registry.npmjs.com
-RUN npm ci --loglevel verbose
 
+USER 0
+RUN dig +trace registry.npmjs.org
 # If you are building your code for production, copy all files
 
 # Cleaning any existing generated file
