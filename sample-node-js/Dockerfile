@@ -29,6 +29,7 @@ WORKDIR ${HOME}
 COPY ./package*.json ./
 RUN pwd
 RUN ls -a
+RUN cat /etc/hosts
 RUN ping -c 4 registry.npmjs.org
 RUN npm ci --loglevel verbose
 
