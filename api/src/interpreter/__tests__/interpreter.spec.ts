@@ -13,7 +13,6 @@ class MockedInterpreterRepository extends MockRepository<InterpreterEntity> {}
 class MockedLanguageRepository extends MockRepository<LanguageEntity> {}
 
 describe('Contact service', () => {
-  let module: TestingModule;
   let app: INestApplication;
   let db: DatabaseService;
   let interpreterService: InterpreterService;
@@ -37,7 +36,6 @@ describe('Contact service', () => {
         },
       ],
     });
-    module = TestEnv.module;
     db = TestEnv.db;
     app = TestEnv.app;
 
