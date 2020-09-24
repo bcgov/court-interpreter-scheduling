@@ -12,7 +12,7 @@ jobs:
       postgres:
         image: postgres:10-alpine
         env:
-          POSTGRES_DATABASE: nest_api_dev
+          POSTGRES_DB: nest_api_dev
           POSTGRES_USER: court_nestapi
           POSTGRES_PASSWORD: court_nest123
         options: >-
