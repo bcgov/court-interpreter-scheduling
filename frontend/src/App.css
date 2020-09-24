@@ -2,9 +2,12 @@
 
 #root {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: grid;
+  grid-template:
+    "header" 70px
+    "subheader" 48px
+    "main" 1fr
+    "footer" 40px
 }
 
 body {
@@ -18,6 +21,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.content {
+  padding: 1rem 150px;
+}
+
 .login-container,
 .signup-container {
   height: 100%;
@@ -28,6 +35,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  grid-area: main;
 }
 .login-form,
 .signup-form {

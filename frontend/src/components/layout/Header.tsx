@@ -9,8 +9,7 @@ import logo from '../../assets/images/logo-banner.svg';
 
 const useStyles = makeStyles({
   header: {
-    position: 'fixed',
-    zIndex: 11,
+    gridArea: 'header',
     alignItems: 'center',
     backgroundColor: '#036', // TODO: Replace with theme color once theme is refactored with MUI
     width: '100%',
@@ -20,7 +19,6 @@ const useStyles = makeStyles({
     padding: '0 65px 0 150px',
     color: '#fff',
     display: 'flex',
-    height: '70px',
   },
   titleWrapper: {
     width: '100%',
@@ -38,11 +36,10 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     // borderRight: '1px solid #F3B229',
-    marginRight: '70px',
+    marginRight: '24px',
   },
   logo: {
     height: '37px',
-    width: '200px',
   },
   help: {
     minWidth: '195px',
