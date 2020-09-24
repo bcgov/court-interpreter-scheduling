@@ -6,6 +6,8 @@
     "@bcgov/bc-sans": "^1.0.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@matharumanpreet00/react-daterange-picker": "^1.0.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -20,11 +22,13 @@
     "material-table": "^1.69.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-dropzone": "^11.2.0",
     "react-error-boundary": "^2.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "store": "^2.0.12",
     "typescript": "~3.7.2",
+    "vaping-regulation-shared-components": "git+ssh://git@bitbucket.org/freshworks/vaping-regulation-shared-components.git",
     "yup": "^0.29.3"
   },
   "scripts": {

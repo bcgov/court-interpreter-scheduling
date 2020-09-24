@@ -30,5 +30,5 @@ export const theme = createMuiTheme({
     primary: {
       main: '#003365'
     }
-  }
+  },
 });
