@@ -1,25 +1,24 @@
+<!-- Header -->
 <div class="container-fluid page-title-row">
-     <!-- Header -->
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-              <h1 class="page-title center animate__animated animate__fadeIn">
-                Search Interpreters
-              </h1>
-            </div>
-          </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="page-title center animate__animated animate__fadeIn">
+          Search Interpreters
+        </h1>
+      </div>
     </div>
+  </div>
 </div> <!-- // Header -->
 
 <div class="container">
+  <!-- Search Criteria -->
   <div class="row search-criteria">
-    <!-- Search Criteria -->
+    <!-- Language -->
     <div class="col-sm-12 col-md-6 col-lg-3 col-12">
-      <!-- Language -->
       <h4 class="field-header">Language</h4>
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Language</mat-label> -->
-        <mat-select>
+        <mat-select [ngModel]="selectedLanguage" (selectionChange)="languageSelectionChanged($event)">
           <mat-option *ngFor="let language of languages" [value]="language.name">
             {{language.name}}
           </mat-option>
@@ -27,23 +26,21 @@
       </mat-form-field>
     </div> <!-- // Language -->
 
+    <!-- level -->
     <div class="col-sm-12 col-md-6 col-lg-3 col-12">
-      <!-- level -->
       <h4>Level</h4>
-      <mat-radio-group id="level" aria-label="Level">
-        <mat-radio-button value="1">1</mat-radio-button>
-        <mat-radio-button value="2">2</mat-radio-button>
-        <mat-radio-button value="3">3</mat-radio-button>
-        <mat-radio-button value="4">4</mat-radio-button>
-      </mat-radio-group>
+      <div id="levels" aria-label="Level">
+        <mat-checkbox class="level" *ngFor="let level of levels" [(ngModel)]="level.selected">
+          {{level.name}}
+        </mat-checkbox>
+      </div>
     </div> <!-- // level -->
 
+    <!-- Court Location -->
     <div class="col-sm-12 col-lg-6 col-12">
-      <!-- Court Location -->
       <h4>Court Location</h4>
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Court Location</mat-label> -->
-        <mat-select>
+        <mat-select [ngModel]="selectedLocation" (selectionChange)="locationSelectionChanged($event)">
           <mat-option *ngFor="let courtLocation of courtLocations" [value]="courtLocation.name">
             {{courtLocation.name}}
           </mat-option>
@@ -51,24 +48,28 @@
       </mat-form-field>
     </div> <!-- // Court Location -->
 
+    <!-- Date -->
     <div class="col-sm-6 col-12">
-      <!-- Date -->
       <h4>Date</h4>
       <mat-form-field appearance="outline">
-        <input matInput readonly [matDatepicker]="picker" placeholder="Choose a date">
+        <input matInput readonly [matDatepicker]="picker" placeholder="Choose a date" (dateChange)="dateChanged($event)"
+        (click)="picker.open()">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
     </div> <!-- // Date -->
+
+    <!-- search button -->
     <div class="col-sm-12 col-12">
-      <button mat-raised-button color="primary">Search</button>
-    </div>
+      <button mat-raised-button color="primary" (click)="search()">Search</button>
+    </div> <!-- // search button -->
+
   </div> <!-- // Search Criteria -->
 
   <div class="row divider"></div>
 
+  <!-- Search Results -->
   <div class="row">
-    <!-- Search Results -->
     <div class="col-12">
       <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z0">
         <ng-container matColumnDef="{{column.key}}" *ngFor="let column of tableDef">
@@ -78,30 +79,30 @@
 
         <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
         <ng-container matColumnDef="expandedDetail">
-          <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length" class="expanded-cell">
             <div class="interpreter-element-detail"
               [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+               <!-- Expanded interpreter cell content -->
               <div class="container-fluid">
                 <div class="row">
                   <div class="col-md-6 col-12">
-                    last booked: date
                   </div>
                   <div class="col-md-6 col-12">
-                    <button mat-raised-button color="primary">Book</button>
+                    <button mat-raised-button color="primary" class="book-btn" (click)="showRequestForm(element)">Book</button>
                   </div>
                 </div>
-              </div>
+              </div> <!-- // Expanded interpreter cell content -->
             </div>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-        <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="interpreter-element-row" 
+        <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="interpreter-element-row"
           [class.example-expanded-row]="expandedElement === element"
           (click)="expandedElement = expandedElement === element ? null : element">
         </tr>
         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="interpreter-detail-row"></tr>
       </table>
-    </div> <!-- // Search Results -->
-  </div>
+    </div> 
+  </div><!-- // Search Results -->
 </div>

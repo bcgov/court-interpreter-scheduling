@@ -7,16 +7,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoginComponent } from './components/login/login.component';
-import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { BookingsComponent } from './components/bookings/bookings.component';
-import { SearchInterpreterComponent } from './components/search-interpreter/search-interpreter.component';
 import { InterpreterRequestComponent } from './components/interpreter-request/interpreter-request.component';
 import { InterpretersComponent } from './components/interpreters/interpreters.component';
 import { ClerksComponent } from './components/clerks/clerks.component';
-import { AddClerkComponent } from './components/add-clerk/add-clerk.component';
-import { AddInterpreterComponent } from './components/add-interpreter/add-interpreter.component';
 
 
 // Material
@@ -37,21 +33,18 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    HomeComponent,
     NavBarComponent,
     FooterComponent,
     BookingsComponent,
-    SearchInterpreterComponent,
     InterpreterRequestComponent,
     InterpretersComponent,
     ClerksComponent,
-    AddClerkComponent,
-    AddInterpreterComponent
   ],
   imports: [
     BrowserModule,
@@ -76,7 +69,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatRadioModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTabsModule
+    MatTabsModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

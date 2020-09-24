@@ -1,3 +1,7 @@
 <app-nav-bar></app-nav-bar>
 <!-- Current route  -->
-<router-outlet></router-outlet>
+<!-- NOTE: remove conditional ngIf to preserve search result when closing a request form -->
+<!-- The conditional ngIf is added to improve scrolling in the request modal -->
+<router-outlet *ngIf="!interpreterRequest"></router-outlet>
+<!-- Request form modal -->
+<app-interpreter-request *ngIf="interpreterRequest" [request]="interpreterRequest"></app-interpreter-request>

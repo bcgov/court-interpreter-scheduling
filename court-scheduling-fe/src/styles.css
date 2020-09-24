@@ -1,5 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
 html,
 body {
   height: 100%;
@@ -62,7 +60,6 @@ body {
 }
 
 /* // Style tab bar */
-
 /* Style buttons */
 .mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
   background-color: #003365;
@@ -77,4 +74,49 @@ body {
 /* Style dropdown selected item */
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
   color: #003365;
+}
+
+/* style fields */
+/* .mat-form-field-appearance-outline .mat-form-field-infix {
+  height: 42px;
+  padding: 0;
+} */
+
+.custom-modal {
+  position: fixed; 
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: saturate(170%) blur(9px);
+  animation: fadeIn;
+  animation-duration: 0.3s;
+}
+
+.custom-modal:after {
+  background-color: rgba(21, 74, 136, 0.2);
+}
+
+.mat-form-field-infix {
+  top: -0.25em;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-prefix, .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: -0.25em !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  margin-top: 0em;
+}
+
+.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button, .mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button {
+  top: .5em;
+}
+
+.mat-select-arrow-wrapper {
+  padding-top: 10px;
 }

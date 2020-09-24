@@ -3,6 +3,11 @@ import { Language } from 'src/app/models/language';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { Court } from 'src/app/models/court';
 import { Interpreter } from 'src/app/models/interpreter';
+import { InterpretersService } from 'src/app/services/interpreters/interpreters.service';
+import { CodesService } from 'src/app/services/codes/codes.service';
+import { RequestService } from 'src/app/services/request/request.service';
+import { MatSelectChange } from '@angular/material/select';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-interpreters',
@@ -19,19 +24,26 @@ import { Interpreter } from 'src/app/models/interpreter';
 
 export class InterpretersComponent implements OnInit {
 
-  languages: Language[] = [
-    {id: `farsi`, name: `Farsi`},
-    {id: `french`, name: `French`},
-    {id: `italian`, name: `Italian`}
+  // Search Variables
+  selectedDate: Date = new Date();
+  selectedLanguage = '';
+  selectedLocation = '';
+  levels = [
+    {name: '1', selected: false},
+    {name: '2', selected: false},
+    {name: '3', selected: false},
+    {name: '4', selected: false}
   ];
+  selectedLevels: number[] = [];
 
-  courtLocations: Court[] = [
-    {id: `victoria`, name: `Victoria`},
-    {id: `vancouver`, name: `Vancouver`},
-    {id: `nanaimo`, name: `Nanaimo`}
-  ];
+  // Dropdowns
+  statuses: string[] = ['Booked', 'Pending'];
+  languages: Language[] = [];
+  courtLocations: Court[] = [];
 
-  dataSource: Interpreter[] = ELEMENT_DATA;
+  // Table
+  dataSource: Interpreter[] = [];
+  expandedElement: Interpreter | null;
   columnsToDisplay = ['name', 'level', 'phone', 'emailAddress', 'bookingsInTheLastDays'];
   tableDef: Array<any> = [
     {
@@ -50,58 +62,63 @@ export class InterpretersComponent implements OnInit {
       key: 'bookingsInTheLastDays',
       header: 'Bookings in the last 30 days',
     },
-  ]
-  expandedElement: Interpreter | null;
+  ];
 
-  constructor() { }
+  constructor(
+              private interpretersService: InterpretersService,
+              private codesService: CodesService,
+              private requestService: RequestService) { }
 
   ngOnInit(): void {
+    this.fetchAllInterpreters();
+    this.fetchCodes();
   }
 
-}
+  async fetchAllInterpreters(): Promise<void> {
+    this.dataSource = await this.interpretersService.getInterpreters();
+  }
 
-const ELEMENT_DATA: Interpreter[] = [
-  {
-    id: '1',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '2',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '3',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '4',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '5',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  }, {
-    id: '6',
-    name: 'Ella Beck',
-    level: '2',
-    phone: '+1604.333.4567',
-    emailAddress: 'ella_beck@cameron.net',
-    bookingsInTheLastDays: '2'
-  },
-];
+  async fetchCodes(): Promise<void> {
+    this.courtLocations = await this.codesService.getCourts();
+    this.languages = await this.codesService.getLanguages();
+  }
+
+  showRequestForm(forInterpreter: Interpreter): void {
+    this.requestService.showNewRequestForm(forInterpreter, this.selectedDate);
+  }
+
+  // Search
+  async search(): Promise<void> {
+    const language = this.languages.find(item => item.name === this.selectedLanguage);
+    const location = this.courtLocations.find(item => item.name === this.selectedLocation);
+    const selectedLevels = this.levels.filter(level => level.selected);
+    const lvls: number[] = selectedLevels.map(level => +level.name);
+    this.dataSource = await this.interpretersService.search(language, location, lvls, this.selectedDate);
+  }
+
+  /**
+   * Sets selectedLanguage on dropdown change
+   * @param event new selection event
+   */
+  languageSelectionChanged(event: MatSelectChange): void {
+    const selectedOption = this.languages.find(item => item.name === event.value);
+    this.selectedLanguage = selectedOption.name;
+    console.log(this.selectedLanguage);
+  }
+
+  /**
+   * Sets selectedLocation on dropdown change
+   * @param event new selection event
+   */
+  locationSelectionChanged(event: MatSelectChange): void {
+    const selectedOption = this.courtLocations.find(item => item.name === event.value);
+    this.selectedLocation = selectedOption.name;
+    console.log(this.selectedLocation);
+  }
+
+  dateChanged(event: MatDatepickerInputEvent<Date>): void {
+    if (this.selectedDate !== event.value) {
+        this.selectedDate = event.value;
+    }
+  }
+}
