@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import Header from './components/layout/Header'
 import SubHeader from './components/layout/SubHeader'
+import ContentHeader from './components/layout/ContentHeader'
 import Footer from './components/layout/Footer'
 
 const Booking = lazy(() => import('./views/Booking'))
@@ -14,6 +15,7 @@ const App = () => {
         <Header />
         <SubHeader />
         <section className='content'>
+          <ContentHeader />
           <Switch>
             <Route exact path='/directory' component={Directory} />
             <Route exact path='/booking' component={Booking} />

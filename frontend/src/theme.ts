@@ -6,10 +6,10 @@ export const theme = createMuiTheme({
       'BCSans', 'Raleway', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'
     ].join(','),
     h5: {
-      color: '#002C71',
-      fontSize: '27px',
+      fontSize: '24px',
       fontWeight: 600,
-      padding: '1.5rem 0'
+      padding: '1.5rem 0',
+      lineHeight: '37.95px',
     },
     h6: {
       fontSize: '20px',
@@ -27,5 +27,8 @@ export const theme = createMuiTheme({
     },
   },
   palette: {
+    primary: {
+      main: '#003365'
+    }
   }
 });

@@ -21,10 +21,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.content {
-  padding: 1rem 150px;
-}
-
 .login-container,
 .signup-container {
   height: 100%;
