@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
@@ -9,7 +10,7 @@ import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
   documentation(app);
   if (process.env.NODE_ENV !== 'production') {
