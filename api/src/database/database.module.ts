@@ -7,14 +7,12 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const entities =
-  process.env.NODE_ENV === 'development' ||
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? join(__dirname, '../**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
 
 const synchronize =
-  process.env.NODE_ENV === 'development' ||
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? true
     : false;
 
@@ -35,9 +33,10 @@ const option: any = {
   },
   synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
-  dropSchema: false,
+  dropSchema: true,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
+  keepConnectionAlive: true,
 };
 
 @Module({

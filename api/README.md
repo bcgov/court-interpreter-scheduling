@@ -136,6 +136,14 @@ Add additional notes about how to deploy this on a live system.
 - [Schemaspy](http://schemaspy.org/) - Display Schema of database
 - [Typeorm](https://typeorm.io/#/) - Database ORM
 
+## Testing
+
+### Issues
+
+- https://github.com/typeorm/typeorm/issues/3017
+
+- https://github.com/nestjs/typeorm/issues/61
+
 ## Learn More
 
 You can learn more about [NestJS](https://nestjs.com/)

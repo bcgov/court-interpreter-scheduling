@@ -16,12 +16,11 @@ export class InterpreterService {
   ) {}
 
   async create(
-    createInterpreterDto: CreateInterpreterDto,
+    createInterpreterDto: Partial<CreateInterpreterDto>,
   ): Promise<InterpreterEntity> {
-    const interpreter = new InterpreterEntity();
-    interpreter.name = createInterpreterDto.name;
+    const interpreter = this.interpreterRepository.create(createInterpreterDto);
     let language: LanguageEntity;
-    if (createInterpreterDto.language) {
+    if (createInterpreterDto && createInterpreterDto.language) {
       language = await this.languageRepository.findOne({
         id: createInterpreterDto.language,
       });

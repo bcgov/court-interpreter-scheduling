@@ -2,9 +2,15 @@ import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
-import { setupEnvironment, clearDB } from '../../../test/util/testUtils';
+import { setupEnvironment, clearDB } from 'src/utils/testUtils';
 import { InterpreterService } from 'src/interpreter/interpreter.service';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
+import { MockRepository } from 'src/utils/mock-repository';
+import { LanguageEntity } from 'src/language/entities/language.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { CreateInterpreterDto } from '../dto/create-interpreter.dto';
+class MockedInterpreterRepository extends MockRepository<InterpreterEntity> {}
+class MockedLanguageRepository extends MockRepository<LanguageEntity> {}
 
 describe('Contact service', () => {
   let module: TestingModule;
@@ -13,16 +19,33 @@ describe('Contact service', () => {
   let interpreterService: InterpreterService;
   let interpreter: InterpreterEntity;
 
-  const testInterpreter: Partial<InterpreterEntity> = {
-    name: 'testinterpreter',
+  const testInterpreter: Partial<CreateInterpreterDto> = {
+    name: 'test interpreter',
   };
+
   beforeAll(async () => {
-    ({ module, app, db } = await setupEnvironment());
+    const TestEnv = await setupEnvironment({
+      providers: [
+        InterpreterService,
+        {
+          provide: getRepositoryToken(InterpreterEntity),
+          useClass: MockedInterpreterRepository,
+        },
+        {
+          provide: getRepositoryToken(LanguageEntity),
+          useClass: MockedLanguageRepository,
+        },
+      ],
+    });
+    module = TestEnv.module;
+    db = TestEnv.db;
+    app = TestEnv.app;
 
     interpreterService = app.get<InterpreterService>(InterpreterService);
   });
+
   beforeEach(async () => {
-    interpreter = await interpreterService.create(interpreter);
+    interpreter = await interpreterService.create(testInterpreter);
   });
 
   afterEach(async () => {
@@ -31,6 +54,10 @@ describe('Contact service', () => {
 
   afterAll(async () => {
     await db.connection.close();
+  });
+
+  it('should be defined', () => {
+    expect(interpreterService).toBeDefined();
   });
 
   it('Interpreter service create creates a interpreter', async () => {

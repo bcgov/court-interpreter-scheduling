@@ -2,15 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection } from 'typeorm';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 
-import { AppModule } from '../../src/app.module';
-import { DatabaseService } from '../../src/database/database.service';
+import { AppModule } from 'src/app.module';
+import { DatabaseService } from 'src/database/database.service';
 
-export const setupEnvironment = async (): Promise<{
+export const setupEnvironment = async ({
+  controllers = [],
+  providers = [],
+}): Promise<{
   module: TestingModule;
   app: INestApplication;
   db: DatabaseService;
 }> => {
   const module: TestingModule = await Test.createTestingModule({
+    controllers,
+    providers: [{ provide: Connection, useValue: {} }, ...providers],
     imports: [AppModule],
   }).compile();
   const app = module.createNestApplication();
