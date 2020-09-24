@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     maxWidth: '100vw',
     boxSizing: 'border-box',
     borderBottom: '2px solid #fcba19',
-    padding: '0 65px 0 10px',
+    padding: '0 65px 0 150px',
     color: '#fff',
     display: 'flex',
     height: '70px',
@@ -37,8 +37,8 @@ const useStyles = makeStyles({
     height: '45px',
     display: 'flex',
     alignItems: 'center',
-    borderRight: '1px solid #F3B229',
-    marginRight: '20px',
+    // borderRight: '1px solid #F3B229',
+    marginRight: '70px',
   },
   logo: {
     height: '37px',
@@ -86,7 +86,7 @@ export default function Header() {
       </Link>
       <div className={classes.titleWrapper}>
         <Typography className={classes.topTitle}>
-          Court Interpreter Scheduler
+          Court Services Branch Scheduling System
         </Typography>
       </div>
       <div className={classes.help}>
