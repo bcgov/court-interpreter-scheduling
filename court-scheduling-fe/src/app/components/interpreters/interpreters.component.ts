@@ -6,6 +6,8 @@ import { Interpreter } from 'src/app/models/interpreter';
 import { InterpretersService } from 'src/app/services/interpreters/interpreters.service';
 import { CodesService } from 'src/app/services/codes/codes.service';
 import { RequestService } from 'src/app/services/request/request.service';
+import { MatSelectChange } from '@angular/material/select';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-interpreters',
@@ -22,8 +24,17 @@ import { RequestService } from 'src/app/services/request/request.service';
 
 export class InterpretersComponent implements OnInit {
 
-  // Variables
+  // Search Variables
   selectedDate: Date = new Date();
+  selectedLanguage = '';
+  selectedLocation = '';
+  levels = [
+    {name: '1', selected: false},
+    {name: '2', selected: false},
+    {name: '3', selected: false},
+    {name: '4', selected: false}
+  ];
+  selectedLevels: number[] = [];
 
   // Dropdowns
   statuses: string[] = ['Booked', 'Pending'];
@@ -74,5 +85,40 @@ export class InterpretersComponent implements OnInit {
 
   showRequestForm(forInterpreter: Interpreter): void {
     this.requestService.showNewRequestForm(forInterpreter, this.selectedDate);
+  }
+
+  // Search
+  async search(): Promise<void> {
+    const language = this.languages.find(item => item.name === this.selectedLanguage);
+    const location = this.courtLocations.find(item => item.name === this.selectedLocation);
+    const selectedLevels = this.levels.filter(level => level.selected);
+    const lvls: number[] = selectedLevels.map(level => +level.name);
+    this.dataSource = await this.interpretersService.search(language, location, lvls, this.selectedDate);
+  }
+
+  /**
+   * Sets selectedLanguage on dropdown change
+   * @param event new selection event
+   */
+  languageSelectionChanged(event: MatSelectChange): void {
+    const selectedOption = this.languages.find(item => item.name === event.value);
+    this.selectedLanguage = selectedOption.name;
+    console.log(this.selectedLanguage);
+  }
+
+  /**
+   * Sets selectedLocation on dropdown change
+   * @param event new selection event
+   */
+  locationSelectionChanged(event: MatSelectChange): void {
+    const selectedOption = this.courtLocations.find(item => item.name === event.value);
+    this.selectedLocation = selectedOption.name;
+    console.log(this.selectedLocation);
+  }
+
+  dateChanged(event: MatDatepickerInputEvent<Date>): void {
+    if (this.selectedDate !== event.value) {
+        this.selectedDate = event.value;
+    }
   }
 }

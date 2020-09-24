@@ -12,11 +12,19 @@ export class RequestService {
 
   constructor() { }
 
+  /**
+   * Show a new request form
+   * @param interpreter selected interpreter
+   * @param date date of booking
+   */
   public showNewRequestForm(interpreter: Interpreter, date: Date): void {
     const model = new InterpreterRequest(true, date, interpreter);
     this.emit(model);
   }
 
+  /**
+   * Close interpreter request
+   */
   public cancelRequest(): void {
     this.subject.next(null);
   }

@@ -9,6 +9,9 @@ export class BookingsService {
 
   constructor(private dummy: DummyService) { }
 
+  /**
+   * Get all bookings
+   */
   public async getBookings(): Promise<Booking[]> {
     return this.dummy.bookings(10);
   }

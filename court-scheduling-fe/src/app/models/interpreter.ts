@@ -1,3 +1,5 @@
+import { Language } from './language';
+
 export class Interpreter {
     id: string;
     name: string;

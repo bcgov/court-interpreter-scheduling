@@ -17,11 +17,15 @@ h4 {
 }
 
 @media screen and (min-width: 768px) {
-  #level {
+  #levels {
     position: absolute;
     bottom: 0;
     margin-bottom: 32px;
   }
+}
+
+.level {
+  padding-right: 16px;
 }
 
 .divider {

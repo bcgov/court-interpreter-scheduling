@@ -18,8 +18,7 @@
     <div class="col-sm-12 col-md-6 col-lg-3 col-12">
       <h4 class="field-header">Language</h4>
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Language</mat-label> -->
-        <mat-select>
+        <mat-select [ngModel]="selectedLanguage" (selectionChange)="languageSelectionChanged($event)">
           <mat-option *ngFor="let language of languages" [value]="language.name">
             {{language.name}}
           </mat-option>
@@ -30,20 +29,18 @@
     <!-- level -->
     <div class="col-sm-12 col-md-6 col-lg-3 col-12">
       <h4>Level</h4>
-      <mat-radio-group id="level" aria-label="Level">
-        <mat-radio-button value="1">1</mat-radio-button>
-        <mat-radio-button value="2">2</mat-radio-button>
-        <mat-radio-button value="3">3</mat-radio-button>
-        <mat-radio-button value="4">4</mat-radio-button>
-      </mat-radio-group>
+      <div id="levels" aria-label="Level">
+        <mat-checkbox class="level" *ngFor="let level of levels" [(ngModel)]="level.selected">
+          {{level.name}}
+        </mat-checkbox>
+      </div>
     </div> <!-- // level -->
 
     <!-- Court Location -->
     <div class="col-sm-12 col-lg-6 col-12">
       <h4>Court Location</h4>
       <mat-form-field appearance="outline">
-        <!-- <mat-label>Court Location</mat-label> -->
-        <mat-select>
+        <mat-select [ngModel]="selectedLocation" (selectionChange)="locationSelectionChanged($event)">
           <mat-option *ngFor="let courtLocation of courtLocations" [value]="courtLocation.name">
             {{courtLocation.name}}
           </mat-option>
@@ -55,7 +52,8 @@
     <div class="col-sm-6 col-12">
       <h4>Date</h4>
       <mat-form-field appearance="outline">
-        <input matInput readonly [matDatepicker]="picker" placeholder="Choose a date">
+        <input matInput readonly [matDatepicker]="picker" placeholder="Choose a date" (dateChange)="dateChanged($event)"
+        (click)="picker.open()">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
@@ -63,7 +61,7 @@
 
     <!-- search button -->
     <div class="col-sm-12 col-12">
-      <button mat-raised-button color="primary">Search</button>
+      <button mat-raised-button color="primary" (click)="search()">Search</button>
     </div> <!-- // search button -->
 
   </div> <!-- // Search Criteria -->
