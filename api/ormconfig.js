@@ -1,24 +1,25 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseService } from './database.service';
-import { join } from 'path';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+const { join } = require('path');
 
 const entities =
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'production'
-    ? join(__dirname, '../**/**.entity{.ts,.js}')
+    ? join(__dirname, 'src/**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
-
 const synchronize =
   process.env.NODE_ENV === 'development' ||
   process.env.NODE_ENV === 'production'
-    ? true
+    ? false
     : false;
-
-const option: any = {
+console.dir({
+  host: process.env.DB_HOST,
+  username: process.env.POSTGRESQL_USER,
+  password: process.env.POSTGRESQL_PASSWORD,
+  database:
+    process.env.NODE_ENV !== 'test'
+      ? process.env.POSTGRESQL_DATABASE
+      : process.env.DB_TEST_DATABASE,
+});
+module.exports = {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT, 10) || 5432,
@@ -35,13 +36,7 @@ const option: any = {
   },
   synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
-  dropSchema: false,
+  dropSchema: true,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
 };
-
-@Module({
-  imports: [TypeOrmModule.forRoot(option)],
-  providers: [DatabaseService],
-})
-export class DatabaseModule {}

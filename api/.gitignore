@@ -117,3 +117,8 @@ dist
 
 # mac
 .DS_Store
+
+# documentation
+documentation/jest
+documentation/typedocs
+# documentation/schema

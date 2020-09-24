@@ -61,7 +61,7 @@ services:
       - postgres
     command: -t pgsql -db nest_api_dev -host postgres -u court_nestapi -p court_nest123 -s public -debug
     volumes:
-      - ./api/schemaspy/schema:/output
+      - ./api/documentation/schema:/output
     networks:
       - backend
 
