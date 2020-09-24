@@ -2,9 +2,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AppModule } from '../app.module';
-import { InterpreterModule } from 'src/interpreter/interpreter.module';
-
 import { CONFIG } from './common.config';
+
+import { InterpreterModule } from 'src/interpreter/interpreter.module';
+import { LanguageModule } from 'src/language/language.module';
+import { LocationModule } from 'src/location/location.module';
 
 export const documentation = (app: INestApplication) => {
   const options = new DocumentBuilder()
@@ -17,7 +19,7 @@ export const documentation = (app: INestApplication) => {
     .build();
 
   const baseDocument = SwaggerModule.createDocument(app, options, {
-    include: [AppModule, InterpreterModule],
+    include: [AppModule, InterpreterModule, LanguageModule, LocationModule],
   });
 
   SwaggerModule.setup('api', app, baseDocument, {

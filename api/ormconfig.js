@@ -1,24 +1,14 @@
 const { join } = require('path');
 
 const entities =
-  process.env.NODE_ENV === 'development' ||
-  process.env.NODE_ENV === 'production'
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? join(__dirname, 'src/**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
 const synchronize =
-  process.env.NODE_ENV === 'development' ||
-  process.env.NODE_ENV === 'production'
-    ? false
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+    ? true
     : false;
-console.dir({
-  host: process.env.DB_HOST,
-  username: process.env.POSTGRESQL_USER,
-  password: process.env.POSTGRESQL_PASSWORD,
-  database:
-    process.env.NODE_ENV !== 'test'
-      ? process.env.POSTGRESQL_DATABASE
-      : process.env.DB_TEST_DATABASE,
-});
+
 module.exports = {
   type: 'postgres',
   host: process.env.DB_HOST,
