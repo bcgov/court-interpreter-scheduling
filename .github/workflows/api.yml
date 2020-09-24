@@ -2,6 +2,7 @@ name: deploy document for api
 on:
   push:
     branches:
+      - "backend"
       - "backend/**"
 jobs:
   node-docker:
