@@ -49,7 +49,8 @@ export class DummyService {
       const email: string = faker.internet.email();
       const level: number = faker.random.number(4);
       const bookings: number = faker.random.number(15);
-      random.push(new Interpreter(id, name, level, phone, email, bookings));
+
+      random.push(new Interpreter(id, name, this.languages[1].name, level, phone, email, bookings));
     }
     return random;
   }

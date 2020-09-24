@@ -5,3 +5,4 @@
 <router-outlet *ngIf="!interpreterRequest"></router-outlet>
 <!-- Request form modal -->
 <app-interpreter-request *ngIf="interpreterRequest" [request]="interpreterRequest"></app-interpreter-request>
+<app-interpreter *ngIf="adminAction"></app-interpreter>

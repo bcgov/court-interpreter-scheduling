@@ -1,0 +1,78 @@
+<!-- Interpreter detail modal -->
+<div class="custom-modal" role="dialog">
+
+  <div class="interpreter-modal-container container">
+    <nav class="navbar nav-bar container">
+      <div class="col-10">
+        <h1 class="header">Add Interpreter</h1>
+      </div>
+      <div class="col-2">
+        <button type="button" class="close" (click)="close()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="divider"></div>
+    </nav>
+    <div class="interpreter-modal-fields-container">
+      <div class="row">
+        <div class="col-md-6 col-12" id="fullName">
+          <h4 class="field-header">Full Name</h4>
+          <mat-form-field appearance="outline" [(ngModel)]="fullName" ngDefaultControl><input matInput>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-12" id="language">
+          <h4 class="field-header">Language</h4>
+          <mat-form-field appearance="outline">
+            <mat-select [ngModel]="language" (selectionChange)="languageSelectionChanged($event)">
+              <mat-option *ngFor="let language of languages" [value]="language.name">
+                {{language.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-12" id="level">
+          <h4>Level</h4>
+          <mat-radio-group id="levels" aria-label="levels" [(ngModel)]="level">
+            <mat-radio-button value="1">1</mat-radio-button>
+            <mat-radio-button value="2">2</mat-radio-button>
+            <mat-radio-button value="3">3</mat-radio-button>
+            <mat-radio-button value="4">4</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div class="col-md-6 col-12" id="phone">
+          <h4 class="field-header">Phone Number</h4>
+          <mat-form-field appearance="outline" [(ngModel)]="phone" ngDefaultControl><input matInput>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-12" id="email">
+          <h4 class="field-header">Email Address</h4>
+          <mat-form-field appearance="outline" [(ngModel)]="email" ngDefaultControl><input matInput>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 col-12" id="court">
+          <h4 class="field-header">Court</h4>
+          <mat-form-field appearance="outline">
+            <mat-select [ngModel]="court" (selectionChange)="locationSelectionChanged($event)">
+              <mat-option *ngFor="let courtLocation of courtLocations" [value]="courtLocation.name">
+                {{courtLocation.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <div class="row">
+        <!-- Actions -->
+        <div class="col-6">
+          <button mat-raised-button class="cancel-btn" (click)="close()">Cancel</button>
+        </div>
+        <div class="col-6">
+          <button mat-raised-button color="primary" class="save-btn" (click)="save()">Save</button>
+        </div>
+      </div> <!-- // Actions -->
+    </div>
+  </div>
+</div>
+<!-- // modal -->

@@ -4,5 +4,6 @@ export enum AppRoutes {
     Login = 'login',
     Bookings = 'bookings',
     Interpreters = 'interpreters',
+    Admin = 'admin',
     Clerks = 'clerks'
 }

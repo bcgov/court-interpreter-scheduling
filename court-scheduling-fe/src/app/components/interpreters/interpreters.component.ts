@@ -103,7 +103,6 @@ export class InterpretersComponent implements OnInit {
   languageSelectionChanged(event: MatSelectChange): void {
     const selectedOption = this.languages.find(item => item.name === event.value);
     this.selectedLanguage = selectedOption.name;
-    console.log(this.selectedLanguage);
   }
 
   /**
@@ -113,7 +112,6 @@ export class InterpretersComponent implements OnInit {
   locationSelectionChanged(event: MatSelectChange): void {
     const selectedOption = this.courtLocations.find(item => item.name === event.value);
     this.selectedLocation = selectedOption.name;
-    console.log(this.selectedLocation);
   }
 
   dateChanged(event: MatDatepickerInputEvent<Date>): void {

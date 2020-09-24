@@ -55,6 +55,10 @@ export class NavBarComponent implements OnInit {
     this.routerService.navigateTo(AppRoutes.Clerks);
   }
 
+  goToAdmin(): void {
+    this.routerService.navigateTo(AppRoutes.Admin);
+  }
+
   /**
    * Convert current route to corresponding tab index
    */
@@ -70,7 +74,7 @@ export class NavBarComponent implements OnInit {
         return 2;
       }
       default: {
-        return 0;
+        return 3;
       }
     }
   }

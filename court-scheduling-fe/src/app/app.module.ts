@@ -34,6 +34,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { AdminComponent } from './components/admin/admin.component';
+import { InterpreterComponent } from './components/interpreter/interpreter.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +47,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     InterpreterRequestComponent,
     InterpretersComponent,
     ClerksComponent,
+    AdminComponent,
+    InterpreterComponent,
   ],
   imports: [
     BrowserModule,

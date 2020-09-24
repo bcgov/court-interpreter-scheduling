@@ -1,0 +1,143 @@
+.interpreter-modal-container {
+  box-sizing: border-box;
+  margin-top: 100px;
+  height: 620px;
+  width: 90%;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 10px 0 #DFECFF;
+  animation: bounceInUp;
+  animation-duration: 0.35s;
+  border-radius: 10px;
+  overflow: scroll;
+}
+
+.missing {
+  color: lightcoral;
+}
+
+.interpreter-modal-fields-container {
+    padding: 32px;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+h4 {
+  margin-bottom: 0;
+}
+
+.mat-radio-button~.mat-radio-button {
+  margin-left: 16px;
+}
+
+@media screen and (min-width: 768px) {
+  #levels {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 32px;
+  }
+}
+
+/*  Nav */
+.close {
+  float: right;
+}
+
+.divider {
+  margin-left: 0;
+  margin-right: 0;
+  height: 1px;
+  width: 100%;
+  border: 1px solid #EEEEEE;
+}
+
+.nav-bar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  backdrop-filter: saturate(170%) blur(16px);
+  padding-bottom: 0 !important;
+  padding-top: 32px;
+}
+
+:not(html, .nav-bar) {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0)
+}
+
+.nav-bar:after {
+  background-color: rgba(21, 74, 136, 0.2);
+}
+
+.header {
+  color: #1A5A96;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+@media screen and (min-width: 768px) {
+
+  .header {
+    font-size: 33px;
+    line-height: 37.95px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header {
+    font-size: 28px;
+    line-height: 32px;
+  }
+}
+
+@media screen and (max-width: 540px) {
+
+  .header {
+    font-size: 23px;
+    line-height: 27px;
+  }
+}
+
+/*  // Nav */
+
+@media screen and (min-width: 768px) {
+  .cancel-btn {
+    width: 226px;
+    height: 50px;
+  }
+  
+  .save-btn {
+    width: 226px;
+    height: 50px;
+    float: right;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cancel-btn {
+    width: 180px;
+    height: 42px;
+  }
+  
+  .save-btn {
+    width: 180px;
+    height: 42px;
+    float: right;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .cancel-btn {
+    width: 95%;
+    height: 42px;
+  }
+  
+  .save-btn {
+    width: 95%;
+    height: 42px;
+    float: right;
+  }
+}
