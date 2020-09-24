@@ -1,0 +1,97 @@
+import React from 'react';
+import { Link, useHistory } from 'react-router-dom';
+
+import store from 'store';
+
+import { makeStyles, Typography } from '@material-ui/core';
+
+import logo from '../../assets/images/logo-banner.svg';
+
+const useStyles = makeStyles({
+  header: {
+    position: 'fixed',
+    zIndex: 11,
+    alignItems: 'center',
+    backgroundColor: '#036', // TODO: Replace with theme color once theme is refactored with MUI
+    width: '100%',
+    maxWidth: '100vw',
+    boxSizing: 'border-box',
+    borderBottom: '2px solid #fcba19',
+    padding: '0 65px 0 10px',
+    color: '#fff',
+    display: 'flex',
+    height: '70px',
+  },
+  titleWrapper: {
+    width: '100%',
+  },
+  topTitle: {
+    height: '26px',
+    width: '350px',
+    color: '#FFFFFF',
+    fontSize: '18px',
+    letterSpacing: 0,
+    lineHeight: '26px',
+  },
+  logoWrapper: {
+    height: '45px',
+    display: 'flex',
+    alignItems: 'center',
+    borderRight: '1px solid #F3B229',
+    marginRight: '20px',
+  },
+  logo: {
+    height: '37px',
+    width: '200px',
+  },
+  help: {
+    minWidth: '195px',
+  },
+  getHelp: {
+    color: '#F3B229',
+    fontWeight: 'bold',
+  },
+  accountType: {
+    color: 'white',
+  },
+  authButton: {
+    color: '#181818',
+    textDecoration: 'none',
+    padding: '0.5rem 1rem',
+    margin: '1rem 2rem',
+    border: 'solid 1px white',
+    borderRadius: '5px',
+    fontWeight: 600,
+    backgroundColor: 'whitesmoke',
+    boxShadow: 'grey 1px 1px',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  }
+});
+
+export default function Header() {
+  const history = useHistory();
+  const classes = useStyles();
+
+  const logout = () => {
+    store.clearAll();
+    history.push('/');
+  };
+
+  return (
+    <div className={classes.header}>
+      <Link to='/' className={classes.logoWrapper}>
+        <img className={classes.logo} src={logo} alt='Go to the homepage' />
+      </Link>
+      <div className={classes.titleWrapper}>
+        <Typography className={classes.topTitle}>
+          Court Interpreter Scheduler
+        </Typography>
+      </div>
+      <div className={classes.help}>
+        Having Trouble? <Link className={classes.getHelp} to='/gethelp'>Get Help</Link>
+      </div>
+    </div>
+  );
+}

@@ -1,8 +1,12 @@
 import React, { lazy, Suspense } from 'react'
 import { render } from 'react-dom'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
+import { ThemeProvider } from '@material-ui/core'
 import store from 'store'
+
 import './App.css'
+import '@bcgov/bc-sans/css/BCSans.css';
+import { theme } from './theme';
 
 const Signup = lazy(() => import('./views/register'))
 const Login = lazy(() => import('./views/login'))
@@ -24,11 +28,13 @@ const Routes = () => {
   return (
     <BrowserRouter>
       <Suspense fallback={<div>loading...</div>}>
-        <Switch>
-          <Route path='/login' component={Login} />
-          <Route path='/signup' component={Signup} />
-          <PrivateRoute path='/' component={App} />
-        </Switch>
+        <ThemeProvider theme={theme}>
+          <Switch>
+            <Route path='/login' component={Login} />
+            <Route path='/signup' component={Signup} />
+            <PrivateRoute path='/' component={App} />
+          </Switch>
+        </ThemeProvider>
       </Suspense>
     </BrowserRouter>
   )
