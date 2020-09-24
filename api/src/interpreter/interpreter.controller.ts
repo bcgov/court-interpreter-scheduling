@@ -11,7 +11,9 @@ import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterEntity } from './entities/interpreter.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('interpreter')
 @Controller('interpreter')
 export class InterpreterController {
   constructor(private readonly interpreterService: InterpreterService) {}
