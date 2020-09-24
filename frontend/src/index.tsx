@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import store from 'store'
 import './App.css'
 
-const Signup = lazy(() => import('./views/signup'))
+const Signup = lazy(() => import('./views/register'))
 const Login = lazy(() => import('./views/login'))
 const App = lazy(() => import('./App'))
 

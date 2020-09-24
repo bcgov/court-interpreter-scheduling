@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import store from 'store'
 
 const Login = () => {
   const history = useHistory()
@@ -13,10 +14,18 @@ const Login = () => {
     setValues({ ...values, [name]: value })
   }
 
+  function handleSubmit (event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (values.password === 'password') {
+      store.set('TOKEN', 'authToken')
+      history.push('/')
+    }
+  }
+
   return (
     <section className='login-container'>
       <h1>Login</h1>
-      <form className='login-form'>
+      <form className='login-form' onSubmit={(e) => handleSubmit(e)}>
         <input
           className='input'
           placeholder='Email'
@@ -32,7 +41,7 @@ const Login = () => {
           onChange={handleChangeValue}
           value={values.password}
         />
-        <button className='button' onClick={() => console.log(values)}>
+        <button className='button'>
           Send
         </button>
       </form>
