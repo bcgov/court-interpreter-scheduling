@@ -44,7 +44,7 @@ export class InterpretersComponent implements OnInit {
   // Table
   dataSource: Interpreter[] = [];
   expandedElement: Interpreter | null;
-  columnsToDisplay = ['name', 'level', 'phone', 'emailAddress', 'bookingsInTheLastDays'];
+  columnsToDisplay = ['name', 'level', 'phone', 'email', 'bookingsInTheLastDays'];
   tableDef: Array<any> = [
     {
       key: 'name',
@@ -56,7 +56,7 @@ export class InterpretersComponent implements OnInit {
       key: 'phone',
       header: 'Phone',
     },    {
-      key: 'emailAddress',
+      key: 'email',
       header: 'Email address',
     },    {
       key: 'bookingsInTheLastDays',

@@ -4,6 +4,7 @@
 
 #admin-actions {
   text-align: right;
+  cursor: pointer;
 }
 
 #site-name {

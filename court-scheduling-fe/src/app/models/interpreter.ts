@@ -6,7 +6,7 @@ export class Interpreter {
     language: string;
     level: number;
     phone: string;
-    emailAddress: string;
+    email: string;
     bookingsInTheLastDays: number;
 
     constructor(
@@ -15,13 +15,14 @@ export class Interpreter {
         language: string,
         level: number,
         phone: string,
-        emailAddress: string,
+        email: string,
         bookingsInTheLastDays: number) {
         this.id = id;
         this.name = name;
         this.level = level;
         this.phone = phone;
-        this.emailAddress = emailAddress;
+        this.email = email;
+        this.language = language;
         this.bookingsInTheLastDays = bookingsInTheLastDays;
     }
 }

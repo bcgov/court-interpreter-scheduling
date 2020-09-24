@@ -5,6 +5,7 @@ import { Interpreter } from 'src/app/models/interpreter';
 import { Language } from 'src/app/models/language';
 import { AdminService } from 'src/app/services/admin/admin.service';
 import { CodesService } from 'src/app/services/codes/codes.service';
+import { ToastService } from 'src/app/services/toast/toast.service';
 
 @Component({
   selector: 'app-interpreter',
@@ -27,7 +28,8 @@ export class InterpreterComponent implements OnInit {
     private adminService: AdminService,
     private codesService: CodesService,
     private renderer: Renderer2,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef,
+    private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.fetchCodes();
@@ -36,11 +38,17 @@ export class InterpreterComponent implements OnInit {
   async save(): Promise<void> {
     if (this.missingFields().length > 0) {
       this.shakeMissingFields();
+      this.toastService.show('Missing fields');
       return;
     }
     const model = new Interpreter('', this.fullName, this.language, +this.level, this.phone, this.email, 0);
-    await this.adminService.addNewInterpreter(model);
-    this.close();
+    const submitted = await this.adminService.addNewInterpreter(model);
+    if (submitted) {
+      this.close();
+      this.toastService.show('Interpreter added');
+    } else {
+      this.toastService.show('There was an error while creating interpreter');
+    }
   }
 
   close(): void {
@@ -51,6 +59,7 @@ export class InterpreterComponent implements OnInit {
     this.courtLocations = await this.codesService.getCourts();
     this.languages = await this.codesService.getLanguages();
   }
+
   /**
    * Sets selectedLanguage on dropdown change
    * @param event new selection event

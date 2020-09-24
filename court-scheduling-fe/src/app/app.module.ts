@@ -36,6 +36,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AdminComponent } from './components/admin/admin.component';
 import { InterpreterComponent } from './components/interpreter/interpreter.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { InterpreterComponent } from './components/interpreter/interpreter.compo
     ClerksComponent,
     AdminComponent,
     InterpreterComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,

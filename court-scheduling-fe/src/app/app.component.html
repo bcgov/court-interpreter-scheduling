@@ -5,4 +5,7 @@
 <router-outlet *ngIf="!interpreterRequest"></router-outlet>
 <!-- Request form modal -->
 <app-interpreter-request *ngIf="interpreterRequest" [request]="interpreterRequest"></app-interpreter-request>
+<!-- Add Interpreter modal -->
 <app-interpreter *ngIf="adminAction"></app-interpreter>
+<!-- Toast -->
+<app-toast *ngIf="toastMessage" [model]="toastMessage"></app-toast>

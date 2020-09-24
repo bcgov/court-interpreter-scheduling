@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { AppConstants } from 'src/app/constants/constants';
 import { Court } from 'src/app/models/court';
 import { Interpreter } from 'src/app/models/interpreter';
 import { Language } from 'src/app/models/language';
+import { APIRequestMethod, ApiService } from '../api/api.service';
 import { DummyService } from '../dummy/dummy.service';
 
 @Injectable({
@@ -9,13 +11,16 @@ import { DummyService } from '../dummy/dummy.service';
 })
 export class InterpretersService {
 
-  constructor(private dummy: DummyService) { }
+  constructor(private dummy: DummyService, private api: ApiService) { }
 
   /**
    * Get all interpreters
    */
   public async getInterpreters(): Promise<Interpreter[]> {
+    const response = await this.api.request(APIRequestMethod.GET, AppConstants.API_INTERPRETER, null);
+    console.log(response.response);
     // TODO: API Call
+    return response.response;
     return this.dummy.interpreters(20);
   }
 
