@@ -57,9 +57,17 @@ $ npm run start:dev
 docker-compose up
 ```
 
+### Swagger
+
+![](https://i.imgur.com/kr8Xuk9.png)
+
 ### SchemaSpy
 
 ![](https://i.imgur.com/yAFthhm.png)
+
+### typedoc
+
+![](https://i.imgur.com/iR7tzqo.png)
 
 ## 🔧 Running the tests <a name = "tests"></a>
 
