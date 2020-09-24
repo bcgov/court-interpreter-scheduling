@@ -7,6 +7,7 @@ on:
 jobs:
   node-docker:
     runs-on: ubuntu-latest
+    container: node:12
 
     services:
       postgres:
