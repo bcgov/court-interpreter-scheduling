@@ -60,10 +60,6 @@ describe('Contact service', () => {
     expect(interpreterService).toBeDefined();
   });
 
-  it('should be defined2', () => {
-    expect(interpreterService).toBeDefined();
-  });
-
   it('Interpreter service create creates a interpreter', async () => {
     expect(interpreter.name).toEqual(testInterpreter.name);
   });
