@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
@@ -13,6 +14,7 @@ import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { ApiTags } from '@nestjs/swagger';
 
+import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
 @ApiTags('interpreter')
 @Controller('interpreter')
 export class InterpreterController {
@@ -26,8 +28,10 @@ export class InterpreterController {
   }
 
   @Get()
-  async findAll(): Promise<InterpreterEntity[]> {
-    return await this.interpreterService.findAll();
+  async findAll(
+    @Query() paginateInterpreterQueryDTO: PaginateInterpreterQueryDTO,
+  ): Promise<InterpreterEntity[]> {
+    return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
   }
 
   @Get(':id')

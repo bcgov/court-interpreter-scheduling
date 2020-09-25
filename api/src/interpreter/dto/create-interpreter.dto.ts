@@ -21,6 +21,7 @@ export class CreateInterpreterDto {
   @ApiProperty({
     description: 'Interpreter level from 1 to 4',
     example: 1,
+    enum: [1, 2, 3, 4],
   })
   @IsEnum(Level)
   @IsOptional()
