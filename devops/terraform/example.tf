@@ -39,12 +39,12 @@ resource "aws_security_group" "minishift" {
 
 // CentOS Linux 8 8.2.2004 ca-central-1 ami-07a182edcd7d04084 x86_64
 // https://wiki.centos.org/Cloud/AWS
-resource "aws_instance" "example" {
+resource "aws_instance" "minishift" {
   ami      = "ami-07a182edcd7d04084"
   instance_type = "t3a.large"
-  key_name = resource.aws_key_pair.main.key_name
+  key_name = aws_key_pair.main.key_name
   subnet_id = var.subnet_id
-  vpc_security_group_ids = [resource.aws_security_group.minishift.id]
+  vpc_security_group_ids = [aws_security_group.minishift.id]
   associate_public_ip_address = true
 }
 
