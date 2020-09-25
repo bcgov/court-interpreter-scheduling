@@ -71,11 +71,6 @@ export default function Header() {
   const history = useHistory();
   const classes = useStyles();
 
-  const logout = () => {
-    store.clearAll();
-    history.push('/');
-  };
-
   return (
     <div className={classes.header}>
       <Link to='/' className={classes.logoWrapper}>

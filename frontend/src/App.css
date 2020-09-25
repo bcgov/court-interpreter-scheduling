@@ -21,6 +21,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.content {
+  overflow: scroll;
+}
+
 .login-container,
 .signup-container {
   height: 100%;

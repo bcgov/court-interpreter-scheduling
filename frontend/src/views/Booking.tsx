@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import {
+  Box,
+} from '@material-ui/core'
 
 const Booking = () => {
   return (
-    <div>
-      <h1>Booking</h1>
-    </div>
+    <Box px='150px'>
+      <h4>Booking</h4>
+    </Box>
   )
 }
 export default Booking
