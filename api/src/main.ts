@@ -7,7 +7,6 @@ import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
 import { documentation } from './common/common.documentation';
 import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -33,7 +32,7 @@ async function bootstrap() {
   );
 
   // exception filter
-  app.useGlobalFilters(new HttpExceptionFilter(), new ErrorExceptionFilter());
+  app.useGlobalFilters(new ErrorExceptionFilter());
   await app.listen(CONFIG.applicationPort);
 
   Logger.log(

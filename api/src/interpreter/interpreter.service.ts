@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { In, Repository } from 'typeorm';
@@ -22,11 +22,15 @@ export class InterpreterService {
   ): Promise<InterpreterEntity> {
     const interpreter = this.interpreterRepository.create(createInterpreterDto);
     let language: LanguageEntity;
-    if (createInterpreterDto && createInterpreterDto.language) {
-      language = await this.languageRepository.findOne({
-        id: createInterpreterDto.language,
-      });
-      interpreter.language = language;
+    if (createInterpreterDto && createInterpreterDto.languageId) {
+      try {
+        language = await this.languageRepository.findOneOrFail({
+          id: createInterpreterDto.languageId,
+        });
+        interpreter.language = language;
+      } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      }
     }
 
     await this.interpreterRepository.save(interpreter);

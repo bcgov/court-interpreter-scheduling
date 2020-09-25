@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsNumber,
+  IsUUID,
 } from 'class-validator';
 import { Level } from '../enums/level.enum';
 
@@ -31,8 +32,9 @@ export class CreateInterpreterDto {
     description: 'Interpreter Language id',
     example: faker.random.uuid(),
   })
+  @IsUUID(4)
   @IsOptional()
-  language: any;
+  languageId: string;
 
   @ApiProperty({
     description: 'Interpreter phone number',
