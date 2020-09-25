@@ -32,7 +32,9 @@ Backend for Court Scheduling
 
 ### Installing
 
-#### Local
+There are 2 options, run in `local` or `docker`.
+
+#### Run in Local
 
 In root folder:
 
@@ -51,11 +53,34 @@ $ npm i // first time
 $ npm run start:dev
 ```
 
-#### Docker
+#### Run in Docker
 
 ```
 docker-compose up
 ```
+
+### Seeding
+
+We use [typeorm-seeding](https://github.com/w3tecch/typeorm-seeding)
+
+You can run seeding to get some testing data for development.
+
+So far we seed the following data:
+
+- `language`
+- `interpreter`
+
+```
+$ npm run seed:run
+```
+
+`Seeding` files are located at `src/database/seeds`.
+
+#### Issues
+
+- https://github.com/w3tecch/typeorm-seeding/issues/29
+
+- https://www.npmjs.com/package/tsconfig-paths
 
 ### Swagger
 

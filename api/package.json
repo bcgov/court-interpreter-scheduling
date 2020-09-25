@@ -22,6 +22,8 @@
     "migrate:create": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:create -n $1",
     "migrate:generate": "cross-env-shell NODE_ENV=migration npm run build && typeorm migration:generate",
     "migrate:run": "npm run build && typeorm migration:run",
+    "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
+    "seed:run": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
     "typedoc": "typedoc"
   },
   "dependencies": {
