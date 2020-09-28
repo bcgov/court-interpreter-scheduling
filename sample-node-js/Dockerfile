@@ -29,9 +29,9 @@ WORKDIR ${HOME}
 COPY ./package*.json ./
 COPY ./ .
 USER 0
-RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
-RUN echo "104.16.21.35 registry.npmjs.com" >> /etc/hosts
-RUN npm config set registry registry.npmjs.com
+# RUN echo "104.16.21.35 registry.npmjs.org" >> /etc/hosts
+# RUN echo "104.16.21.35 registry.npmjs.com" >> /etc/hosts
+# RUN npm config set registry registry.npmjs.com
 USER 1001
 RUN cat /etc/hosts
 RUN npm ci --loglevel verbose
