@@ -15,4 +15,5 @@ provider "aws" {
 locals {
   instance_name   = "${var.project_name}-dev-minishift"
   wildcard_domain = "*.${var.project_name}.${var.dns_zone}"
+  ssh_domain      = "ssh.${var.project_name}.${var.dns_zone}"
 }
