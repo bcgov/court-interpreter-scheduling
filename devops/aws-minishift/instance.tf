@@ -5,13 +5,21 @@ resource "aws_key_pair" "minishift" {
 }
 
 resource "aws_security_group" "minishift" {
-  name        = "minishift"
+  name        = "minishift-instance"
   vpc_id      = var.vpc_id
 
   ingress {
     description = "HTTP from ALB"
-    from_port       = 8080
-    to_port         = 8080
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lb.id]
+  }
+
+  ingress {
+    description = "HTTPS for health check"
+    from_port       = 8443
+    to_port         = 8443
     protocol        = "tcp"
     security_groups = [aws_security_group.lb.id]
   }
@@ -32,10 +40,10 @@ resource "aws_security_group" "minishift" {
   }
 }
 
-// CentOS Linux 8 8.2.2004 ca-central-1 ami-07a182edcd7d04084 x86_64
+// CentOS Linux 7 ca-central-1
 // https://wiki.centos.org/Cloud/AWS
 resource "aws_instance" "minishift" {
-  ami                         = "ami-07a182edcd7d04084"
+  ami                         = "ami-0252eebc56636a56b"
   instance_type               = "t3a.large"
   key_name                    = aws_key_pair.minishift.key_name
   subnet_id                   = var.subnet_id
