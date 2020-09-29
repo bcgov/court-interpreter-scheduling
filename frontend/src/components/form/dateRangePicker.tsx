@@ -1,28 +1,30 @@
 import React, { useState } from 'react'
 import { useField } from 'formik'
+import dayjs from 'dayjs'
 import {
-  FormControl,
   InputAdornment,
   IconButton,
 } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import { DateRangePicker, DateRange } from '@matharumanpreet00/react-daterange-picker'
-import { StyledLabel, StyledTextField } from './inputs/directory'
+import { StyledFormControl, StyledLabel, StyledTextField } from './inputs/DirectoryInputs'
 
 export default function Range() {
   const [open, setOpen] = useState(false)
   const [field, meta, helpers] = useField('dates')
+  const dateFormat = 'MMM D, YYYY'
   return (
     <>
-      <FormControl onClick={() => setOpen(true)}>
+      <StyledFormControl onClick={() => setOpen(true)}>
         <StyledLabel htmlFor='language'>
           Date Range
         </StyledLabel>
         <StyledTextField
+          style={{ maxWidth: `calc(50% - 16px)` }}
           id='date-static'
           variant='outlined'
           size='small'
-          value={field.value?.startDate}
+          value={`${dayjs(field.value?.startDate).format(dateFormat)} to ${dayjs(field.value?.endDate).format(dateFormat)}`}
           InputProps={{
             endAdornment: (
               <InputAdornment position='end'>
@@ -33,7 +35,7 @@ export default function Range() {
             ),
           }}
         />
-      </FormControl>
+      </StyledFormControl>
       <DateRangePicker
         open={open}
         {...field}

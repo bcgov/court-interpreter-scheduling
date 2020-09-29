@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import {
   Box,
 } from '@material-ui/core'
-import Search from '../components/form/directorySearch'
-import DirectoryTable from '../components/table/Directory'
+import Search from '../components/form/DirectorySearch'
+import DirectoryTable from '../components/table/DirectoryTable'
 import { SearchParams } from '../constants/interfaces'
 
 import DataService from '../data/index'

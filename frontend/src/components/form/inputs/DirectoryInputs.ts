@@ -1,5 +1,7 @@
 import {
   Box,
+  Grid,
+  FormControl,
   FormLabel,
   InputBase,
   InputLabel,
@@ -7,6 +9,15 @@ import {
   TextField,
   withStyles,
 } from '@material-ui/core'
+
+export const StyledFormControl = withStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    height: '120px'
+  },
+})(FormControl)
 
 export const StyledTextField = withStyles({
   root: {
@@ -19,19 +30,12 @@ export const StyledTextField = withStyles({
       borderRadius: '4px',
       borderColor: '#979797'
     },
-    'label + &': {
-      marginTop: '3.5rem',
-    },
   },
 })(TextField)
 
 export const StyledSelectInput = withStyles({
   root: {
-    maxHeight: '1.15em',
     minWidth: '250px',
-    'label + &': {
-      marginTop: '0.35rem',
-    },
   },
   input: {
     position: 'relative',
@@ -41,7 +45,6 @@ export const StyledSelectInput = withStyles({
     fontSize: 16,
     padding: '10px 26px 10px 12px',
     border: 'solid 2px #979797',
-    marginTop: '1.2rem',
   },
 })(InputBase)
 
@@ -51,6 +54,8 @@ export const StyledLabel = withStyles({
     fontSize: '16px',
     lineHeight: '22px',
     fontWeight: 'bold',
+    transform: 'none',
+    position: 'relative',
   },
 })(InputLabel)
 
@@ -67,9 +72,7 @@ export const StyledFormLabel = withStyles({
 })(FormLabel)
 
 export const StyledNativeSelect = withStyles({
-  icon: {
-    top: '7px'
-  },
+
 })(NativeSelect)
 
 export const FlexBox = withStyles({
@@ -79,3 +82,13 @@ export const FlexBox = withStyles({
     alignItems: 'flex-end',
   },
 })(Box)
+
+export const GridRow = withStyles({
+  root: {
+    margin: '1rem 0',
+    '& .MuiGrid-item': {
+      paddingTop: 0,
+      paddingBottom: 0,
+    }
+  },
+})(Grid)
