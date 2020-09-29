@@ -43,7 +43,6 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
           comment: '',
         }}
         onSubmit={(values) => {
-          console.dir(values)
           postBooking({ data: values })
         }}
       >
@@ -54,18 +53,18 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                 Court Interpreter Request
               </Typography>
               <Typography variant='h4'>
-                {interpreter?.name} (Level {interpreter?.level}) <Button>Edit</Button>
+                {interpreter?.firstName} {interpreter?.lastName} (Level {interpreter?.language[0].level}) <Button>Edit</Button>
               </Typography>
             </DialogTitle>
             <DialogContent>
               <BookingInputs />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => toggleOpen(false)} color='secondary'>
+              <Button variant='outlined' onClick={() => toggleOpen(false)} color='secondary'>
                 Cancel
               </Button>
-              <Button onClick={() => handleSubmit()} color='primary' disabled={isSubmitting}>
-                Subscribe
+              <Button variant='contained' onClick={() => handleSubmit()} color='primary' disabled={isSubmitting}>
+                Create Booking
               </Button>
             </DialogActions>
           </>
