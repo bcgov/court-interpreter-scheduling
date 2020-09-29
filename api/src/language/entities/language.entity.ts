@@ -1,30 +1,22 @@
-import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import {
   Entity,
-  PrimaryGeneratedColumn,
-  Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity('language')
 export class LanguageEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ unique: true })
+  @PrimaryColumn()
   name: string;
 
-  @OneToMany(
-    type => InterpreterEntity,
-    interpreter => interpreter.language,
-  )
-  interpreters: InterpreterEntity[];
+  @CreateDateColumn({
+    name: 'created_at',
+  })
+  createdAt: Date;
 
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
+  updatedAt: Date;
 }

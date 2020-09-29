@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
@@ -15,22 +17,45 @@ import { InterpreterEntity } from './entities/interpreter.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
+import { InterpreterLanguageService } from './interpreter-language.service';
+import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
+import { SuccessResponse } from 'src/common/interface/response/success.interface';
 @ApiTags('interpreter')
 @Controller('interpreter')
 export class InterpreterController {
-  constructor(private readonly interpreterService: InterpreterService) {}
+  constructor(
+    private readonly interpreterService: InterpreterService,
+    private readonly interpreterLanguageService: InterpreterLanguageService,
+  ) {}
 
   @Post()
   async create(
     @Body() createInterpreterDto: CreateInterpreterDto,
   ): Promise<InterpreterEntity> {
-    return await this.interpreterService.create(createInterpreterDto);
+    let interpreterLangs: InterpreterLanguageEntity[] = [];
+
+    const { language } = createInterpreterDto;
+
+    if (language && language.length > 0) {
+      try {
+        interpreterLangs = await this.interpreterLanguageService.create(
+          language,
+        );
+      } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    return this.interpreterService.create(
+      createInterpreterDto,
+      interpreterLangs,
+    );
   }
 
   @Get()
   async findAll(
     @Query() paginateInterpreterQueryDTO: PaginateInterpreterQueryDTO,
-  ): Promise<InterpreterEntity[]> {
+  ): Promise<SuccessResponse<InterpreterEntity>> {
     return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
   }
 

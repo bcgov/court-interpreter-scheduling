@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { In, Repository } from 'typeorm';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
+import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { Level } from './enums/level.enum';
 
@@ -19,39 +21,45 @@ export class InterpreterService {
 
   async create(
     createInterpreterDto: Partial<CreateInterpreterDto>,
+    interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
-    const interpreter = this.interpreterRepository.create(createInterpreterDto);
-    let language: LanguageEntity;
-    if (createInterpreterDto && createInterpreterDto.languageId) {
-      try {
-        language = await this.languageRepository.findOneOrFail({
-          id: createInterpreterDto.languageId,
-        });
-        interpreter.language = language;
-      } catch (err) {
-        throw new HttpException(err, HttpStatus.BAD_REQUEST);
-      }
-    }
-
-    await this.interpreterRepository.save(interpreter);
-    return interpreter;
+    const { language, ...insertInterpreter } = createInterpreterDto;
+    const interpreter = this.interpreterRepository.create(insertInterpreter);
+    interpreter.language = interpreterLangs;
+    return await this.interpreterRepository.save(interpreter);
   }
 
   async findAll(
     paginateInterpreterQueryDTO: PaginateInterpreterQueryDTO,
-  ): Promise<InterpreterEntity[]> {
-    const { page, limit, level, ...where } = paginateInterpreterQueryDTO;
+  ): Promise<SuccessResponse<InterpreterEntity>> {
+    const { page, limit, level, language, city } = paginateInterpreterQueryDTO;
 
-    const data = await this.interpreterRepository.find({
-      where: {
-        level: level ? In(level) : In([1, 2, 3, 4]),
-        ...where,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: ['language'],
-    });
-    return data;
+    const query = this.interpreterRepository
+      .createQueryBuilder('interpreter')
+      .leftJoinAndSelect('interpreter.language', 'intLang')
+      .leftJoinAndSelect('intLang.language', 'lang')
+      .offset((page - 1) * limit)
+      .limit(limit);
+
+    if (level && level.length > 0) {
+      query.where('intLang.level IN (:...level)', {
+        level,
+      });
+    }
+    if (language) {
+      query.andWhere('intLang.language.name = :name', { name: language });
+    }
+
+    if (city) {
+      query.andWhere('interpreter.city = :city', { city });
+    }
+
+    const interpreters = await query.getMany();
+
+    return {
+      data: interpreters,
+      pagination: { page, limit },
+    };
   }
 
   async findOne(id: number): Promise<InterpreterEntity> {

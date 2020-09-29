@@ -1,52 +1,81 @@
-import { LanguageEntity } from 'src/language/entities/language.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 
-import { Level } from '../enums/level.enum';
+import { InterpreterLanguageEntity } from './interpreter-language.entity';
 
 @Entity('interpreter')
 export class InterpreterEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
-  @Column('enum', {
-    enum: Level,
-    nullable: false,
-    default: Level.one,
-    name: 'level',
+  @Column({
+    name: 'first_name',
   })
-  level: Level;
+  firstName: string;
 
-  @ManyToOne(
-    type => LanguageEntity,
-    (language: LanguageEntity) => language.id,
+  @Column({
+    name: 'last_name',
+  })
+  lastName: string;
+
+  @OneToMany(
+    type => InterpreterLanguageEntity,
+    (interpreterLanguage: InterpreterLanguageEntity) =>
+      interpreterLanguage.interpreter,
   )
-  language: LanguageEntity;
+  language: InterpreterLanguageEntity[];
 
   @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  province: string;
+
+  @Column({ nullable: true, name: 'postal' })
+  postal: string;
+
+  @Column({ nullable: true, name: 'home_phone' })
+  homePhone: string;
+
+  @Column({ nullable: true, name: 'business_phone' })
+  businessPhone: string;
+
+  @Column({ nullable: true, name: 'phone' })
   phone: string;
 
   @Column({ nullable: true })
   email: string;
+  @Column({ nullable: true })
+  supplier: string;
 
-  @Column({
-    type: 'decimal',
-    nullable: true,
+  @Column({ nullable: true })
+  gst: string;
+
+  @Column({ nullable: true })
+  comments: string;
+
+  @Column({ nullable: true, name: 'contract_extension' })
+  contractExtension: boolean;
+
+  @Column({ nullable: true, name: 'contract_termination' })
+  contractTermination: boolean;
+
+  @CreateDateColumn({
+    name: 'created_at',
   })
-  distance: number;
+  createdAt: Date;
 
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
+  updatedAt: Date;
 }

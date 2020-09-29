@@ -18,9 +18,16 @@ export class PaginateInterpreterQueryDTO extends PaginationQueryDTO {
   level?: [1, 2, 3, 4][];
 
   @ApiProperty({
-    description: 'Interpreter Language id',
-    example: faker.random.uuid(),
+    description: 'Interpreter Language',
+    example: 'French',
   })
   @IsOptional()
-  language?: any;
+  language?: string;
+
+  @ApiProperty({
+    description: 'Interpreter City',
+    example: 'Victoria',
+  })
+  @IsOptional()
+  city?: string;
 }
