@@ -85,7 +85,7 @@ export const FlexBox = withStyles({
 
 export const GridRow = withStyles({
   root: {
-    margin: '1rem 0',
+    marginTop: '1rem',
     '& .MuiGrid-item': {
       paddingTop: 0,
       paddingBottom: 0,

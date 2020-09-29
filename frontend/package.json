@@ -17,6 +17,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/store": "^2.0.2",
+    "axios": "^0.20.0",
     "axios-hooks": "^2.1.0",
     "dayjs": "^1.8.36",
     "faker": "^5.1.0",
