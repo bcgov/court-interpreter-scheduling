@@ -23,15 +23,14 @@ import { StyledButton } from 'vaping-regulation-shared-components'
 import { Field, Formik, FormikProps } from 'formik'
 
 export default function Search({ handleSearch }: { handleSearch: Function }) {
-
+  console.log(`render search`)
   return (
     <Box>
       <Formik
         initialValues={{
           language: '',
           level: [],
-          location: 'Abbotsford',
-          dates: {}
+          location: '',
         }}
         onSubmit={(values) => handleSearch(values)}>
           {({ handleSubmit }: FormikProps<any>) => (
@@ -41,9 +40,8 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
                   <StyledLabel htmlFor='language'>
                     Language
                   </StyledLabel>
-                  <Field
-                    name='language'
-                    component={({ field, form, ...props }: any) => (
+                  <Field name='language'>
+                    {({ field, form, ...props }: any) => (
                       <StyledTextField
                         id='language'
                         variant='outlined'
@@ -52,7 +50,7 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
                         {...props}
                       />
                     )}
-                  />
+                  </Field>
                 </StyledFormControl>
               </Grid>
               <Grid item xs={4}>
@@ -86,9 +84,9 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
                     name='location'
                     variant='outlined'
                   >
-                    <option value='abbotsford'>Abbotsford</option>
-                    <option value='vancouver'>Vancouver</option>
-                    <option value='victoria'>Victoria</option>
+                    <option value='Victoria'>Victoria</option>
+                    <option value='Abbotsford'>Abbotsford</option>
+                    <option value='Vancouver'>Vancouver</option>
                   </StyledNativeSelect>
                 </StyledFormControl>
               </Grid>
