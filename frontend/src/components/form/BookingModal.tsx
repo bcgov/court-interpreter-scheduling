@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import useAxios from 'axios-hooks'
 import BookingInputs from './inputs/Booking'
+import { Schema, Initial } from './schemas/booking.schema'
 
+import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -27,23 +29,16 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
 
   return (
 
-    <Dialog open={open} onClose={() => setInterpreter(null)} maxWidth={'xl'}>
+    <Dialog open={open} onClose={() => setInterpreter(null)} maxWidth='xl'>
       <Formik
-        initialValues={{
-          name: '',
-          registry: '',
-          file: '',
-          interpretFor: '',
-          caseName: '',
-          requestedBy: '',
-          federal: '',
-          language: '',
-          reason: '',
-          prosecutor: '',
-          comment: '',
-        }}
-        onSubmit={(values) => {
-          postBooking({ data: values })
+        initialValues={Initial}
+        validationSchema={Schema}
+        onSubmit={async (values) => {
+          await postBooking({ data: values })
+          if (response?.status === 201) {
+            setInterpreter(null)
+            return
+          } else return
         }}
       >
         {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
@@ -58,6 +53,11 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
             </DialogTitle>
             <DialogContent>
               <BookingInputs />
+              {error && (
+                <Box p='120' mt='20'>
+                  <span>{error.message}</span>
+                </Box>
+              )}
             </DialogContent>
             <DialogActions>
               <Button variant='outlined' onClick={() => toggleOpen(false)} color='secondary'>

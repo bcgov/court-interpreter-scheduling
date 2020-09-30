@@ -28,7 +28,7 @@ const Directory = () => {
       <Search handleSearch={(searchObject: SearchParams) => setSearch(searchObject)} />
       {
         loading
-          ? <CircularProgress />
+          ? <Box mt='20'><CircularProgress /></Box>
           : error
           ? <Box p='120'>{error.message}</Box>
           : interpreters
