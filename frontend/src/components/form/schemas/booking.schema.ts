@@ -1,7 +1,7 @@
 import  * as yup from 'yup'
 
 const Initial = {
-  name: '',
+  room: '',
   registry: '',
   file: '',
   interpretFor: '',
@@ -15,7 +15,7 @@ const Initial = {
 }
 
 const Schema = yup.object({
-  name: yup.string(),
+  room: yup.string(),
   registry: yup.string(),
   file: yup.string(),
   interpretFor: yup.string(),
