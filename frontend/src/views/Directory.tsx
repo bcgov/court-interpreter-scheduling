@@ -14,7 +14,7 @@ const Directory = () => {
   const [search, setSearch] = useState<SearchParams>({
     language: '',
     level: [],
-    location: '',
+    city: '',
   })
 
   const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter', { manual: true })

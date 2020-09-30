@@ -65,7 +65,7 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
               </Grid>
               <Grid item xs={4}>
                 <StyledFormControl>
-                  <StyledFormLabel htmlFor='location'>
+                  <StyledFormLabel htmlFor='city'>
                     Court Location
                   </StyledFormLabel>
                   <StyledNativeSelect
@@ -74,8 +74,8 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
                         <StyledSelectInput {...field} {...props} />
                       )} />
                     }
-                    id='location'
-                    name='location'
+                    id='city'
+                    name='city'
                     variant='outlined'
                   >
                     <option value='Victoria'>Victoria</option>
