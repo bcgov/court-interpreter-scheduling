@@ -1,15 +1,29 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { BookingEntity } from './entities/booking.entity';
 
+@ApiTags('booking')
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
-  
+
   @Post()
-  create(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingService.create(createBookingDto);
+  async create(
+    @Body() createBookingDto: CreateBookingDto,
+  ): Promise<BookingEntity> {
+    console.log(createBookingDto);
+    return await this.bookingService.create(createBookingDto);
   }
 
   @Get()

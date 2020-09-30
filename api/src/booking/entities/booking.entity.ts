@@ -1,4 +1,5 @@
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
+import { LanguageEntity } from 'src/language/entities/language.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,9 +8,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { BookingDateDto } from '../dto/booking-date.dto';
+
+import { BookingStatus } from '../enums/booking-status.enum';
 
 @Entity('booking')
-export class Booking {
+export class BookingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -20,39 +24,54 @@ export class Booking {
   interpreter: InterpreterEntity;
 
   @Column()
-  status: string;
-
-  @CreateDateColumn()
-  date: Date;
-
-  @Column()
-  registry: string;
-
-  @Column()
-  file: string;
-
-  @Column()
-  interpretFor: string;
-
-  @Column()
   caseName: string;
 
-  @Column()
+  @Column({ nullable: true })
+  room: string;
+
+  @Column('enum', {
+    enum: BookingStatus,
+    nullable: false,
+    default: BookingStatus.PENDING,
+    name: 'status',
+  })
+  status: string;
+
+  @Column({
+    type: 'jsonb',
+    nullable: false,
+  })
+  dates: BookingDateDto[];
+
+  @Column({ nullable: true })
+  registry: string;
+
+  @Column({ nullable: true })
+  file: string;
+
+  @Column({ nullable: true })
+  interpretFor: string;
+
+  @Column({ nullable: true })
   requestedBy: string;
 
-  @Column()
-  federal: string;
+  @Column({ default: false })
+  federal: boolean;
 
-  @Column()
-  language: string;
+  @ManyToOne(
+    type => LanguageEntity,
+    (language: LanguageEntity) => language.name,
+    { eager: true },
+  )
+  language: LanguageEntity;
 
-  @Column()
+  @Column({ nullable: true })
   reason: string;
 
-  @Column()
+  @Column({ nullable: true })
   prosecutor: string;
 
-  @Column()
+  @Column({ nullable: true })
   comment: string;
 
   @CreateDateColumn({
