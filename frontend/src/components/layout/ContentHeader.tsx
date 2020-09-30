@@ -30,7 +30,7 @@ export default function Header() {
   // TODO introduce concept of a user and get the clerk's location
   switch(pathname) {
     case '/booking':
-      headerText = `Upcoming Bookings - Abbotsford`
+      headerText = `Upcoming Bookings - Victoria`
       break
     case '/directory':
       headerText = `Search Interpreters`

@@ -19,7 +19,7 @@ const useStyles = makeStyles({
   subheader: {
     gridArea: 'subheader',
     alignItems: 'center',
-    backgroundColor: '#38598A', // TODO: Replace with theme color once theme is refactored with MUI
+    backgroundColor: '#38598A',
     width: '100%',
     maxWidth: '100vw',
     boxSizing: 'border-box',
