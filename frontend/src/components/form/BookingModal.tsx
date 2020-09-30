@@ -37,8 +37,8 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
           await postBooking({ data: values })
           if (response?.status === 201) {
             setInterpreter(null)
-            return
-          } else return
+          }
+          return
         }}
       >
         {({ handleSubmit, isSubmitting }: FormikProps<any>) => (

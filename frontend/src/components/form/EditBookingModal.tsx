@@ -40,8 +40,8 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
           await editBooking({ data: values })
           if (response?.status === 201) {
             setBooking(null)
-            return
-          } else return
+          }
+          return
         }}
       >
         {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
