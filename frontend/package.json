@@ -44,7 +44,14 @@
     "precommit": "react-scripts precommit"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "moduleDirectory": ["node_modules", "src/"]
+        }
+      }
+    }
   },
   "browserslist": {
     "production": [

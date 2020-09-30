@@ -6,9 +6,9 @@ import {
 import useAxios from 'axios-hooks'
 import queryString from 'query-string'
 
-import Search from '../components/form/DirectorySearch'
-import DirectoryTable from '../components/table/DirectoryTable'
-import { SearchParams } from '../constants/interfaces'
+import Search from 'components/form/DirectorySearch'
+import DirectoryTable from 'components/table/DirectoryTable'
+import { SearchParams } from 'constants/interfaces'
 
 const Directory = () => {
   const [search, setSearch] = useState<SearchParams>({
