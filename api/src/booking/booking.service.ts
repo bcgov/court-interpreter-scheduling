@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Repository } from 'typeorm';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingEntity } from './entities/booking.entity';
 
@@ -35,8 +37,24 @@ export class BookingService {
     return await this.bookingRepository.save(booking);
   }
 
-  findAll() {
-    return `This action returns all booking`;
+  async findAll(
+    paginateBookingQueryDto: PaginateBookingQueryDto,
+  ): Promise<SuccessResponse<BookingEntity[]>> {
+    const { page, limit } = paginateBookingQueryDto;
+
+    const query = this.bookingRepository
+      .createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.interpreter', 'interpreter')
+      .leftJoinAndSelect('booking.language', 'language')
+      .offset((page - 1) * limit)
+      .limit(limit);
+
+    const bookings = await query.getMany();
+
+    return {
+      data: bookings,
+      pagination: { page, limit },
+    };
   }
 
   findOne(id: number) {

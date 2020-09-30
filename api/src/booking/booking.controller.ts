@@ -6,10 +6,13 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingEntity } from './entities/booking.entity';
 
@@ -27,8 +30,10 @@ export class BookingController {
   }
 
   @Get()
-  findAll() {
-    return this.bookingService.findAll();
+  async findAll(
+    @Query() paginateBookingQueryDto: PaginateBookingQueryDto,
+  ): Promise<SuccessResponse<BookingEntity[]>> {
+    return await this.bookingService.findAll(paginateBookingQueryDto);
   }
 
   @Get(':id')
