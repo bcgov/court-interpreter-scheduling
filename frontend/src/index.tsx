@@ -4,13 +4,13 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/core'
 import store from 'store'
 
-import './App.css'
+import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css';
-import { theme } from './theme';
+import { theme } from 'theme';
 
-const Signup = lazy(() => import('./views/register'))
-const Login = lazy(() => import('./views/login'))
-const App = lazy(() => import('./App'))
+const Signup = lazy(() => import('views/register'))
+const Login = lazy(() => import('views/login'))
+const App = lazy(() => import('App'))
 
 const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
   const token = store.get('TOKEN')

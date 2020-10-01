@@ -5,7 +5,8 @@ import MaterialTable, { MTableCell, MTableBodyRow, Column, MaterialTableProps } 
 const StyledTableRow = withStyles({
   root: {
     backgroundColor: 'transparent',
-    boxShadow: '0 0 0 1px #385989',
+    boxShadow: '0 0 0 1px #DFECFF',
+    // boxShadow: '0 0 0 1px #385989',
     // border: 'solid 1px #DFECFF',
     marginBottom: '20px',
     borderRadius: '4px',
@@ -54,6 +55,9 @@ export default function BaseTable({
       color: '#333333',
       backgroundColor: 'transparent',
       fontWeight: 600,
+      lineHeight: '22px',
+      border: 'none',
+      outline: 'none',
     },
   }
   const { options = {}, ...rest } = overrides
