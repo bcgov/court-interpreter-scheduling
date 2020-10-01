@@ -4,6 +4,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import BaseTable from 'components/table/Base'
 import DateTimeCell from 'components/table/DateTimeCell'
 import StatusButton from 'components/table/Status'
+import InterpreterName from 'components/table/InterpreterName'
 
 import EditBookingModal from 'components/form/EditBookingModal'
 
@@ -20,10 +21,14 @@ export default function BookingsTable({ data }: { data: Array<any> }) {
           { render: (row: any) => <DateTimeCell date={row.date} />, title: 'Date & Time' },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
-          { render: (row: any) => <span className='linkSpan pointer' onClick={() => setInterpreter(row.interpreterId)}>{row.interpreterName}</span>, title: 'Interpreter' },
-          { render: (row: any) => <StatusButton status={row.isBooked ? 'Booked' : 'Pending'} />, title: 'Status' },
-          { field: 'comments', title: 'Comment' },
-          { render: (row: any) => <EditIcon className='pointer' onClick={() => setBooking(row)} />, align: 'right' }
+          { render: (row: any) => <InterpreterName setInterpreter={setInterpreter} interpreter={row.interpreter} />, title: 'Interpreter' },
+          { render: (row: any) => <StatusButton status={row.status} />, title: 'Status' },
+          { field: 'comment', title: 'Comment' },
+          {
+            render: (row: any) => <EditIcon className='pointer' onClick={() => setBooking(row)} />,
+            align: 'right',
+            width: 48,
+          }
         ]}
       />
 

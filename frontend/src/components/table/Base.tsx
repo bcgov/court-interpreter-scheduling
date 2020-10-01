@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, withStyles } from '@material-ui/core'
-import MaterialTable, { MTableCell, MTableBodyRow, Column } from 'material-table'
+import MaterialTable, { MTableCell, MTableBodyRow, Column, MaterialTableProps } from 'material-table'
 
 const StyledTableRow = withStyles({
   root: {
@@ -43,8 +43,20 @@ export default function BaseTable({
 }: {
   data: Array<any>,
   columns: Array<Column<{}>>,
-  overrides?: Object
+  overrides?: Partial<MaterialTableProps<{}>>
 }) {
+  const baseOptions = {
+    pageSize: 10,
+    showTitle: false,
+    toolbar: false,
+    search: false,
+    headerStyle: {
+      color: '#333333',
+      backgroundColor: 'transparent',
+      fontWeight: 600,
+    },
+  }
+  const { options = {}, ...rest } = overrides
   return (
     <StyledTable
       data={data}
@@ -55,17 +67,10 @@ export default function BaseTable({
         Cell: StyledCell,
       }}
       options={{
-        pageSize: 10,
-        showTitle: false,
-        toolbar: false,
-        search: false,
-        headerStyle: {
-          color: '#333333',
-          fontWeight: 'bold',
-          backgroundColor: 'transparent',
-        }
+        ...baseOptions,
+        ...options
       }}
-      {...overrides}
+      {...rest}
     />
   )
 }
