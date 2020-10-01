@@ -6,15 +6,15 @@ import {
 import useAxios from 'axios-hooks'
 import queryString from 'query-string'
 
-import Search from '../components/form/DirectorySearch'
-import DirectoryTable from '../components/table/DirectoryTable'
-import { SearchParams } from '../constants/interfaces'
+import Search from 'components/form/DirectorySearch'
+import DirectoryTable from 'components/table/DirectoryTable'
+import { SearchParams } from 'constants/interfaces'
 
 const Directory = () => {
   const [search, setSearch] = useState<SearchParams>({
     language: '',
     level: [],
-    location: '',
+    city: '',
   })
 
   const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter', { manual: true })
@@ -28,7 +28,7 @@ const Directory = () => {
       <Search handleSearch={(searchObject: SearchParams) => setSearch(searchObject)} />
       {
         loading
-          ? <CircularProgress />
+          ? <Box mt='20'><CircularProgress /></Box>
           : error
           ? <Box p='120'>{error.message}</Box>
           : interpreters

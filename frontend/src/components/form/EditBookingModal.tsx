@@ -14,29 +14,32 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { Formik, FormikProps } from 'formik'
 
 type BookingModalProps = {
-  interpreter: any;
-  setInterpreter: Function;
+  booking: any;
+  setBooking: Function;
 }
 
-export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
+export default function BookingModal({ booking, setBooking }: BookingModalProps) {
 
-  const [open, toggleOpen] = useState(!!interpreter)
-  const [{ data, response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
+  const [open, toggleOpen] = useState(!!booking)
+  const [{ data, response, error, loading }, editBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
 
   useEffect(() => {
-    toggleOpen(!!interpreter)
-  }, [interpreter])
+    toggleOpen(!!booking)
+  }, [booking])
 
   return (
 
-    <Dialog open={open} onClose={() => setInterpreter(null)} maxWidth='xl'>
+    <Dialog open={open} onClose={() => setBooking(null)} maxWidth='xl'>
       <Formik
-        initialValues={Initial}
+        initialValues={{
+          ...Initial,
+          ...booking
+      }}
         validationSchema={Schema}
         onSubmit={async (values) => {
-          await postBooking({ data: values })
+          await editBooking({ data: values })
           if (response?.status === 201) {
-            setInterpreter(null)
+            setBooking(null)
           }
           return
         }}
@@ -45,10 +48,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
           <>
             <DialogTitle>
               <Typography variant='h4'>
-                Court Interpreter Request
-              </Typography>
-              <Typography variant='h4'>
-                {interpreter?.firstName} {interpreter?.lastName} (Level {interpreter?.language[0].level}) <Button>Edit</Button>
+                Update Booking
               </Typography>
             </DialogTitle>
             <DialogContent>

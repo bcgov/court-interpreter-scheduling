@@ -21,6 +21,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.linkSpan {
+  text-decoration: underline;
+  color: #1A5A96;
+  font-weight: bold;
+}
+
+.pointer:hover {
+  cursor: pointer;
+}
+
 .content {
   overflow: scroll;
 }

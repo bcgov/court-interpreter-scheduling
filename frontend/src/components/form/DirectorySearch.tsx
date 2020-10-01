@@ -15,6 +15,7 @@ import {
   StyledSelectInput,
   GridRow,
 } from './inputs/DirectoryInputs'
+import { Schema, Initial } from './schemas/search.schema'
 
 import Range from './DateRangePicker'
 import Check from './inputs/Check'
@@ -23,15 +24,11 @@ import { StyledButton } from 'vaping-regulation-shared-components'
 import { Field, Formik, FormikProps } from 'formik'
 
 export default function Search({ handleSearch }: { handleSearch: Function }) {
-  console.log(`render search`)
   return (
     <Box>
       <Formik
-        initialValues={{
-          language: '',
-          level: [],
-          location: '',
-        }}
+        initialValues={Initial}
+        validationSchema={Schema}
         onSubmit={(values) => handleSearch(values)}>
           {({ handleSubmit }: FormikProps<any>) => (
             <GridRow container spacing={4}>
@@ -68,23 +65,22 @@ export default function Search({ handleSearch }: { handleSearch: Function }) {
               </Grid>
               <Grid item xs={4}>
                 <StyledFormControl>
-                  <StyledFormLabel htmlFor='location'>
+                  <StyledFormLabel htmlFor='city'>
                     Court Location
                   </StyledFormLabel>
                   <StyledNativeSelect
                     input={
                       <Field component={({ field, form, ...props }: any) => (
-                        <StyledSelectInput
-                          {...field}
-                          {...props}
-                        />
+                        <StyledSelectInput {...field} {...props} />
                       )} />
                     }
-                    id='location'
-                    name='location'
+                    id='city'
+                    name='city'
                     variant='outlined'
                   >
                     <option value='Victoria'>Victoria</option>
+                    <option value='Nanaimo'>Nanaimo</option>
+                    <option value='Courtenay'>Courtenay</option>
                     <option value='Abbotsford'>Abbotsford</option>
                     <option value='Vancouver'>Vancouver</option>
                   </StyledNativeSelect>

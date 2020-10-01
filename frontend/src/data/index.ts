@@ -29,11 +29,12 @@ export default class DataService {
       const date: Date = faker.date.future();
       const interpreterId: string = '' + i;
       const interpreterName: string = faker.name.findName();
-      const courtFileNumber: string = faker.random.alphaNumeric(11);
-      const caseName: string = faker.lorem.sentence();
-      const comments: string = faker.lorem.sentences();
+      const file: string = faker.random.alphaNumeric(6);
+      const language: string = faker.lorem.word(1);
+      const caseName: string = faker.lorem.sentence(4);
+      const comments: string = faker.lorem.sentence(6);
       const isBooked: boolean = faker.random.boolean();
-      random.push(new Booking(id, date, interpreterId, interpreterName, courtFileNumber, caseName, comments, isBooked));
+      random.push(new Booking(id, date, interpreterId, interpreterName, file, language, caseName, comments, isBooked));
     }
     return random;
   }
