@@ -34,7 +34,7 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
         initialValues={{
           ...Initial,
           ...booking
-      }}
+        }}
         validationSchema={Schema}
         onSubmit={async (values) => {
           await editBooking({ data: values })
@@ -64,7 +64,7 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
                 Cancel
               </Button>
               <Button variant='contained' onClick={() => handleSubmit()} color='primary' disabled={isSubmitting}>
-                Create Booking
+                Update
               </Button>
             </DialogActions>
           </>

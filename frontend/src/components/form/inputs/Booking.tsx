@@ -43,11 +43,11 @@ const StyledRadios = () =>   (
       <StyledLabel htmlFor='federal'>Federal</StyledLabel>
       <div id='federal' style={{ display: 'flex', flexDirection: 'row', maxWidth: '120px', justifyContent: 'space-evenly'}}>
         <label>
-          <Field type='radio' value='yes' name='federal' />
+          <Field type='radio' value={true} name='federal' />
           <span style={{ marginLeft: '4px' }}>Yes</span>
         </label>
         <label>
-          <Field type='radio' value='no' name='federal' />
+          <Field type='radio' value={false} name='federal' />
           <span style={{ marginLeft: '4px' }}>No</span>
         </label>
       </div>
