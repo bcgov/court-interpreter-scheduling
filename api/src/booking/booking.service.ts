@@ -72,7 +72,7 @@ export class BookingService {
         // }),
       );
     }
-    console.log(query.getQuery());
+
     const bookings = await query.getMany();
 
     return {
