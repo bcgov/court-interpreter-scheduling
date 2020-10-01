@@ -4,7 +4,6 @@ import * as faker from 'faker/locale/en_CA';
 
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
-import { InterpreterLanguageEntity } from 'src/interpreter/entities/interpreter-language.entity';
 import { BookingEntity } from 'src/booking/entities/booking.entity';
 
 export default class CreateBooking implements Seeder {

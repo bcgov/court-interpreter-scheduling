@@ -43,6 +43,7 @@ export class InterpreterService {
         level,
       });
     }
+
     if (language) {
       query.andWhere('intLang.language.name = :name', { name: language });
     }

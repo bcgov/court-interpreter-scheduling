@@ -5,26 +5,31 @@ import * as faker from 'faker/locale/en_CA';
 import { PaginationQueryDTO } from 'src/common/dto/pagination.dto';
 
 export class PaginateBookingQueryDto extends PaginationQueryDTO {
-  // @ApiProperty({
-  //   description: `
-  //     Multiple interpreter level from 1 to 4,
-  //     Like: level[]=2&level[]=3
-  //   `,
-  //   example: Level.one,
-  //   enum: [1, 2, 3, 4],
-  // })
-  // @IsOptional()
-  // level?: [1, 2, 3, 4][];
-  // @ApiProperty({
-  //   description: 'Interpreter Language',
-  //   example: 'French',
-  // })
-  // @IsOptional()
-  // language?: string;
-  // @ApiProperty({
-  //   description: 'Interpreter City',
-  //   example: 'Victoria',
-  // })
-  // @IsOptional()
-  // city?: string;
+  @ApiProperty({
+    description: 'Date',
+    example: '2020-09-30',
+  })
+  @IsOptional()
+  date?: Date;
+
+  @ApiProperty({
+    description: 'Interpreter Name',
+    example: faker.name.firstName(),
+  })
+  @IsOptional()
+  interpreter?: string;
+
+  @ApiProperty({
+    description: 'Courthouse location',
+    example: 'Vancouver',
+  })
+  @IsOptional()
+  location?: string;
+
+  @ApiProperty({
+    description: 'Case File Number',
+    example: 'VAN-P-C-123456',
+  })
+  @IsOptional()
+  file?: string;
 }
