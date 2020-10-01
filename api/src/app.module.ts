@@ -7,9 +7,10 @@ import { DatabaseModule } from './database/database.module';
 import { InterpreterModule } from './interpreter/interpreter.module';
 import { LanguageModule } from './language/language.module';
 import { LocationModule } from './location/location.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), DatabaseModule, InterpreterModule, LanguageModule, LocationModule],
+  imports: [ConfigModule.forRoot(), DatabaseModule, InterpreterModule, LanguageModule, LocationModule, BookingModule],
   controllers: [AppController],
   providers: [AppService],
 })

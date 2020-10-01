@@ -1,22 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { LanguageEntity } from 'src/language/entities/language.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
-import { Level } from './enums/level.enum';
 
 @Injectable()
 export class InterpreterService {
   constructor(
     @InjectRepository(InterpreterEntity)
     private readonly interpreterRepository: Repository<InterpreterEntity>,
-    @InjectRepository(LanguageEntity)
-    private readonly languageRepository: Repository<LanguageEntity>,
   ) {}
 
   async create(
@@ -46,6 +43,7 @@ export class InterpreterService {
         level,
       });
     }
+
     if (language) {
       query.andWhere('intLang.language.name = :name', { name: language });
     }
