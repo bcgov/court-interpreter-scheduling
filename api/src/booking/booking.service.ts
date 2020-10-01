@@ -50,29 +50,25 @@ export class BookingService {
       .limit(limit);
 
     if (file) {
-      query.where('booking.file like :file', { file: `%${file}%` });
+      query.where('LOWER(booking.file) like LOWER(:file)', {
+        file: `%${file}%`,
+      });
     }
 
     if (interpreter) {
       query.andWhere(
-        'interpreter.firstName like :name OR interpreter.lastName like :name',
-        {
-          name: `%${interpreter}%`,
-        },
-        // TODO more searching functionality
-
-        // new Brackets(sqb => {
-        //   sqb
-        //     .where('interpreter.firstName like :name', {
-        //       name: `%${interpreter}%`,
-        //     })
-        //     .orWhere('interpreter.lastName like :name', {
-        //       name: `%${interpreter}$`,
-        //     });
-        // }),
+        new Brackets(sqb => {
+          sqb
+            .where('LOWER(interpreter.firstName) like LOWER(:name)', {
+              name: `%${interpreter}%`,
+            })
+            .orWhere('LOWER(interpreter.lastName) like LOWER(:name)', {
+              name: `%${interpreter}%`,
+            });
+        }),
       );
     }
-
+    console.log(query.getQuery());
     const bookings = await query.getMany();
 
     return {

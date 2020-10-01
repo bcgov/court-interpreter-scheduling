@@ -18,12 +18,12 @@ export class PaginationQueryDTO {
     description: `
       The maximum size for every page
     `,
-    example: '8',
+    example: '15, default is 10',
     required: false,
   })
   @Max(100)
   @Min(1)
   @IsOptional()
   @IsNumber()
-  limit: number = 8;
+  limit: number = 10;
 }
