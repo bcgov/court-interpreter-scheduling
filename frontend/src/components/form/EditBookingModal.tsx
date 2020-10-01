@@ -33,7 +33,8 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
       <Formik
         initialValues={{
           ...Initial,
-          ...booking
+          ...booking,
+          language: booking?.language?.name,
         }}
         validationSchema={Schema}
         onSubmit={async (values) => {
