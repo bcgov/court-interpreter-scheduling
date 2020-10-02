@@ -4,9 +4,12 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/core'
 import store from 'store'
 
+import 'react-dates/initialize'
+import 'react-dates/lib/css/_datepicker.css';
+
 import 'css/App.css'
-import '@bcgov/bc-sans/css/BCSans.css';
-import { theme } from 'theme';
+import '@bcgov/bc-sans/css/BCSans.css'
+import { theme } from 'theme'
 
 const Signup = lazy(() => import('views/register'))
 const Login = lazy(() => import('views/login'))

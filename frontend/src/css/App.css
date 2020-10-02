@@ -21,6 +21,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.right {
+  float: right;
+}
+
 .linkSpan {
   text-decoration: underline;
   color: #1A5A96;
