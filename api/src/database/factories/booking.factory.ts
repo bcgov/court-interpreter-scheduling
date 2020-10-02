@@ -4,6 +4,7 @@ import * as Faker from 'faker';
 import { BookingEntity } from 'src/booking/entities/booking.entity';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 import { BookingStatus } from 'src/booking/enums/booking-status.enum';
+import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 
 define(BookingEntity, (faker: typeof Faker, settings) => {
   const gender = faker.random.number(1);
@@ -24,15 +25,6 @@ define(BookingEntity, (faker: typeof Faker, settings) => {
   booking.reason = faker.lorem.sentence();
   booking.prosecutor = firstName;
   booking.comment = faker.lorem.sentence();
-  booking.dates = [
-    {
-      date: faker.date.recent(),
-      period: faker.random.arrayElement([
-        BookingPeriod.MORNING,
-        BookingPeriod.AFTERNOON,
-        BookingPeriod.WHOLE_DAY,
-      ]),
-    },
-  ];
+
   return booking;
 });

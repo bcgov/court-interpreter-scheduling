@@ -68,7 +68,7 @@ export class InterpreterService {
     id: number,
     updateInterpreterDto: UpdateInterpreterDto,
   ): Promise<void> {
-    await this.interpreterRepository.update(id, updateInterpreterDto);
+    await this.interpreterRepository.save({ id, ...updateInterpreterDto });
   }
 
   async remove(id: number): Promise<void> {

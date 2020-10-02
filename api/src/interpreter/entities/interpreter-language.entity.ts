@@ -18,6 +18,7 @@ export class InterpreterLanguageEntity {
   @ManyToOne(
     type => InterpreterEntity,
     interpreter => interpreter.language,
+    { onDelete: 'CASCADE' },
   )
   interpreter: InterpreterEntity;
 

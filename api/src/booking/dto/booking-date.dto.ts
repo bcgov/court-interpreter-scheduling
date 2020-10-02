@@ -1,4 +1,4 @@
-import { IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -26,4 +26,11 @@ export class BookingDateDto {
   @IsNotEmpty()
   @IsEnum(BookingPeriod)
   period: BookingPeriod;
+
+  @ApiProperty({
+    description: 'Booking arrival time, 24 hours format: HH:MM',
+    example: '12:00',
+  })
+  @IsOptional()
+  arrivalTime: string;
 }

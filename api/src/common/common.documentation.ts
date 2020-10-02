@@ -7,6 +7,7 @@ import { CONFIG } from './common.config';
 import { InterpreterModule } from 'src/interpreter/interpreter.module';
 import { LanguageModule } from 'src/language/language.module';
 import { LocationModule } from 'src/location/location.module';
+import { BookingModule } from 'src/booking/booking.module';
 
 export const documentation = (app: INestApplication) => {
   const options = new DocumentBuilder()
@@ -19,7 +20,13 @@ export const documentation = (app: INestApplication) => {
     .build();
 
   const baseDocument = SwaggerModule.createDocument(app, options, {
-    include: [AppModule, InterpreterModule, LanguageModule, LocationModule],
+    include: [
+      AppModule,
+      InterpreterModule,
+      LanguageModule,
+      LocationModule,
+      BookingModule,
+    ],
   });
 
   SwaggerModule.setup('api', app, baseDocument, {

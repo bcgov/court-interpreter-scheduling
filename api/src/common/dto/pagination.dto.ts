@@ -16,14 +16,14 @@ export class PaginationQueryDTO {
 
   @ApiProperty({
     description: `
-      The maximum size for every page
+      The maximum size for every page, default is 10
     `,
-    example: '8',
+    example: '10',
     required: false,
   })
   @Max(100)
   @Min(1)
   @IsOptional()
   @IsNumber()
-  limit: number = 8;
+  limit: number = 10;
 }
