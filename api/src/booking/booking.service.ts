@@ -47,7 +47,7 @@ export class BookingService {
   async findAll(
     paginateBookingQueryDto: PaginateBookingQueryDto,
   ): Promise<SuccessResponse<BookingEntity[]>> {
-    const { page, limit, interpreter, file, date } = paginateBookingQueryDto;
+    const { page, limit, interpreter, file, dates } = paginateBookingQueryDto;
 
     const query = this.bookingRepository
       .createQueryBuilder('booking')
@@ -77,10 +77,10 @@ export class BookingService {
       );
     }
 
-    if (date) {
+    if (dates) {
       query.andWhere(
         new Brackets((sqb: WhereExpression) => {
-          date.reduce((acc, { startDate, endDate }) => {
+          dates.reduce((acc, { startDate, endDate }) => {
             acc.orWhere(
               '(dates.date >= :startDate AND dates.date <= :endDate)',
               {

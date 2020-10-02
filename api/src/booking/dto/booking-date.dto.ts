@@ -28,7 +28,7 @@ export class BookingDateDto {
   period: BookingPeriod;
 
   @ApiProperty({
-    description: 'Booking arrival time',
+    description: 'Booking arrival time, 24 hours format: HH:MM',
     example: '12:00',
   })
   @IsOptional()

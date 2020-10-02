@@ -4,7 +4,7 @@ import { IsOnlyDate } from 'src/common/decorator/isOnlyDate.decorator';
 
 export class SearchDateDto {
   @ApiProperty({
-    description: 'start date',
+    description: 'start date, format: YYYY-MM-DD',
     example: '2020-09-20',
   })
   @IsNotEmpty()
