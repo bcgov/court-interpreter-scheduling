@@ -49,77 +49,57 @@ parameters:
     value: "750m"
   - name: MEMORY_REQUEST
     value: "1Gi"
+  - name: TAG
+    value: "1"
 objects:
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${SOURCE_IMAGE_NAME}
-      creationTimestamp: null
-      annotations:
-        description: Nodejs Base Image
-      labels:
-        shared: "true"
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${SOURCE_IMAGE_TAG}
-          annotations: null
-          from:
-            kind: DockerImage
-            name: ${BASE_IMAGE_URL}
-          importPolicy: {}
-          referencePolicy:
-            type: Local
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: "${NAME}"
-      creationTimestamp:
-      annotations:
-        description: Nodejs Runtime Image
-      labels:
-        shared: "true"
-    spec:
-      lookupPolicy:
-        local: false
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      name: "${NAME}${SUFFIX}"
-      creationTimestamp:
-      labels: {}
-      annotations: {}
-    spec:
-      failedBuildsHistoryLimit: 5
-      nodeSelector:
-      output:
-        to:
-          kind: ImageStreamTag
-          name: "${NAME}:${VERSION}"
-      postCommit: {}
-      resources:
-        limits:
-          cpu: ${CPU_LIMIT}
-          memory: ${MEMORY_LIMIT}
-        requests:
-          cpu: ${CPU_REQUEST}
-          memory: ${MEMORY_REQUEST}
-      runPolicy: SerialLatestOnly
-      source:
-        contextDir: "${SOURCE_CONTEXT_DIR}"
-        git:
-          uri: "${SOURCE_REPOSITORY_URL}"
-          ref: "${SOURCE_REPOSITORY_REF}"
-        sourceSecret:
-          name: "git-secret"
-        type: Git
-      strategy:
-        dockerStrategy: {}
-        type: Docker
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-    status:
-      lastVersion: 7
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+    annotations:
+      description: Nodejs Runtime Image
+    labels:
+      shared: "true"
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: "${NAME}"
+    creationTimestamp:
+    labels: {}
+    annotations: {}
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: "${NAME}:${TAG}"
+    postCommit: {}
+    resources:
+      limits:
+        cpu: ${CPU_LIMIT}
+        memory: ${MEMORY_LIMIT}
+      requests:
+        cpu: ${CPU_REQUEST}
+        memory: ${MEMORY_REQUEST}
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: "${SOURCE_CONTEXT_DIR}"
+      git:
+        uri: "${SOURCE_REPOSITORY_URL}"
+        ref: "${SOURCE_REPOSITORY_REF}"
+      sourceSecret:
+        name: "git-secret"
+      type: Git
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+  status:
+    lastVersion: 7
