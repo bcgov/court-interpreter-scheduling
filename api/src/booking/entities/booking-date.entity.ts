@@ -18,6 +18,7 @@ export class BookingDateEntity {
   @ManyToOne(
     type => BookingEntity,
     booking => booking.dates,
+    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
   booking: BookingEntity;
 

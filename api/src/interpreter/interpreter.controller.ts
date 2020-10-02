@@ -2,8 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
-  Put,
   Param,
   Delete,
   Query,
@@ -64,7 +64,7 @@ export class InterpreterController {
     return await this.interpreterService.findOne(+id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateInterpreterDto: UpdateInterpreterDto,

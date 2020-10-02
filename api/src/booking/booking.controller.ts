@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { LanguageEntity } from 'src/language/entities/language.entity';
 import { BookingDateService } from './booking-date.service';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -63,9 +64,28 @@ export class BookingController {
     return this.bookingService.findOne(+id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingService.update(+id, updateBookingDto);
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateBookingDto: UpdateBookingDto,
+  ) {
+    const { dates, ...updateDto } = updateBookingDto;
+    const originBooking = await this.bookingService.findOne(+id);
+    const originBookingDates = originBooking.dates;
+
+    let bookingDates: BookingDateEntity[];
+
+    if (dates && dates.length > 0) {
+      try {
+        bookingDates = await this.bookingDateService.create(dates);
+
+        await this.bookingDateService.removeByBookings(originBookingDates);
+      } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    return this.bookingService.update(+id, updateDto, bookingDates);
   }
 
   @Delete(':id')

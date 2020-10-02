@@ -26,4 +26,8 @@ export class BookingDateService {
       bDates.map(bDate => this.bookingDateRepository.save(bDate)),
     );
   }
+
+  async removeByBookings(bookingDates: BookingDateEntity[]): Promise<void> {
+    this.bookingDateRepository.remove(bookingDates);
+  }
 }

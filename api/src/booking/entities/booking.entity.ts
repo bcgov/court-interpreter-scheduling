@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BookingDateDto } from '../dto/booking-date.dto';
 
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingDateEntity } from './booking-date.entity';

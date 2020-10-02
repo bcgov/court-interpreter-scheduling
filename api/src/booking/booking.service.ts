@@ -34,11 +34,13 @@ export class BookingService {
     const booking = this.bookingRepository.create(createDto);
     booking.interpreter = interpreter;
     booking.dates = bookingDates;
+
     if (language) {
       booking.language = await this.languageRepository.findOneOrFail({
         name: language,
       });
     }
+
     return await this.bookingRepository.save(booking);
   }
 
@@ -100,15 +102,44 @@ export class BookingService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} booking`;
+  async findOne(id: number): Promise<BookingEntity> {
+    return await this.bookingRepository.findOneOrFail({
+      relations: ['interpreter', 'language', 'dates'],
+      where: { id },
+    });
   }
 
-  update(id: number, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
+  async update(
+    id: number,
+    updateBookingDto: Omit<UpdateBookingDto, 'dates'>,
+    bookingDates?: BookingDateEntity[],
+  ): Promise<void> {
+    const { language, interpreterId, ...updateDto } = updateBookingDto;
+    const booking = this.bookingRepository.create({ id, ...updateDto });
+
+    if (language) {
+      const lang = await this.languageRepository.findOneOrFail({
+        name: language,
+      });
+      booking.language = lang;
+    }
+
+    if (interpreterId) {
+      const interpreter = await this.interpreterRepository.findOneOrFail({
+        id: interpreterId,
+      });
+      booking.interpreter = interpreter;
+    }
+
+    if (bookingDates && bookingDates.length > 0) {
+      booking.dates = bookingDates;
+    }
+
+    await this.bookingRepository.save(booking);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} booking`;
+  async remove(id: number): Promise<void> {
+    const booking = await this.bookingRepository.findOneOrFail({ id });
+    await this.bookingRepository.remove(booking);
   }
 }
