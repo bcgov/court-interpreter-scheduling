@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, createContext } from 'react'
 import {
   Box,
   CircularProgress,
@@ -10,31 +10,50 @@ import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
 import { SearchParams } from 'constants/interfaces'
 
+export const SearchContext = createContext<{ search: SearchParams, updateSearchContext: Function }>({
+  search: {
+    language: '',
+    level: [],
+    city: '',
+    dates: []
+  },
+  updateSearchContext: () => {}
+})
+
 const Directory = () => {
   const [search, setSearch] = useState<SearchParams>({
     language: '',
     level: [],
-    city: '',
+    // TODO: update with clerk location on login
+    city: 'Victoria',
+    dates: []
   })
 
-  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter', { manual: true })
+  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter')
 
-  useEffect(() => {
-    getInterpreters({ url: `/interpreter?${queryString.stringify(search, { arrayFormat: 'bracket' })}` })
-  }, [search, getInterpreters])
+  const getSearchResults = async (params: SearchParams) => {
+    setSearch(params)
+    const { dates, ...searchParams } = params
+    // TODO modify this to POST when API is ready
+    await getInterpreters({
+      url: `/interpreter?${queryString.stringify({ ...searchParams }, { arrayFormat: 'bracket' })}`
+    })
+  }
 
   return (
     <Box px='150px'>
-      <Search handleSearch={(searchObject: SearchParams) => setSearch(searchObject)} />
-      {
-        loading
-          ? <Box mt='20'><CircularProgress /></Box>
-          : error
-          ? <Box p='120'>{error.message}</Box>
-          : interpreters
-          ? <DirectoryTable  data={interpreters.data} />
-          : null
+      <SearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
+        <Search getSearchResults={getSearchResults} />
+        {
+          loading
+            ? <Box mt={12}><CircularProgress /></Box>
+            : error
+            ? <Box p='120'>{error.message}</Box>
+            : interpreters
+            ? <DirectoryTable data={interpreters.data} />
+            : null
         }
+      </SearchContext.Provider>
     </Box>
   )
 }
