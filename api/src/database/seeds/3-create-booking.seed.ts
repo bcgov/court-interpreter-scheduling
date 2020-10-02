@@ -5,6 +5,7 @@ import * as faker from 'faker/locale/en_CA';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { BookingEntity } from 'src/booking/entities/booking.entity';
+import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 
 export default class CreateBooking implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
@@ -48,22 +49,25 @@ export default class CreateBooking implements Seeder {
       .map(async booking => {
         booking.language = Math.random() > 0.5 ? LangEntity : LangEntity2;
         booking.interpreter = await generateInterpreter(1);
+        booking.dates = await factory(BookingDateEntity)().createMany(2);
         return booking;
       })
-      .createMany(2);
+      .createMany(1);
 
     await factory(BookingEntity)()
       .map(async booking => {
         booking.language = Math.random() > 0.5 ? LangEntity : LangEntity2;
         booking.interpreter = await generateInterpreter(2);
+        booking.dates = await factory(BookingDateEntity)().createMany(2);
         return booking;
       })
-      .createMany(2);
+      .createMany(1);
 
     await factory(BookingEntity)()
       .map(async booking => {
         booking.language = Math.random() > 0.5 ? LangEntity : LangEntity2;
         booking.interpreter = await generateInterpreter(3);
+        booking.dates = await factory(BookingDateEntity)().createMany(2);
         return booking;
       })
       .createMany(2);

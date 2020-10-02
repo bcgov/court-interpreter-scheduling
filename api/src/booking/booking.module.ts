@@ -7,6 +7,8 @@ import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { InterpreterService } from 'src/interpreter/interpreter.service';
 import { InterpreterModule } from 'src/interpreter/interpreter.module';
 import { BookingEntity } from './entities/booking.entity';
+import { BookingDateService } from './booking-date.service';
+import { BookingDateEntity } from './entities/booking-date.entity';
 
 @Module({
   imports: [
@@ -14,10 +16,11 @@ import { BookingEntity } from './entities/booking.entity';
       LanguageEntity,
       InterpreterEntity,
       BookingEntity,
+      BookingDateEntity,
     ]),
     InterpreterModule,
   ],
   controllers: [BookingController],
-  providers: [BookingService],
+  providers: [BookingService, BookingDateService],
 })
 export class BookingModule {}

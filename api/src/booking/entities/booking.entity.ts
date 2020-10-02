@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { BookingDateDto } from '../dto/booking-date.dto';
 
 import { BookingStatus } from '../enums/booking-status.enum';
+import { BookingDateEntity } from './booking-date.entity';
 
 @Entity('booking')
 export class BookingEntity {
@@ -37,11 +39,11 @@ export class BookingEntity {
   })
   status: string;
 
-  @Column({
-    type: 'jsonb',
-    nullable: false,
-  })
-  dates: BookingDateDto[];
+  @OneToMany(
+    type => BookingDateEntity,
+    (bookingDate: BookingDateEntity) => bookingDate.booking,
+  )
+  dates: BookingDateEntity[];
 
   @Column({ nullable: true })
   registry: string;

@@ -1,16 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsJSON, IsOptional, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 
 import { PaginationQueryDTO } from 'src/common/dto/pagination.dto';
+import { SearchDateDto } from './search-date.dto';
 
 export class PaginateBookingQueryDto extends PaginationQueryDTO {
   @ApiProperty({
     description: 'Date',
-    example: '2020-09-30',
+    example: [
+      { startDate: '2020-09-21', endDate: '2020-09-30' },
+      { startDate: '2020-10-01', endDate: '2020-10-01' },
+    ],
   })
   @IsOptional()
-  date?: Date;
+  @ValidateNested({ each: true })
+  @Type(() => SearchDateDto)
+  date?: SearchDateDto[];
 
   @ApiProperty({
     description: 'Interpreter Name',

@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, Repository, WhereExpression } from 'typeorm';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 
 @Injectable()
@@ -21,14 +22,18 @@ export class BookingService {
     private readonly interpreterRepository: Repository<InterpreterEntity>,
   ) {}
 
-  async create(createBookingDto: CreateBookingDto): Promise<BookingEntity> {
-    const { interpreterId, language, ...createDto } = createBookingDto;
+  async create(
+    createBookingDto: CreateBookingDto,
+    bookingDates: BookingDateEntity[],
+  ): Promise<BookingEntity> {
+    const { interpreterId, language, dates, ...createDto } = createBookingDto;
     const interpreter = await this.interpreterRepository.findOneOrFail({
       id: interpreterId,
     });
 
     const booking = this.bookingRepository.create(createDto);
     booking.interpreter = interpreter;
+    booking.dates = bookingDates;
     if (language) {
       booking.language = await this.languageRepository.findOneOrFail({
         name: language,
@@ -46,11 +51,12 @@ export class BookingService {
       .createQueryBuilder('booking')
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
+      .leftJoinAndSelect('booking.dates', 'dates')
       .offset((page - 1) * limit)
       .limit(limit);
 
     if (file) {
-      query.where('LOWER(booking.file) like LOWER(:file)', {
+      query.andWhere('LOWER(booking.file) like LOWER(:file)', {
         file: `%${file}%`,
       });
     }
@@ -68,7 +74,24 @@ export class BookingService {
         }),
       );
     }
-    console.log(query.getQuery());
+
+    if (date) {
+      query.andWhere(
+        new Brackets((sqb: WhereExpression) => {
+          date.reduce((acc, { startDate, endDate }) => {
+            acc.orWhere(
+              '(dates.date >= :startDate AND dates.date <= :endDate)',
+              {
+                startDate: `${startDate}T00:00:00`,
+                endDate: `${endDate}T23:59:59`,
+              },
+            );
+            return acc;
+          }, sqb);
+        }),
+      );
+    }
+
     const bookings = await query.getMany();
 
     return {
