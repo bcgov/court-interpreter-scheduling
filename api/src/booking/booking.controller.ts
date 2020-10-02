@@ -78,7 +78,6 @@ export class BookingController {
     if (dates && dates.length > 0) {
       try {
         bookingDates = await this.bookingDateService.create(dates);
-
         await this.bookingDateService.removeByBookings(originBookingDates);
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);

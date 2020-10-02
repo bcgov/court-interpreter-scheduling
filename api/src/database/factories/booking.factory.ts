@@ -26,33 +26,5 @@ define(BookingEntity, (faker: typeof Faker, settings) => {
   booking.prosecutor = firstName;
   booking.comment = faker.lorem.sentence();
 
-  // const dates1 = new BookingDateEntity();
-  // dates1.date = faker.date.recent();
-  // dates1.period = faker.random.arrayElement([
-  //   BookingPeriod.MORNING,
-  //   BookingPeriod.AFTERNOON,
-  //   BookingPeriod.WHOLE_DAY,
-  // ]);
-  // dates1.arrivalTime = '12:00';
-
-  // const dates2 = new BookingDateEntity();
-  // dates2.date = faker.date.recent();
-  // dates2.period = faker.random.arrayElement([
-  //   BookingPeriod.MORNING,
-  //   BookingPeriod.AFTERNOON,
-  //   BookingPeriod.WHOLE_DAY,
-  // ]);
-  // dates2.arrivalTime = '13:00';
-  // booking.dates = [dates1, dates2];
-  // booking.dates = [
-  //   {
-  //     date: faker.date.recent(),
-  //     period: faker.random.arrayElement([
-  //       BookingPeriod.MORNING,
-  //       BookingPeriod.AFTERNOON,
-  //       BookingPeriod.WHOLE_DAY,
-  //     ]),
-  //   },
-  // ];
   return booking;
 });

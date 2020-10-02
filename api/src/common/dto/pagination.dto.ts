@@ -26,12 +26,4 @@ export class PaginationQueryDTO {
   @IsOptional()
   @IsNumber()
   limit: number = 10;
-
-  // @ApiProperty({
-  //   description: 'entity id',
-  //   example: 1,
-  // })
-  // @IsOptional()
-  // @IsNumber()
-  // id?: number;
 }
