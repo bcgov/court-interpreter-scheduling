@@ -1,12 +1,12 @@
 import React from 'react';
-import dayjs from 'dayjs'
+import moment from 'moment'
 
 export default function DateTimeCell({ date }: { date: string }) {
   return (
     <div>
-      <b>{dayjs(date).format('ddd, MMM DD')}</b>
+      <b>{moment(date).format('ddd, MMM DD')}</b>
       <br />
-      <span>{dayjs(date).format('hh:mm A')}</span>
+      <span>{moment(date).format('hh:mm A')}</span>
     </div>
   )
 }

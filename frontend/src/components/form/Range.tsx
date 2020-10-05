@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import { Field, ErrorMessage, Formik, useField, useFormikContext } from 'formik'
-import dayjs from 'dayjs'
 import moment from 'moment'
 import {
   Box,
@@ -104,7 +103,7 @@ export default function Range() {
                   aria-describedby={id}
                   variant='outlined'
                   size='small'
-                  value={`${dayjs(search.dates[0]?.date).format(dateFormat)} to ${dayjs(search.dates[search.dates.length - 1]?.date).format(dateFormat)}`}
+                  value={`${moment(search.dates[0]?.date).format(dateFormat)} to ${moment(search.dates[search.dates.length - 1]?.date).format(dateFormat)}`}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position='end'>
