@@ -14,13 +14,13 @@ import {
   StyledNativeSelect,
   StyledSelectInput,
   GridRow,
-} from './inputs/DirectoryInputs'
+} from 'components/form/inputs/DirectoryInputs'
 
 import { SearchContext } from 'views/Directory'
 import SearchDates from 'components/form/SearchDates'
 import { Schema, Initial } from 'components/form/schemas/search.schema'
-import Range from './Range'
-import Check from './inputs/Check'
+import Range from 'components/form/Range'
+import Check from 'components/form/inputs/Check'
 
 import { StyledButton } from 'vaping-regulation-shared-components'
 import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
@@ -82,9 +82,13 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                         </StyledFormLabel>
                         <StyledNativeSelect
                           input={
-                            <Field component={({ field, form, ...props }: any) => (
-                              <StyledSelectInput {...field} {...props} />
-                            )} />
+                            <Field
+                              component={
+                                ({ field, form, ...props }: any) => (
+                                  <StyledSelectInput {...field} {...props} />
+                                )
+                              }
+                            />
                           }
                           id='city'
                           name='city'
@@ -100,6 +104,8 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                         <ErrorMessage name='city' />
                       </StyledFormControl>
                     </Grid>
+                  </GridRow>
+                  <GridRow container spacing={4} mt={2}>
                     <Grid item xs={8}>
                       <Range />
                     </Grid>
@@ -118,12 +124,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       </StyledFormControl>
                     </Grid>
                   </GridRow>
-                  {search.dates.length > 0 && (
-                    <>
-                      <SearchDates values={props.values} />
-                      <ErrorMessage name='dates' />
-                    </>
-                  )}
+                  {search.dates.length > 0 && <SearchDates values={props.values} />}
                 </>
               )}
           </Formik>

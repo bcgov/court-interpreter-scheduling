@@ -11,10 +11,11 @@ import {
   Popover,
 } from '@material-ui/core'
 import { SearchContext } from 'views/Directory'
+import { Initial, Schema } from 'components/form/schemas/daterange-search.schema'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import { DayPickerRangeController } from 'react-dates';
-import { StyledFormControl, StyledLabel, StyledTextField } from 'components/form/inputs/DirectoryInputs'
-import { TextCheck } from 'components/form/inputs/Check'
+import { StyledFormControl, StyledLabel, StyledTextField, GridRow } from 'components/form/inputs/DirectoryInputs'
+import { PeriodRadio } from 'components/form/inputs/Check'
 
 function Picker () {
   const [field, , helpers] = useField('dates')
@@ -52,21 +53,15 @@ export default function Range() {
     <SearchContext.Consumer>
       {({ search, updateSearchContext }) => (
         <Formik
-          initialValues={{
-            arrival: '',
-            dates: {
-              startDate: '',
-              endDate: '',
-            },
-            period: [],
-          }}
+          initialValues={Initial}
+          validationSchema={Schema}
           onSubmit={async (values, actions) => {
 
             const { startDate, endDate } = values.dates
             const baseDay = {
               date: values.dates.startDate,
               period: values.period,
-              arrival: values.arrival
+              arrivalTime: values.arrivalTime
             }
             let dates = [baseDay]
 
@@ -131,52 +126,55 @@ export default function Range() {
                 <Grid container style={{ width: 'min-content' }}>
                   <Grid item xs={12}>
                     <Picker />
-                    <ErrorMessage name='dates' />
+                    <ErrorMessage name='dates' render={() => <Box px={3} pb={1}>Please select a date range</Box>} />
                   </Grid>
 
                   <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
 
-                  <Grid item xs={12}>
-                    <Box px={2}>
+                  <GridRow mt={0.5} item xs={12}>
+                    <Box px={3} py={1}>
                       <Grid container>
                         <Grid item xs={4}>
                           <StyledFormControl>
                             <StyledLabel htmlFor='time-options'>
                               Arrival Time
                             </StyledLabel>
-                            <Field type='time' name='arrival' />
-                            <ErrorMessage name='arrival' />
+                            <Box my={1}>
+                              <Field type='time' name='arrivalTime' />
+                            </Box>
+                            <Box my={1}>
+                              <ErrorMessage name='arrivalTime' />
+                            </Box>
                           </StyledFormControl>
                         </Grid>
-                        <Grid item xs={1} />
-                        <Grid item xs={7}>
+                        <Grid item xs={8}>
                           <StyledFormControl>
                             <StyledLabel htmlFor='time-options'>
                               Time Options
                             </StyledLabel>
                             <div role='group' aria-labelledby='time-options'>
-                              <TextCheck
+                              <PeriodRadio
                                 label='Full Day'
                                 name='period'
                                 value='WHOLE_DAY'
                               />
-                              <TextCheck
+                              <PeriodRadio
                                 label='Morning'
                                 name='period'
                                 value='MORNING'
                               />
-                              <TextCheck
+                              <PeriodRadio
                                 label='Afternoon'
                                 name='period'
                                 value='AFTERNOON'
                               />
-                              <ErrorMessage name='period' />
                             </div>
+                            <div><ErrorMessage name='period' /></div>
                           </StyledFormControl>
                         </Grid>
                       </Grid>
                     </Box>
-                  </Grid>
+                  </GridRow>
 
                   <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
 

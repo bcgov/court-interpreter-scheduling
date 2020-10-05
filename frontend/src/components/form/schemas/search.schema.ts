@@ -14,7 +14,7 @@ const Schema = yup.object({
   dates: yup.array().of(yup.object({
     date: yup.string(),
     arrival: yup.string(),
-    period: yup.array().of(yup.string().matches(/MORNING|AFTERNOON|WHOLE_DAY/))
+    period: yup.string().matches(/MORNING|AFTERNOON|WHOLE_DAY/)
   }))
 })
 
