@@ -37,7 +37,7 @@ export class Application {
             info: {}
         };
         this.branch = options.branch;
-        this.id = `${key}-${options.branch}-default`;
+        this.id = `${key}-${options.branch ?? env}-default`;
         this.label = `${this.id}-${this.buildId}`;
     }
 
