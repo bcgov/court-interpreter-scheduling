@@ -74,6 +74,8 @@ parameters:
   value: "1"
 - name: MAX_REPLICAS
   value: "1"
+- name: BUILD_ID
+  value: "1"
 objects:
 - apiVersion: v1
   kind: Secret
@@ -133,6 +135,8 @@ objects:
         containers:
         - capabilities: {}
           env:
+          - name: BUILD_ID
+            value: ${BUILD_ID}
           - name: POSTGRESQL_USER
             value: "${POSTGRESQL_USER}"
           - name: POSTGRESQL_PASSWORD

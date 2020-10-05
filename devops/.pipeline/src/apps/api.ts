@@ -27,6 +27,7 @@ export class ApiApps extends Application {
             'NAME': this.deploymentConfig().name,
             'DB_SERVICE': this.dbApp.name(),
             TAG: this.tag,
+            BUILD_ID: this.id
         };
         return params;
     }

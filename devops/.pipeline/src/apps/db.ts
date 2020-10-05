@@ -8,6 +8,7 @@ export class DataBaseApp extends Application {
     resolveDeploymentParams() {
         const params = {
             'DATABASE_SERVICE_NAME': this.deploymentConfig().name,
+            'BUILD_ID': this.id,
         };
         return params;
     }

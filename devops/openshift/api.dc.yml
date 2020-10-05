@@ -37,6 +37,8 @@ parameters:
   - name: TAG
     description: Deployment image tag
     value: "1"
+  - name: BUILD_ID
+    value: "1"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -88,6 +90,8 @@ objects:
         spec:
           containers:
             - env:
+                - name: BUILD_ID
+                  value: ${BUILD_ID}
                 - name: APPLICATION_PORT
                   value: "${PORT}"
                 - name: DB_HOST
