@@ -16,7 +16,7 @@ import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { ApiTags } from '@nestjs/swagger';
 
-import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
+import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
 import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
@@ -54,7 +54,14 @@ export class InterpreterController {
 
   @Get()
   async findAll(
-    @Query() paginateInterpreterQueryDTO: PaginateInterpreterQueryDTO,
+    @Query() paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
+  ): Promise<SuccessResponse<InterpreterEntity>> {
+    return await this.interpreterService.findAll(paginateInterpreterQueryDto);
+  }
+
+  @Post('search')
+  async search(
+    @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterEntity>> {
     return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
   }

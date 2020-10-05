@@ -46,7 +46,7 @@ export default class CreateInterpreter implements Seeder {
 
     await factory(InterpreterEntity)()
       .map(async interpreter => {
-        interpreter.language = [
+        interpreter.languages = [
           ...(await factory(InterpreterLanguageEntity)().createMany(1, {
             language: LangEntity,
           })),
@@ -60,7 +60,7 @@ export default class CreateInterpreter implements Seeder {
 
     await factory(InterpreterEntity)()
       .map(async interpreter => {
-        interpreter.language = await gIntLang();
+        interpreter.languages = await gIntLang();
         return interpreter;
       })
       .createMany(16);

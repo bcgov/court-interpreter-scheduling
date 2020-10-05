@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SuccessResponse } from 'src/common/interface/response/success.interface';
-import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Repository } from 'typeorm';
+
+import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
+import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
-import { PaginateInterpreterQueryDTO } from './dto/paginate-interpreter-query.dto';
+import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
+import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 
 @Injectable()
 export class InterpreterService {
@@ -22,19 +24,28 @@ export class InterpreterService {
   ): Promise<InterpreterEntity> {
     const { language, ...insertInterpreter } = createInterpreterDto;
     const interpreter = this.interpreterRepository.create(insertInterpreter);
-    interpreter.language = interpreterLangs;
+    interpreter.languages = interpreterLangs;
     return await this.interpreterRepository.save(interpreter);
   }
 
   async findAll(
-    paginateInterpreterQueryDTO: PaginateInterpreterQueryDTO,
+    paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterEntity>> {
-    const { page, limit, level, language, city } = paginateInterpreterQueryDTO;
+    const {
+      page,
+      limit,
+      level,
+      language,
+      city,
+      dates,
+    } = paginateInterpreterQueryDto;
 
     const query = this.interpreterRepository
       .createQueryBuilder('interpreter')
-      .leftJoinAndSelect('interpreter.language', 'intLang')
+      .leftJoinAndSelect('interpreter.languages', 'intLang')
       .leftJoinAndSelect('intLang.language', 'lang')
+      .leftJoinAndSelect('interpreter.bookings', 'booking')
+      .leftJoinAndSelect('booking.dates', 'dates')
       .offset((page - 1) * limit)
       .limit(limit);
 
@@ -50,6 +61,38 @@ export class InterpreterService {
 
     if (city) {
       query.andWhere('interpreter.city = :city', { city });
+    }
+
+    if (dates && dates.length > 0) {
+      const date = dates[0];
+      const metric = (date: string, time: string, period: BookingPeriod) => {
+        return `MIN(SQRT(
+          POWER(ABS(EXTRACT(EPOCH FROM ('${date}' - d."date"))/60),2) 
+        + POWER(ABS(EXTRACT(EPOCH FROM ('${time}' - d."arrival_time"))/60),2)
+        + (CASE WHEN d."period" = '${period}' THEN 0 
+        ELSE 1 
+        END)
+        ))        
+        `;
+      };
+
+      query.leftJoinAndSelect(
+        subQuery => {
+          return subQuery
+            .select(
+              metric(date.date.toISOString(), date.arrivalTime, date.period),
+              `score`,
+            )
+            .addSelect(`b.interpreter`, 'interpreterId')
+            .from(BookingDateEntity, 'd')
+            .leftJoin('d.booking', 'b')
+            .groupBy('b.interpreter');
+        },
+        's',
+        `"s"."interpreterId" = interpreter.id`,
+      );
+
+      query.orderBy('s.score', 'DESC');
     }
 
     const interpreters = await query.getMany();

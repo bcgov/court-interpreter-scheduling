@@ -34,7 +34,7 @@ const option: any = {
   },
   synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
-  dropSchema: true,
+  dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
   keepConnectionAlive: true,
