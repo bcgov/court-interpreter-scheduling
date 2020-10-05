@@ -33,10 +33,10 @@ const Directory = () => {
 
   const getSearchResults = async (params: SearchParams) => {
     setSearch(params)
-    const { dates, ...searchParams } = params
-    // TODO modify this to POST when API is ready
     await getInterpreters({
-      url: `/interpreter?${queryString.stringify({ ...searchParams }, { arrayFormat: 'bracket' })}`
+      url: '/interpreter/search',
+      method: 'POST',
+      data: params
     })
   }
 
