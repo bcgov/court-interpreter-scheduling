@@ -17,13 +17,15 @@ export class Application {
     env: Env;
     appConfig: ApplicationConfig;
     id: string;
+    buildId: string;
     options: any;
     branch?: string;
+    label: string;
     constructor(key: ApplicationName, env: Env, id: string, options: any) {
         assert(Pipeline.apps[key], `Pipeline-app: No application config for key: ${key}`);
         this.key = key;
         this.env = env;
-        this.id = id;
+        this.buildId = id;
         this.options = options;
         this.appConfig = Pipeline.apps[key] ?? {
             name: `${this.key}`,
@@ -35,6 +37,8 @@ export class Application {
             info: {}
         };
         this.branch = options.branch;
+        this.id = `${key}-${options.branch}-default`;
+        this.label = `${this.id}-${this.buildId}`;
     }
 
     get tag(): string {
@@ -43,7 +47,7 @@ export class Application {
 
 
     buildConfig() {
-        return buildConfig(this.name(), Pipeline.version, this.id, this.branch);
+        return buildConfig(this.name(), Pipeline.version, this.buildId, this.id);
     }
 
     buildTemplate() {
@@ -64,7 +68,8 @@ export class Application {
             params,
             path: getTemplatePath(this.appConfig.template.build),
             options: this.options,
-            env: 'build'
+            env: 'build',
+            label: this.label,
         };
         return template;
     }
@@ -86,7 +91,7 @@ export class Application {
             name: this.name(),
             namespace: dc.namespace,
             params: this.deploymentParams(),
-            label: dc.label,
+            label: this.label,
             options: this.options,
             id: this.id,
             path: getTemplatePath(this.appConfig.template.deploy),

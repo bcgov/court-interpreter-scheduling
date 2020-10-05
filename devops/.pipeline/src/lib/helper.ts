@@ -20,19 +20,23 @@ export const processOptions = (options: any) => {
       const final = last.split('.')[0];
       result.git.repository = final;
     }
+
+    if (!options.pr && options.id) {
+      options.pr = options.id;
+    }
     return result;
 };
 
 export const pipelineOptions = (): any => processOptions(util.parseArguments());
 
-export const buildConfig = (name: string, version: string = '1.0', id: string = 'default', branch?: string) => {
+export const buildConfig = (name: string, version: string = '1.0', buildId: string = '0', id: string) => {
   return {
       namespace: namespace('tools'),
       name,
       phase: 'build',
       id,
       version,
-      tag: `${branch ?? version}-${id}`,
+      tag: `${id}-${buildId}`,
       label: `${name}`
   };
 };
