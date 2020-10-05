@@ -11,7 +11,7 @@ export const processOptions = (options: any) => {
       result.git.url = `${result.git.url}.git`;
     }
     if (!result.git.http_url.includes('.git')) {
-      result.git.http_url = `${result.git.http_url}.git`;
+      result.git.http_url = `git@github.com:FreshworksStudio/Court-scheduler.git`;
     }
     // Fixing repo
     if (result.git.repository.includes('/')) {
