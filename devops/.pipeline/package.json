@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "oc-build": "tsc && DEBUG=*  node ./dist/app.js --action=build",
-    "oc-deploy": "tsc && DEBUG=*  node ./dist/app.js --action=deploy",
-    "oc-delete": "tsc && DEBUG=*  node ./dist/app.js --action=delete"
+    "oc-build": "tsc && DEBUG=*  node ./dist/app.js --action=build --pr=0",
+    "oc-deploy": "tsc && DEBUG=*  node ./dist/app.js --action=deploy --pr=0",
+    "oc-delete": "tsc && DEBUG=*  node ./dist/app.js --action=delete --pr=0"
   },
   "repository": {
     "type": "git",
