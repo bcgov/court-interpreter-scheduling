@@ -29,16 +29,19 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
   return (
     <Box>
       <SearchContext.Consumer>
-        {({ search, updateSearchContext }) => (
+        {({ search }) => (
           <Formik
-            initialValues={Initial}
+            /* TODO set default value as clerk location */
+            initialValues={{
+              ...Initial,
+              city: 'Victoria',
+            }}
             validationSchema={Schema}
             onSubmit={async (values) => {
-              updateSearchContext({
-                ...search,
+              await getSearchResults({
                 ...values,
+                dates: search.dates,
               })
-              await getSearchResults(values)
             }}>
               {({ handleSubmit, errors, isSubmitting, ...props }: FormikProps<any>) => (
                 <>
@@ -94,8 +97,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                           name='city'
                           variant='outlined'
                         >
-                          /* TODO set default value as clerk location */
-                          <option selected value='Victoria'>Victoria</option>
+                          <option value='Victoria'>Victoria</option>
                           <option value='Nanaimo'>Nanaimo</option>
                           <option value='Courtenay'>Courtenay</option>
                           <option value='Abbotsford'>Abbotsford</option>
