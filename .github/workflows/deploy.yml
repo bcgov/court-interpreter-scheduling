@@ -79,7 +79,7 @@ jobs:
 
       # Build the app images
       - name: Build APP Images
-        working-directory: "./app/.pipeline/"
+        working-directory: "./devops/.pipeline/"
         run: |
           echo Placeholder for app build phase
   # End buildAPP

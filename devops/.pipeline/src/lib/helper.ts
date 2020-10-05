@@ -1,5 +1,6 @@
 import { Env } from '../types';
 import { NameSpaceConfig, namespace } from '@config/namespace';
+import { Pipeline } from '@config/applications';
 import * as assert from 'assert';
 import * as path from 'path';
 const util = require('pipeline-cli').Util;
@@ -11,7 +12,7 @@ export const processOptions = (options: any) => {
       result.git.url = `${result.git.url}.git`;
     }
     if (!result.git.http_url.includes('.git')) {
-      result.git.http_url = `git@github.com:FreshworksStudio/Court-scheduler.git`;
+      result.git.http_url = `${Pipeline.git.url}`; // TODO: Restore this when we have bcgov git `${result.git.http_url}.git`;
     }
     // Fixing repo
     if (result.git.repository.includes('/')) {
