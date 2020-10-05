@@ -13,7 +13,7 @@ import {
 import { SearchContext } from 'views/Directory'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import { DayPickerRangeController } from 'react-dates';
-import { StyledFormControl, StyledLabel, StyledTextField } from 'components/form/inputs/DirectoryInputs'
+import { StyledFormControl, StyledLabel, StyledTextField, GridRow } from 'components/form/inputs/DirectoryInputs'
 import { TextCheck } from 'components/form/inputs/Check'
 
 function Picker () {
@@ -53,7 +53,7 @@ export default function Range() {
       {({ search, updateSearchContext }) => (
         <Formik
           initialValues={{
-            arrival: '',
+            arrivalTime: '',
             dates: {
               startDate: '',
               endDate: '',
@@ -66,7 +66,7 @@ export default function Range() {
             const baseDay = {
               date: values.dates.startDate,
               period: values.period,
-              arrival: values.arrival
+              arrivalTime: values.arrivalTime
             }
             let dates = [baseDay]
 
@@ -136,7 +136,7 @@ export default function Range() {
 
                   <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
 
-                  <Grid item xs={12}>
+                  <GridRow mt={0.5} item xs={12}>
                     <Box px={2}>
                       <Grid container>
                         <Grid item xs={4}>
@@ -144,8 +144,8 @@ export default function Range() {
                             <StyledLabel htmlFor='time-options'>
                               Arrival Time
                             </StyledLabel>
-                            <Field type='time' name='arrival' />
-                            <ErrorMessage name='arrival' />
+                            <Field type='time' name='arrivalTime' />
+                            <ErrorMessage name='arrivalTime' />
                           </StyledFormControl>
                         </Grid>
                         <Grid item xs={1} />
@@ -176,7 +176,7 @@ export default function Range() {
                         </Grid>
                       </Grid>
                     </Box>
-                  </Grid>
+                  </GridRow>
 
                   <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
 

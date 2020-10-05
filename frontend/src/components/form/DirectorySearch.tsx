@@ -100,6 +100,8 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                         <ErrorMessage name='city' />
                       </StyledFormControl>
                     </Grid>
+                  </GridRow>
+                  <GridRow container spacing={4} mt={2}>
                     <Grid item xs={8}>
                       <Range />
                     </Grid>

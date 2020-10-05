@@ -50,7 +50,7 @@ const Directory = () => {
             : error
             ? <Box p='120'>{error.message}</Box>
             : interpreters
-            ? <DirectoryTable data={interpreters.data} />
+            ? <DirectoryTable data={interpreters.data} disabled={!search.dates.length} />
             : null
         }
       </SearchContext.Provider>

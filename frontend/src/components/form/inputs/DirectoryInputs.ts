@@ -8,6 +8,7 @@ import {
   NativeSelect,
   TextField,
   withStyles,
+  GridProps,
 } from '@material-ui/core'
 
 export const StyledFormControl = withStyles({
@@ -15,7 +16,6 @@ export const StyledFormControl = withStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-evenly',
-    height: '120px'
   },
 })(FormControl)
 
@@ -26,6 +26,11 @@ export const StyledTextField = withStyles({
       position: 'relative',
     },
     '& input + fieldset': {
+      borderWidth: 2,
+      borderRadius: '4px',
+      borderColor: '#979797'
+    },
+    '& .MuiInputBase-multiline fieldset': {
       borderWidth: 2,
       borderRadius: '4px',
       borderColor: '#979797'
@@ -56,6 +61,8 @@ export const StyledLabel = withStyles({
     fontWeight: 'bold',
     transform: 'none',
     position: 'relative',
+    textTransform: 'capitalize',
+    marginBottom: '1rem',
   },
 })(InputLabel)
 
@@ -65,6 +72,8 @@ export const StyledFormLabel = withStyles({
     fontSize: '16px',
     lineHeight: '22px',
     fontWeight: 'bold',
+    textTransform: 'capitalize',
+    marginBottom: '1rem',
     '&.Mui-focused': {
       color: '#979797',
     }
@@ -72,7 +81,9 @@ export const StyledFormLabel = withStyles({
 })(FormLabel)
 
 export const StyledNativeSelect = withStyles({
-
+  root: {
+    height: '16px',
+  }
 })(NativeSelect)
 
 export const FlexBox = withStyles({
@@ -85,7 +96,7 @@ export const FlexBox = withStyles({
 
 export const GridRow = withStyles({
   root: {
-    marginTop: '1rem',
+    marginTop: (props: Partial<GridProps> & { mt?: number }) => `${props.mt || 1}rem`,
     '& .MuiGrid-item': {
       paddingTop: 0,
       paddingBottom: 0,

@@ -46,7 +46,7 @@ export default function SearchDates({ values }: { values: { dates: BookingDate[]
                     <StyledLabel htmlFor='time-options'>
                       Arrival Time
                     </StyledLabel>
-                    <Field type='time' name={`dates[${index}].arrival`} />
+                    <Field type='time' name={`dates[${index}].arrivalTime`} />
                   </StyledFormControl>
                   <div role='group' aria-labelledby='time-options'>
                     <ArrayPeriodCheckbox

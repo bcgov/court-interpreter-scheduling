@@ -5,6 +5,10 @@ export const theme = createMuiTheme({
     fontFamily: [
       'BCSans', 'Raleway', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'
     ].join(','),
+    h4: {
+      fontSize: '28px',
+      fontWeight: 600,
+    },
     h5: {
       fontSize: '24px',
       fontWeight: 600,
