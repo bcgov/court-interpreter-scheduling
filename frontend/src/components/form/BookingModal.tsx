@@ -45,7 +45,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
               await postBooking({
                 data: {
                   ...values,
-                  dates: search.dates.map((date) => ({ ...date, period: date.period ? date.period[0] : 'WHOLE_DAY' })),
+                  dates: search.dates,
                   interpreterId: interpreter.id,
                 }
               })

@@ -2,6 +2,7 @@ import React from 'react'
 import { Field, FieldProps} from 'formik'
 import {
   Checkbox,
+  Radio,
   FormControlLabel,
 } from '@material-ui/core'
 
@@ -53,7 +54,32 @@ export function TextCheck ({ value, label, name }: { value: string, label: strin
   )
 }
 
-export function ArrayPeriodCheckbox ({
+export function PeriodRadio ({ value, label, name }: { value: string, label: string, name: string }) {
+  return (
+    <FormControlLabel
+      label={label}
+      labelPlacement='end'
+      control={
+        <Field
+          type='radio'
+          name={name}
+          value={value}
+          component={({ field, form, ...props }: FieldProps) => (
+            <Radio
+              {...field}
+              {...props}
+              color='primary'
+              checked={form.values[name]?.includes(value)}
+            />
+          )}
+        />
+      }
+    />
+  )
+}
+
+
+export function ArrayPeriodRadio ({
   value,
   label,
   name,
@@ -72,11 +98,11 @@ export function ArrayPeriodCheckbox ({
       labelPlacement='end'
       control={
         <Field
-          type='checkbox'
+          type='radio'
           name={name}
           value={value}
           component={({ field, form, ...props }: FieldProps) => (
-            <Checkbox
+            <Radio
               {...field}
               {...props}
               color='primary'
