@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from 'react'
 import { render } from 'react-dom'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
-import { ThemeProvider } from '@material-ui/core'
+import { ThemeProvider, Box, CircularProgress } from '@material-ui/core'
 import store from 'store'
 
 import 'react-dates/initialize'
@@ -30,7 +30,7 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
 const Routes = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>loading...</div>}>
+      <Suspense fallback={<Box p={2}><CircularProgress /></Box>}>
         <ThemeProvider theme={theme}>
           <Switch>
             <Route path='/login' component={Login} />

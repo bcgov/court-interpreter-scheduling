@@ -12,12 +12,13 @@ import moment from 'moment'
 import { Field, FieldArray, ArrayHelpers } from 'formik'
 
 import { StyledFormControl, StyledLabel, } from 'components/form/inputs/DirectoryInputs'
-import { ArrayPeriodCheckbox } from 'components/form/inputs/Check'
+import { ArrayPeriodRadio } from 'components/form/inputs/Check'
 import { BookingDate } from 'constants/interfaces'
 
 const useStyles = makeStyles({
   parent: {
     marginTop: '1rem',
+    overflow: 'auto',
   },
   closeIcon: {
     float: 'right',
@@ -49,21 +50,21 @@ export default function SearchDates({ values }: { values: { dates: BookingDate[]
                     <Field type='time' name={`dates[${index}].arrivalTime`} />
                   </StyledFormControl>
                   <div role='group' aria-labelledby='time-options'>
-                    <ArrayPeriodCheckbox
+                    <ArrayPeriodRadio
                       index={index}
                       label='Full Day'
                       name={`dates[${index}].period`}
                       fieldName='period'
                       value='WHOLE_DAY'
                     />
-                    <ArrayPeriodCheckbox
+                    <ArrayPeriodRadio
                       index={index}
                       label='Morning'
                       name={`dates[${index}].period`}
                       fieldName='period'
                       value='MORNING'
                     />
-                    <ArrayPeriodCheckbox
+                    <ArrayPeriodRadio
                       index={index}
                       label='Afternoon'
                       name={`dates[${index}].period`}
