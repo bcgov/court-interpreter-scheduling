@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/FreshworksStudio/Court-scheduler#readme",
   "dependencies": {
+    "module-alias": "^2.2.2",
     "pipeline-cli": "git+https://github.com/BCDevOps/pipeline-cli.git#v1.1"
   },
   "devDependencies": {
