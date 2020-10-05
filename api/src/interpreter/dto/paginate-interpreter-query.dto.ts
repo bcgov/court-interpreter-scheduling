@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
+import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
+import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 
 import { PaginationQueryDTO } from 'src/common/dto/pagination.dto';
 import { Level } from '../enums/level.enum';
 
-export class PaginateInterpreterQueryDTO extends PaginationQueryDTO {
+export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   @ApiProperty({
     description: `
       Multiple interpreter level from 1 to 4,
@@ -30,4 +33,20 @@ export class PaginateInterpreterQueryDTO extends PaginationQueryDTO {
   })
   @IsOptional()
   city?: string;
+
+  @ApiProperty({
+    description: 'Booking date',
+    example: [
+      {
+        date: faker.date.recent(),
+        arrivalTime: '12:00',
+        period: BookingPeriod.MORNING,
+      },
+    ],
+    required: true,
+  })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => BookingDateDto)
+  dates: BookingDateDto[];
 }

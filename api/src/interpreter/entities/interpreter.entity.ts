@@ -1,3 +1,4 @@
+import { BookingEntity } from 'src/booking/entities/booking.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -29,7 +30,13 @@ export class InterpreterEntity {
     (interpreterLanguage: InterpreterLanguageEntity) =>
       interpreterLanguage.interpreter,
   )
-  language: InterpreterLanguageEntity[];
+  languages: InterpreterLanguageEntity[];
+
+  @OneToMany(
+    type => BookingEntity,
+    (booking: BookingEntity) => booking.interpreter,
+  )
+  bookings: BookingEntity[];
 
   @Column({ nullable: true })
   address: string;

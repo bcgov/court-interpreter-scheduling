@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEnum,
-  IsJSON,
   IsNotEmpty,
   IsOptional,
   ValidateNested,
@@ -38,7 +37,13 @@ export class CreateBookingDto {
 
   @ApiProperty({
     description: 'Booking date',
-    example: [{ date: faker.date.recent(), period: BookingPeriod.MORNING }],
+    example: [
+      {
+        date: faker.date.recent(),
+        arrivalTime: '10:00',
+        period: BookingPeriod.MORNING,
+      },
+    ],
     required: true,
   })
   @IsNotEmpty()
