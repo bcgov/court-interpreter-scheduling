@@ -40,7 +40,7 @@ export class CreateBookingDto {
     example: [
       {
         date: faker.date.recent(),
-        arrivalTime: '13:00',
+        arrivalTime: '10:00',
         period: BookingPeriod.MORNING,
       },
     ],
