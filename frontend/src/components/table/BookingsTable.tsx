@@ -1,11 +1,21 @@
 import React, { useState } from 'react'
-import { Box } from '@material-ui/core'
-import EditIcon from '@material-ui/icons/Edit'
+import { Box, IconButton, withStyles } from '@material-ui/core'
+import BorderColorIcon from '@material-ui/icons/BorderColor'
 import BaseTable from 'components/table/Base'
 import DateTimeCell from 'components/table/DateTimeCell'
 import StatusButton from 'components/table/Status'
+import InterpreterName from 'components/table/InterpreterName'
 
 import EditBookingModal from 'components/form/EditBookingModal'
+
+const StyledIconButton = withStyles({
+  root: {
+    backgroundColor: '#E8F3FD',
+    borderRadius: '4px',
+    height: '40px',
+    width: '40px',
+  }
+})(IconButton)
 
 export default function BookingsTable({ data }: { data: Array<any> }) {
 
@@ -20,10 +30,22 @@ export default function BookingsTable({ data }: { data: Array<any> }) {
           { render: (row: any) => <DateTimeCell date={row.date} />, title: 'Date & Time' },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
-          { render: (row: any) => <span className='linkSpan pointer' onClick={() => setInterpreter(row.interpreterId)}>{row.interpreterName}</span>, title: 'Interpreter' },
-          { render: (row: any) => <StatusButton status={row.isBooked ? 'Booked' : 'Pending'} />, title: 'Status' },
-          { field: 'comments', title: 'Comment' },
-          { render: (row: any) => <EditIcon className='pointer' onClick={() => setBooking(row)} />, align: 'right' }
+          { render: (row: any) => <InterpreterName setInterpreter={setInterpreter} interpreter={row.interpreter} />, title: 'Interpreter' },
+          { render: (row: any) => <StatusButton status={row.status} />, title: 'Status' },
+          { field: 'comment', title: 'Comment' },
+          {
+            render: (row: any) => (
+              <StyledIconButton
+                className='pointer'
+                onClick={() => setBooking(row)}
+                color='primary'
+              >
+                <BorderColorIcon />
+              </StyledIconButton>
+            ),
+            align: 'right',
+            width: 48,
+          }
         ]}
       />
 

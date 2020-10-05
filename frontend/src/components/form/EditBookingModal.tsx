@@ -33,8 +33,9 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
       <Formik
         initialValues={{
           ...Initial,
-          ...booking
-      }}
+          ...booking,
+          language: booking?.language?.name,
+        }}
         validationSchema={Schema}
         onSubmit={async (values) => {
           await editBooking({ data: values })
@@ -64,7 +65,7 @@ export default function BookingModal({ booking, setBooking }: BookingModalProps)
                 Cancel
               </Button>
               <Button variant='contained' onClick={() => handleSubmit()} color='primary' disabled={isSubmitting}>
-                Create Booking
+                Update
               </Button>
             </DialogActions>
           </>

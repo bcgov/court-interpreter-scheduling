@@ -3,6 +3,7 @@ import Hidden from '@material-ui/core/Hidden'
 import Grid from '@material-ui/core/Grid'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
 
 import {
   StyledFormControl,
@@ -10,7 +11,7 @@ import {
   StyledLabel,
 } from './DirectoryInputs'
 
-import { Field } from 'formik'
+import { Field, useFormikContext, FieldProps } from 'formik'
 
 type GridItemInputProps = {
   name: string;
@@ -37,23 +38,25 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
   </Grid>
 )
 
-const StyledRadios = () =>   (
+const StyledRadios = () => {
+  const { values } = useFormikContext()
+  return (
   <Grid item xs={6}>
     <StyledFormControl>
       <StyledLabel htmlFor='federal'>Federal</StyledLabel>
-      <div id='federal' style={{ display: 'flex', flexDirection: 'row', maxWidth: '120px', justifyContent: 'space-evenly'}}>
-        <label>
-          <Field type='radio' value='yes' name='federal' />
-          <span style={{ marginLeft: '4px' }}>Yes</span>
-        </label>
-        <label>
-          <Field type='radio' value='no' name='federal' />
-          <span style={{ marginLeft: '4px' }}>No</span>
-        </label>
-      </div>
+      <Field name='federal' value={values.federal}>
+        {({ form }: FieldProps) => (
+          <React.Fragment>
+            <RadioGroup name='federal' onChange={(e) => form.setFieldValue('federal', e.target.value === 'yes')}>
+              <FormControlLabel value='yes' control={<Radio color='primary' checked={values.federal === true} />} label='Yes' />
+              <FormControlLabel value='no' control={<Radio color='primary' checked={values.federal === false} />} label='No' />
+            </RadioGroup>
+          </React.Fragment>
+        )}
+      </Field>
     </StyledFormControl>
   </Grid>
-)
+)}
 export default function BookingInputs () {
   return (
     <Grid container spacing={2}>

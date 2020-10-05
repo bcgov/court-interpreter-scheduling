@@ -34,7 +34,12 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
         initialValues={Initial}
         validationSchema={Schema}
         onSubmit={async (values) => {
-          await postBooking({ data: values })
+          await postBooking({
+            data: {
+              ...values,
+              interpreterId: interpreter.id,
+            }
+          })
           if (response?.status === 201) {
             setInterpreter(null)
           }
