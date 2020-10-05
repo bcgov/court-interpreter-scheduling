@@ -119,7 +119,7 @@ jobs:
           echo Deploying database
           npm run oc-deploy -- --app=db --id=$BUILD_ID --env=dev
           echo Deploying api
-          npm run oc-deploy -- --app=api --id=$BUILD_ID --branch=${{ github.base_ref }}
+          npm run oc-deploy -- --app=api --id=$BUILD_ID --branch=${{ github.base_ref }} --env=dev
 
       # Deploy the api-mobile
       - name: Deploy frontend
