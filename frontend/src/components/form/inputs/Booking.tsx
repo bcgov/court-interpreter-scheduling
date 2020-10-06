@@ -21,7 +21,7 @@ import {
 } from './DirectoryInputs'
 
 import { BookingDate, SearchParams } from 'constants/interfaces'
-import { ErrorMessage, Field, FieldArray, ArrayHelpers, useFormikContext, FieldProps } from 'formik'
+import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik'
 
 type GridItemInputProps = {
   name: string;
@@ -118,14 +118,22 @@ const Dates = ({ dates = [] }: { dates?: SearchParams['dates'] }) => (
   </Grid>
 )
 
-export default function BookingInputs ({ interpreter, search }: { interpreter?: any, search?: SearchParams }) {
+export default function BookingInputs ({
+  interpreter,
+  search,
+  booking,
+}: {
+  interpreter?: any,
+  search?: SearchParams,
+  booking?: any,
+}) {
   return (
     <Grid container spacing={4}>
 
       <StyledSelect rows={{ lg: 3, xs: 12 }} name='status' options={['Pending', 'Booked', 'Cancelled']} />
       <Grid item xs={8} />
 
-      <Dates dates={search?.dates} />
+      <Dates dates={search?.dates || booking?.dates} />
       <Grid item xs={8} />
 
       <StyledField name='room' label='Court Room' rows={{ xs: 6, lg: 3 }} />
