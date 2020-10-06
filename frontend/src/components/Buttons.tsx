@@ -34,3 +34,17 @@ export const ButtonSecondary = styled(Button)({
     boxShadow: 'none',
   }
 });
+
+export const StyledButton = styled(Button)({
+  minWidth: '120px',
+  backgroundColor: '#002C71',
+  color: '#fff',
+  textTransform: 'none',
+  fontSize: '16px',
+  fontWeight: 500,
+  boxShadow: 'none',
+  '&:hover': {
+    backgroundColor: '#2e6ead',
+    boxShadow: 'none',
+  }
+})

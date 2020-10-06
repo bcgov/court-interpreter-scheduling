@@ -16,8 +16,8 @@ export default function DirectoryTable({ data, disabled }: { data: Array<any>, d
           { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, },
           { title: 'Phone', field: 'phone', },
           { title: 'Email', field: 'email', },
-          { title: 'Language', render: (row: any) => `${row.language[0].language.name}`, },
-          { title: 'Level', render: (row: any) => `${row.language[0].level}`, },
+          { title: 'Language', render: (row: any) => `${row.languages[0].language.name}`, },
+          { title: 'Level', render: (row: any) => `${row.languages[0].level}`, },
           { render: (row: any) => <BookingButton disabled={disabled} onClick={() => setInterpreter(row)} />, align: 'right' }
         ]}
       />

@@ -3,6 +3,7 @@ import { render } from 'react-dom'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
 import { ThemeProvider, Box, CircularProgress } from '@material-ui/core'
 import store from 'store'
+import axios from 'axios';
 
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css';
@@ -10,6 +11,8 @@ import 'react-dates/lib/css/_datepicker.css';
 import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css'
 import { theme } from 'theme'
+
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || '/'
 
 const Signup = lazy(() => import('views/register'))
 const Login = lazy(() => import('views/login'))
