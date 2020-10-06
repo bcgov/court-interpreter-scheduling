@@ -139,7 +139,7 @@ export default function BookingInputs ({ interpreter, search }: { interpreter?: 
       <StyledField name='caseName' label='Case Name' />
       <StyledField name='requestedBy' label='Requested By' rows={{ xs: 6, lg: 3 }} />
 
-      <StyledSelect name='language' options={interpreter?.language.map((l: { language: { name: string } }) => l.language.name)} />
+      <StyledSelect name='language' options={interpreter?.languages.map((l: { language: { name: string } }) => l.language.name)} />
 
       <StyledRadios />
 

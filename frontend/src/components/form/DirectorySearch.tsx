@@ -22,7 +22,7 @@ import { Schema, Initial } from 'components/form/schemas/search.schema'
 import Range from 'components/form/Range'
 import Check from 'components/form/inputs/Check'
 
-import { StyledButton } from 'vaping-regulation-shared-components'
+import { StyledButton } from 'components/Buttons'
 import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
@@ -118,7 +118,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                           style={{ marginTop: '1rem' }}
                           type='submit'
                           variant='contained'
-                          onClick={handleSubmit}
+                          onClick={() => handleSubmit}
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? '...' : 'Search'}

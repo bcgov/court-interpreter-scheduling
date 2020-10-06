@@ -72,7 +72,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                 <DialogContent>
                   <Box mt={2} mb={2}>
                     <Typography variant='h4'>
-                      {interpreter?.firstName} {interpreter?.lastName} (Level {interpreter?.language[0].level})
+                      {interpreter?.firstName} {interpreter?.lastName} (Level {interpreter?.languages[0].level})
                     </Typography>
                   </Box>
                   <BookingInputs interpreter={interpreter} search={search} />
