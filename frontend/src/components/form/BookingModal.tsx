@@ -24,20 +24,21 @@ type BookingModalProps = {
 }
 
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
-
-  const [open, toggleOpen] = useState(!!interpreter)
+  const [open, toggle] = useState(false)
   const [{ data, response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
 
   useEffect(() => {
-    toggleOpen(!!interpreter)
+    toggle(interpreter !== null)
   }, [interpreter])
+
   useEffect(() => {
-    if (response?.status === 201) toggleOpen(false)
+    if (response?.status === 201) setInterpreter(null)
   }, [response])
+
   return (
     <SearchContext.Consumer>
       {({ search }) => (
-        <Dialog open={open} onClose={() => setInterpreter(null)} maxWidth='xl'>
+        <Dialog open={open} maxWidth='xl'>
           <Formik
             initialValues={Initial}
             validationSchema={Schema}
@@ -62,7 +63,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                       </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <CloseIcon className='right pointer' />
+                      <CloseIcon onClick={() => setInterpreter(null)} className='right pointer' />
                     </Grid>
                   </Grid>
                 </DialogTitle>
@@ -88,7 +89,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                 <DialogActions style={{ marginTop: '2rem', marginBottom: '1rem', paddingLeft: '24px', paddingRight: '24px' }}>
                   <Grid container justify='space-between'>
                     <Grid item xs={10}>
-                      <ButtonSecondary variant='outlined' onClick={() => toggleOpen(false)}>
+                      <ButtonSecondary variant='outlined' onClick={() => setInterpreter(null)}>
                         Cancel
                       </ButtonSecondary>
                     </Grid>

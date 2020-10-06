@@ -69,7 +69,7 @@ const StyledRadios = () => {
   )
 }
 
-const StyledSelect = ({ options, name, rows = { xs: 6 } }: { options: string[], name: string, rows?: GridItemInputProps['rows'] }) => (
+const StyledSelect = ({ options = [], name, rows = { xs: 6 } }: { options: string[], name: string, rows?: GridItemInputProps['rows'] }) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>
