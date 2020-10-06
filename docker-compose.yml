@@ -65,8 +65,27 @@ services:
     networks:
       - backend
 
+  ### Frontend ###############################
+  client:
+    image: court-frontend:dev
+    container_name: court-frontend
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile
+    environment:
+      # TODO replace with dev api url
+      - REACT_APP_API_URL=https://courts-api.freshworks.club
+    ports:
+      - "8080:80"
+    expose:
+      - "8080"
+    networks:
+      - frontend
+
 networks:
   backend:
+    driver: "bridge"
+  frontend:
     driver: "bridge"
 
 volumes:
