@@ -9,11 +9,11 @@ import BookingButton from 'components/table/BookingButton'
 export default function DirectoryTable({ data, disabled }: { data: Array<any>, disabled: boolean }) {
 
   const [interpreter, setInterpreter] = useState(null)
-  const [view, setView] = useState('cal')
+  const [view, setView] = useState('list')
 
   return (
     <Box mt={8}>
-      {disabled && <ViewToggle view={view} setView={setView} />}
+      {!disabled && <ViewToggle view={view} setView={setView} />}
       {
         view === 'list' ?
           <BaseTable
