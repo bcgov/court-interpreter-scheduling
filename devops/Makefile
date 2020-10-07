@@ -152,8 +152,13 @@ deploy-db:
 
 
 deploy-api:
+	test -n "$(NAMESPACE)"
+	test -n "$(BUILD_NAMESPACE)"
+	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST=$(API_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f - --dry-run
+	@echo "+\n++ Pulling image from build name space"
+	@oc tag $(BUILD_NAMESPACE)/$(API):$(TAG) $(NAMESPACE)/$(API):$(TAG)
+	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST=$(API_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
 	@oc -n $(NAMESPACE) rollout status dc/$(API)
 
 delete:

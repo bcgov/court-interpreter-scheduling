@@ -13,8 +13,8 @@ USER 1001
 
 WORKDIR ${HOME}
 
-COPY package.json ./
-RUN npm install
+COPY ./package*.json ./
+RUN npm ci
 COPY . ./
 RUN npm run build
 

@@ -44,13 +44,13 @@ parameters:
     name: SOURCE_IMAGE_NAMESPACE
     value: "openshift"
   - name: CPU_LIMIT
-    value: "1000m"
+    value: "1500m"
   - name: MEMORY_LIMIT
-    value: "1Gi"
+    value: "3Gi"
   - name: CPU_REQUEST
-    value: "750m"
+    value: "1000m"
   - name: MEMORY_REQUEST
-    value: "1Gi"
+    value: "2Gi"
   - name: TAG
     value: "1"
   - name: INSTANCE
