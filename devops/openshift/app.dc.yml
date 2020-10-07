@@ -48,6 +48,10 @@ parameters:
     value: "court-interpreter-scheduler"
   - name: API_HOST
     required: true
+    value: "NONE"
+  - name: PATH
+    required: true
+    value: "/app"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -213,6 +217,7 @@ objects:
       name: ${NAME}
     spec:
       host: ${HOST_NAME}
+      path: ${PATH}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge

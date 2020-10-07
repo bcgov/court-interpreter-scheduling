@@ -69,10 +69,6 @@ define APP_INSTANCE
 "app-$(APP_NAME)-$(BUILD_ID)"
 endef
 
-define API_HOST
-"api-$(HOST_PREFIX)-$(APP_NAME).$(DOMAIN)"
-endef
-
 define APP_HOST
 "$(HOST_PREFIX)-$(APP_NAME).$(DOMAIN)"
 endef
@@ -109,13 +105,15 @@ print-status:
 	@echo " | PROJECT:      $(APP_NAME)"
 	@echo " | BRANCH:       $(BRANCH)"
 	@echo " | NAMESPACE:    $(NAMESPACE)"
-	@echo " | NAMESPACE:    $(BUILD_NAMESPACE)"
+	@echo " | BUILD_NAMESPACE:    $(BUILD_NAMESPACE)"
 	@echo " +---------------------------------------------------------+ "
 	@echo " | BUILD_ID: 	$(BUILD_ID) "
 	@echo " | BUILD_TAG: 	$(BUILD_TAG) "
 	@echo " +---------------------------------------------------------+ "
 	@echo " | FILE NAME: 	$(TEMPLATE_FILE_NAME) "
 	@echo " | FILE PATH: 	$(TEMPLATE_PATH) "
+	@echo " +---------------------------------------------------------+ "
+	@echo " | HOST NAME: 	$(APP_HOST) "
 	@echo " +---------------------------------------------------------+ "
 
 build:
@@ -159,8 +157,8 @@ deploy-api:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@echo "+\n++ Pulling image from build name space"
-	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(API_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@echo "+\n++ Pulling image from build name space\n+"
 	@oc tag $(BUILD_NAMESPACE)/$(API):$(BUILD_TAG) $(NAMESPACE)/$(API):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(API)
 
@@ -170,8 +168,8 @@ deploy-app:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@echo "+\n++ Pulling image from build name space"
-	@oc process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) API_HOST=$(API_HOST) | oc -n $(NAMESPACE) apply -f -
+	@oc process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@echo "+\n++ Pulling image from build name space\n+"
 	@oc tag $(BUILD_NAMESPACE)/$(APP):$(BUILD_TAG) $(NAMESPACE)/$(APP):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(APP)
 

@@ -53,6 +53,9 @@ parameters:
     value: "api-dev-court-interpreter-scheduler.pathfinder.gov.bc.ca"
   - name: PROJECT
     value: "api-court-interpreter-scheduler"
+  - name: PATH
+    required: true
+    value: "/api"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -233,6 +236,7 @@ objects:
       name: ${NAME}
     spec:
       host: ${HOST_NAME}
+      path: ${PATH}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
