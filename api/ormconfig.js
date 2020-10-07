@@ -4,6 +4,7 @@ const entities =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? join(__dirname, 'src/**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
+
 const synchronize =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? true
@@ -26,7 +27,7 @@ module.exports = {
   },
   synchronize,
   migrationsRun: process.env.NODE_ENV === 'production',
-  dropSchema: true,
+  dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
   keepConnectionAlive: true,
