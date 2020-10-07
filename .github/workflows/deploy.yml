@@ -48,10 +48,9 @@ jobs:
 
       # Build the api images
       - name: Build API Images
-        working-directory: "./devops/.pipeline/"
+        working-directory: "./devops"
         run: |
-          npm ci
-          npm run oc-build -- --app=api --id=$BUILD_ID --branch=${{ github.base_ref }}
+          echo Will Build API
   
   # Build the web frontend app
   buildAPP:
@@ -79,7 +78,7 @@ jobs:
 
       # Build the app images
       - name: Build APP Images
-        working-directory: "./devops/.pipeline/"
+        working-directory: "./devops/"
         run: |
           echo Placeholder for app build phase
   # End buildAPP
@@ -113,17 +112,13 @@ jobs:
 
       # Deploy the api
       - name: Deploy
-        working-directory: "./devops/.pipeline/"
+        working-directory: "./devops/"
         run: |
-          npm ci
-          echo Deploying database
-          npm run oc-deploy -- --app=db --id=$BUILD_ID --env=dev
-          echo Deploying api
-          npm run oc-deploy -- --app=api --id=$BUILD_ID --branch=${{ github.base_ref }} --env=dev
+          echo Placeholder for app and db container deployment
 
-      # Deploy the api-mobile
+      # Deploy the app
       - name: Deploy frontend
-        working-directory: "./devops/.pipeline/"
+        working-directory: "./devops/"
         run: |
           echo Placeholder for front end container deployment
 
