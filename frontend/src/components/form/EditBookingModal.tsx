@@ -43,7 +43,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
       toggleOpen(false)
       refetch()
     }
-  }, [response])
+  }, [response, refetch])
 
   return (
 

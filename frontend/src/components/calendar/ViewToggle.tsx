@@ -7,7 +7,7 @@ const StyledBox = withStyles({
   root: {
     border: 'solid 1px #979797',
     borderRadius: '4px',
-    padding: '10px',
+    padding: '8px',
     marginBottom: '8px',
     width: 'max-content',
   },
@@ -17,7 +17,9 @@ const useStyles = makeStyles({
   iconParent: {
     alignItems: 'baseline',
     display: 'flex',
-    borderRadius: '4px',
+    '&:last-child': {
+      borderRadius: '0 4px 4px 0',
+    }
   },
   active: {
     backgroundColor: 'aliceblue',

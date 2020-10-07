@@ -2,6 +2,7 @@ import React from 'react'
 import moment from 'moment'
 import { Box, Grid, Typography, withStyles } from '@material-ui/core'
 import { SearchContext } from 'views/Directory'
+import Month from 'components/calendar/Month'
 import BookingButton from 'components/table/BookingButton'
 
 type CalendarProps = {
@@ -86,13 +87,22 @@ search.dates[0].date`
                     </FlexBox>
                   </OutlinedGridItem>
                   <OutlinedGridItem item xs={3}>
-
+                    <Month
+                      start={0}
+                      bookings={i?.bookings}
+                    />
                   </OutlinedGridItem>
                   <OutlinedGridItem item xs={3}>
-
+                    <Month
+                      start={1}
+                      bookings={i?.bookings}
+                    />
                   </OutlinedGridItem>
                   <OutlinedGridItem item xs={3}>
-
+                    <Month
+                      start={2}
+                      bookings={i?.bookings}
+                    />
                   </OutlinedGridItem>
                 </Grid>
               </Box>

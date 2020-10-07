@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Box } from '@material-ui/core'
 import BaseTable from 'components/table/Base'
-import Calendar from 'components/table/DirectoryCalendar'
-import ViewToggle from 'components/table/ViewToggle'
+import Calendar from 'components/calendar/DirectoryCalendar'
+import ViewToggle from 'components/calendar/ViewToggle'
 import BookingModal from 'components/form/BookingModal'
 import BookingButton from 'components/table/BookingButton'
 
