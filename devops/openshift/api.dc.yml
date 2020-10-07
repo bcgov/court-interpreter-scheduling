@@ -157,7 +157,7 @@ objects:
                   path: /api/v1/healthcheck
                   port: "${{PORT}}"
                   scheme: HTTP
-                initialDelaySeconds: 140
+                initialDelaySeconds: 10
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
@@ -167,7 +167,7 @@ objects:
                   path: /api/v1/healthcheck
                   port: "${{PORT}}"
                   scheme: HTTP
-                initialDelaySeconds: 90
+                initialDelaySeconds: 10
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
