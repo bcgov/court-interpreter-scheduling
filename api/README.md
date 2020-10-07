@@ -82,6 +82,26 @@ $ npm run seed:run
 
 - https://www.npmjs.com/package/tsconfig-paths
 
+### Migration
+
+- create migration file
+
+```
+$ npm run migrate:create <Migration File Name>
+```
+
+- running migration
+
+1. Testing in local env,
+   Set `syncronize: false, dropSchema: true` in `database.module.ts`.
+   Then
+
+```
+$ npm run migrate:run
+```
+
+2. In Production env, will run migration automatically as we did set `migrationRun: process.env.NODE_ENV='prodcution'`
+
 ### Swagger
 
 ![](https://i.imgur.com/kr8Xuk9.png)
