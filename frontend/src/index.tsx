@@ -12,7 +12,7 @@ import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css'
 import { theme } from 'theme'
 
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || '/'
+axios.defaults.baseURL = '/api/v1'
 
 const Signup = lazy(() => import('views/register'))
 const Login = lazy(() => import('views/login'))
