@@ -20,9 +20,11 @@ default:
 # ------------------------------------------------------------------------------
 
 oc-build: app-check print-status build
-oc-api-build: app-check print-status build-api
-oc-app-build: app-check print-status build-app
-oc-db: app-check print-status deploy-db
+oc-build-api: app-check print-status build-api
+oc-build-app: app-check print-status build-app
+oc-deploy-db: app-check print-status deploy-db
+oc-deploy-api: app-check print-status deploy-api
+oc-deploy-app: app-check print-status deploy-app
 oc-delete: app-check print-status delete
 DIR := ${CURDIR}
 
@@ -155,18 +157,30 @@ deploy-api:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
+	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
 	@echo "+\n++ Pulling image from build name space"
-	@oc tag $(BUILD_NAMESPACE)/$(API):$(TAG) $(NAMESPACE)/$(API):$(TAG)
-	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST=$(API_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(API_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@oc tag $(BUILD_NAMESPACE)/$(API):$(BUILD_TAG) $(NAMESPACE)/$(API):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(API)
+
+deploy-app:
+	test -n "$(NAMESPACE)"
+	test -n "$(BUILD_NAMESPACE)"
+	test -n "$(BRANCH)"
+	test -n "$(HOST_PREFIX)"
+	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
+	@echo "+\n++ Pulling image from build name space"
+	@oc process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) API_HOST=$(API_HOST) | oc -n $(NAMESPACE) apply -f -
+	@oc tag $(BUILD_NAMESPACE)/$(APP):$(BUILD_TAG) $(NAMESPACE)/$(APP):$(BUILD_TAG)
+	@oc -n $(NAMESPACE) rollout status dc/$(APP)
 
 delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"
-	@oc project $(BUILD_NAMESPACE)
-	@oc delete all -l app=$$APPLICATION
 	@oc project $(NAMESPACE)
 	@oc delete all -l app=$$APPLICATION
+	@oc delete secret $$APPLICATION --ignore-not-found
+	@oc delete pvc $$APPLICATION --ignore-not-found
 
 delete-project:
 	@echo "+\n++ Delete all project related items\n"
