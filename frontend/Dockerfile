@@ -19,11 +19,7 @@ RUN npm run build
 
 FROM node:12.18.3-slim as client
 ENV PORT 7070
-<<<<<<< HEAD
-ENV HOME /opt/app-root/src/app
-=======
 ENV HOME /opt/app-root/src/app/build
->>>>>>> [devops] Fix Dockerfile issue and app deploy template
 RUN npm i -g serve
 COPY --from=builder ${HOME}/build .
 COPY --from=builder ${HOME}/serve.json .
