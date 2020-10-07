@@ -10,6 +10,7 @@ import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setGlobalPrefix('api/v1')
   app.enableCors();
   documentation(app);
   if (process.env.NODE_ENV !== 'production') {
