@@ -217,7 +217,6 @@ objects:
       name: ${NAME}
     spec:
       host: ${HOST_NAME}
-      path: ${PATH}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge

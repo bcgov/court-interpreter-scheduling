@@ -128,7 +128,7 @@ build-api:
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
 	@oc process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(API) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
-	# @oc -n $(BUILD_NAMESPACE) start-build bc/$(API) --wait
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(API) --wait
 
 build-app:
 	test -n "$(BRANCH)"
