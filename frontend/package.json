@@ -25,6 +25,7 @@
     "formik": "^2.1.5",
     "material-table": "^1.69.0",
     "moment": "^2.29.0",
+    "moment-range": "^4.0.2",
     "query-string": "^6.13.4",
     "react": "^16.13.1",
     "react-dates": "^21.8.0",

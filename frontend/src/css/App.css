@@ -91,3 +91,20 @@ body {
     margin: 0 auto;
   }
 }
+
+.MORNING, .AFTERNOON, .WHOLE_DAY {
+  border: solid 1px #313132;
+  border-radius: 4px;
+}
+
+.WHOLE_DAY {
+  background-color: #FCBA19;
+}
+
+.AFTERNOON {
+  background: linear-gradient(0deg, #FCBA19 50%, #FFFFFF 50%);
+}
+
+.MORNING {
+  background: linear-gradient(0deg, #FFFFFF 50%, #FCBA19 50%);
+}

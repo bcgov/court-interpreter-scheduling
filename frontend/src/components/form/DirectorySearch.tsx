@@ -108,14 +108,15 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     </Grid>
                   </GridRow>
                   <GridRow container spacing={4} mt={2}>
-                    <Grid item xs={8}>
+                    <Grid item xs={6}>
                       <Range />
                     </Grid>
+                    <Grid item xs={2} />
                     <Grid item xs={4}>
                       <StyledFormControl>
                         <StyledFormLabel htmlFor='submit' />
                         <StyledButton
-                          style={{ marginTop: '1rem' }}
+                          style={{ marginTop: '1.25rem' }}
                           type='submit'
                           variant='contained'
                           onClick={() => handleSubmit}

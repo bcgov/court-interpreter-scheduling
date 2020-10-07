@@ -17,7 +17,7 @@ const StyledIconButton = withStyles({
   }
 })(IconButton)
 
-export default function BookingsTable({ data }: { data: Array<any> }) {
+export default function BookingsTable({ data, refetch }: { data: Array<any>, refetch: Function }) {
 
   const [booking, setBooking] = useState()
   const [interpreter, setInterpreter] = useState()
@@ -50,8 +50,7 @@ export default function BookingsTable({ data }: { data: Array<any> }) {
       />
 
       {/* TODO: create a popover for when an interpreter has been selected to show interpreter details */}
-      {/* ?: will this require an api call or a join on the bookings GET endpoint? */}
-      <EditBookingModal booking={booking} setBooking={setBooking} />
+      <EditBookingModal refetch={refetch} booking={booking} setBooking={setBooking} />
     </Box>
   )
 }

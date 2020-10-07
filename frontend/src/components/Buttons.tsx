@@ -48,3 +48,15 @@ export const StyledButton = styled(Button)({
     boxShadow: 'none',
   }
 })
+
+export const BookingButton = styled(Button)({
+  root: {
+    backgroundColor: '#E8F3FD',
+    color: '#1A5A96',
+    borderRadius: '4px',
+    width: '95px',
+    textTransform: 'none',
+    fontWeight: 'bold',
+    fontSize: '16px'
+  },
+})

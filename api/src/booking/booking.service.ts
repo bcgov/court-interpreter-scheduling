@@ -54,6 +54,8 @@ export class BookingService {
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
+      .leftJoinAndSelect('interpreter.languages', 'languages')
+      .leftJoinAndSelect('languages.language', 'lang')
       .offset((page - 1) * limit)
       .limit(limit);
 

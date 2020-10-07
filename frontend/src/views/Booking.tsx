@@ -9,8 +9,8 @@ import useAxios from 'axios-hooks'
 
 const Booking = () => {
   /* TODO add API call for GET booking */
-  const [{ data: bookings, error, loading }] = useAxios('/booking')
-  const [{ data: searchResults, error: searchError, loading: searchLoading }, search] = useAxios({
+  const [{ data: bookings, error, loading }, refetch] = useAxios('/booking')
+  const [{ data: searchResults, loading: searchLoading }, search] = useAxios({
     url: '/booking/search',
     method: 'POST'
   }, {
@@ -20,7 +20,19 @@ const Booking = () => {
   return (
     <Box px='150px'>
       <BookingsSearch getSearchResults={search} />
-      {loading || searchLoading ? <Box mt={10}><CircularProgress /></Box> : <BookingsTable data={searchResults?.data || bookings?.data || []} />}
+      {error && <p>Failed to fetch bookings. {error.message}</p>}
+      {
+        (loading || searchLoading)
+          ?
+            <Box mt={10}>
+              <CircularProgress />
+            </Box>
+          :
+            <BookingsTable
+              refetch={refetch}
+              data={searchResults?.data || bookings?.data || []}
+            />
+      }
     </Box>
   )
 }

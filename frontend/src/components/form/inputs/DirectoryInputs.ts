@@ -21,7 +21,7 @@ export const StyledFormControl = withStyles({
 
 export const StyledTextField = withStyles({
   root: {
-    minWidth: '250px',
+    minWidth: '100%',
     '& input': {
       position: 'relative',
     },
@@ -40,7 +40,7 @@ export const StyledTextField = withStyles({
 
 export const StyledSelectInput = withStyles({
   root: {
-    minWidth: '250px',
+    minWidth: '100%',
   },
   input: {
     position: 'relative',
