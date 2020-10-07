@@ -1,7 +1,6 @@
 FROM node:12.18.3-slim as builder
 
 LABEL MAINTAINER="FreshWorks <web@freshworks.io>"
-ENV PORT 7070
 ENV HOME /opt/app-root/src/app
 
 # Creating HOME
