@@ -21,6 +21,7 @@
     "@types/yup": "^0.29.7",
     "axios": "^0.20.0",
     "axios-hooks": "^2.1.0",
+    "cypress": "^5.3.0",
     "faker": "^5.1.0",
     "formik": "^2.1.5",
     "material-table": "^1.69.0",
@@ -45,7 +46,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "precommit": "react-scripts precommit"
+    "precommit": "react-scripts precommit",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -73,7 +75,8 @@
     ]
   },
   "devDependencies": {
-    "@types/faker": "^5.1.2"
+    "@types/faker": "^5.1.2",
+    "eslint-plugin-cypress": "^2.11.2"
   },
   "proxy": "http://localhost:4000"
 }
