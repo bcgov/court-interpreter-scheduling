@@ -1,11 +1,18 @@
 apiVersion: v1
 kind: Template
+metadata:
+  labels:
+    app: ${NAME}
+    build: ${INSTANCE}
+    template: ${NAME}-template
+    project: ${PROJECT}
+  name: api-court-interpreter-scheduler
 parameters:
   - name: NAME
     displayName: Name
     description: A suffix appended to all objects
     required: true
-    value: court-schedule-api
+    value: api-court-interpreter-scheduler
   - name: VERSION
     required: true
     value: "1.0"
@@ -28,7 +35,7 @@ parameters:
   - name: APP_PORT_OTHER
     value: "8080-tcp"
   - name: DB_SERVICE
-    value: "postgresqlfw"
+    required: true
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
     name: POSTGRESQL_USER
@@ -39,6 +46,13 @@ parameters:
     value: "1"
   - name: BUILD_ID
     value: "1"
+  - name: INSTANCE
+    value: ""
+  - name: HOST_NAME
+    required: true
+    value: "api-dev-court-interpreter-scheduler.pathfinder.gov.bc.ca"
+  - name: PROJECT
+    value: "api-court-interpreter-scheduler"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -46,7 +60,10 @@ objects:
       annotations:
         description: Nodejs Runtime Image
       labels:
+        app: ${NAME}
+        instance: ${INSTANCE}
         shared: "true"
+        project: ${PROJECT}
       creationTimestamp: null
       generation: 0
       name: ${NAME}
@@ -62,7 +79,10 @@ objects:
         openshift.io/generated-by: OpenShiftWebConsole
       creationTimestamp: null
       generation: 0
-      labels: null
+      labels: 
+        app: ${NAME}
+        instance: ${INSTANCE}
+        project: ${PROJECT}
       name: ${NAME}
     spec:
       replicas: "${{REPLICAS}}"
@@ -177,7 +197,10 @@ objects:
     metadata:
       annotations: null
       creationTimestamp: null
-      labels: {}
+      labels:
+        app: ${NAME}
+        instance: ${INSTANCE}
+        project: ${PROJECT}
       name: ${NAME}
     spec:
       ports:
@@ -200,10 +223,13 @@ objects:
     metadata:
       annotations: {}
       creationTimestamp: null
-      labels: {}
+      labels:
+        app: ${NAME}
+        instance: ${INSTANCE}
+        project: ${PROJECT}
       name: ${NAME}
     spec:
-      host: ""
+      host: ${HOST_NAME}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
