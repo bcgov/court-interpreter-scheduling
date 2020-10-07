@@ -39,7 +39,8 @@ RUN npm ci --loglevel verbose
 # If you are building your code for production, copy all files
 
 # Cleaning any existing generated file
-RUN rm -rf ./dist-server
+
+RUN npm run build
 
 
 
@@ -54,4 +55,4 @@ VOLUME ${HOME}
 EXPOSE ${PORT}
 
 # Application Entry point
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]

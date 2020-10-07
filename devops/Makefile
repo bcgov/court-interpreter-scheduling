@@ -157,7 +157,7 @@ deploy-api:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) ENV=production | oc -n $(NAMESPACE) apply -f -
 	@echo "+\n++ Pulling image from build name space\n+"
 	@oc tag $(BUILD_NAMESPACE)/$(API):$(BUILD_TAG) $(NAMESPACE)/$(API):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(API)

@@ -56,6 +56,8 @@ parameters:
   - name: PATH
     required: true
     value: "/api"
+  - name: ENV
+    value: "production"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -113,6 +115,8 @@ objects:
         spec:
           containers:
             - env:
+                - name: NODE_ENV
+                  value: ${ENV}
                 - name: BUILD_ID
                   value: ${BUILD_ID}
                 - name: APPLICATION_PORT
