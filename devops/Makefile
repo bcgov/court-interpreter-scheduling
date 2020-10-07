@@ -86,6 +86,14 @@ define DB_DEPLOY_TEMPLATE_PATH
 "./openshift/db.dc.yml"
 endef
 
+define APP_BUILD_TEMPLATE_PATH
+"./openshift/app.bc.yml"
+endef
+
+define APP_DEPLOY_TEMPLATE_PATH
+"./openshift/app.dc.yml"
+endef
+
 
 # Openshift Build
 app-check:
@@ -121,6 +129,12 @@ build-api:
 	test -n "$(BRANCH)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
 	@oc process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
+
+build-app:
+	test -n "$(BRANCH)"
+	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
+	@oc process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
 
 import:
