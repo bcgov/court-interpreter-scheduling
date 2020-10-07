@@ -20,7 +20,8 @@ default:
 # ------------------------------------------------------------------------------
 
 oc-build: app-check print-status build
-oc-api: app-check print-status deploy-api
+oc-api-build: app-check print-status build-api
+oc-app-build: app-check print-status build-app
 oc-db: app-check print-status deploy-db
 oc-delete: app-check print-status delete
 DIR := ${CURDIR}
@@ -97,10 +98,7 @@ endef
 
 # Openshift Build
 app-check:
-	test -n "$(NAMESPACE)"
-	test -n "$(APP_NAME)"
 	test -n "$(BUILD_ID)"
-	test -n "$(TEMPLATE_FILE_NAME)"
 
 print-status:
 	@echo " +---------------------------------------------------------+ "
@@ -122,20 +120,22 @@ build:
 	test -n "$(BRANCH)"
 	test -n "$(APP_KEY)"
 	@echo "+\n++ BUILIDING $(APP_KEY) with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc process -f $(TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
 
 build-api:
 	test -n "$(BRANCH)"
+	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
-	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
+	@oc process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(API) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	# @oc -n $(BUILD_NAMESPACE) start-build bc/$(API) --wait
 
 build-app:
 	test -n "$(BRANCH)"
+	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
-	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
+	@oc process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(APP) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
 
 import:
 	test -n "$(NAMESPACE)"
