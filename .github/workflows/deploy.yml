@@ -88,6 +88,13 @@ jobs:
       - buildAPI
       - buildAPP
     steps:
+      - name: Print env
+        run: |
+          echo BUILD ID: $BUILD_ID
+          echo BUILD NAMESPACE: $BUILD_NAMESPACE
+          echo NAMESPACE: $NAMESPACE
+          echo BRANCH: $BRANCH
+          echo HOST_PREFIX: $HOST_PREFIX
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v1
