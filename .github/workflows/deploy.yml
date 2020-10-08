@@ -81,6 +81,9 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       NAMESPACE: l4izby-dev
+      BUILD_NAMESPACE: l4izby-tools
+      BRANCH: ${{ github.head_ref }}
+      HOST_PREFIX: dev
     needs:
       - buildAPI
       - buildAPP
