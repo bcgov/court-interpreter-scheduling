@@ -127,14 +127,14 @@ build-api:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(API) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(API) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(API) --wait
 
 build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(APP) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(APP) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
 
 import:
@@ -147,7 +147,7 @@ import:
 
 deploy-db:
 	@echo "+\n++ Deploying DB with tag: $(BUILD_ID)\n+"
-	@oc process -f $(DB_DEPLOY_TEMPLATE_PATH) -p NAME=$(DB_SERVICE_NAME) INSTANCE=$(DB_SERVICE_INSTANCE) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f - 
+	@oc -n $(NAMESPACE) process -f $(DB_DEPLOY_TEMPLATE_PATH) -p NAME=$(DB_SERVICE_NAME) INSTANCE=$(DB_SERVICE_INSTANCE) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f - 
 	@oc -n $(NAMESPACE) rollout status dc/$(DB_SERVICE_NAME)
 
 
@@ -157,7 +157,7 @@ deploy-api:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) ENV=production | oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
 	@echo "+\n++ Pulling image from build name space\n+"
 	@oc tag $(BUILD_NAMESPACE)/$(API):$(BUILD_TAG) $(NAMESPACE)/$(API):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(API)
@@ -168,7 +168,7 @@ deploy-app:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
 	@echo "+\n++ Pulling image from build name space\n+"
 	@oc tag $(BUILD_NAMESPACE)/$(APP):$(BUILD_TAG) $(NAMESPACE)/$(APP):$(BUILD_TAG)
 	@oc -n $(NAMESPACE) rollout status dc/$(APP)
