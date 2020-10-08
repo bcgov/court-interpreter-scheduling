@@ -4,8 +4,8 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 import useAxios from 'axios-hooks'
-import queryString from 'query-string'
 
+import Error from 'components/Error'
 import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
 import { SearchParams } from 'constants/interfaces'
@@ -48,7 +48,7 @@ const Directory = () => {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
             : error
-            ? <Box p='120'>{error.message}</Box>
+            ? <Error message={error?.message} prefix='Failed to load directory.' />
             : interpreters
             ? <DirectoryTable data={interpreters.data} disabled={!search.dates.length} />
             : null
