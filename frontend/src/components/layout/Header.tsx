@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
-import store from 'store';
-
 import { makeStyles, Typography } from '@material-ui/core';
 
 import logo from '../../assets/images/logo-banner.svg';
@@ -68,8 +66,7 @@ const useStyles = makeStyles({
 });
 
 export default function Header() {
-  const history = useHistory();
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <div className={classes.header}>

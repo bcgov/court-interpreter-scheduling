@@ -2,3 +2,6 @@ node_modules/
 .env
 dist/
 .vscode/
+/frontend/cypress/integration/examples
+/frontend/cypress/videos
+/frontend/cypress/screenshots

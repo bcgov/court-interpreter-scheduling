@@ -41,15 +41,15 @@ const Login = () => {
           onChange={handleChangeValue}
           value={values.password}
         />
-        <button className='button'>
-          Send
+        <button id='loginButton' className='button'>
+          Login
         </button>
       </form>
       <button
         className='button-register'
         onClick={() => history.push('signup')}
       >
-        ¡Signup!
+        Signup
       </button>
     </section>
   )
