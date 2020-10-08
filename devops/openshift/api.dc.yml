@@ -52,7 +52,7 @@ parameters:
     required: true
     value: "api-dev-court-interpreter-scheduler.pathfinder.gov.bc.ca"
   - name: PROJECT
-    value: "api-court-interpreter-scheduler"
+    value: "court-interpreter-scheduler"
   - name: PATH
     required: true
     value: "/api"

@@ -54,9 +54,9 @@ parameters:
   - name: TAG
     value: "1"
   - name: INSTANCE
-    value: "api-court-interpreter-scheduler-0"
+    value: ""
   - name: PROJECT
-    value: "api-court-interpreter-scheduler"
+    value: "court-interpreter-scheduler"
 objects:
 - kind: ImageStream
   apiVersion: v1
@@ -113,5 +113,3 @@ objects:
     triggers:
       - type: ConfigChange
       - type: ImageChange
-  status:
-    lastVersion: 7

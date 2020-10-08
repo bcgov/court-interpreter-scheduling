@@ -79,7 +79,7 @@ parameters:
 - name: INSTANCE
   value: ""
 - name: PROJECT
-  value: "api-court-interpreter-scheduler"
+  value: "court-interpreter-scheduler"
 objects:
 - apiVersion: v1
   kind: Secret

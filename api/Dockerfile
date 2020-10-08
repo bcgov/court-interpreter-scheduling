@@ -34,7 +34,7 @@ COPY ./ .
 # RUN npm config set registry registry.npmjs.com
 # USER 1001
 # RUN cat /etc/hosts
-RUN npm ci --loglevel verbose
+RUN npm ci
 
 # If you are building your code for production, copy all files
 
