@@ -63,7 +63,6 @@ jobs:
       HOST_PREFIX: dev
     needs:
       - buildAPI
-      - buildAPP
     steps:
       - name: Print env
         run: |
