@@ -3,3 +3,5 @@ node_modules/
 dist/
 .vscode/
 /frontend/cypress/integration/examples
+/frontend/cypress/videos
+/frontend/cypress/screenshots
