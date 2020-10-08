@@ -46,36 +46,13 @@ jobs:
         working-directory: "./devops"
         run: |
           make oc-build-api
-  
-  # Build the web frontend app
-  buildAPP:
-    name: Build App Static
-    runs-on: ubuntu-latest
-    # if: ${{ github.event.pull_request.merged == true}}
-    env:
-      BUILD_ID: ${{ github.event.number }}
-      BUILD_NAMESPACE: l4izby-tools
-      BRANCH: ${{ github.head_ref }}
-    steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v1
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.SA_TOKEN }}
-
-      # Build the app images
-      - name: Build APP Images
-        working-directory: "./devops/"
-        run: |
           make oc-build-app
-  # End buildAPP
+  
+  
 
   # Deploy App, API, and API-MOBILE images in Dev
   deployDev:
-    name: Deploy App, API, and API-MOBILE to DEV environment
+    name: Deploy App, API, and DB to DEV environment
     runs-on: ubuntu-latest
     # if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
     env:
