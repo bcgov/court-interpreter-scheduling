@@ -30,17 +30,11 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_NAMESPACE: ${{ secrets.BUILD_NAMESPACE }}
+      BRANCH: ${{ github.head_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v1
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
-
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -51,7 +45,7 @@ jobs:
       - name: Build API Images
         working-directory: "./devops"
         run: |
-          echo Will Build API
+          make oc-build-api
   
   # Build the web frontend app
   buildAPP:
@@ -60,17 +54,12 @@ jobs:
     # if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BUILD_NAMESPACE: ${{ secrets.BUILD_NAMESPACE }}
+      BRANCH: ${{ github.head_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v1
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
-
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -81,7 +70,7 @@ jobs:
       - name: Build APP Images
         working-directory: "./devops/"
         run: |
-          echo Placeholder for app build phase
+          make oc-build-app
   # End buildAPP
 
   # Deploy App, API, and API-MOBILE images in Dev
@@ -91,6 +80,7 @@ jobs:
     # if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      NAMESPACE: ${{ secrets.DEV_NAMESPACE}}
     needs:
       - buildAPI
       - buildAPP
@@ -98,12 +88,6 @@ jobs:
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v1
-
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.16
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -115,13 +99,9 @@ jobs:
       - name: Deploy
         working-directory: "./devops/"
         run: |
-          echo Placeholder for app and db container deployment
-
-      # Deploy the app
-      - name: Deploy frontend
-        working-directory: "./devops/"
-        run: |
-          echo Placeholder for front end container deployment
+          make oc-deploy-db
+          make oc-deploy-api
+          make oc-deploy-app
 
 
   

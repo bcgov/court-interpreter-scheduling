@@ -14,7 +14,7 @@ make oc-build-app BUILD_NS=l4izby-tools BRANCH=devops ID=1
 make oc-deploy-db NS=l4izby-dev ID=1
 
 2. API
-make oc-deploy-api NS=l4izby-dev BUILD_NS=l4izby-tools ID=1 HPX=dev BR=devops
+make oc-deploy-api NS=l4izby-dev BUILD_NS=l4izby-tools HPX=dev BR=devops ID=1
 
 3. APP
 make oc-deploy-app NS=l4izby-dev BUILD_NS=l4izby-tools ID=1 HPX=dev BR=devops
