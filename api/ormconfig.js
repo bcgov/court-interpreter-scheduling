@@ -1,9 +1,6 @@
 const { join } = require('path');
 
-const entities =
-  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? join(__dirname, 'src/**/**.entity{.ts,.js}')
-    : 'dist/**/*.entity{ .ts,.js}';
+const entities = join(__dirname, 'src/**/**.entity{.ts,.js}');
 
 const synchronize =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
