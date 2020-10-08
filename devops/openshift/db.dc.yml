@@ -87,7 +87,6 @@ objects:
     name: "${NAME}"
     labels:
       app: ${NAME}
-      instance: ${INSTANCE}
       project: ${PROJECT}
   stringData:
     database-user: "${POSTGRESQL_USER}"
@@ -121,7 +120,6 @@ objects:
     name: "${NAME}"
     labels:
       app: ${NAME}
-      instance: ${INSTANCE}
       project: ${PROJECT}
   spec:
     accessModes:
