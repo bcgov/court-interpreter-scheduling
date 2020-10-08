@@ -29,7 +29,7 @@ jobs:
     # if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
-      BUILD_NAMESPACE: ${{ secrets.BUILD_NAMESPACE }}
+      BUILD_NAMESPACE: l4izby-tools
       BRANCH: ${{ github.head_ref }}
     steps:
       # Checkout the PR branch
@@ -54,7 +54,7 @@ jobs:
     # if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
-      BUILD_NAMESPACE: ${{ secrets.BUILD_NAMESPACE }}
+      BUILD_NAMESPACE: l4izby-tools
       BRANCH: ${{ github.head_ref }}
     steps:
       # Checkout the PR branch
@@ -80,7 +80,7 @@ jobs:
     # if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: ${{ secrets.DEV_NAMESPACE}}
+      NAMESPACE: l4izby-dev
     needs:
       - buildAPI
       - buildAPP
