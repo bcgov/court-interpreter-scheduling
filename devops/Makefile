@@ -177,7 +177,6 @@ delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"
 	@oc project $(NAMESPACE)
 	@oc delete all -l app=$$APPLICATION
-	@oc delete secret $$APPLICATION --ignore-not-found
 	@oc delete pvc $$APPLICATION --ignore-not-found
 
 delete-project:

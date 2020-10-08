@@ -1,6 +1,6 @@
 FROM node:12.18.3-slim as builder
 
-ENV HOME /opt/app-root/src/app
+ENV HOME /usr/src/app
 
 WORKDIR ${HOME}
 
@@ -13,7 +13,7 @@ FROM node:12.18.3-slim as client
 LABEL MAINTAINER="FreshWorks <web@freshworks.io>"
 ENV PORT 7070
 RUN npm i -g serve
-COPY --from=builder ${HOME}/build .
-COPY --from=builder ${HOME}/serve.json .
+COPY --from=builder /usr/src/app/build .
+COPY --from=builder /usr/src/app/serve.json .
 EXPOSE ${PORT}
 CMD ["sh", "-c","serve", "-p", "$PORT", "-s", "."]
