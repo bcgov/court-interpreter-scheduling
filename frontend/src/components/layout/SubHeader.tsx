@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 
 import {
   makeStyles,
@@ -57,15 +57,15 @@ const BCTab = withStyles((theme: Theme) => ({
 }))((props: StyledTabProps) => <Tab disableRipple {...props} />);
 
 export default function Header() {
+  const location = useLocation()
   const history = useHistory()
   const classes = useStyles()
-  const [activeTab, setActiveTab] = useState('/booking')
+  const [activeTab, setActiveTab] = useState(location.pathname)
 
-  const handleNav = (event: React.ChangeEvent<{}>, value: any) => setActiveTab(value)
-
-  useEffect(() => {
-    history.push(activeTab)
-  }, [activeTab, history])
+  const handleNav = (event: React.ChangeEvent<{}>, value: any) => {
+    setActiveTab(value)
+    history.push(value)
+  }
 
   return (
     <Paper elevation={0} square className={classes.subheader}>

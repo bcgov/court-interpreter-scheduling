@@ -36,8 +36,8 @@ const Routes = () => {
       <Suspense fallback={<Box p={2}><CircularProgress /></Box>}>
         <ThemeProvider theme={theme}>
           <Switch>
-            <Route path='/login' component={Login} />
-            <Route path='/signup' component={Signup} />
+            <Route exact path='/login' component={Login} />
+            <Route exact path='/signup' component={Signup} />
             <PrivateRoute path='/' component={App} />
           </Switch>
         </ThemeProvider>
