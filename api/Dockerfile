@@ -34,12 +34,13 @@ COPY ./ .
 # RUN npm config set registry registry.npmjs.com
 # USER 1001
 # RUN cat /etc/hosts
-RUN npm ci --loglevel verbose
+RUN npm ci
 
 # If you are building your code for production, copy all files
 
 # Cleaning any existing generated file
-RUN rm -rf ./dist-server
+
+RUN npm run build
 
 
 
@@ -54,4 +55,4 @@ VOLUME ${HOME}
 EXPOSE ${PORT}
 
 # Application Entry point
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]

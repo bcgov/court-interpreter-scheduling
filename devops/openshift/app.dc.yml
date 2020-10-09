@@ -6,13 +6,13 @@ metadata:
     build: ${INSTANCE}
     template: ${NAME}-template
     project: ${PROJECT}
-  name: api-court-interpreter-scheduler
+  name: app-court-interpreter-scheduler
 parameters:
   - name: NAME
     displayName: Name
     description: A suffix appended to all objects
     required: true
-    value: api-court-interpreter-scheduler
+    value: app-court-interpreter-scheduler
   - name: VERSION
     required: true
     value: "1.0"
@@ -29,18 +29,11 @@ parameters:
   - name: MAX_REPLICAS
     value: "1"
   - name: PORT
-    value: "3030"
+    value: "7070"
   - name: APP_PORT_DEFAULT
-    value: "3030-tcp"
+    value: "7070-tcp"
   - name: APP_PORT_OTHER
-    value: "8080-tcp"
-  - name: DB_SERVICE
-    required: true
-  - description: Username for PostgreSQL user that will be used for accessing the database.
-    displayName: PostgreSQL Connection Username
-    name: POSTGRESQL_USER
-    required: true
-    value: "developer"
+    value: "8088-tcp"
   - name: TAG
     description: Deployment image tag
     value: "1"
@@ -50,14 +43,15 @@ parameters:
     value: ""
   - name: HOST_NAME
     required: true
-    value: "api-dev-court-interpreter-scheduler.pathfinder.gov.bc.ca"
+    value: "dev-court-interpreter-scheduler.pathfinder.gov.bc.ca"
   - name: PROJECT
     value: "court-interpreter-scheduler"
+  - name: API_HOST
+    required: true
+    value: "NONE"
   - name: PATH
     required: true
-    value: "/api"
-  - name: ENV
-    value: "production"
+    value: "/app"
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -115,32 +109,15 @@ objects:
         spec:
           containers:
             - env:
-                - name: NODE_ENV
-                  value: ${ENV}
                 - name: BUILD_ID
                   value: ${BUILD_ID}
                 - name: APPLICATION_PORT
                   value: "${PORT}"
-                - name: DB_HOST
-                  value: "${DB_SERVICE}"
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: "${DB_SERVICE}"
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-password
-                      name: "${DB_SERVICE}"
-                - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-name
-                      name: "${DB_SERVICE}"
+                - name: REACT_APP_API_URL
+                  value: "${API_HOST}"
               image: " "
               imagePullPolicy: Always
-              name: api
+              name: app
               ports:
                 - containerPort: "${{PORT}}"
                   protocol: TCP
@@ -154,20 +131,20 @@ objects:
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/v1/healthcheck
+                  path: /
                   port: "${{PORT}}"
                   scheme: HTTP
-                initialDelaySeconds: 10
+                initialDelaySeconds: 140
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
               livenessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/v1/healthcheck
+                  path: /
                   port: "${{PORT}}"
                   scheme: HTTP
-                initialDelaySeconds: 10
+                initialDelaySeconds: 90
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
@@ -189,7 +166,7 @@ objects:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - api
+              - app
             from:
               kind: ImageStreamTag
               name: ${NAME}:${TAG}
@@ -219,9 +196,9 @@ objects:
           protocol: TCP
           targetPort: "${{PORT}}"
         - name: ${APP_PORT_OTHER}
-          port: 8080
+          port: 8088
           protocol: TCP
-          targetPort: 8080
+          targetPort: 8088
       selector:
         deploymentconfig: ${NAME}
       sessionAffinity: None
@@ -240,7 +217,6 @@ objects:
       name: ${NAME}
     spec:
       host: ${HOST_NAME}
-      path: ${PATH}
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge

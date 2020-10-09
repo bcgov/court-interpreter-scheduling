@@ -71,7 +71,7 @@ services:
     container_name: court-frontend
     build:
       context: ./frontend/
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
     environment:
       # TODO replace with dev api url
       - REACT_APP_API_URL=https://courts-api.freshworks.club

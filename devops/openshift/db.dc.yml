@@ -4,7 +4,12 @@ labels:
   template: postgresql-persistent-template
 metadata:
   creationTimestamp: null
-  name: postgresql-dc
+  name: ${NAME}
+  labels:
+    app: ${NAME}
+    build: ${INSTANCE}
+    template: ${NAME}-template
+    project: ${PROJECT}
 parameters:
 - description: The name of the OpenShift Service exposed for the database.
   displayName: Database Service Name
@@ -19,11 +24,6 @@ parameters:
   displayName: Namespace
   name: IMAGE_STREAM_NAMESPACE
   value: "openshift"
-- description: The name of the OpenShift Service exposed for the database.
-  displayName: Database Service Name
-  name: DATABASE_SERVICE_NAME
-  required: true
-  value: "postgresqlfw"
 - description: Username for PostgreSQL user that will be used for accessing the database.
   displayName: PostgreSQL Connection Username
   name: POSTGRESQL_USER
@@ -51,7 +51,7 @@ parameters:
   displayName: PostgreSQL Database Name
   name: POSTGRESQL_DATABASE
   required: true
-  value: "court-scheduler"
+  value: CourtInterpreterSchedular
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY
@@ -61,7 +61,7 @@ parameters:
   displayName: Version of PostgreSQL Image
   name: IMAGE_STREAM_VERSION
   required: true
-  value: '10'
+  value: '9.6'
 - name: CPU_LIMIT
   value: "500m"
 - name: MEMORY_LIMIT
@@ -70,20 +70,26 @@ parameters:
   value: "200m"
 - name: MEMORY_REQUEST
   value: "512Mi"
+- name: REPLICAS
+  value: "1"
+- name: MAX_REPLICAS
+  value: "1"
+- name: BUILD_ID
+  value: "1"
+- name: INSTANCE
+  value: ""
+- name: PROJECT
+  value: "court-interpreter-scheduler"
 objects:
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    name: "${DATABASE_SERVICE_NAME}"
-  stringData:
-    database-name: "${POSTGRESQL_DATABASE}"
-    database-password: "${POSTGRESQL_PASSWORD}"
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
-    name: "${DATABASE_SERVICE_NAME}"
+    name: "${NAME}"
+    labels:
+      app: ${NAME}
+      instance: ${INSTANCE}
   spec:
     ports:
     - name: postgresql
@@ -92,7 +98,7 @@ objects:
       protocol: TCP
       targetPort: 5432
     selector:
-      name: "${DATABASE_SERVICE_NAME}"
+      name: "${NAME}"
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -100,34 +106,30 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: "${DATABASE_SERVICE_NAME}"
+    name: "${NAME}"
+    labels:
+      app: ${NAME}
+      project: ${PROJECT}
   spec:
     accessModes:
     - ReadWriteMany
     resources:
       requests:
         storage: "${VOLUME_CAPACITY}"
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    name: "${IMAGE_STREAM_NAME}"
-    creationTimestamp: 
-    labels:
-      shared: 'true'
-    annotations: {}
-  spec:
-    lookupPolicy:
-      local: false
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
     annotations:
       template.alpha.openshift.io/wait-for-ready: 'true'
-    name: "${DATABASE_SERVICE_NAME}"
+    name: "${NAME}"
+    labels:
+      app: ${NAME}
+      instance: ${INSTANCE}
+      project: ${PROJECT}
   spec:
-    replicas: 1
+    replicas: "${{REPLICAS}}"
     selector:
-      name: "${DATABASE_SERVICE_NAME}"
+      name: "${NAME}"
     strategy:
       type: Recreate
       maxSurge: 50%
@@ -135,23 +137,28 @@ objects:
     template:
       metadata:
         labels:
-          name: "${DATABASE_SERVICE_NAME}"
+          name: "${NAME}"
       spec:
         containers:
         - capabilities: {}
           env:
+          - name: BUILD_ID
+            value: ${BUILD_ID}
           - name: POSTGRESQL_USER
-            value: "${POSTGRESQL_USER}"
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: "${NAME}"
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: database-password
-                name: "${DATABASE_SERVICE_NAME}"
+                name: "${NAME}"
           - name: POSTGRESQL_DATABASE
             valueFrom:
               secretKeyRef:
                 key: database-name
-                name: "${DATABASE_SERVICE_NAME}"
+                name: "${NAME}"
           image: " "
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -186,16 +193,16 @@ objects:
           terminationMessagePath: "/dev/termination-log"
           volumeMounts:
           - mountPath: "/var/lib/pgsql/data"
-            name: "${DATABASE_SERVICE_NAME}-data"
+            name: "${NAME}-data"
           - mountPath: "/var/run/postgresql"
-            name: "${DATABASE_SERVICE_NAME}-run"
+            name: "${NAME}-run"
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
-        - name: "${DATABASE_SERVICE_NAME}-data"
+        - name: "${NAME}-data"
           persistentVolumeClaim:
-            claimName: "${DATABASE_SERVICE_NAME}"
-        - name: "${DATABASE_SERVICE_NAME}-run"
+            claimName: "${NAME}"
+        - name: "${NAME}-run"
           emptyDir: {}
     triggers:
     - imageChangeParams:
