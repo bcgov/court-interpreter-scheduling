@@ -181,8 +181,6 @@ delete:
 
 delete-project:
 	@echo "+\n++ Delete all project related items\n"
-	@oc project $(BUILD_NAMESPACE)
-	@oc delete all -l project=$(APP_NAME)
 	@oc project $(NAMESPACE)
 	@oc delete all -l project=$(APP_NAME)
 

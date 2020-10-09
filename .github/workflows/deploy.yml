@@ -26,11 +26,11 @@ jobs:
   buildAPI:
     name: Build API and APP
     runs-on: ubuntu-latest
-    # if: ${{ github.event.pull_request.merged == true}}
+    if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_NAMESPACE: l4izby-tools
-      BRANCH: ${{ github.head_ref }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -57,12 +57,12 @@ jobs:
   deployDev:
     name: Deploy App, API, and DB to DEV environment
     runs-on: ubuntu-latest
-    # if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
+    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
     env:
       BUILD_ID: ${{ github.event.number }}
       NAMESPACE: l4izby-dev
       BUILD_NAMESPACE: l4izby-tools
-      BRANCH: ${{ github.head_ref }}
+      BRANCH: ${{ github.base_ref }}
       HOST_PREFIX: dev
     needs:
       - buildAPI
@@ -85,11 +85,17 @@ jobs:
         run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.SA_TOKEN }}
 
       # Deploy the api
-      - name: Deploy
+      - name: Deploy DB
         working-directory: "./devops/"
         run: |
           make oc-deploy-db
+      - name: Deploy API
+        working-directory: "./devops/"
+        run: |
           make oc-deploy-api
+      - name: Deploy API
+        working-directory: "./devops/"
+        run: |
           make oc-deploy-app
 
 
