@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: sterlingwes/gh-pages-deploy-action@v1.1
+      - uses: peaceiris/actions-gh-pages@v3
         with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          source-directory: api/documentation
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          publish_dir: ./api/documentation
