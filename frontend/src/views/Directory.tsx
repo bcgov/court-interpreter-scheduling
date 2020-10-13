@@ -1,24 +1,15 @@
-import React, { useEffect, useState, createContext } from 'react'
+import React, { useState } from 'react'
 import {
   Box,
   CircularProgress,
 } from '@material-ui/core'
 import useAxios from 'axios-hooks'
-import queryString from 'query-string'
+import useError from 'hooks/useError'
 
 import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
 import { SearchParams } from 'constants/interfaces'
-
-export const SearchContext = createContext<{ search: SearchParams, updateSearchContext: Function }>({
-  search: {
-    language: '',
-    level: [],
-    city: '',
-    dates: []
-  },
-  updateSearchContext: () => {}
-})
+import SearchContext from 'contexts/SearchContext'
 
 const Directory = () => {
   const [search, setSearch] = useState<SearchParams>({
@@ -30,6 +21,7 @@ const Directory = () => {
   })
 
   const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter')
+  useError({ error, prefix: 'Failed to load the interpreter directory.' })
 
   const getSearchResults = async (params: SearchParams) => {
     setSearch(params)
@@ -47,8 +39,6 @@ const Directory = () => {
         {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
-            : error
-            ? <Box p='120'>{error.message}</Box>
             : interpreters
             ? <DirectoryTable data={interpreters.data} disabled={!search.dates.length} />
             : null

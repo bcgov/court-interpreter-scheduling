@@ -3,34 +3,28 @@ import {
   Box,
   CircularProgress,
 } from '@material-ui/core'
-import BookingsTable from 'components/table/BookingsTable'
-import BookingsSearch from 'components/form/BookingsSearch'
 import useAxios from 'axios-hooks'
 
-const Booking = () => {
-  /* TODO add API call for GET booking */
-  const [{ data: bookings, error, loading }, refetch] = useAxios('/booking')
-  const [{ data: searchResults, loading: searchLoading }, search] = useAxios({
-    url: '/booking/search',
-    method: 'POST'
-  }, {
-    manual: true,
-  })
+import BookingsTable from 'components/table/BookingsTable'
+import BookingsSearch from 'components/form/BookingsSearch'
+import useError from 'hooks/useError'
 
+const Booking = () => {
+  const [{ data: bookings, error, loading }, getBookings] = useAxios('/booking')
+  useError({ error, prefix: 'Failed to load bookings.' })
   return (
     <Box px='150px'>
-      <BookingsSearch getSearchResults={search} />
-      {error && <p>Failed to fetch bookings. {error.message}</p>}
+      <BookingsSearch getSearchResults={getBookings} />
       {
-        (loading || searchLoading)
+        loading
           ?
             <Box mt={10}>
               <CircularProgress />
             </Box>
           :
             <BookingsTable
-              refetch={refetch}
-              data={searchResults?.data || bookings?.data || []}
+              refetch={getBookings}
+              data={bookings?.data || []}
             />
       }
     </Box>

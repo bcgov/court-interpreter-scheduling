@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import useAxios from 'axios-hooks'
+import useError from 'hooks/useError'
+
 import BookingInputs from 'components/form/inputs/Booking'
 import { Schema, Initial } from 'components/form/schemas/booking.schema'
 import { ButtonPrimary, ButtonSecondary } from 'components/Buttons'
 
-import { SearchContext } from 'views/Directory'
+import SearchContext from 'contexts/SearchContext'
 
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
@@ -25,7 +27,8 @@ type BookingModalProps = {
 
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
   const [open, toggle] = useState(false)
-  const [{ data, response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
+  const [{ response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
+  useError({ error, prefix: 'Failed to create a booking.'})
 
   useEffect(() => {
     toggle(interpreter !== null)
@@ -89,12 +92,20 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                 <DialogActions style={{ marginTop: '2rem', marginBottom: '1rem', paddingLeft: '24px', paddingRight: '24px' }}>
                   <Grid container justify='space-between'>
                     <Grid item xs={10}>
-                      <ButtonSecondary variant='outlined' onClick={() => setInterpreter(null)}>
+                      <ButtonSecondary
+                        variant='outlined'
+                        onClick={() => setInterpreter(null)}
+                      >
                         Cancel
                       </ButtonSecondary>
                     </Grid>
                     <Grid item xs={2}>
-                      <ButtonPrimary className='right' variant='contained' onClick={() => handleSubmit()} disabled={isSubmitting}>
+                      <ButtonPrimary
+                        className='right'
+                        variant='contained'
+                        onClick={() => handleSubmit()}
+                        disabled={isSubmitting || loading}
+                      >
                         Create Booking
                       </ButtonPrimary>
                     </Grid>

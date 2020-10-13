@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import { Box, Grid, Typography, withStyles } from '@material-ui/core'
-import { SearchContext } from 'views/Directory'
+import SearchContext from 'contexts/SearchContext'
 import Month from 'components/calendar/Month'
 import BookingButton from 'components/table/BookingButton'
 
@@ -43,10 +43,6 @@ const LinkTypography = withStyles({
 })(Typography)
 
 export default function Calendar ({ interpreters, setInterpreter }: CalendarProps) {
-  const thing = `
-  search.dates[0].date
-search.dates[0].date
-search.dates[0].date`
   return (
     <SearchContext.Consumer>
       {({ search }) => (

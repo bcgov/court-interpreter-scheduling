@@ -31,7 +31,14 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
       <Formik
         initialValues={Initial}
         validationSchema={Schema}
-        onSubmit={async (values) => getSearchResults({ data: { ...values, dates: [values.dates] } })}>
+        onSubmit={async (values) => getSearchResults({
+          url: '/booking/search',
+          method: 'POST',
+          data: {
+            ...values,
+            dates: [values.dates],
+          }
+        })}>
           {({ handleSubmit, isSubmitting, values }: FormikProps<any>) => (
             <Form onSubmit={handleSubmit}>
               <GridRow container spacing={4}>
