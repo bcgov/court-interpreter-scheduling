@@ -3,6 +3,7 @@ import moment from 'moment'
 import { Box, Grid, Typography, withStyles } from '@material-ui/core'
 import SearchContext from 'contexts/SearchContext'
 import Month from 'components/calendar/Month'
+import MoreDetails from 'components/calendar/MoreDetails'
 import BookingButton from 'components/table/BookingButton'
 
 type CalendarProps = {
@@ -33,14 +34,6 @@ const FlexBox = withStyles({
     alignItems: 'center',
   },
 })(Box)
-
-const LinkTypography = withStyles({
-  root: {
-    textDecoration: 'underline',
-    color: '#1A5A96',
-    fontWeight: 600,
-  },
-})(Typography)
 
 export default function Calendar ({ interpreters, setInterpreter }: CalendarProps) {
   return (
@@ -79,7 +72,7 @@ export default function Calendar ({ interpreters, setInterpreter }: CalendarProp
                     </Grid>
                     <FlexBox mt={1}>
                       <BookingButton onClick={() => setInterpreter(i)}>Book</BookingButton>
-                      <Box px={1}><LinkTypography variant='body1'>More Details</LinkTypography></Box>
+                      <Box px={1}><MoreDetails search={search} interpreter={i} setInterpreter={setInterpreter} /></Box>
                     </FlexBox>
                   </OutlinedGridItem>
                   <OutlinedGridItem item xs={3}>
