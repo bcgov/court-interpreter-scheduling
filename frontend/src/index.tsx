@@ -12,7 +12,7 @@ import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css'
 import { theme } from 'theme'
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/api/v1' : '/'
+axios.defaults.baseURL = '/api/v1'
 
 const Signup = lazy(() => import('views/register'))
 const Login = lazy(() => import('views/login'))
