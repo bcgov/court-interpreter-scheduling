@@ -4,7 +4,6 @@ import { BookingController } from './booking.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
-import { InterpreterService } from 'src/interpreter/interpreter.service';
 import { InterpreterModule } from 'src/interpreter/interpreter.module';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingDateService } from './booking-date.service';

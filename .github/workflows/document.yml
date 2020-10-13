@@ -1,0 +1,17 @@
+name: Court Api Document Deploy to Github Page
+
+on:
+  push:
+    branches:
+      - "backend-**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: sterlingwes/gh-pages-deploy-action@v1.1
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          source-directory: api/documentation
+          build-command: yarn build

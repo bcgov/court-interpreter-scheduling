@@ -45,7 +45,7 @@ services:
     ports:
       - "5435:5432"
     environment:
-      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations"
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations", "sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
     volumes:
@@ -81,6 +81,19 @@ services:
       - "8080"
     networks:
       - frontend
+  ### Sonarqube ###############################
+  sonarqube:
+    image: sonarqube:8.2-community
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonar
+      SONAR_JDBC_USERNAME: court_nestapi # database username
+      SONAR_JDBC_PASSWORD: court_nest123 # database password
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+    networks:
+      - backend
 
 networks:
   backend:
