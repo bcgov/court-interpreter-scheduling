@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react'
 import { AxiosError } from 'axios'
-import { ErrorContext } from 'contexts/ErrorContext'
+import ErrorContext from 'contexts/ErrorContext'
 
 export default function useError ({ error, prefix}: {
   error: AxiosError | undefined,

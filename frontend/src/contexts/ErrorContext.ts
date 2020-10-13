@@ -1,9 +1,11 @@
 import { createContext } from 'react'
 
-export const ErrorContext = createContext<{
+const ErrorContext = createContext<{
   message: string,
   updateErrorContext: Function,
 }>({
   message: '',
   updateErrorContext: () => {}
 })
+
+export default ErrorContext

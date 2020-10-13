@@ -6,7 +6,7 @@ import SubHeader from 'components/layout/SubHeader'
 import ContentHeader from 'components/layout/ContentHeader'
 import Footer from 'components/layout/Footer'
 import Error from 'components/Error'
-import { ErrorContext } from 'contexts/ErrorContext'
+import ErrorContext from 'contexts/ErrorContext'
 
 const Booking = lazy(() => import('views/Booking'))
 const Directory = lazy(() => import('views/Directory'))
