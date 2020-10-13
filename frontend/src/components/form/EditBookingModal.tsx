@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import useAxios from 'axios-hooks'
+import useError from 'hooks/useError'
 
 import { ButtonPrimary, ButtonSecondary } from 'components/Buttons'
 import BookingInputs from 'components/form/inputs/Booking'
@@ -27,12 +28,14 @@ type BookingModalProps = {
 export default function BookingModal({ booking, setBooking, refetch }: BookingModalProps) {
 
   const [open, toggleOpen] = useState(!!booking)
-  const [{ data, response, error, loading }, editBooking] = useAxios({
+  const [{ response, error, loading }, editBooking] = useAxios({
     url: '/booking',
     method: 'PATCH',
   }, {
     manual: true
   })
+
+  useError({ error, prefix: 'Failed to update this booking.' })
 
   useEffect(() => {
     toggleOpen(!!booking)
@@ -99,12 +102,20 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
             <DialogActions>
               <Grid container justify='space-between'>
                 <Grid item xs={10}>
-                  <ButtonSecondary variant='outlined' onClick={() => toggleOpen(false)}>
+                  <ButtonSecondary
+                    variant='outlined'
+                    onClick={() => toggleOpen(false)}
+                  >
                     Cancel
                   </ButtonSecondary>
                 </Grid>
                 <Grid item xs={2}>
-                  <ButtonPrimary className='right' variant='contained' onClick={() => handleSubmit()} disabled={isSubmitting}>
+                  <ButtonPrimary
+                    className='right'
+                    variant='contained'
+                    onClick={() => handleSubmit()}
+                    disabled={isSubmitting || loading}
+                  >
                     Update Booking
                   </ButtonPrimary>
                 </Grid>

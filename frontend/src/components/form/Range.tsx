@@ -10,7 +10,7 @@ import {
   IconButton,
   Popover,
 } from '@material-ui/core'
-import { SearchContext } from 'views/Directory'
+import SearchContext from 'contexts/SearchContext'
 import { Initial, Schema } from 'components/form/schemas/daterange-search.schema'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import { DayPickerRangeController } from 'react-dates';

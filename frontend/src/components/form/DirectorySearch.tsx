@@ -16,7 +16,7 @@ import {
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
 
-import { SearchContext } from 'views/Directory'
+import SearchContext from 'contexts/SearchContext'
 import SearchDates from 'components/form/SearchDates'
 import { Schema, Initial } from 'components/form/schemas/search.schema'
 import Range from 'components/form/Range'

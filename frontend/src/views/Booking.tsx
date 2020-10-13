@@ -7,15 +7,14 @@ import useAxios from 'axios-hooks'
 
 import BookingsTable from 'components/table/BookingsTable'
 import BookingsSearch from 'components/form/BookingsSearch'
-import Error from 'components/Error'
+import useError from 'hooks/useError'
 
 const Booking = () => {
   const [{ data: bookings, error, loading }, getBookings] = useAxios('/booking')
-
+  useError({ error, prefix: 'Failed to load bookings.' })
   return (
     <Box px='150px'>
       <BookingsSearch getSearchResults={getBookings} />
-      <Error message={error?.message} prefix='Failed to fetch bookings.' />
       {
         loading
           ?
