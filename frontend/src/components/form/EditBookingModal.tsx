@@ -76,7 +76,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
                   </Typography>
                 </Grid>
                 <Grid item xs={1}>
-                  <CloseIcon className='right pointer' />
+                  <CloseIcon className='right pointer' onClick={() => toggleOpen(false)} />
                 </Grid>
               </Grid>
             </DialogTitle>
