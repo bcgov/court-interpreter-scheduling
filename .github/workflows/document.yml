@@ -21,6 +21,7 @@ jobs:
 
       - name: Generate Jest Coverage
         run: npm run test:cov
+        working-directory: ./api
 
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
