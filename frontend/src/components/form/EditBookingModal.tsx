@@ -90,11 +90,6 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
                 </Typography>
               </Box>
               <BookingInputs interpreter={booking.interpreter} booking={booking} />
-              {error && (
-                <Box p={2} mt={2}>
-                  <span>{error.message}</span>
-                </Box>
-              )}
             </DialogContent>
 
             <Divider variant='middle' />
