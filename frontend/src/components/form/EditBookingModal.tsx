@@ -28,14 +28,14 @@ type BookingModalProps = {
 export default function BookingModal({ booking, setBooking, refetch }: BookingModalProps) {
 
   const [open, toggleOpen] = useState(!!booking)
-  const [{ response, error, loading }, editBooking] = useAxios({
+  const [{ response, data, loading, error }, editBooking] = useAxios({
     url: '/booking',
     method: 'PATCH',
   }, {
     manual: true
   })
 
-  useError({ error, prefix: 'Failed to update this booking.' })
+  useError({ error, prefix: 'Failed to update booking.' })
 
   useEffect(() => {
     toggleOpen(!!booking)
@@ -48,7 +48,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
     }
   }, [response, refetch])
 
-  return (
+  return !booking ? null : (
 
     <Dialog open={open} onClose={() => setBooking(null)} maxWidth='xl'>
       <Formik

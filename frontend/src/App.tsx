@@ -28,7 +28,7 @@ const App = () => {
         </Suspense>
       </section>
       <Footer />
-      <Error message={errorMessage} />
+      <Error />
     </ErrorContext.Provider>
   )
 }
