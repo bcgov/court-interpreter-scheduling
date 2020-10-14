@@ -59,9 +59,11 @@ services:
     user: ${UID}:${GID}
     depends_on:
       - postgres
-    command: -t pgsql -db nest_api_dev -host postgres -u court_nestapi -p court_nest123 -s public -debug
+      - api
+    command: ["-configFile", "/config/schemaspy.properties"]
     volumes:
       - ./api/documentation/schema:/output
+      - ./api/schemaspy.properties:/config/schemaspy.properties
     networks:
       - backend
 

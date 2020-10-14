@@ -22,8 +22,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      schemaspy:
-        image: schemaspy/schemaspy:latest
+      # schemaspy:
+      #   image: schemaspy/schemaspy:latest
+
       sonarqube:
         image: sonarqube:8.2-community
         env:
@@ -57,6 +58,11 @@ jobs:
           POSTGRESQL_USER: court_nestapi
           POSTGRESQL_PASSWORD: court_nest123
         working-directory: ./api
+
+      - name: Build Schemaspy
+        run: docker build -t schemaspy < .docker/schemaspy/Dockerfile
+      - name: Generate Schemaspy
+        run: docker run -v ./api/documentation:/output schemaspy
 
       - name: Generate Sonarqube
         run: npm run sonar
