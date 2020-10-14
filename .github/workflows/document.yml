@@ -19,7 +19,7 @@ jobs:
       #   run: docker-compose --file docker-compose.prod.yml exec api npm run doc:generate
 
       - name: Generate Schemaspy
-        run: docker-compose --file docker-compose.prod.yml up --build schemaspy
+        run: docker-compose --file docker-compose.document.yml up --build schemaspy
 
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
