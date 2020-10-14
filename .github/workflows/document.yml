@@ -8,68 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # container: node:12
-
-    services:
-      postgres:
-        image: postgres:10-alpine
-        env:
-          POSTGRES_DB: nest_api_dev
-          POSTGRES_USER: court_nestapi
-          POSTGRES_PASSWORD: court_nest123
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      # schemaspy:
-      #   image: schemaspy/schemaspy:latest
-
-      sonarqube:
-        image: sonarqube:8.2-community
-        env:
-          SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/nest_api_dev
-          SONAR_JDBC_USERNAME: court_nestapi # database username
-          SONAR_JDBC_PASSWORD: court_nest123 # database password
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./api
-
-      # - name: Generate Typedoc
-      #   run: npm run typedoc
-      #   working-directory: ./api
-
-      # - name: Generate Jest Coverage
-      #   run: npm run test:cov
-      #   working-directory: ./api
-
-      - name: Migration Database
-        run: npm run migrate:run
-        env:
-          # The hostname used to communicate with the PostgreSQL service container
-          DB_CONNECTION: pgsql
-          DB_HOST: postgres
-          DB_PORT: 5432
-          POSTGRESQL_DATABASE: nest_api_dev
-          POSTGRESQL_USER: court_nestapi
-          POSTGRESQL_PASSWORD: court_nest123
-        working-directory: ./api
-
-      - name: Build Schemaspy
-        run: docker build -t schemaspy < .docker/schemaspy/Dockerfile
-      - name: Generate Schemaspy
-        run: docker run -v ./api/documentation:/output schemaspy
-
-      - name: Generate Sonarqube
-        run: npm run sonar
-        env:
-          SONAR_HOST: sonarqube
-          SONAR_PORT: 9000
-        working-directory: ./api
+      - name: docker-compose
+        run: docker-compose up --build schemaspy
 
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
