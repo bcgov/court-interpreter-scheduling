@@ -19,6 +19,9 @@ jobs:
         run: npm run typedoc
         working-directory: ./api
 
+      - name: Generate Jest Coverage
+        run: npm run test:cov
+
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
         with:
