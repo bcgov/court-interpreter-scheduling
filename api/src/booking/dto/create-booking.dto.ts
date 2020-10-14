@@ -21,11 +21,18 @@ export class CreateBookingDto {
   interpreterId: number;
 
   @ApiProperty({
-    description: 'Booking case name',
-    example: faker.lorem.word(),
+    description: 'Case name',
+    example: 'Montague vs Capulet',
   })
   @IsNotEmpty()
   caseName: string;
+
+  @ApiProperty({
+    description: 'Room at courthouse for this matter',
+    example: faker.random.number({ max: 9999 }),
+  })
+  @IsOptional()
+  room: string;
 
   @ApiProperty({
     description: 'Booking status',
@@ -59,28 +66,28 @@ export class CreateBookingDto {
   registry: string;
 
   @ApiProperty({
-    description: 'Booking file',
-    example: 'file',
+    description: 'Court file number',
+    example: 'VAN-PC-1981',
   })
-  @IsOptional()
+  @IsNotEmpty()
   file: string;
 
   @ApiProperty({
-    description: 'Booking interpretFor',
+    description: 'To interpret on behalf of whom',
     example: 'defendant',
   })
   @IsOptional()
   interpretFor: string;
 
   @ApiProperty({
-    description: 'Booking requestedBy',
+    description: 'Who the interpreter is being requested by',
     example: 'prosecutor',
   })
   @IsOptional()
   requestedBy: string;
 
   @ApiProperty({
-    description: 'Booking federal',
+    description: 'Federal or provincial/civil matter',
     example: true,
   })
   @IsOptional()
@@ -94,14 +101,14 @@ export class CreateBookingDto {
   language: string;
 
   @ApiProperty({
-    description: 'Booking reason',
+    description: 'Reason for this booking',
     example: faker.lorem.sentence(),
   })
   @IsOptional()
   reason: string;
 
   @ApiProperty({
-    description: 'Booking prosecutor',
+    description: 'Prosecutor name for this matter',
     example: 'prosecutor',
   })
   @IsOptional()

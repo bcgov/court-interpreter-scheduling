@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import useAxios from 'axios-hooks'
 import useError from 'hooks/useError'
 
@@ -27,6 +28,7 @@ type BookingModalProps = {
 
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
   const [open, toggle] = useState(false)
+  const { state } = useLocation()
   const [{ response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
   useError({ error, prefix: 'Failed to create a booking.'})
 
@@ -35,7 +37,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
   }, [interpreter])
 
   useEffect(() => {
-    if (response?.status === 201) setInterpreter(null)
+    if ([200, 201].some((status) => status === response?.status)) setInterpreter(null)
   }, [response])
 
   return (
@@ -43,16 +45,28 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
       {({ search }) => (
         <Dialog open={open} maxWidth='xl'>
           <Formik
-            initialValues={Initial}
+            initialValues={{
+              ...Initial,
+              ...state?.booking,
+              language: state?.booking?.language?.name || search.language
+            }}
             validationSchema={Schema}
             onSubmit={async (values) => {
-              await postBooking({
-                data: {
-                  ...values,
-                  dates: search.dates,
-                  interpreterId: interpreter.id,
-                }
-              })
+              if (state?.booking) {
+                await postBooking({
+                  url: `/booking/${state.booking.id}`,
+                  method: 'PATCH',
+                  data: values,
+                })
+              } else {
+                await postBooking({
+                  data: {
+                    ...values,
+                    dates: search.dates,
+                    interpreterId: interpreter.id,
+                  }
+                })
+              }
               return
             }}
           >

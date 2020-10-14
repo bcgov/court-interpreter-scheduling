@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import {
@@ -66,6 +66,12 @@ export default function Header() {
     setActiveTab(value)
     history.push(value)
   }
+
+  useEffect(() => {
+    if (activeTab !== location.pathname) {
+      setActiveTab(location.pathname)
+    }
+  }, [location.pathname])
 
   return (
     <Paper elevation={0} square className={classes.subheader}>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
   Box,
   CircularProgress,
@@ -8,10 +9,11 @@ import useError from 'hooks/useError'
 
 import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
-import { SearchParams } from 'constants/interfaces'
+import { BookingDate, SearchParams } from 'constants/interfaces'
 import SearchContext from 'contexts/SearchContext'
 
 const Directory = () => {
+  const { state } = useLocation()
   const [search, setSearch] = useState<SearchParams>({
     language: '',
     level: [],
@@ -31,6 +33,22 @@ const Directory = () => {
       data: params
     })
   }
+
+  useEffect(() => {
+    if (state?.booking) {
+      const { booking } = state
+      getSearchResults({
+        language: booking.language.name,
+        level: ['1', '2', '3', '4'],
+        city: booking.city || search.city,
+        dates: booking.dates.map((d: BookingDate) => ({
+          date: d.date,
+          period: d.period,
+          arrivalTime: d.arrivalTime,
+        }))
+      })
+    }
+  }, [])
 
   return (
     <Box px='150px'>
