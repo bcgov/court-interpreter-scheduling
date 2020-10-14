@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import useAxios from 'axios-hooks'
 import useError from 'hooks/useError'
 
-import { ButtonPrimary, ButtonSecondary } from 'components/Buttons'
+import { StyledButton, ButtonSecondary, BookingButton } from 'components/Buttons'
 import BookingInputs from 'components/form/inputs/Booking'
 import { Schema, Initial } from 'components/form/schemas/booking.schema'
 
@@ -27,8 +28,10 @@ type BookingModalProps = {
 
 export default function BookingModal({ booking, setBooking, refetch }: BookingModalProps) {
 
+  const history = useHistory()
+
   const [open, toggleOpen] = useState(!!booking)
-  const [{ response, data, loading, error }, editBooking] = useAxios({
+  const [{ response, loading, error }, editBooking] = useAxios({
     url: '/booking',
     method: 'PATCH',
   }, {
@@ -47,6 +50,10 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
       refetch()
     }
   }, [response, refetch])
+
+  const editInterpreter = () => {
+    history.push('/directory', { booking })
+  }
 
   return !booking ? null : (
 
@@ -86,20 +93,15 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
             <DialogContent>
               <Box mt={2} mb={2}>
                 <Typography variant='h4'>
-                  {booking.interpreter?.firstName} {booking.interpreter?.lastName} (Level {booking.interpreter?.languages[0].level})
+                  {booking.interpreter?.firstName} {booking.interpreter?.lastName} (Level {booking.interpreter?.languages[0].level}) <BookingButton onClick={editInterpreter}>Edit</BookingButton>
                 </Typography>
               </Box>
-              <BookingInputs interpreter={booking.interpreter} booking={booking} />
-              {error && (
-                <Box p={2} mt={2}>
-                  <span>{error.message}</span>
-                </Box>
-              )}
+              <BookingInputs edit={true} interpreter={booking.interpreter} booking={booking} />
             </DialogContent>
 
             <Divider variant='middle' />
 
-            <DialogActions>
+            <DialogActions style={{ marginTop: '1rem', marginBottom: '1rem', paddingLeft: '24px', paddingRight: '24px' }}>
               <Grid container justify='space-between'>
                 <Grid item xs={10}>
                   <ButtonSecondary
@@ -110,14 +112,14 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
                   </ButtonSecondary>
                 </Grid>
                 <Grid item xs={2}>
-                  <ButtonPrimary
+                  <StyledButton
                     className='right'
                     variant='contained'
                     onClick={() => handleSubmit()}
                     disabled={isSubmitting || loading}
                   >
                     Update Booking
-                  </ButtonPrimary>
+                  </StyledButton>
                 </Grid>
               </Grid>
             </DialogActions>

@@ -122,10 +122,12 @@ export default function BookingInputs ({
   interpreter,
   search,
   booking,
+  edit,
 }: {
   interpreter?: any,
   search?: SearchParams,
   booking?: any,
+  edit?: boolean,
 }) {
   return (
     <Grid container spacing={4}>
@@ -147,7 +149,11 @@ export default function BookingInputs ({
       <StyledField name='caseName' label='Case Name' />
       <StyledField name='requestedBy' label='Requested By' rows={{ xs: 6, lg: 3 }} />
 
-      <StyledSelect name='language' options={interpreter?.languages.map((l: { language: { name: string } }) => l.language.name)} />
+      {
+        edit
+          ? <StyledField name='language' label='Language' />
+          : <StyledSelect name='language' options={interpreter?.languages.map((l: { language: { name: string } }) => l.language.name)} />
+      }
 
       <StyledRadios />
 

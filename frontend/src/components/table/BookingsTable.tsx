@@ -26,7 +26,7 @@ export default function BookingsTable({ data, refetch }: { data: Array<any>, ref
       <BaseTable
         data={data}
         columns={[
-          { render: (row: any) => <DateTimeCell date={row.date} />, title: 'Date & Time' },
+          { render: (row: any) => <DateTimeCell date={row.dates[0].date} />, title: 'Date & Time' },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
           { render: (row: any) => <InterpreterName interpreter={row.interpreter} />, title: 'Interpreter' },
