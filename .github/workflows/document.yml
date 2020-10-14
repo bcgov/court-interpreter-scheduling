@@ -15,6 +15,9 @@ jobs:
       - name: docker-compose
         run: docker-compose up --build schemaspy
 
+      - name: docker-compose 2
+        run: docker-compose up --build schemaspy
+
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
         with:
