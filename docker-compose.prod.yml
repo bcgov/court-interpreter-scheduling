@@ -8,7 +8,7 @@ services:
     stdin_open: true
     build:
       context: ./api
-      dockerfile: Dockerfile.schemaspy
+      dockerfile: Dockerfile
     ports:
       - "4000:4000"
     environment:
@@ -25,6 +25,13 @@ services:
       - MERGE_BRANCH=dev
     expose:
       - "4000"
+    volumes:
+      # Binds the application folder from the host inside the container for fast changes
+      - ./api:/usr/src/app
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /usr/src/app/node_modules
+    command: npm run doc:generate
     depends_on:
       - postgres
     networks:

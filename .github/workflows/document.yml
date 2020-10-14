@@ -6,17 +6,17 @@ on:
       - "backend-**"
 
 jobs:
-  build:
+  schemaspy:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: docker-compose
-        run: docker-compose up --build schemaspy
+      - name: Build Database
+        run: docker-compose up -f docker-compose.prod.yml --build api
 
-      - name: docker-compose 2
-        run: docker-compose up --build schemaspy
+      - name: Generate Schemaspy
+        run: docker-compose up -f docker-compose.prod.yml --build schemaspy
 
       - name: Deploy doc folder to gh-page
         uses: peaceiris/actions-gh-pages@v3
