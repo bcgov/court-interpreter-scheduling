@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import moment from 'moment'
 import { Box, IconButton, withStyles } from '@material-ui/core'
 import BorderColorIcon from '@material-ui/icons/BorderColor'
 import BaseTable from 'components/table/Base'
