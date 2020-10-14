@@ -25,7 +25,7 @@
     "seed:run": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
     "typedoc": "typedoc",
     "sonar": "node src/sonar.ts",
-    "doc:generate": "npm-run-all typedoc test:cov"
+    "doc:generate": "npm-run-all migrate:run typedoc test:cov"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
