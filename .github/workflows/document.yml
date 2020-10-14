@@ -10,7 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: peaceiris/actions-gh-pages@v3
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./api
+
+      - name: Generate Typedoc
+        run: npm run typedoc
+        working-directory: ./api
+
+      - name: Deploy doc folder to gh-page
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
           publish_dir: ./api/documentation
