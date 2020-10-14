@@ -20,7 +20,6 @@ const StyledIconButton = withStyles({
 export default function BookingsTable({ data, refetch }: { data: Array<any>, refetch: Function }) {
 
   const [booking, setBooking] = useState()
-  const [interpreter, setInterpreter] = useState()
 
   return (
     <Box mt={4}>
@@ -30,7 +29,7 @@ export default function BookingsTable({ data, refetch }: { data: Array<any>, ref
           { render: (row: any) => <DateTimeCell date={row.date} />, title: 'Date & Time' },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
-          { render: (row: any) => <InterpreterName setInterpreter={setInterpreter} interpreter={row.interpreter} />, title: 'Interpreter' },
+          { render: (row: any) => <InterpreterName interpreter={row.interpreter} />, title: 'Interpreter' },
           { render: (row: any) => <StatusButton status={row.status} />, title: 'Status' },
           { field: 'comment', title: 'Comment' },
           {
@@ -48,8 +47,6 @@ export default function BookingsTable({ data, refetch }: { data: Array<any>, ref
           }
         ]}
       />
-
-      {/* TODO: create a popover for when an interpreter has been selected to show interpreter details */}
       <EditBookingModal refetch={refetch} booking={booking} setBooking={setBooking} />
     </Box>
   )

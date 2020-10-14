@@ -77,6 +77,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                           <Check value='4' />
                         </FormGroup>
                       </StyledFormControl>
+                      <ErrorMessage name='level' />
                     </Grid>
                     <Grid item xs={4}>
                       <StyledFormControl>
@@ -119,7 +120,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                           style={{ marginTop: '1.25rem' }}
                           type='submit'
                           variant='contained'
-                          onClick={() => handleSubmit}
+                          onClick={() => handleSubmit()}
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? '...' : 'Search'}

@@ -35,6 +35,10 @@ body {
   cursor: pointer;
 }
 
+.rowItem, .MuiGrid-item.rowItem {
+  margin-bottom: 1rem;
+}
+
 .content {
   overflow: scroll;
 }
