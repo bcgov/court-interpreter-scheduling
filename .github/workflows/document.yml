@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: node:12
+    # container: node:12
 
     services:
       postgres:
@@ -39,13 +39,13 @@ jobs:
         run: npm ci
         working-directory: ./api
 
-      - name: Generate Typedoc
-        run: npm run typedoc
-        working-directory: ./api
+      # - name: Generate Typedoc
+      #   run: npm run typedoc
+      #   working-directory: ./api
 
-      - name: Generate Jest Coverage
-        run: npm run test:cov
-        working-directory: ./api
+      # - name: Generate Jest Coverage
+      #   run: npm run test:cov
+      #   working-directory: ./api
 
       - name: Migration Database
         run: npm run migrate:run
