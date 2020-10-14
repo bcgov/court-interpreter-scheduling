@@ -48,10 +48,21 @@ jobs:
 
       - name: Migration Database
         run: npm run migrate:run
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          DB_CONNECTION: pgsql
+          DB_HOST: postgres
+          DB_PORT: 5432
+          POSTGRESQL_DATABASE: nest_api_dev
+          POSTGRESQL_USER: court_nestapi
+          POSTGRESQL_PASSWORD: court_nest123
         working-directory: ./api
 
       - name: Generate Sonarqube
         run: npm run sonar
+        env:
+          SONAR_HOST: sonarqube
+          SONAR_PORT: 9000
         working-directory: ./api
 
       - name: Deploy doc folder to gh-page
