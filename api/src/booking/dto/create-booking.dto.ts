@@ -28,6 +28,13 @@ export class CreateBookingDto {
   caseName: string;
 
   @ApiProperty({
+    description: 'Room at courthouse for this matter',
+    example: faker.random.number({ max: 9999 }),
+  })
+  @IsOptional()
+  room: string;
+
+  @ApiProperty({
     description: 'Booking status',
     example: BookingStatus.PENDING,
   })
