@@ -31,7 +31,6 @@ services:
       # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
       # from inside the container to be used instead
       - /usr/src/app/node_modules
-    command: npm run doc:generate
     depends_on:
       - postgres
     networks:
