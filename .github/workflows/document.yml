@@ -8,6 +8,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: node:12
+
+    services:
+      postgres:
+        image: postgres:10-alpine
+        env:
+          POSTGRES_DB: nest_api_dev
+          POSTGRES_USER: court_nestapi
+          POSTGRES_PASSWORD: court_nest123
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      schemaspy:
+        image: schemaspy/schemaspy:latest
+      sonarqube:
+        image: sonarqube:8.2-community
+        env:
+          SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/nest_api_dev
+          SONAR_JDBC_USERNAME: court_nestapi # database username
+          SONAR_JDBC_PASSWORD: court_nest123 # database password
+
     steps:
       - uses: actions/checkout@v1
 
@@ -21,6 +44,14 @@ jobs:
 
       - name: Generate Jest Coverage
         run: npm run test:cov
+        working-directory: ./api
+
+      - name: Migration Database
+        run: npm run migrate:run
+        working-directory: ./api
+
+      - name: Generate Sonarqube
+        run: npm run sonar
         working-directory: ./api
 
       - name: Deploy doc folder to gh-page
