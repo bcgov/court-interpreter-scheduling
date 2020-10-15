@@ -23,7 +23,7 @@
     "migrate:run": "./node_modules/.bin/ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:run",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "typedoc": "typedoc",
+    "typedoc": "typedoc --disableOutputCheck",
     "sonar": "node src/sonar.ts",
     "doc:generate": "npm-run-all typedoc test:cov"
   },
