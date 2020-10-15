@@ -45,7 +45,7 @@ services:
     ports:
       - "5435:5432"
     environment:
-      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations", "sonar"
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
     volumes:
