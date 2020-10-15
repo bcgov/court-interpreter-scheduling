@@ -16,7 +16,7 @@ jobs:
         run: docker-compose --file docker-compose.document.yml up -d --build api
 
       - name: Generate Typedoc and Jest Coverage
-        run: docker-compose --file docker-compose.document.yml exec api npm run doc:generate
+        run: docker-compose --file docker-compose.document.yml exec -T api npm run doc:generate
 
       - name: Generate Schemaspy
         run: docker-compose --file docker-compose.document.yml up --build schemaspy
