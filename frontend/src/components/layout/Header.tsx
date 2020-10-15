@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core'
 
-import logo from '../../assets/images/logo-banner.svg';
+import logo from '../../assets/images/logo-banner.svg'
 
 const useStyles = makeStyles({
   header: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles({
       cursor: 'pointer',
     },
   }
-});
+})
 
 export default function Header() {
   const classes = useStyles()
@@ -82,5 +82,5 @@ export default function Header() {
         Having Trouble? <Link className={classes.getHelp} to='/gethelp'>Get Help</Link>
       </div>
     </div>
-  );
+  )
 }

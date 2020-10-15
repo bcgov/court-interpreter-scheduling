@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Box, Grid, withStyles, makeStyles } from '@material-ui/core'
 import CalendarIcon from '@material-ui/icons/CalendarToday'
 import ListIcon from '@material-ui/icons/List'

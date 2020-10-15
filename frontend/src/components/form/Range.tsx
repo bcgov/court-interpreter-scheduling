@@ -56,7 +56,7 @@ export default function Range() {
     if (search?.dates) {
       setFieldValue('dates', search.dates)
     }
-  }, [])
+  }, [setFieldValue, search])
   return (
     <Formik
       initialValues={Initial}

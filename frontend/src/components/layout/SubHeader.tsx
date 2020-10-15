@@ -71,7 +71,7 @@ export default function Header() {
     if (activeTab !== location.pathname) {
       setActiveTab(location.pathname)
     }
-  }, [location.pathname])
+  }, [location.pathname, activeTab])
 
   return (
     <Paper elevation={0} square className={classes.subheader}>
