@@ -16,17 +16,21 @@ import {
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
 
-import SearchContext from 'contexts/SearchContext'
-import SearchDates from 'components/form/SearchDates'
-import { Schema, Initial } from 'components/form/schemas/search.schema'
-import Range from 'components/form/Range'
+import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
+import { Schema, Initial } from 'components/form/schemas/interpreter-search.schema'
 import Check from 'components/form/inputs/Check'
 
-import { StyledButton } from 'components/Buttons'
+import { StyledButton, ButtonSecondary } from 'components/Buttons'
 import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
 
-export default function Search({ getSearchResults }: { getSearchResults: Function }) {
-  const { search } = useContext(SearchContext)
+export default function Search({
+  getSearchResults,
+  openCreateModal,
+}: {
+  getSearchResults: Function,
+  openCreateModal: Function,
+}) {
+  const { search } = useContext(InterpreterSearchContext)
   return (
     <Box>
       <Formik
@@ -34,17 +38,12 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         initialValues={{
           ...Initial,
           ...search,
-          city: '',
+          city: 'Victoria',
         }}
         enableReinitialize={true}
         validationSchema={Schema}
-        onSubmit={async (values) => {
-          await getSearchResults({
-            ...values,
-            dates: search.dates,
-          })
-        }}>
-          {({ handleSubmit, errors, isSubmitting, ...props }: FormikProps<any>) => (
+        onSubmit={async (values) => getSearchResults(values)}>
+          {({ handleSubmit, errors, isSubmitting }: FormikProps<any>) => (
             <>
               <GridRow container spacing={4}>
                 <Grid item xs={4}>
@@ -110,10 +109,21 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </Grid>
               </GridRow>
               <GridRow container spacing={4} mt={2}>
-                <Grid item xs={6}>
-                  <Range />
+                <Grid item xs={4}>
+                  <StyledFormControl>
+                    <StyledFormLabel htmlFor='add' />
+                    <ButtonSecondary
+                      style={{ marginTop: '1.25rem' }}
+                      type='button'
+                      variant='outlined'
+                      onClick={() => openCreateModal(true)}
+                      id='add'
+                    >
+                      Add
+                    </ButtonSecondary>
+                  </StyledFormControl>
                 </Grid>
-                <Grid item xs={2} />
+                <Grid item xs={4} />
                 <Grid item xs={4}>
                   <StyledFormControl>
                     <StyledFormLabel htmlFor='submit' />
@@ -129,7 +139,6 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   </StyledFormControl>
                 </Grid>
               </GridRow>
-              {search.dates.length > 0 && <SearchDates values={props.values} />}
             </>
           )}
       </Formik>

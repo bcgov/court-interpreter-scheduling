@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   makeStyles,
   Paper,
-  withStyles,
-  Theme,
   Typography,
-} from '@material-ui/core';
+} from '@material-ui/core'
 
 const useStyles = makeStyles({
   contentHeader: {
@@ -21,12 +19,12 @@ const useStyles = makeStyles({
     color: '#fff',
     display: 'flex',
   },
-});
+})
 
 export default function Header() {
   const { pathname } = useLocation()
   const classes = useStyles()
-  let headerText;
+  let headerText
   // TODO introduce concept of a user and get the clerk's location
   switch(pathname) {
     case '/booking':
@@ -34,6 +32,9 @@ export default function Header() {
       break
     case '/directory':
       headerText = `Search Interpreters`
+      break
+    case '/interpreters':
+      headerText = `Manage Interpreters`
       break
     default:
       break

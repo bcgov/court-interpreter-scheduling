@@ -9,6 +9,7 @@ import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dt
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
+import { InterpreterRO } from './ro/interpreter.ro';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 
 @Injectable()
@@ -22,7 +23,7 @@ export class InterpreterService {
     createInterpreterDto: Partial<CreateInterpreterDto>,
     interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
-    const { language, ...insertInterpreter } = createInterpreterDto;
+    const { languages, ...insertInterpreter } = createInterpreterDto;
     const interpreter = this.interpreterRepository.create(insertInterpreter);
     interpreter.languages = interpreterLangs;
     return await this.interpreterRepository.save(interpreter);
@@ -30,7 +31,7 @@ export class InterpreterService {
 
   async findAll(
     paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
-  ): Promise<SuccessResponse<InterpreterEntity>> {
+  ): Promise<SuccessResponse<InterpreterRO>> {
     const {
       page,
       limit,
@@ -46,8 +47,8 @@ export class InterpreterService {
       .leftJoinAndSelect('intLang.language', 'lang')
       .leftJoinAndSelect('interpreter.bookings', 'booking')
       .leftJoinAndSelect('booking.dates', 'dates')
-      .offset((page - 1) * limit)
-      .limit(limit);
+      .skip((page - 1) * limit)
+      .take(limit);
 
     if (level && level.length > 0) {
       query.where('intLang.level IN (:...level)', {
@@ -60,6 +61,7 @@ export class InterpreterService {
     }
 
     if (city) {
+      // TODO make case insensitive
       query.andWhere('interpreter.city = :city', { city });
     }
 
@@ -67,12 +69,12 @@ export class InterpreterService {
       const date = dates[0];
       const metric = (date: string, time: string, period: BookingPeriod) => {
         return `MIN(SQRT(
-          POWER(ABS(EXTRACT(EPOCH FROM ('${date}' - d."date"))/60),2) 
+          POWER(ABS(EXTRACT(EPOCH FROM ('${date}' - d."date"))/60),2)
         + POWER(ABS(EXTRACT(EPOCH FROM ('${time}' - d."arrival_time"))/60),2)
-        + (CASE WHEN d."period" = '${period}' THEN 0 
-        ELSE 1 
+        + (CASE WHEN d."period" = '${period}' THEN 0
+        ELSE 1
         END)
-        ))        
+        ))
         `;
       };
 
@@ -96,9 +98,8 @@ export class InterpreterService {
     }
 
     const interpreters = await query.getMany();
-
     return {
-      data: interpreters,
+      data: interpreters.map((i: InterpreterEntity) => i.toResponseObject()),
       pagination: { page, limit },
     };
   }

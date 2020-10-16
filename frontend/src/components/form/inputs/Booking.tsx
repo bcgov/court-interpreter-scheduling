@@ -19,6 +19,7 @@ import {
   StyledTextField,
   StyledLabel,
 } from './DirectoryInputs'
+import { BookingType } from 'components/form/schemas/booking.schema'
 
 import { BookingDate, SearchParams } from 'constants/interfaces'
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik'
@@ -49,7 +50,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
 )
 
 const StyledRadios = () => {
-  const { values } = useFormikContext()
+  const { values } = useFormikContext<BookingType>()
   return (
     <Grid item xs={6}>
       <StyledFormControl>
@@ -152,7 +153,7 @@ export default function BookingInputs ({
       {
         edit
           ? <StyledField name='language' label='Language' />
-          : <StyledSelect name='language' options={interpreter?.languages.map((l: { language: { name: string } }) => l.language.name)} />
+          : <StyledSelect name='language' options={interpreter?.languages.map((l: { languageName: string }) => l.languageName)} />
       }
 
       <StyledRadios />

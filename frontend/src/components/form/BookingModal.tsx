@@ -26,9 +26,13 @@ type BookingModalProps = {
   setInterpreter: Function;
 }
 
+interface LocationState {
+  booking: any;
+}
+
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
   const [open, toggle] = useState(false)
-  const { state } = useLocation()
+  const { state } = useLocation<LocationState>()
   const [{ response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
   useError({ error, prefix: 'Failed to create a booking.'})
 
@@ -94,11 +98,6 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                     </Typography>
                   </Box>
                   <BookingInputs interpreter={interpreter} search={search} />
-                  {error && (
-                    <Box p={2} mt={2}>
-                      <span>{error.message}</span>
-                    </Box>
-                  )}
                 </DialogContent>
 
                 <Divider variant='middle' />

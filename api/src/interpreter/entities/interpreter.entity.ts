@@ -8,6 +8,8 @@ import {
   OneToMany,
 } from 'typeorm';
 
+import { InterpreterRO } from '../ro/interpreter.ro';
+
 import { InterpreterLanguageEntity } from './interpreter-language.entity';
 
 @Entity('interpreter')
@@ -61,6 +63,7 @@ export class InterpreterEntity {
 
   @Column({ nullable: true })
   email: string;
+
   @Column({ nullable: true })
   supplier: string;
 
@@ -85,4 +88,28 @@ export class InterpreterEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  toResponseObject(): InterpreterRO {
+    return {
+      id: this.id,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      languages: this.languages.map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject()),
+      bookings: this.bookings,
+      address: this.address,
+      city: this.city,
+      province: this.province,
+      postal: this.postal,
+      homePhone: this.homePhone,
+      businessPhone: this.businessPhone,
+      phone: this.phone,
+      email: this.email,
+      supplier: this.supplier,
+      gst: this.gst,
+      comments: this.comments,
+      contractExtension: this.contractExtension,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    }
+  }
 }

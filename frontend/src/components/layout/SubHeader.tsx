@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useLocation, useHistory } from 'react-router-dom'
 
 import {
   makeStyles,
@@ -8,7 +8,7 @@ import {
   Tabs,
   withStyles,
   Theme,
-} from '@material-ui/core';
+} from '@material-ui/core'
 
 interface StyledTabProps {
   label: string;
@@ -27,13 +27,13 @@ const useStyles = makeStyles({
     color: '#fff',
     display: 'flex',
   },
-});
+})
 
 const BCTabs = withStyles({
   indicator: {
     display: 'none',
   },
-})(Tabs);
+})(Tabs)
 
 const BCTab = withStyles((theme: Theme) => ({
   root: {
@@ -54,7 +54,7 @@ const BCTab = withStyles((theme: Theme) => ({
   selected: {
     borderBottom: 'solid 2px #FCBA19'
   },
-}))((props: StyledTabProps) => <Tab disableRipple {...props} />);
+}))((props: StyledTabProps) => <Tab disableRipple {...props} />)
 
 export default function Header() {
   const location = useLocation()
@@ -81,6 +81,7 @@ export default function Header() {
       >
         <BCTab label='Bookings' value='/booking' />
         <BCTab label='Search Interpreters' value='/directory' />
+        <BCTab label='Interpreters' value='/interpreters' />
       </BCTabs>
     </Paper>
   );

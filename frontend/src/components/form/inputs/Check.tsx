@@ -54,6 +54,29 @@ export function TextCheck ({ value, label, name }: { value: string, label: strin
   )
 }
 
+export function SingleCheck ({ label, name }: { label: string, name: string }) {
+  return (
+    <FormControlLabel
+      label={label}
+      labelPlacement='end'
+      control={
+        <Field
+          type='checkbox'
+          name={name}
+          component={({ field, form, ...props }: FieldProps) => (
+            <Checkbox
+              {...field}
+              {...props}
+              color='primary'
+              checked={form.values[name]}
+            />
+          )}
+        />
+      }
+    />
+  )
+}
+
 export function PeriodRadio ({ value, label, name }: { value: string, label: string, name: string }) {
   return (
     <FormControlLabel
