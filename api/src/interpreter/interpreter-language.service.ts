@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterLanguageDTO } from './dto/interpreter-language.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
+import { capFirstAndSmallRest } from 'src/utils/utils';
 
 @Injectable()
 export class InterpreterLanguageService {
@@ -23,9 +24,16 @@ export class InterpreterLanguageService {
     const iLangs = await Promise.all(
       interpreterLanguage.map(async (intLang: InterpreterLanguageDTO) => {
         const iLang = new InterpreterLanguageEntity();
-        const language = await this.languageRepository.findOneOrFail({
-          name: intLang.languageName,
-        });
+      
+        let language = await this.languageRepository.createQueryBuilder("language")
+        .where('LOWER(language.name) = LOWER(:name)', {name: intLang.languageName})
+        .getOne();
+        
+        if(!language) {
+          const newLang = this.languageRepository.create();
+          newLang.name = capFirstAndSmallRest(intLang.languageName);
+          language = await this.languageRepository.save(newLang);
+        }       
 
         iLang.language = language;
         iLang.level = intLang.level;
