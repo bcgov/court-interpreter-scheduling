@@ -1,4 +1,5 @@
-import { styled } from '@material-ui/core'
+import { styled, withStyles } from '@material-ui/core'
+import IconButton from '@material-ui/core/IconButton'
 import Button from '@material-ui/core/Button'
 
 export const ButtonPrimary = styled(Button)({
@@ -58,3 +59,12 @@ export const BookingButton = styled(Button)({
   fontWeight: 'bold',
   fontSize: '16px'
 })
+
+export const StyledIconButton = withStyles({
+  root: {
+    backgroundColor: '#E8F3FD',
+    borderRadius: '4px',
+    height: '40px',
+    width: '40px',
+  }
+})(IconButton)
