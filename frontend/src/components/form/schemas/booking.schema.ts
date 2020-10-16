@@ -28,4 +28,18 @@ const Schema = yup.object({
   comment: yup.string(),
 })
 
+export type BookingType = {
+  room: string;
+  registry: string;
+  file: string;
+  interpretFor: string;
+  caseName: string;
+  requestedBy: string;
+  federal: boolean | undefined,
+  language: string;
+  reason: string;
+  prosecutor: string;
+  comment: string;
+}
+
 export { Initial, Schema }
