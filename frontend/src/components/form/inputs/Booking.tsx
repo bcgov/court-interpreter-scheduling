@@ -19,6 +19,7 @@ import {
   StyledTextField,
   StyledLabel,
 } from './DirectoryInputs'
+import { BookingType } from 'components/form/schemas/booking.schema'
 
 import { BookingDate, SearchParams } from 'constants/interfaces'
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik'
@@ -49,7 +50,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
 )
 
 const StyledRadios = () => {
-  const { values } = useFormikContext()
+  const { values } = useFormikContext<BookingType>()
   return (
     <Grid item xs={6}>
       <StyledFormControl>
