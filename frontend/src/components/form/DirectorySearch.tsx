@@ -34,7 +34,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         initialValues={{
           ...Initial,
           ...search,
-          city: 'Victoria',
+          city: '',
         }}
         enableReinitialize={true}
         validationSchema={Schema}

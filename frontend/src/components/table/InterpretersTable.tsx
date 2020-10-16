@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, IconButton, withStyles } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import BorderColorIcon from '@material-ui/icons/BorderColor'
 import BaseTable from 'components/table/Base'
 import { StyledIconButton } from 'components/Buttons'
@@ -18,7 +18,7 @@ export default function InterpretersTable({ data }: { data: Array<Interpreter> }
           { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, },
           { title: 'Phone', field: 'phone', },
           { title: 'Email', field: 'email', },
-          { title: 'Language', render: (row: any) => `${row.languages[0].language.name}`, },
+          { title: 'Language', render: (row: any) => `${row.languages[0].languageName}`, },
           { title: 'Level', render: (row: any) => `${row.languages[0].level}`, },
           {
             render: (row: any) => (

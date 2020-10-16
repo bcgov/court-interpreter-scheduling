@@ -82,7 +82,7 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
             <DialogContent>
               <Box mt={2} mb={2}>
                 <Typography variant='h4'>
-                  {interpreter?.firstName} {interpreter?.lastName} (Level {interpreter?.languages[0].level})
+                  {interpreter?.firstName} {interpreter?.lastName}
                 </Typography>
               </Box>
               <InterpreterInputs />

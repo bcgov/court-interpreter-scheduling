@@ -153,7 +153,7 @@ export default function BookingInputs ({
       {
         edit
           ? <StyledField name='language' label='Language' />
-          : <StyledSelect name='language' options={interpreter?.languages.map((l: { language: { name: string } }) => l.language.name)} />
+          : <StyledSelect name='language' options={interpreter?.languages.map((l: { languageName: string }) => l.languageName)} />
       }
 
       <StyledRadios />

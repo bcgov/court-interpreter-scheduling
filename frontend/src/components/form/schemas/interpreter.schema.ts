@@ -5,7 +5,7 @@ import { Language } from 'constants/interfaces'
 const Initial = {
   firstName: '',
   lastName: '',
-  language: [{
+  languages: [{
     languageName: '',
     level: '',
     commentOnLevel: ''
@@ -28,7 +28,7 @@ const Initial = {
 const Schema = yup.object({
   firstName: yup.string(),
   lastName: yup.string(),
-  language: yup.array().of(yup.object({
+  languages: yup.array().of(yup.object({
     name: yup.string(),
     level: yup.string().matches(/(1|2|3|4)/, 'Level must be a number from 1-4'),
     comment: yup.string(),
@@ -52,7 +52,7 @@ export type Interpreter = {
   id: number;
   firstName: string;
   lastName: string;
-  language: Language[];
+  languages: Language[];
   bookings: BookingType[];
   address?: string;
   city?: string;

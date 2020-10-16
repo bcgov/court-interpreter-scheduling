@@ -22,11 +22,11 @@ const Directory = () => {
     language: '',
     level: [],
     // TODO: update with clerk location on login
-    city: 'Victoria',
+    city: '',
     dates: []
   })
 
-  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter')
+  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter', { useCache: false })
   useError({ error, prefix: 'Failed to load the interpreter directory.' })
 
   const getSearchResults = async (params: SearchParams) => {
@@ -62,7 +62,7 @@ const Directory = () => {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
             : interpreters
-            ? <DirectoryTable data={interpreters.data} disabled={!search.dates.length} />
+            ? <DirectoryTable language={search.language} data={interpreters.data} disabled={!search.dates.length} />
             : null
         }
       </SearchContext.Provider>

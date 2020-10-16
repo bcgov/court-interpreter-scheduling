@@ -31,12 +31,7 @@ export enum Level {
 }
 
 export type Language = {
-  id: number;
-  language: {
-    name: string;
-    created_at?: Date;
-    updated_at?: Date;
-  };
+  languageName: string;
   level: Level;
   commentOnLevel: string;
   created_at?: Date;

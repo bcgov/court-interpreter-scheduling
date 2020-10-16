@@ -59,13 +59,13 @@ export default function InterpreterInputs () {
       <Grid item xs={12}>
         <FieldArray
           name='language'
-          render={arrayHelpers => values.language && values.language.length > 0 && values.language.map((language: Language, index: number) => (
+          render={arrayHelpers => values.languages && values.languages.length > 0 && values.languages.map((language: Language, index: number) => (
             <Grid container spacing={4}>
-              <StyledField name={`language[${index}].languageName`} label='Language' rows={{ xs: 10, lg: 4 }} />
-              <StyledField name={`language[${index}].level`} label='Level' rows={{ xs: 2, lg: 2 }} />
-              <StyledField name={`language[${index}].commentOnLevel`} label='Comment' rows={{ xs: 11, lg: 5 }} />
+              <StyledField name={`languages[${index}].languageName`} label='Language' rows={{ xs: 10, lg: 4 }} />
+              <StyledField name={`languages[${index}].level`} label='Level' rows={{ xs: 2, lg: 2 }} />
+              <StyledField name={`languages[${index}].commentOnLevel`} label='Comment' rows={{ xs: 11, lg: 5 }} />
               {
-                index === values.language.length - 1 ? (
+                index === values.languages.length - 1 ? (
                   <Grid
                     className='pointer'
                     style={{ display: 'flex', alignItems: 'flex-end' }}
