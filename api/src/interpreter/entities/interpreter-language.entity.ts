@@ -8,6 +8,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { LanguageRO } from '../ro/interpreter-language.ro';
 import { Level } from '../enums/level.enum';
 
 @Entity('interpreterLanguage')
@@ -49,4 +50,12 @@ export class InterpreterLanguageEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  toResponseObject(): LanguageRO {
+    return {
+      languageName: this.language.name,
+      level: this.level,
+      commentOnLevel: this.commentOnLevel,
+    }
+  }
 }

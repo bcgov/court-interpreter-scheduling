@@ -35,7 +35,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => InterpreterLanguageDTO)
-  language: InterpreterLanguageDTO[];
+  languages: InterpreterLanguageDTO[];
 
   @ApiProperty({
     description: 'Street Address',

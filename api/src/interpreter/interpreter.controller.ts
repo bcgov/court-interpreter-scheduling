@@ -14,12 +14,15 @@ import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterEntity } from './entities/interpreter.entity';
+import { InterpreterRO } from './ro/interpreter.ro';
 import { ApiTags } from '@nestjs/swagger';
 
 import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
+
 import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+
 @ApiTags('interpreter')
 @Controller('interpreter')
 export class InterpreterController {
@@ -31,38 +34,40 @@ export class InterpreterController {
   @Post()
   async create(
     @Body() createInterpreterDto: CreateInterpreterDto,
-  ): Promise<InterpreterEntity> {
+  ): Promise<InterpreterRO> {
     let interpreterLangs: InterpreterLanguageEntity[] = [];
 
-    const { language } = createInterpreterDto;
+    const { languages } = createInterpreterDto;
 
-    if (language && language.length > 0) {
+    if (languages && languages.length > 0) {
       try {
         interpreterLangs = await this.interpreterLanguageService.create(
-          language,
+          languages,
         );
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
 
-    return this.interpreterService.create(
+    const interpreter = await this.interpreterService.create(
       createInterpreterDto,
       interpreterLangs,
     );
+
+    return interpreter.toResponseObject();
   }
 
   @Get()
   async findAll(
     @Query() paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
-  ): Promise<SuccessResponse<InterpreterEntity>> {
+  ): Promise<SuccessResponse<InterpreterRO>> {
     return await this.interpreterService.findAll(paginateInterpreterQueryDto);
   }
 
   @Post('search')
   async search(
     @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
-  ): Promise<SuccessResponse<InterpreterEntity>> {
+  ): Promise<SuccessResponse<InterpreterRO>> {
     return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
   }
 
