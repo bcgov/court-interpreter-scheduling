@@ -58,7 +58,8 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
         }}
         validationSchema={Schema}
         onSubmit={async (values) => {
-          await editInterpreter({ url: '/interpreter/' + interpreter?.id, data: values })
+          const { bookings, ...interpreterDetails } = values
+          await editInterpreter({ url: `/interpreter/${interpreter?.id}`, data: interpreterDetails })
           return
         }}
       >
