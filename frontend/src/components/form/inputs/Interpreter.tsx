@@ -1,18 +1,14 @@
 import React from 'react'
 
-import { withStyles } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
 import Hidden from '@material-ui/core/Hidden'
-import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 
 import {
   StyledFormControl,
-  StyledNativeSelect,
-  StyledSelectInput,
   StyledTextField,
   StyledLabel,
 } from './DirectoryInputs'
