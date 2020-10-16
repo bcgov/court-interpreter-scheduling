@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Box,
   CircularProgress,
@@ -20,7 +20,7 @@ const Directory = () => {
     city: 'Victoria',
   })
 
-  const [open, toggle] = useState(true)
+  const [open, toggle] = useState(false)
 
   const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter')
   useError({ error, prefix: 'Failed to load the interpreter directory.' })
