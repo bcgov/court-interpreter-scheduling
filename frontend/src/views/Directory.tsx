@@ -12,8 +12,12 @@ import DirectoryTable from 'components/table/DirectoryTable'
 import { BookingDate, SearchParams } from 'constants/interfaces'
 import SearchContext from 'contexts/SearchContext'
 
+interface LocationState {
+  booking: any;
+}
+
 const Directory = () => {
-  const { state } = useLocation()
+  const { state } = useLocation<LocationState>()
   const [search, setSearch] = useState<SearchParams>({
     language: '',
     level: [],

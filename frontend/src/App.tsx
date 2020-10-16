@@ -10,6 +10,7 @@ import ErrorContext from 'contexts/ErrorContext'
 
 const Booking = lazy(() => import('views/Booking'))
 const Directory = lazy(() => import('views/Directory'))
+const Interpreters = lazy(() => import('views/Interpreters'))
 
 const App = () => {
   const [errorMessage, setError] = useState('')
@@ -23,6 +24,7 @@ const App = () => {
           <Switch>
             <Route exact path='/booking' component={Booking} />
             <Route exact path='/directory' component={Directory} />
+            <Route exact path='/interpreters' component={Interpreters} />
             <Redirect to='/booking' />
           </Switch>
         </Suspense>
