@@ -105,14 +105,27 @@ export class InterpreterService {
   }
 
   async findOne(id: number): Promise<InterpreterEntity> {
-    return await this.interpreterRepository.findOneOrFail({ id });
+    return await this.interpreterRepository.findOneOrFail({
+      relations: ['languages'],
+      where: { id },
+    });
   }
 
   async update(
     id: number,
-    updateInterpreterDto: UpdateInterpreterDto,
+    updateInterpreterDto: Omit<UpdateInterpreterDto, 'languages'>,
+    langs?: InterpreterLanguageEntity[],
   ): Promise<void> {
-    await this.interpreterRepository.save({ id, ...updateInterpreterDto });
+    const interpreter = this.interpreterRepository.create({
+      id,
+      ...updateInterpreterDto,
+    });
+
+    if (langs && langs.length > 0) {
+      interpreter.languages = langs;
+    }
+
+    await this.interpreterRepository.save(interpreter);
   }
 
   async remove(id: number): Promise<void> {

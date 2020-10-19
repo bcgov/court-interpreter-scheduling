@@ -81,7 +81,23 @@ export class InterpreterController {
     @Param('id') id: string,
     @Body() updateInterpreterDto: UpdateInterpreterDto,
   ): Promise<void> {
-    await this.interpreterService.update(+id, updateInterpreterDto);
+    const { languages, ...updateDto } = updateInterpreterDto;
+    const interpreter = await this.interpreterService.findOne(+id);
+    const originLangs = interpreter.languages;
+
+    let langs: InterpreterLanguageEntity[];
+
+    if (languages && languages.length > 0) {
+      try {
+        langs = await this.interpreterLanguageService.create(languages);
+        await this.interpreterLanguageService.removeByInterpreterLangs(
+          originLangs,
+        );
+      } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      }
+    }
+    await this.interpreterService.update(+id, updateDto, langs);
   }
 
   @Delete(':id')

@@ -24,16 +24,19 @@ export class InterpreterLanguageService {
     const iLangs = await Promise.all(
       interpreterLanguage.map(async (intLang: InterpreterLanguageDTO) => {
         const iLang = new InterpreterLanguageEntity();
-      
-        let language = await this.languageRepository.createQueryBuilder("language")
-        .where('LOWER(language.name) = LOWER(:name)', {name: intLang.languageName})
-        .getOne();
-        
-        if(!language) {
+
+        let language = await this.languageRepository
+          .createQueryBuilder('language')
+          .where('LOWER(language.name) = LOWER(:name)', {
+            name: intLang.languageName,
+          })
+          .getOne();
+
+        if (!language) {
           const newLang = this.languageRepository.create();
           newLang.name = capFirstAndSmallRest(intLang.languageName);
           language = await this.languageRepository.save(newLang);
-        }       
+        }
 
         iLang.language = language;
         iLang.level = intLang.level;
@@ -50,5 +53,11 @@ export class InterpreterLanguageService {
       }),
     );
     return iLangMap;
+  }
+
+  async removeByInterpreterLangs(
+    interpreterLangs: InterpreterLanguageEntity[],
+  ): Promise<void> {
+    await this.interpreterLanguageRepository.remove(interpreterLangs);
   }
 }
