@@ -41,9 +41,6 @@ const Routes = () => {
     <KeycloakProvider
       authClient={keycloakClient}
       LoadingComponent={<Box p={2}><CircularProgress /></Box>}
-      initOptions={{
-        pkceMethod: 'S256',
-      }}
       onTokens={({ token }) => {
         axios.interceptors.request.use(
           (config: AxiosRequestConfig): AxiosRequestConfig => {
