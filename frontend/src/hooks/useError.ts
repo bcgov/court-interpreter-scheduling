@@ -16,6 +16,6 @@ export default function useError ({ error, prefix }: {
       const message = prefix ? `${prefix} ${error.message}` : error.message
       updateErrorContext(message)
     }
-  }, [error])
+  }, [error, prefix, updateErrorContext])
   return
 }

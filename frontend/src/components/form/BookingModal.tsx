@@ -42,7 +42,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
 
   useEffect(() => {
     if ([200, 201].some((status) => status === response?.status)) setInterpreter(null)
-  }, [response])
+  }, [response, setInterpreter])
 
   return (
     <SearchContext.Consumer>
