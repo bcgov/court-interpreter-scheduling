@@ -78,9 +78,6 @@ export default function Header() {
           Court Services Branch Scheduling System
         </Typography>
       </div>
-      <div className={classes.help}>
-        Having Trouble? <Link className={classes.getHelp} to='/gethelp'>Get Help</Link>
-      </div>
     </div>
   )
 }

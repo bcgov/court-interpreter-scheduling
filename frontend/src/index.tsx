@@ -19,7 +19,6 @@ import 'react-dates/lib/css/_datepicker.css'
 
 axios.defaults.baseURL = '/api/v1'
 
-const Signup = lazy(() => import('views/register'))
 const Login = lazy(() => import('views/login'))
 const KeycloakRedirect = lazy(() => import('views/Keycloak'))
 const App = lazy(() => import('App'))
@@ -56,7 +55,6 @@ const Routes = () => {
           <ThemeProvider theme={theme}>
             <Switch>
               <Route exact path='/login' component={Login} />
-              <Route exact path='/signup' component={Signup} />
               <Route exact path='/keycloak' component={KeycloakRedirect} />
               <PrivateRoute path='/' component={App} />
             </Switch>
