@@ -4,8 +4,8 @@ import Button from '@material-ui/core/Button'
 
 export const ButtonPrimary = styled(Button)({
   minWidth: '120px',
-  backgroundColor: '#E8F3FD',
-  color: '#003365',
+  backgroundColor: '#003365',
+  color: 'white',
   textTransform: 'none',
   fontSize: '16px',
   lineHeight: '22px',
@@ -13,7 +13,7 @@ export const ButtonPrimary = styled(Button)({
   fontWeight: 600,
   boxShadow: 'none',
   '&:hover': {
-    backgroundColor: '#e7f2fb9c',
+    backgroundColor: '#003365d1',
     boxShadow: 'none',
   }
 });
