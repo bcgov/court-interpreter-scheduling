@@ -76,7 +76,7 @@ export class InterpreterService {
         `;
       };
 
-      dates.map((date, idx) => {
+      dates.forEach((date, idx) => {
         query.leftJoinAndSelect(
           subQuery => {
             return subQuery
