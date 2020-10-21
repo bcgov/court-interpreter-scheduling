@@ -107,15 +107,10 @@ export class InterpreterService {
 
     if (name) {
       query.andWhere(
-        new Brackets(sqb => {
-          sqb
-            .where('LOWER(interpreter.firstName) like LOWER(:name)', {
-              name: `%${name}%`,
-            })
-            .orWhere('LOWER(interpreter.lastName) like LOWER(:name)', {
-              name: `%${name}%`,
-            });
-        }),
+        `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) like LOWER(:name)`,
+        {
+          name: `%${name}%`,
+        },
       );
     }
 
