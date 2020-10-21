@@ -67,15 +67,10 @@ export class BookingService {
 
     if (interpreter) {
       query.andWhere(
-        new Brackets(sqb => {
-          sqb
-            .where('LOWER(interpreter.firstName) like LOWER(:name)', {
-              name: `%${interpreter}%`,
-            })
-            .orWhere('LOWER(interpreter.lastName) like LOWER(:name)', {
-              name: `%${interpreter}%`,
-            });
-        }),
+        `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) like LOWER(:name)`,
+        {
+          name: `%${interpreter}%`,
+        },
       );
     }
 

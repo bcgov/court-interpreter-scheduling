@@ -39,6 +39,7 @@ export class InterpreterService {
       language,
       city,
       dates,
+      name,
     } = paginateInterpreterQueryDto;
 
     const query = this.interpreterRepository
@@ -102,6 +103,15 @@ export class InterpreterService {
       );
       query.addSelect(`(${select})/${dates.length}`, 'avg_score');
       query.orderBy('avg_score', 'DESC');
+    }
+
+    if (name) {
+      query.andWhere(
+        `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) like LOWER(:name)`,
+        {
+          name: `%${name}%`,
+        },
+      );
     }
 
     const interpreters = await query.getMany();
