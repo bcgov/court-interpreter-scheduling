@@ -97,6 +97,29 @@ services:
     networks:
       - backend
 
+  ### KeyCloak ##############################
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: nest_api_dev
+      DB_USER: court_nestapi
+      DB_PASSWORD: court_nest123
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    ports:
+      - 9090:8080
+    expose:
+      - "9090"
+    volumes:
+      - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
 networks:
   backend:
     driver: "bridge"
