@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
