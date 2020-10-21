@@ -61,12 +61,10 @@ export class InterpreterService {
     }
 
     if (city) {
-      // TODO make case insensitive
-      query.andWhere('interpreter.city = :city', { city });
+      query.andWhere('LOWER(interpreter.city) = LOWER(:city)', { city });
     }
 
     if (dates && dates.length > 0) {
-      const date = dates[0];
       const metric = (date: string, time: string, period: BookingPeriod) => {
         return `MIN(SQRT(
           POWER(ABS(EXTRACT(EPOCH FROM ('${date}' - d."date"))/60),2)
@@ -78,26 +76,36 @@ export class InterpreterService {
         `;
       };
 
-      query.leftJoinAndSelect(
-        subQuery => {
-          return subQuery
-            .select(
-              metric(date.date.toISOString(), date.arrivalTime, date.period),
-              `score`,
-            )
-            .addSelect(`b.interpreter`, 'interpreterId')
-            .from(BookingDateEntity, 'd')
-            .leftJoin('d.booking', 'b')
-            .groupBy('b.interpreter');
-        },
-        's',
-        `"s"."interpreterId" = interpreter.id`,
-      );
+      dates.forEach((date, idx) => {
+        query.leftJoinAndSelect(
+          subQuery => {
+            return subQuery
+              .select(
+                metric(date.date.toISOString(), date.arrivalTime, date.period),
+                `score_${idx}`,
+              )
+              .addSelect(`b.interpreter`, 'interpreterId')
+              .from(BookingDateEntity, 'd')
+              .leftJoin('d.booking', 'b')
+              .groupBy('b.interpreter');
+          },
+          `s_${idx}`,
+          `"s_${idx}"."interpreterId" = interpreter.id`,
+        );
+      });
 
-      query.orderBy('s.score', 'DESC');
+      const select: string = Array.from(Array(dates.length)).reduce(
+        (acc, val, idx) => {
+          return `${acc}${idx > 0 ? ' + ' : ''}s_${idx}.score_${idx}`;
+        },
+        '',
+      );
+      query.addSelect(`(${select})/${dates.length}`, 'avg_score');
+      query.orderBy('avg_score', 'DESC');
     }
 
     const interpreters = await query.getMany();
+
     return {
       data: interpreters.map((i: InterpreterEntity) => i.toResponseObject()),
       pagination: { page, limit },
