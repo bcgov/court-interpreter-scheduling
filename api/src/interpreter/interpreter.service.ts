@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
@@ -39,6 +39,7 @@ export class InterpreterService {
       language,
       city,
       dates,
+      name,
     } = paginateInterpreterQueryDto;
 
     const query = this.interpreterRepository
@@ -102,6 +103,20 @@ export class InterpreterService {
       );
       query.addSelect(`(${select})/${dates.length}`, 'avg_score');
       query.orderBy('avg_score', 'DESC');
+    }
+
+    if (name) {
+      query.andWhere(
+        new Brackets(sqb => {
+          sqb
+            .where('LOWER(interpreter.firstName) like LOWER(:name)', {
+              name: `%${name}%`,
+            })
+            .orWhere('LOWER(interpreter.lastName) like LOWER(:name)', {
+              name: `%${name}%`,
+            });
+        }),
+      );
     }
 
     const interpreters = await query.getMany();

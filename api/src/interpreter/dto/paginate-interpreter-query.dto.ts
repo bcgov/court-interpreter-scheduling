@@ -48,5 +48,12 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => BookingDateDto)
-  dates: BookingDateDto[];
+  dates?: BookingDateDto[];
+
+  @ApiProperty({
+    description: 'Interpreter Name',
+    example: faker.name.firstName(),
+  })
+  @IsOptional()
+  name?: string;
 }
