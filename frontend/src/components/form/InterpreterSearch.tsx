@@ -20,16 +20,10 @@ import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 import { Schema, Initial } from 'components/form/schemas/interpreter-search.schema'
 import Check from 'components/form/inputs/Check'
 
-import { StyledButton, ButtonSecondary } from 'components/Buttons'
+import { StyledButton } from 'components/Buttons'
 import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
 
-export default function Search({
-  getSearchResults,
-  openCreateModal,
-}: {
-  getSearchResults: Function,
-  openCreateModal: Function,
-}) {
+export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(InterpreterSearchContext)
   return (
     <Box>
@@ -43,9 +37,79 @@ export default function Search({
         enableReinitialize={true}
         validationSchema={Schema}
         onSubmit={async (values) => getSearchResults(values)}>
-          {({ handleSubmit, errors, isSubmitting }: FormikProps<any>) => (
+          {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
             <>
               <GridRow container spacing={4}>
+                <Grid item xs={4}>
+                  <StyledFormControl>
+                    <StyledLabel htmlFor='name'>
+                      Name
+                    </StyledLabel>
+                    <Field name='name'>
+                      {({ field, form, ...props }: any) => (
+                        <StyledTextField
+                          id='name'
+                          variant='outlined'
+                          size='small'
+                          placeholder='First, last or both'
+                          {...field}
+                          {...props}
+                        />
+                      )}
+                    </Field>
+                    <ErrorMessage name='name' />
+                  </StyledFormControl>
+                </Grid>
+                <Grid item xs={4}>
+                  <StyledFormControl>
+                    <StyledFormLabel htmlFor='city'>
+                      Court Location
+                    </StyledFormLabel>
+                    <StyledNativeSelect
+                      input={
+                        <Field
+                          component={
+                            ({ field, form, ...props }: any) => (
+                              <StyledSelectInput {...field} {...props} />
+                            )
+                          }
+                        />
+                      }
+                      id='city'
+                      name='city'
+                      variant='outlined'
+                    >
+                      <option value='Victoria'>Victoria</option>
+                      <option value='Nanaimo'>Nanaimo</option>
+                      <option value='Courtenay'>Courtenay</option>
+                      <option value='Abbotsford'>Abbotsford</option>
+                      <option value='Vancouver'>Vancouver</option>
+                    </StyledNativeSelect>
+                    <ErrorMessage name='city' />
+                  </StyledFormControl>
+                </Grid>
+                <Grid item xs={4}>
+                  <StyledFormControl>
+                    <StyledLabel htmlFor='keywords'>
+                      Keywords
+                    </StyledLabel>
+                    <Field name='keywords'>
+                      {({ field, form, ...props }: any) => (
+                        <StyledTextField
+                          id='keywords'
+                          variant='outlined'
+                          size='small'
+                          placeholder='Email, phone etc'
+                          {...field}
+                          {...props}
+                        />
+                      )}
+                    </Field>
+                    <ErrorMessage name='keywords' />
+                  </StyledFormControl>
+                </Grid>
+              </GridRow>
+              <GridRow container spacing={4} mt={2}>
                 <Grid item xs={4}>
                   <StyledFormControl>
                     <StyledLabel htmlFor='language'>
@@ -79,51 +143,6 @@ export default function Search({
                   </StyledFormControl>
                   <ErrorMessage name='level' />
                 </Grid>
-                <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledFormLabel htmlFor='city'>
-                      Court Location
-                    </StyledFormLabel>
-                    <StyledNativeSelect
-                      input={
-                        <Field
-                          component={
-                            ({ field, form, ...props }: any) => (
-                              <StyledSelectInput {...field} {...props} />
-                            )
-                          }
-                        />
-                      }
-                      id='city'
-                      name='city'
-                      variant='outlined'
-                    >
-                      <option value='Victoria'>Victoria</option>
-                      <option value='Nanaimo'>Nanaimo</option>
-                      <option value='Courtenay'>Courtenay</option>
-                      <option value='Abbotsford'>Abbotsford</option>
-                      <option value='Vancouver'>Vancouver</option>
-                    </StyledNativeSelect>
-                    <ErrorMessage name='city' />
-                  </StyledFormControl>
-                </Grid>
-              </GridRow>
-              <GridRow container spacing={4} mt={2}>
-                <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledFormLabel htmlFor='add' />
-                    <ButtonSecondary
-                      style={{ marginTop: '1.25rem' }}
-                      type='button'
-                      variant='outlined'
-                      onClick={() => openCreateModal(true)}
-                      id='add'
-                    >
-                      Add
-                    </ButtonSecondary>
-                  </StyledFormControl>
-                </Grid>
-                <Grid item xs={4} />
                 <Grid item xs={4}>
                   <StyledFormControl>
                     <StyledFormLabel htmlFor='submit' />

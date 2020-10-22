@@ -14,10 +14,12 @@ import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 
 const Directory = () => {
   const [search, setSearch] = useState<InterpreterSearchParams>({
-    language: '',
-    level: [],
+    name: '',
+    keywords: '',
     // TODO: update with clerk location on login
     city: 'Victoria',
+    language: '',
+    level: [],
   })
 
   const [open, toggle] = useState(false)
@@ -37,12 +39,12 @@ const Directory = () => {
   return (
     <Box px='150px'>
       <InterpreterSearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
-        <InterpreterSearch openCreateModal={toggle} getSearchResults={getSearchResults} />
+        <InterpreterSearch getSearchResults={getSearchResults} />
         {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
             : interpreters
-            ? <InterpretersTable data={interpreters.data} />
+            ? <InterpretersTable getInterpreters={getInterpreters} openCreateModal={toggle} data={interpreters.data} />
             : null
         }
       </InterpreterSearchContext.Provider>

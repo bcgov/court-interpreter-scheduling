@@ -12,6 +12,7 @@ import {
   StyledTextField,
   StyledLabel,
 } from './DirectoryInputs'
+import FieldError from 'components/form/inputs/FieldError'
 import { SingleCheck } from 'components/form/inputs/Check'
 import { Interpreter } from 'components/form/schemas/interpreter.schema'
 
@@ -40,6 +41,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
         )}
       </Field>
     </StyledFormControl>
+    <FieldError name={name} />
   </Grid>
 )
 

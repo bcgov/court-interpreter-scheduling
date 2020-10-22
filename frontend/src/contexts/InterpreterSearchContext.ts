@@ -6,7 +6,9 @@ const InterpreterSearchContext = createContext<{
   updateSearchContext: Function,
 }>({
   search: {
+    name: '',
     language: '',
+    keywords: '',
     level: [],
     city: ''
   },

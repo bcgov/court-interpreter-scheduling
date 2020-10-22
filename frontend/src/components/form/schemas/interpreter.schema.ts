@@ -26,10 +26,10 @@ const Initial = {
 }
 
 const Schema = yup.object({
-  firstName: yup.string(),
-  lastName: yup.string(),
+  firstName: yup.string().required('First name is required'),
+  lastName: yup.string().required('Last name is required'),
   languages: yup.array().of(yup.object({
-    name: yup.string(),
+    languageName: yup.string().required('Please provide a language name'),
     level: yup.string().matches(/(1|2|3|4)/, 'Level must be a number from 1-4'),
     comment: yup.string(),
   })),
@@ -40,7 +40,7 @@ const Schema = yup.object({
   homePhone: yup.string(),
   businessPhone: yup.string(),
   phone: yup.string(),
-  email: yup.string(),
+  email: yup.string().email('Please provide a valid email'),
   supplier: yup.string(),
   gst: yup.string(),
   comments: yup.string(),

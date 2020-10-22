@@ -16,7 +16,7 @@ const StyledTableRow = withStyles({
 const StyledCell = withStyles({
   root: {
     border: 'none',
-    fontSize: '14px'
+    fontSize: '14px',
   }
 })(MTableCell)
 

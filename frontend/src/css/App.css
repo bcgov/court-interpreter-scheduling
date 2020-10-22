@@ -80,3 +80,23 @@ body {
 .MORNING {
   background: linear-gradient(0deg, #FFFFFF 50%, #FCBA19 50%);
 }
+
+span.deleteSpan {
+  color: #FF8686;
+  margin-left: 1rem;
+}
+
+span.deleteSpan.confirm {
+  text-decoration: underline;
+}
+
+span.errorSpan {
+  color: #FF8686;
+  margin-top: 4px;
+}
+
+/* TABLE */
+
+td.MuiTableCell-root {
+  border: none;
+}

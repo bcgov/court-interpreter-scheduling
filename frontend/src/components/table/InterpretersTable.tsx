@@ -1,12 +1,21 @@
 import React, { useState } from 'react'
-import { Box } from '@material-ui/core'
+import { Grid, Box } from '@material-ui/core'
 import BorderColorIcon from '@material-ui/icons/BorderColor'
+import AddIcon from '@material-ui/icons/Add'
 import BaseTable from 'components/table/Base'
 import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
 import { Interpreter } from 'components/form/schemas/interpreter.schema'
 
-export default function InterpretersTable({ data }: { data: Array<Interpreter> }) {
+export default function InterpretersTable({
+  data,
+  openCreateModal,
+  getInterpreters,
+}: {
+  data: Array<Interpreter>,
+  openCreateModal: Function,
+  getInterpreters: Function,
+}) {
 
   const [interpreter, setInterpreter] = useState(null)
 
@@ -15,12 +24,22 @@ export default function InterpretersTable({ data }: { data: Array<Interpreter> }
       <BaseTable
         data={data}
         columns={[
-          { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, },
-          { title: 'Phone', field: 'phone', },
-          { title: 'Email', field: 'email', },
-          { title: 'Language', render: (row: any) => `${row.languages[0].languageName}`, },
-          { title: 'Level', render: (row: any) => `${row.languages[0].level}`, },
+          { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}` },
+          { title: 'Phone', field: 'phone' },
+          { title: 'Email', field: 'email' },
+          { title: 'Language', render: (row: any) => `${row.languages[0].languageName}` },
+          { title: 'Level', render: (row: any) => `${row.languages[0].level}` },
           {
+            title: (
+              <StyledIconButton
+                className='pointer'
+                onClick={() => openCreateModal(true)}
+                color='primary'
+              >
+                <AddIcon />
+              </StyledIconButton>
+            ),
+            sorting: false,
             render: (row: any) => (
               <StyledIconButton
                 className='pointer'
@@ -30,12 +49,48 @@ export default function InterpretersTable({ data }: { data: Array<Interpreter> }
                 <BorderColorIcon />
               </StyledIconButton>
             ),
-            align: 'right',
-            width: 48,
+            width: 75,
           }
         ]}
+        overrides={{
+          detailPanel: (rowData: any) => (
+            <Grid container justify='space-around'>
+              <Grid item>
+                <Box p={1}>
+                  <b>Address</b>
+                  <br />
+                  {`${rowData.address} ${rowData.city} ${rowData.postal}`}</Box>
+              </Grid>
+              <Grid item>
+                <Box p={1}>
+                  <b>Supplier #</b>
+                  <br />
+                  {rowData.supplier}
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box p={1}>
+                  <b>GST #</b>
+                  <br />
+                  {rowData.gst}
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box p={1}>
+                  <b>Comments</b>
+                  <br />
+                  {rowData.comments}
+                </Box>
+              </Grid>
+            </Grid>
+          )
+        }}
       />
-      <EditInterpreterModal interpreter={interpreter} setInterpreter={setInterpreter} refetch={() => console.log('get data again')} />
+      <EditInterpreterModal
+        interpreter={interpreter}
+        setInterpreter={setInterpreter}
+        refetch={getInterpreters}
+      />
     </Box>
   )
 }

@@ -26,7 +26,7 @@ type InterpreterModalProps = {
 }
 
 export default function EditInterpreterModal({ interpreter, setInterpreter, refetch }: InterpreterModalProps) {
-
+  const [confirmDelete, enableDelete] = useState(false)
   const [open, toggleOpen] = useState(!!interpreter)
   const [{ response, loading, error }, editInterpreter] = useAxios({
     url: '/interpreter/' + interpreter?.id,
@@ -35,22 +35,37 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
     manual: true
   })
 
+  const [{ response: deleteResponse, loading: deleteLoading, error: deleteError }, deleteInterpreter] = useAxios({
+    url: '/interpreter/' + interpreter?.id,
+    method: 'DELETE',
+  }, {
+    manual: true
+  })
+
   useError({ error, prefix: 'Failed to update interpreter.' })
+  useError({ error: deleteError, prefix: 'Failed to delete interpreter.' })
 
   useEffect(() => {
     toggleOpen(!!interpreter)
   }, [interpreter])
 
   useEffect(() => {
-    if (response?.status === 200) {
+    if (response?.status === 200 || deleteResponse?.status === 200) {
       toggleOpen(false)
       refetch()
     }
-  }, [response, refetch])
+  }, [response, deleteResponse, refetch])
 
   return !interpreter ? null : (
 
-    <Dialog open={open} onClose={() => setInterpreter(null)} maxWidth='xl'>
+    <Dialog
+      open={open}
+      maxWidth='xl'
+      onClose={() => {
+        setInterpreter(null)
+        enableDelete(false)
+      }}
+    >
       <Formik
         initialValues={{
           ...Initial,
@@ -63,7 +78,7 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
           return
         }}
       >
-        {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
+        {({ handleSubmit, isSubmitting, isValid }: FormikProps<any>) => (
           <>
             <DialogTitle>
               <Grid container justify='space-between'>
@@ -93,20 +108,38 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
 
             <DialogActions style={{ marginTop: '1rem', marginBottom: '1rem', paddingLeft: '24px', paddingRight: '24px' }}>
               <Grid container justify='space-between'>
-                <Grid item xs={10}>
+                <Grid item xs={4}>
                   <ButtonSecondary
                     variant='outlined'
                     onClick={() => toggleOpen(false)}
                   >
                     Cancel
                   </ButtonSecondary>
+                  {
+                    confirmDelete ? (
+                      <Typography className='deleteSpan pointer confirm' component='span' onClick={() => deleteInterpreter()}>Confirm Delete Interpreter</Typography>
+                    ) : (
+                      <Typography className='deleteSpan pointer' component='span' onClick={() => enableDelete(true)}>
+                        Delete
+                      </Typography>
+                    )
+                  }
                 </Grid>
+                {
+                  !isValid ?
+                    <Grid item xs={4}>
+                      <Box pt={1} style={{ textAlign: 'right' }}>
+                        <span className='errorSpan'>Please check your inputs.</span>
+                      </Box>
+                    </Grid>
+                  : null
+                }
                 <Grid item xs={2}>
                   <StyledButton
                     className='right'
                     variant='contained'
                     onClick={() => handleSubmit()}
-                    disabled={isSubmitting || loading}
+                    disabled={isSubmitting || loading || deleteLoading}
                   >
                     Update Interpreter
                   </StyledButton>

@@ -18,9 +18,11 @@ export type SearchParams = {
 }
 
 export type InterpreterSearchParams = {
+  name: string;
+  city: string;
+  keywords: string;
   language: string;
   level: string[];
-  city: string;
 }
 
 export enum Level {

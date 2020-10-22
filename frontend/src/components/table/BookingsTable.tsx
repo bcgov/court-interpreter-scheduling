@@ -29,6 +29,7 @@ export default function BookingsTable({ data, refetch }: { data: Array<any>, ref
           { render: (row: any) => <DateTimeCell date={row.dates[0].date} />, title: 'Date & Time' },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
+          { field: 'language.name', title: 'Language' },
           { render: (row: any) => <InterpreterName interpreter={row.interpreter} />, title: 'Interpreter' },
           { render: (row: any) => <StatusButton status={row.status} />, title: 'Status' },
           { field: 'comment', title: 'Comment' },
