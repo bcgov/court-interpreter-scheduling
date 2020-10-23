@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Box,
   CircularProgress,
@@ -12,6 +12,9 @@ import useError from 'hooks/useError'
 const Booking = () => {
   const [{ data: bookings, error, loading }, getBookings] = useAxios('/booking')
   useError({ error, prefix: 'Failed to load bookings.' })
+  useEffect(() => {
+    getBookings()
+  }, [])
   return (
     <Box px='150px'>
       <BookingsSearch getSearchResults={getBookings} />

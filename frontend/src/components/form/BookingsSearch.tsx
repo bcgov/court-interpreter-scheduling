@@ -36,7 +36,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
           method: 'POST',
           data: {
             ...values,
-            dates: [values.dates],
+            dates: values?.dates?.startDate ? [values.dates] : [],
           }
         })}>
           {({ handleSubmit, isSubmitting, values }: FormikProps<any>) => (

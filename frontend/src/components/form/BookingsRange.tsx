@@ -44,6 +44,7 @@ export default function Range({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
   const anchor = useRef(null)
   const id = open ? 'date-range-popover' : undefined
+  const [field, , helpers] = useField('dates')
   return (
     <>
       <StyledFormControl>
@@ -92,6 +93,15 @@ export default function Range({ text }: { text: string }) {
               <Grid justify='space-between' container>
                 <Grid item xs={2}>
                   <Button variant='outlined' type='button' onClick={() => setOpen(!open)}>Cancel</Button>
+                </Grid>
+                <Grid item xs={6} />
+                <Grid item xs={1}>
+                  <Box pt={1}>
+                    <span className='pointer' onClick={() => helpers.setValue({
+                      startDate: '',
+                      endDate: '',
+                    })}>Clear</span>
+                  </Box>
                 </Grid>
                 <Grid item xs={2}>
                   <Button

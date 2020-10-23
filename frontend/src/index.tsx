@@ -40,7 +40,8 @@ const Routes = () => {
     <KeycloakProvider
       authClient={keycloakClient}
       LoadingComponent={<Box p={2}><CircularProgress /></Box>}
-      onTokens={({ token }) => {
+      autoRefreshToken={true}
+      onTokens={({ token, refreshToken }) => {
         axios.interceptors.request.use(
           (config: AxiosRequestConfig): AxiosRequestConfig => {
             config.headers.Authorization = `Bearer ${token}`
