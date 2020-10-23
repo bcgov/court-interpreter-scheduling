@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsNumber, Max, Min } from 'class-validator';
+import { SelectQueryBuilder } from 'typeorm';
 
 export class PaginationQueryDTO {
   @ApiProperty({
@@ -26,4 +27,10 @@ export class PaginationQueryDTO {
   @IsOptional()
   @IsNumber()
   limit: number = 10;
+
+  filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
+    query.skip((this.page - 1) * this.limit);
+    query.take(this.limit);
+    return query;
+  }
 }

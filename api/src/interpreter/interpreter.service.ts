@@ -32,38 +32,16 @@ export class InterpreterService {
   async findAll(
     paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    const {
-      page,
-      limit,
-      level,
-      language,
-      city,
-      dates,
-      name,
-    } = paginateInterpreterQueryDto;
+    const { page, limit, dates, keywords } = paginateInterpreterQueryDto;
 
-    const query = this.interpreterRepository
+    let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
       .leftJoinAndSelect('interpreter.languages', 'intLang')
       .leftJoinAndSelect('intLang.language', 'lang')
       .leftJoinAndSelect('interpreter.bookings', 'booking')
-      .leftJoinAndSelect('booking.dates', 'dates')
-      .skip((page - 1) * limit)
-      .take(limit);
+      .leftJoinAndSelect('booking.dates', 'dates');
 
-    if (level && level.length > 0) {
-      query.where('intLang.level IN (:...level)', {
-        level,
-      });
-    }
-
-    if (language) {
-      query.andWhere('intLang.language.name = :name', { name: language });
-    }
-
-    if (city) {
-      query.andWhere('LOWER(interpreter.city) = LOWER(:city)', { city });
-    }
+    query = paginateInterpreterQueryDto.filter(query);
 
     if (dates && dates.length > 0) {
       const metric = (date: string, time: string, period: BookingPeriod) => {
@@ -105,13 +83,20 @@ export class InterpreterService {
       query.orderBy('avg_score', 'DESC');
     }
 
-    if (name) {
-      query.andWhere(
-        `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) like LOWER(:name)`,
-        {
-          name: `%${name}%`,
+    if (keywords) {
+      /**
+       * return interpreter.address, ' ' , interpreter.city, ' ' , interpreter.province
+       */
+      const searchColumns = InterpreterEntity.getSearchColums().reduce(
+        (acc, val, idx) => {
+          return `${acc}${idx > 0 ? ", ' ', " : ''}interpreter.${val}`;
         },
+        '',
       );
+
+      query.andWhere(`LOWER(CONCAT(${searchColumns})) like LOWER(:keywords)`, {
+        keywords: `%${keywords}%`,
+      });
     }
 
     const interpreters = await query.getMany();

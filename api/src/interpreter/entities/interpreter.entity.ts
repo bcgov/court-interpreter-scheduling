@@ -94,7 +94,9 @@ export class InterpreterEntity {
       id: this.id,
       firstName: this.firstName,
       lastName: this.lastName,
-      languages: this.languages.map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject()),
+      languages: this.languages.map((intLang: InterpreterLanguageEntity) =>
+        intLang.toResponseObject(),
+      ),
       bookings: this.bookings,
       address: this.address,
       city: this.city,
@@ -110,6 +112,22 @@ export class InterpreterEntity {
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-    }
+    };
+  }
+
+  static getSearchColums() {
+    return [
+      'address',
+      'city',
+      'province',
+      'postal',
+      'homePhone',
+      'businessPhone',
+      'phone',
+      'email',
+      'supplier',
+      'gst',
+      'comments',
+    ];
   }
 }

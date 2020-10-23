@@ -4,8 +4,10 @@ import { IsOptional, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
+import { AndWhere } from 'src/common/decorator/query.decorator';
 
 import { PaginationQueryDTO } from 'src/common/dto/pagination.dto';
+import { SelectQueryBuilder } from 'typeorm';
 import { Level } from '../enums/level.enum';
 
 export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
@@ -56,4 +58,22 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   })
   @IsOptional()
   name?: string;
+
+  @ApiProperty({
+    description: 'Interpreter Keywords, searching phone, email, etc...',
+    example: faker.lorem.word(),
+  })
+  @IsOptional()
+  keywords?: string;
+
+  @AndWhere('intLang.level IN (:...level)', 'level')
+  @AndWhere('intLang.language.name = :language', 'language')
+  @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
+  @AndWhere(
+    `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:name)`,
+    'name',
+  )
+  filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
+    return super.filter(query);
+  }
 }

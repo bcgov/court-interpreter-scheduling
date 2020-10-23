@@ -11,7 +11,15 @@ import { BookingModule } from './booking/booking.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), DatabaseModule, InterpreterModule, LanguageModule, LocationModule, BookingModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot(),
+    DatabaseModule,
+    InterpreterModule,
+    LanguageModule,
+    LocationModule,
+    BookingModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
