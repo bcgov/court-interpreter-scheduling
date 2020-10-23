@@ -57,6 +57,34 @@ export class InterpreterController {
     return interpreter.toResponseObject();
   }
 
+  @Post('/upload')
+  async upload(
+    @Body() createInterpreterDtos: CreateInterpreterDto[],
+  ): Promise<InterpreterRO[]> {
+    return Promise.all(createInterpreterDtos.map(async (createInterpreterDto: CreateInterpreterDto) => {
+      let interpreterLangs: InterpreterLanguageEntity[] = [];
+
+      const { languages } = createInterpreterDto;
+
+      if (languages && languages.length > 0) {
+        try {
+          interpreterLangs = await this.interpreterLanguageService.create(
+            languages,
+          );
+        } catch (err) {
+          throw new HttpException(err, HttpStatus.BAD_REQUEST);
+        }
+      }
+
+      const interpreter = await this.interpreterService.create(
+        createInterpreterDto,
+        interpreterLangs,
+      );
+
+      return interpreter.toResponseObject();
+    }))
+  }
+
   @Get()
   async findAll(
     @Query() paginateInterpreterQueryDto: PaginateInterpreterQueryDto,

@@ -64,6 +64,21 @@ export class InterpreterEntity {
   @Column({ nullable: true })
   email: string;
 
+  @Column({
+    nullable: true,
+    name: 'criminal_record_check'
+  }) 
+  criminalRecordCheck: string;
+
+  @Column({ nullable: true })
+  fax: string;
+
+  @Column({
+    nullable: true,
+    name: 'email_alt'
+  }) 
+  emailAlt: string;
+
   @Column({ nullable: true })
   supplier: string;
 

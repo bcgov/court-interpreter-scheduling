@@ -99,7 +99,28 @@ export class CreateInterpreterDto {
   email: string;
 
   @ApiProperty({
-    description: 'Supplier',
+    description: 'alt email',
+    example: 'faker.internet.email()',
+  })
+  @IsOptional()
+  emailAlt: string;
+
+  @ApiProperty({
+    description: 'fax',
+    example: '1234567',
+  })
+  @IsOptional()
+  fax: string;
+
+  @ApiProperty({
+    description: 'record check',
+    example: '10-Dec-18',
+  })
+  @IsOptional()
+  criminalRecordCheck: string;
+
+  @ApiProperty({
+    description: 'Supplier number',
     example: '1234567',
   })
   @IsOptional()
