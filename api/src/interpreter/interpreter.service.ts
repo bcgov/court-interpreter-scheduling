@@ -73,12 +73,10 @@ export class InterpreterService {
         );
       });
 
-      const select: string = Array.from(Array(dates.length)).reduce(
-        (acc, val, idx) => {
-          return `${acc}${idx > 0 ? ' + ' : ''}s_${idx}.score_${idx}`;
-        },
-        '',
-      );
+      const select: string = Array.from(Array(dates.length))
+        .map((date, idx) => `s_${idx}.score_${idx}`)
+        .join(' + ');
+
       query.addSelect(`(${select})/${dates.length}`, 'avg_score');
       query.orderBy('avg_score', 'DESC');
     }
@@ -87,12 +85,9 @@ export class InterpreterService {
       /**
        * return interpreter.address, ' ' , interpreter.city, ' ' , interpreter.province
        */
-      const searchColumns = InterpreterEntity.getSearchColums().reduce(
-        (acc, val, idx) => {
-          return `${acc}${idx > 0 ? ", ' ', " : ''}interpreter.${val}`;
-        },
-        '',
-      );
+      const searchColumns = InterpreterEntity.getSearchColums()
+        .map(column => `interpreter.${column}`)
+        .join(`, ' ', `);
 
       query.andWhere(`LOWER(CONCAT(${searchColumns})) like LOWER(:keywords)`, {
         keywords: `%${keywords}%`,
