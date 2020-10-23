@@ -60,4 +60,42 @@ export class InterpreterLanguageService {
   ): Promise<void> {
     await this.interpreterLanguageRepository.remove(interpreterLangs);
   }
+
+  async createMany(
+    interpreterLanguage: Partial<InterpreterLanguageDTO>[],
+  ): Promise<InterpreterLanguageEntity[]> {
+    const iLangs = await Promise.all(
+      interpreterLanguage.map(async (intLang: InterpreterLanguageDTO) => {
+        const iLang = new InterpreterLanguageEntity();
+
+        const smallLang = capFirstAndSmallRest(intLang.languageName);
+
+        const language = new LanguageEntity();
+        language.name = smallLang;
+
+        await this.languageRepository
+          .createQueryBuilder('language')
+          .insert()
+          .into(LanguageEntity)
+          .values(language)
+          .onConflict(`("name") DO UPDATE SET "name" = :name`)
+          .setParameter('name', smallLang)
+          .execute();
+
+        iLang.language = language;
+        iLang.level = intLang.level;
+        iLang.commentOnLevel = intLang.commentOnLevel;
+        return iLang;
+      }),
+    ).catch(function(err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    });
+
+    const iLangMap = await Promise.all(
+      iLangs.map(async iLang => {
+        return this.interpreterLanguageRepository.save(iLang);
+      }),
+    );
+    return iLangMap;
+  }
 }

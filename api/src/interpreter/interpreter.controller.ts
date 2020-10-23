@@ -61,28 +61,32 @@ export class InterpreterController {
   async upload(
     @Body() createInterpreterDtos: CreateInterpreterDto[],
   ): Promise<InterpreterRO[]> {
-    return Promise.all(createInterpreterDtos.map(async (createInterpreterDto: CreateInterpreterDto) => {
-      let interpreterLangs: InterpreterLanguageEntity[] = [];
+    return Promise.all(
+      createInterpreterDtos.map(
+        async (createInterpreterDto: CreateInterpreterDto) => {
+          let interpreterLangs: InterpreterLanguageEntity[] = [];
 
-      const { languages } = createInterpreterDto;
+          const { languages } = createInterpreterDto;
 
-      if (languages && languages.length > 0) {
-        try {
-          interpreterLangs = await this.interpreterLanguageService.create(
-            languages,
+          if (languages && languages.length > 0) {
+            try {
+              interpreterLangs = await this.interpreterLanguageService.createMany(
+                languages,
+              );
+            } catch (err) {
+              throw new HttpException(err, HttpStatus.BAD_REQUEST);
+            }
+          }
+
+          const interpreter = await this.interpreterService.create(
+            createInterpreterDto,
+            interpreterLangs,
           );
-        } catch (err) {
-          throw new HttpException(err, HttpStatus.BAD_REQUEST);
-        }
-      }
 
-      const interpreter = await this.interpreterService.create(
-        createInterpreterDto,
-        interpreterLangs,
-      );
-
-      return interpreter.toResponseObject();
-    }))
+          return interpreter.toResponseObject();
+        },
+      ),
+    );
   }
 
   @Get()
