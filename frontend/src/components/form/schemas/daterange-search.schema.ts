@@ -1,12 +1,12 @@
 import * as yup from 'yup'
 
 const Initial = {
-  arrivalTime: '',
+  arrivalTime: '09:00:00',
   dates: {
     startDate: '',
     endDate: '',
   },
-  period: [],
+  period: 'WHOLE_DAY',
 }
 
 const Schema = yup.object({
