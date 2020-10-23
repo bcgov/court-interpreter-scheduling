@@ -11,7 +11,7 @@ export function AndWhere(sql: string, column: string) {
       const val = this[column];
       if (val) {
         if (Array.isArray(val) && val.length === 0) {
-          return;
+          return queryBuilder;
         }
         queryBuilder.andWhere(sql, {
           [column]: sql.includes('LIKE') ? `%${val}%` : val,
