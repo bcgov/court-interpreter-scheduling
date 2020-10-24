@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import useAxios from 'axios-hooks'
 import useError from 'hooks/useError'
 
@@ -33,6 +33,7 @@ interface LocationState {
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
   const [open, toggle] = useState(false)
   const { state } = useLocation<LocationState>()
+  const history = useHistory()
   const [{ response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
   useError({ error, prefix: 'Failed to create a booking.'})
 
@@ -41,7 +42,10 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
   }, [interpreter])
 
   useEffect(() => {
-    if ([200, 201].some((status) => status === response?.status)) setInterpreter(null)
+    if ([200, 201].some((status) => status === response?.status)) {
+      setInterpreter(null)
+      history.push('/booking')
+    }
   }, [response, setInterpreter])
 
   return (
