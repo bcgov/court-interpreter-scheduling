@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { Box, IconButton, withStyles } from '@material-ui/core'
 import BorderColorIcon from '@material-ui/icons/BorderColor'
+
 import BaseTable from 'components/table/Base'
 import DateTimeCell from 'components/table/DateTimeCell'
 import StatusButton from 'components/table/Status'
 import InterpreterName from 'components/table/InterpreterName'
-
 import EditBookingModal from 'components/form/EditBookingModal'
+
+import { Booking } from 'constants/interfaces'
 
 const StyledIconButton = withStyles({
   root: {
@@ -17,7 +19,7 @@ const StyledIconButton = withStyles({
   }
 })(IconButton)
 
-export default function BookingsTable({ data, refetch }: { data: Array<any>, refetch: Function }) {
+export default function BookingsTable({ data, refetch }: { data: Booking[], refetch: Function }) {
 
   const [booking, setBooking] = useState()
 

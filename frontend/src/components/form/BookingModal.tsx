@@ -8,6 +8,7 @@ import { Schema, Initial } from 'components/form/schemas/booking.schema'
 import { ButtonPrimary, ButtonSecondary } from 'components/Buttons'
 
 import SearchContext from 'contexts/SearchContext'
+import { Interpreter, Booking } from 'constants/interfaces'
 
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
@@ -22,12 +23,12 @@ import CloseIcon from '@material-ui/icons/Close'
 import { Formik, FormikProps } from 'formik'
 
 type BookingModalProps = {
-  interpreter: any;
+  interpreter?: Interpreter;
   setInterpreter: Function;
 }
 
 interface LocationState {
-  booking: any;
+  booking: Booking;
 }
 
 export default function BookingModal({ interpreter, setInterpreter }: BookingModalProps) {
@@ -38,7 +39,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
   useError({ error, prefix: 'Failed to create a booking.'})
 
   useEffect(() => {
-    toggle(interpreter !== null)
+    toggle(!!interpreter)
   }, [interpreter])
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
             initialValues={{
               ...Initial,
               ...state?.booking,
-              language: state?.booking?.language?.name || search.language
+              language: state?.booking?.language.languageName || search.language
             }}
             validationSchema={Schema}
             onSubmit={async (values) => {
@@ -71,7 +72,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                   data: {
                     ...values,
                     dates: search.dates,
-                    interpreterId: interpreter.id,
+                    interpreterId: interpreter?.id,
                   }
                 })
               }
@@ -88,7 +89,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                       </Typography>
                     </Grid>
                     <Grid item xs={1}>
-                      <CloseIcon onClick={() => setInterpreter(null)} className='right pointer' />
+                      <CloseIcon onClick={() => setInterpreter()} className='right pointer' />
                     </Grid>
                   </Grid>
                 </DialogTitle>
@@ -111,7 +112,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                     <Grid item xs={10}>
                       <ButtonSecondary
                         variant='outlined'
-                        onClick={() => setInterpreter(null)}
+                        onClick={() => setInterpreter()}
                       >
                         Cancel
                       </ButtonSecondary>

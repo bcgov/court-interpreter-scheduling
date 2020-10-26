@@ -1,11 +1,14 @@
 import React, { useRef, useState } from 'react'
+
 import Popover from '@material-ui/core/Popover'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 
-export default function InterpreterName({ interpreter }: { interpreter?: any }) {
+import { Interpreter } from 'constants/interfaces'
+
+export default function InterpreterName({ interpreter }: { interpreter?: Interpreter }) {
   const [open, toggle] = useState(false)
   const anchorEl = useRef(null)
   return interpreter ? (

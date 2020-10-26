@@ -24,7 +24,7 @@ export class BookingEntity {
   )
   interpreter: InterpreterEntity;
 
-  @Column()
+  @Column({ nullable: true })
   caseName: string;
 
   @Column({ nullable: true })

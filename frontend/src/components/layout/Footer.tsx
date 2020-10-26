@@ -1,5 +1,5 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import React from 'react'
+import { makeStyles } from '@material-ui/core'
 
 const useStyles = makeStyles({
   footer: {
@@ -27,26 +27,26 @@ const useStyles = makeStyles({
     textDecoration: 'none',
     color: '#fff'
   }
-});
+})
 
 export default function Footer() {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <div className={classes.footer}>
       <div className={classes.linkGroup}>
-        <a className={classes.link} href="www.google.com" target="_blank">Home</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>Home</a>
         |
-        <a className={classes.link} href="www.google.com" target="_blank">About gov.bc.ca</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>About gov.bc.ca</a>
         |
-        <a className={classes.link} href="www.google.com" target="_blank">Disclaimer</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>Disclaimer</a>
         |
-        <a className={classes.link} href="www.google.com" target="_blank">Accessibility</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>Accessibility</a>
         |
-        <a className={classes.link} href="www.google.com" target="_blank">Copyright</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>Copyright</a>
         |
-        <a className={classes.link} href="www.google.com" target="_blank">Contact Us</a>
+        <a className={classes.link} href='www.google.com' target='_blank'>Contact Us</a>
       </div>
     </div>
-  );
+  )
 }

@@ -15,14 +15,13 @@ import {
   StyledSelectInput,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
-
-import SearchContext from 'contexts/SearchContext'
 import SearchDates from 'components/form/SearchDates'
 import { Schema, Initial } from 'components/form/schemas/search.schema'
 import Range from 'components/form/Range'
 import Check from 'components/form/inputs/Check'
-
 import { StyledButton } from 'components/Buttons'
+
+import SearchContext from 'contexts/SearchContext'
 import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {

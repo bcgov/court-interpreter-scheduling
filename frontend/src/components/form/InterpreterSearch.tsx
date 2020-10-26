@@ -15,13 +15,13 @@ import {
   StyledSelectInput,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
-
-import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 import { Schema, Initial } from 'components/form/schemas/interpreter-search.schema'
 import Check from 'components/form/inputs/Check'
-
 import { StyledButton } from 'components/Buttons'
-import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
+
+import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
+import { InterpreterSearchParams } from 'constants/interfaces'
+import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(InterpreterSearchContext)
@@ -37,7 +37,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         enableReinitialize={true}
         validationSchema={Schema}
         onSubmit={async (values) => getSearchResults(values)}>
-          {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
+          {({ handleSubmit, isSubmitting }: FormikProps<InterpreterSearchParams>) => (
             <>
               <GridRow container spacing={4}>
                 <Grid item xs={4}>
@@ -46,7 +46,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       Name
                     </StyledLabel>
                     <Field name='name'>
-                      {({ field, form, ...props }: any) => (
+                      {({ field, form, ...props }: FieldProps) => (
                         <StyledTextField
                           id='name'
                           variant='outlined'
@@ -69,7 +69,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       input={
                         <Field
                           component={
-                            ({ field, form, ...props }: any) => (
+                            ({ field, form, ...props }: FieldProps) => (
                               <StyledSelectInput {...field} {...props} />
                             )
                           }
@@ -94,7 +94,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       Keywords
                     </StyledLabel>
                     <Field name='keywords'>
-                      {({ field, form, ...props }: any) => (
+                      {({ field, form, ...props }: FieldProps) => (
                         <StyledTextField
                           id='keywords'
                           variant='outlined'
@@ -116,7 +116,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       Language
                     </StyledLabel>
                     <Field name='language'>
-                      {({ field, form, ...props }: any) => (
+                      {({ field, form, ...props }: FieldProps) => (
                         <StyledTextField
                           id='language'
                           variant='outlined'

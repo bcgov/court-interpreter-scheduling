@@ -6,6 +6,8 @@ import { StyledButton, ButtonSecondary } from 'components/Buttons'
 import InterpreterInputs from 'components/form/inputs/Interpreter'
 import { Schema, Initial } from 'components/form/schemas/interpreter.schema'
 
+import { InterpreterCreate } from 'constants/interfaces'
+
 import Divider from '@material-ui/core/Divider'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
@@ -43,7 +45,7 @@ export default function InterpreterModal({ open, toggle }: { open: boolean, togg
         validationSchema={Schema}
         onSubmit={async (values) => createInterpreter({ data: values })}
       >
-        {({ handleSubmit, isSubmitting }: FormikProps<any>) => (
+        {({ handleSubmit, isSubmitting }: FormikProps<InterpreterCreate>) => (
           <>
             <DialogTitle>
               <Grid container justify='space-between'>

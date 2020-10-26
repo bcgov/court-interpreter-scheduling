@@ -11,7 +11,7 @@ import {
   Popover,
 } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
-import { DayPickerRangeController } from 'react-dates';
+import { DayPickerRangeController } from 'react-dates'
 import moment from 'moment'
 
 import SearchContext from 'contexts/SearchContext'

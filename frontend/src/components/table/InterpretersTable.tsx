@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+
 import { Grid, Box } from '@material-ui/core'
 import BorderColorIcon from '@material-ui/icons/BorderColor'
 import AddIcon from '@material-ui/icons/Add'
+
 import BaseTable from 'components/table/Base'
 import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
-import { Interpreter } from 'components/form/schemas/interpreter.schema'
+
+import { Interpreter } from 'constants/interfaces'
 
 export default function InterpretersTable({
   data,
@@ -17,7 +20,7 @@ export default function InterpretersTable({
   getInterpreters: Function,
 }) {
 
-  const [interpreter, setInterpreter] = useState(null)
+  const [interpreter, setInterpreter] = useState()
 
   return (
     <Box mt={8}>

@@ -14,9 +14,8 @@ import {
 } from './DirectoryInputs'
 import FieldError from 'components/form/inputs/FieldError'
 import { SingleCheck } from 'components/form/inputs/Check'
-import { Interpreter } from 'components/form/schemas/interpreter.schema'
 
-import { Language } from 'constants/interfaces'
+import { Interpreter, Language } from 'constants/interfaces'
 import { Field, useFormikContext, FieldArray } from 'formik'
 
 type GridItemInputProps = {

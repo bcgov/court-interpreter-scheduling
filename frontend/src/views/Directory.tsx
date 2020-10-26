@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import useAxios from 'axios-hooks'
+import useError from 'hooks/useError'
+
 import {
   Box,
   CircularProgress,
 } from '@material-ui/core'
-import useAxios from 'axios-hooks'
-import useError from 'hooks/useError'
 
 import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
-import { BookingDate, SearchParams } from 'constants/interfaces'
+
+import { Booking, BookingDate, SearchParams } from 'constants/interfaces'
 import SearchContext from 'contexts/SearchContext'
 
 interface LocationState {
-  booking: any;
+  booking: Booking;
 }
 
 const Directory = () => {
@@ -42,9 +44,9 @@ const Directory = () => {
     if (state?.booking) {
       const { booking } = state
       getSearchResults({
-        language: booking.language.name,
+        language: booking.language.languageName,
         level: ['1', '2', '3', '4'],
-        city: booking.city || search.city,
+        city: booking.registry || search.city,
         dates: booking.dates.map((d: BookingDate) => ({
           date: d.date,
           period: d.period,

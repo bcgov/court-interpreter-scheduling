@@ -5,12 +5,12 @@ import useError from 'hooks/useError'
 import { StyledButton, ButtonSecondary } from 'components/Buttons'
 import InterpreterInputs from 'components/form/inputs/Interpreter'
 import { Schema, Initial } from 'components/form/schemas/interpreter.schema'
+import { Interpreter } from 'constants/interfaces'
 
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
-
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -20,7 +20,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import { Formik, FormikProps } from 'formik'
 
 type InterpreterModalProps = {
-  interpreter: any;
+  interpreter?: Interpreter;
   setInterpreter: Function;
   refetch: Function;
 }
@@ -62,7 +62,7 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
       open={open}
       maxWidth='xl'
       onClose={() => {
-        setInterpreter(null)
+        setInterpreter()
         enableDelete(false)
       }}
     >
@@ -117,9 +117,19 @@ export default function EditInterpreterModal({ interpreter, setInterpreter, refe
                   </ButtonSecondary>
                   {
                     confirmDelete ? (
-                      <Typography className='deleteSpan pointer confirm' component='span' onClick={() => deleteInterpreter()}>Confirm Delete Interpreter</Typography>
+                      <Typography
+                        className='deleteSpan pointer confirm'
+                        component='span'
+                        onClick={() => deleteInterpreter()}
+                      >
+                        Confirm Delete Interpreter
+                      </Typography>
                     ) : (
-                      <Typography className='deleteSpan pointer' component='span' onClick={() => enableDelete(true)}>
+                      <Typography
+                        className='deleteSpan pointer'
+                        component='span'
+                        onClick={() => enableDelete(true)}
+                      >
                         Delete
                       </Typography>
                     )

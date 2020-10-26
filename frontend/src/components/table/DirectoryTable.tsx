@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Language, Level } from 'constants/interfaces'
 import { Box } from '@material-ui/core'
+
+import { Interpreter, Language, Level } from 'constants/interfaces'
+
 import BaseTable from 'components/table/Base'
 import Calendar from 'components/calendar/DirectoryCalendar'
 import ViewToggle from 'components/calendar/ViewToggle'
@@ -17,9 +19,9 @@ const getValueFromLanguages = (
   return activeLanguage ? activeLanguage[field] : languages[0][field]
 }
 
-export default function DirectoryTable({ data, disabled, language }: { data: Array<any>, disabled: boolean, language?: string }) {
+export default function DirectoryTable({ data, disabled, language }: { data: Interpreter[], disabled: boolean, language?: string }) {
 
-  const [interpreter, setInterpreter] = useState(null)
+  const [interpreter, setInterpreter] = useState()
   const [view, setView] = useState('list')
 
   return (
