@@ -1,19 +1,15 @@
-FROM node:12.18.3-slim as builder
-
-ENV HOME /usr/src/app
-
-WORKDIR ${HOME}
+FROM registry.access.redhat.com/ubi8/nodejs-12:1  as builder
 
 COPY ./package*.json ./
 RUN npm ci
 COPY . ./
 RUN npm run build
 
-FROM node:12.18.3-slim as client
+FROM registry.access.redhat.com/ubi8/nodejs-12:1 as client
 LABEL MAINTAINER="FreshWorks <web@freshworks.io>"
-ENV PORT 7070
+
 RUN npm i -g serve
-COPY --from=builder /usr/src/app/build .
-COPY --from=builder /usr/src/app/serve.json .
-EXPOSE ${PORT}
+COPY --from=builder /opt/app-root/src/build .
+COPY --from=builder /opt/app-root/src/serve.json .
+
 CMD ["sh", "-c","serve", "-p", "$PORT", "-s", "."]

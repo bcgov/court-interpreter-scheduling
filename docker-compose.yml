@@ -23,6 +23,10 @@ services:
       - DB_TEST_DATABASE=nest_api_test
       - DEPLOY_ENV=node-api-dev
       - MERGE_BRANCH=dev
+      - KEYCLOAK_REALM=court
+      - KEYCLOAK_CLIENT=court-client
+      - KEYCLOAK_AUTH_URL=keycloak:8080/auth/
+      - KEYCLOAK_SECRET=cae82b0a-70c3-4932-84da-ba9c36e8fc89
     expose:
       - "4000"
     volumes:
@@ -48,8 +52,8 @@ services:
       - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
-    volumes:
-      - ./.docker/postgres:/docker-entrypoint-initdb.d
+    # volumes:
+    #   - ./.docker/postgres:/docker-entrypoint-initdb.d
     networks:
       - backend
 
@@ -92,6 +96,41 @@ services:
       SONAR_JDBC_PASSWORD: court_nest123 # database password
     ports:
       - "9000:9000"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+  # ### KeyCload ##############################
+  keycloak:
+    image: court-keycloak
+    build:
+      context: ./.docker/keycloak
+      dockerfile: ./Dockerfile.dev
+      args:
+        RELAM: court
+        CLIENT: court-client
+        SECRET: cae82b0a-70c3-4932-84da-ba9c36e8fc89
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: nest_api_dev
+      DB_USER: court_nestapi
+      DB_PASSWORD: court_nest123
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /tmp/testrealm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+      KEYCLOAK_REALM: court
+      KEYCLOAK_CLIENT: court-client
+      KEYCLOAK_SECRET: cae82b0a-70c3-4932-84da-ba9c36e8fc89
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9090/auth/realms/court/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 9090:8080
+    expose:
+      - "9090"
     depends_on:
       - postgres
     networks:
