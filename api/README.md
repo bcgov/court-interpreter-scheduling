@@ -38,10 +38,10 @@ There are 2 options, run in `local` or `docker`.
 
 In root folder:
 
-- Start Database in docker first
+- Start Keycloak and Database in docker first
 
 ```
-docker-compose up postgres
+docker-compose up keycloak
 ```
 
 - Application
@@ -102,7 +102,13 @@ $ npm run migrate:run
 
 2. In Production env, will run migration automatically as we did set `migrationRun: process.env.NODE_ENV='prodcution'`
 
+### Keycloak
+
+User:
+
 ### Swagger
+
+- localhost:4000/api
 
 ![](https://i.imgur.com/kr8Xuk9.png)
 
