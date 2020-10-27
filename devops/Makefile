@@ -1,15 +1,18 @@
 #!make
 
+include .env
+export $(shell sed 's/=.*//' .env)
+
 .DEFAULT_GOAL := default
 
 export NAMESPACE := $(or $(NAMESPACE), $$NS)
-export APP_NAME := $(or $(APP_NAME), court-interpreter-scheduler)
+export APP_NAME := $(or $(APP_NAME), court-interpreter-scheduling)
 export BUILD_ID := $(or $(BUILD_ID), $$ID)
 export APP_KEY :=  $(or $(APP_KEY), $$KEY)
 export TEMPLATE_FILE_NAME := $(or $(TEMPLATE_FILE_NAME), $$FILE)
 export BRANCH := $(or $(BRANCH), $$BR)
 export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), $$BUILD_NS)
-export DOMAIN := $(or $(DOMAIN), pathfinder.gov.bc.ca)
+export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
 export HOST_PREFIX := $(or $(HOST_PREFIX), $$HPX)
 
 default:
@@ -34,15 +37,7 @@ define NAME
 endef
 
 define DB_SERVICE_NAME
-"db-$(APP_NAME)"
-endef
-
-define DB_SERVICE_INSTANCE
-"db-$(APP_NAME)-$(BUILD_ID)"
-endef
-
-define INSTANCE
-"${APP_KEY}-$(APP_NAME)-$(BUILD_ID)"
+"patroni"
 endef
 
 define TEMPLATE_PATH 
@@ -70,29 +65,32 @@ define APP_INSTANCE
 endef
 
 define APP_HOST
-"$(HOST_PREFIX)-$(APP_NAME).$(DOMAIN)"
-endef
-
-define API_BUILD_TEMPLATE_PATH
-"./openshift/api.bc.yml"
+"$(HOST_PREFIX)$(APP_NAME).$(DOMAIN)"
 endef
 
 define API_DEPLOY_TEMPLATE_PATH
-"./openshift/api.dc.yml"
+"./openshift/api-deploy.yml"
 endef
 
 define DB_DEPLOY_TEMPLATE_PATH
-"./openshift/db.dc.yml"
-endef
-
-define APP_BUILD_TEMPLATE_PATH
-"./openshift/app.bc.yml"
+"./openshift/patroni-deploy.yml"
 endef
 
 define APP_DEPLOY_TEMPLATE_PATH
-"./openshift/app.dc.yml"
+"./openshift/app-deploy.yml"
 endef
 
+define DOCKER_BUILD_TEMPLATE_PATH
+"./openshift/docker-build.yml"
+endef
+
+define KEYCLOAK_IMAGE_NAME
+"keycloak"
+endef
+
+define KC_NGINX_IMAGE_NAME
+"$(KEYCLOAK_IMAGE_NAME)-nginx"
+endef
 
 # Openshift Build
 app-check:
@@ -116,26 +114,50 @@ print-status:
 	@echo " | HOST NAME: 	$(APP_HOST) "
 	@echo " +---------------------------------------------------------+ "
 
+init-project:
+	@echo "Run initial set-up for the project, including network security\n" 
+	@oc process -f openshift/security-init.yml -p NAMESPACE=$$(oc project --short) | oc apply -f -
+	@oc -n $(BUILD_NAMESPACE) policy add-role-to-group system:image-puller system:serviceaccounts:$$(oc project --short)
+
+init-keycloak:
+	@oc process -f openshift/keycloak-pre-req.yml | oc apply -f -
+	@oc process -f openshift/createdb-job.yml -p DB_NAME=keycloak -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) | oc apply -f -
+
+init-patroni:
+	@oc process -f openshift/patroni-pre-req.yml | oc apply -f -
+
 build:
 	test -n "$(BRANCH)"
 	test -n "$(APP_KEY)"
-	@echo "+\n++ BUILIDING $(APP_KEY) with tag: $(BUILD_TAG)\n+"
+	@echo "+\n++ BUILDING $(APP_KEY) with tag: $(BUILD_TAG)\n+"
 	@oc process -f $(TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
 
 build-api:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(API_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(API) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@echo "+\n++ BUILDING API with tag: $(BUILD_TAG)\n+"
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=api -p NAME=$(API) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(API) --wait
 
 build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ BUILIDING API with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(APP_BUILD_TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(APP) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
+
+build-patroni:
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=patroni -p TAG="12-latest" -p BASE_IMAGE_NAME=postgres -p BASE_IMAGE_TAG="12" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/platform-services.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="apps/pgsql/patroni/docker" | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/patroni --wait
+
+build-keycloak-nginx: 
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=nginx -p BASE_IMAGE_TAG="1.19.3" -p SOURCE_CONTEXT_DIR=".docker/keycloak-nginx" -p NAME=$(KC_NGINX_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KC_NGINX_IMAGE_NAME) --wait
+
+build-keycloak:
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=keycloak -p BASE_IMAGE_TAG="11.0.2" -p BASE_IMAGE_REPO="jboss/" -p SOURCE_CONTEXT_DIR=".docker/keycloak" -p NAME=$(KEYCLOAK_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KEYCLOAK_IMAGE_NAME) --wait
 
 import:
 	test -n "$(NAMESPACE)"
@@ -150,16 +172,13 @@ deploy-db:
 	@oc -n $(NAMESPACE) process -f $(DB_DEPLOY_TEMPLATE_PATH) -p NAME=$(DB_SERVICE_NAME) INSTANCE=$(DB_SERVICE_INSTANCE) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f - 
 	@oc -n $(NAMESPACE) rollout status dc/$(DB_SERVICE_NAME)
 
-
 deploy-api:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f $(API_DEPLOY_TEMPLATE_PATH) -p NAME=$(API) TAG=$(BUILD_TAG) INSTANCE=$(API_INSTANCE) BUILD_ID=$(BUILD_ID) DB_SERVICE=$(DB_SERVICE_NAME) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
-	@echo "+\n++ Pulling image from build name space\n+"
-	@oc tag $(BUILD_NAMESPACE)/$(API):$(BUILD_TAG) $(NAMESPACE)/$(API):$(BUILD_TAG)
+	@oc process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" | oc apply -f -
 	@oc -n $(NAMESPACE) rollout status dc/$(API)
 
 deploy-app:
@@ -168,10 +187,17 @@ deploy-app:
 	test -n "$(BRANCH)"
 	test -n "$(HOST_PREFIX)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f $(APP_DEPLOY_TEMPLATE_PATH) -p NAME=$(APP) TAG=$(BUILD_TAG) INSTANCE=$(APP_INSTANCE) BUILD_ID=$(BUILD_ID) HOST_NAME=$(APP_HOST) PROJECT=$(APP_NAME) | oc -n $(NAMESPACE) apply -f -
-	@echo "+\n++ Pulling image from build name space\n+"
-	@oc tag $(BUILD_NAMESPACE)/$(APP):$(BUILD_TAG) $(NAMESPACE)/$(APP):$(BUILD_TAG)
+	@oc process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc apply -f -
 	@oc -n $(NAMESPACE) rollout status dc/$(APP)
+
+deploy-keycloak:
+	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
+
+deploy-keycloak-nginx:
+	@oc process -f openshift/keycloak-nginx-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KC_NGINX_IMAGE_NAME):latest | oc apply -f -
+
+deploy-patroni:
+	@oc process -f openshift/patroni-deploy.yml -p NAME=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -
 
 delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"

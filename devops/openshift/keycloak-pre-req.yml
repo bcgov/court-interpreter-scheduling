@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: keycloak-pre-req
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: "${NAME}-creds"
+  stringData:
+    client-secret: "${KC_CLIENT_SECRET}"
+    admin-password: "${KC_ADMIN_PWD}"
+parameters:
+  - name: NAME
+    value: keycloak
+  - name: KC_CLIENT_SECRET
+    from: "[a-zA-Z0-9]{36}"
+    generate: expression
+  - name: KC_ADMIN_PWD
+    from: "[a-zA-Z0-9]{8}"
+    generate: expression
