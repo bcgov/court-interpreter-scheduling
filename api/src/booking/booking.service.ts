@@ -47,32 +47,17 @@ export class BookingService {
   async findAll(
     paginateBookingQueryDto: PaginateBookingQueryDto,
   ): Promise<SuccessResponse<BookingEntity[]>> {
-    const { page, limit, interpreter, file, dates } = paginateBookingQueryDto;
+    const { page, limit, dates } = paginateBookingQueryDto;
 
-    const query = this.bookingRepository
+    let query = this.bookingRepository
       .createQueryBuilder('booking')
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
       .leftJoinAndSelect('interpreter.languages', 'languages')
-      .leftJoinAndSelect('languages.language', 'lang')
-      .offset((page - 1) * limit)
-      .limit(limit);
+      .leftJoinAndSelect('languages.language', 'lang');
 
-    if (file) {
-      query.andWhere('LOWER(booking.file) like LOWER(:file)', {
-        file: `%${file}%`,
-      });
-    }
-
-    if (interpreter) {
-      query.andWhere(
-        `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) like LOWER(:name)`,
-        {
-          name: `%${interpreter}%`,
-        },
-      );
-    }
+    query = paginateBookingQueryDto.filter(query);
 
     if (dates) {
       query.andWhere(

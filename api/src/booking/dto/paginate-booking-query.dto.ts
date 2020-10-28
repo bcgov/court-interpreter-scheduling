@@ -2,8 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { PaginationQueryDTO } from 'src/common/dto/pagination.dto';
+import { AndWhere } from 'src/common/decorator/query.decorator';
 import { SearchDateDto } from './search-date.dto';
 
 export class PaginateBookingQueryDto extends PaginationQueryDTO {
@@ -39,4 +41,13 @@ export class PaginateBookingQueryDto extends PaginationQueryDTO {
   })
   @IsOptional()
   file?: string;
+
+  @AndWhere(
+    `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:interpreter)`,
+    'interpreter',
+  )
+  @AndWhere('LOWER(booking.file) LIKE LOWER(:file)', 'file')
+  filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
+    return super.filter(query);
+  }
 }
