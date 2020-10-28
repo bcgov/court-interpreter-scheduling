@@ -2,6 +2,9 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: patroni-pre-req
+labels:
+  project: ${PROJECT}
+  service: ${NAME}
 objects:
   - apiVersion: v1
     kind: Secret
@@ -86,7 +89,9 @@ parameters:
     description: | 
       The name of the application for labelling all artifacts.
     displayName: Application Name
-    value: registry-patroni
+    value: patroni
+  - name: PROJECT 
+    value: court-interpreter-scheduling
   - name: PATRONI_SUPERUSER_USERNAME
     description: |
       Username of the superuser account for initialization.

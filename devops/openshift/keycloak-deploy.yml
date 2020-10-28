@@ -5,6 +5,9 @@ metadata:
   annotations:
     description: >-
       Keycloak OIDC IdP
+labels:
+  project: ${PROJECT}
+  service: ${NAME}
 objects:
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
@@ -100,6 +103,8 @@ objects:
 parameters:
   - name: NAME
     value: keycloak
+  - name: PROJECT 
+    value: court-interpreter-scheduling
   - name: REPLICAS
     value: "1"
   - name: CPU_REQUEST

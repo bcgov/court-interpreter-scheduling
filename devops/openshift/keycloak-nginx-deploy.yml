@@ -6,6 +6,9 @@ metadata:
     description: >-
       Reverse proxy sitting in front of KeyCloak, in order to set required headers correctly
       as the OpenShift route does not do this.
+labels:
+  project: ${PROJECT}
+  service: ${SERVICE_NAME}
 objects:
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
@@ -82,6 +85,10 @@ objects:
 parameters:
   - name: NAME
     value: keycloak-nginx
+  - name: PROJECT 
+    value: court-interpreter-scheduling
+  - name: SERVICE_NAME
+    value: keycloak
   - name: REPLICAS
     value: "2"
   - name: CPU_REQUEST
