@@ -1,17 +1,17 @@
-FROM node:12.18.3-slim as builder
+FROM node:13.12.0-alpine
 
-MAINTAINER FreshWorks <web@freshworks.io>
+ARG REACT_APP_REALM_AUTH_URL
+ARG REACT_APP_API_HOST
+ARG CHOKIDAR_USEPOLLING=true
 
-WORKDIR /usr/src/app
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
-RUN npm install
-COPY . ./
-ARG REACT_APP_API_URL=http://localhost:4000
-ENV REACT_APP_API_URL http://localhost:4000
-RUN npm run build
+COPY package-lock.json ./
+RUN npm install --silent
+RUN npm install react-scripts@3.4.1 -g --silent
 
-FROM node:12.18.3-slim as client
-RUN npm i -g serve
-COPY --from=builder /usr/src/app/build .
-CMD ["serve", "-p", "80", "-s", "."]
+COPY . ./
+
+CMD ["CHOKIDAR_USEPOLLING=true", "npm", "start"]

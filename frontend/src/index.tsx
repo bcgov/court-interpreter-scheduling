@@ -17,7 +17,7 @@ import { configure } from 'axios-hooks'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
 
-axios.defaults.baseURL = '/api/v1'
+axios.defaults.baseURL = `${process.env.REACT_APP_API_HOST}/api/v1`
 
 const Login = lazy(() => import('views/login'))
 const KeycloakRedirect = lazy(() => import('views/Keycloak'))
@@ -48,7 +48,7 @@ const Routes = () => {
             return config
           },
         )
-        configure({ axios })
+        configure({ axios, cache: false })
       }}
     >
       <BrowserRouter>
