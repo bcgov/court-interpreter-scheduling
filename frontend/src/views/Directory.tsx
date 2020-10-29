@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import useAxios from 'axios-hooks'
+import { useAxiosGet } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import {
@@ -28,7 +28,7 @@ const Directory = () => {
     dates: []
   })
 
-  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter', { useCache: false })
+  const [{ data: interpreters, loading, error }, getInterpreters] = useAxiosGet('/interpreter')
   useError({ error, prefix: 'Failed to load the interpreter directory.' })
 
   const getSearchResults = async (params: SearchParams) => {
@@ -44,7 +44,7 @@ const Directory = () => {
     if (state?.booking) {
       const { booking } = state
       getSearchResults({
-        language: booking.language.languageName,
+        language: booking.language?.languageName,
         level: ['1', '2', '3', '4'],
         city: booking.registry || search.city,
         dates: booking.dates.map((d: BookingDate) => ({

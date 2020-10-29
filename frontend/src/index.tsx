@@ -10,14 +10,8 @@ import { ThemeProvider, Box, CircularProgress } from '@material-ui/core'
 import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css'
 import { theme } from 'theme'
-
-import axios, { AxiosRequestConfig } from 'axios'
-import { configure } from 'axios-hooks'
-
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
-
-axios.defaults.baseURL = `${process.env.REACT_APP_API_HOST}/api/v1`
 
 const Login = lazy(() => import('views/login'))
 const KeycloakRedirect = lazy(() => import('views/Keycloak'))
@@ -40,16 +34,6 @@ const Routes = () => {
     <KeycloakProvider
       authClient={keycloakClient}
       LoadingComponent={<Box p={2}><CircularProgress /></Box>}
-      autoRefreshToken={true}
-      onTokens={({ token, refreshToken }) => {
-        axios.interceptors.request.use(
-          (config: AxiosRequestConfig): AxiosRequestConfig => {
-            config.headers.Authorization = `Bearer ${token}`
-            return config
-          },
-        )
-        configure({ axios, cache: false })
-      }}
     >
       <BrowserRouter>
         <Suspense fallback={<Box p={2}><CircularProgress /></Box>}>

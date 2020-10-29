@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import useAxios from 'axios-hooks'
+import { useAxiosPatch, useAxiosDelete } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import { StyledButton, ButtonSecondary } from 'components/Buttons'
@@ -28,19 +28,14 @@ type InterpreterModalProps = {
 export default function EditInterpreterModal({ interpreter, setInterpreter, refetch }: InterpreterModalProps) {
   const [confirmDelete, enableDelete] = useState(false)
   const [open, toggleOpen] = useState(!!interpreter)
-  const [{ response, loading, error }, editInterpreter] = useAxios({
+  const [{ response, loading, error }, editInterpreter] = useAxiosPatch({
     url: '/interpreter/' + interpreter?.id,
     method: 'PATCH',
   }, {
     manual: true
   })
 
-  const [{ response: deleteResponse, loading: deleteLoading, error: deleteError }, deleteInterpreter] = useAxios({
-    url: '/interpreter/' + interpreter?.id,
-    method: 'DELETE',
-  }, {
-    manual: true
-  })
+  const [{ response: deleteResponse, loading: deleteLoading, error: deleteError }, deleteInterpreter] = useAxiosDelete({ url: '/interpreter/' + interpreter?.id }, { manual: true })
 
   useError({ error, prefix: 'Failed to update interpreter.' })
   useError({ error: deleteError, prefix: 'Failed to delete interpreter.' })

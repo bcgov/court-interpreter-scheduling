@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import useAxios from 'axios-hooks'
+import { useAxiosPost } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import BookingInputs from 'components/form/inputs/Booking'
@@ -35,7 +35,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
   const [open, toggle] = useState(false)
   const { state } = useLocation<LocationState>()
   const history = useHistory()
-  const [{ response, error, loading }, postBooking] = useAxios({ url: '/booking', method: 'POST' }, { manual: true })
+  const [{ response, error, loading }, postBooking] = useAxiosPost({ url: '/booking' }, { manual: true })
   useError({ error, prefix: 'Failed to create a booking.'})
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
             initialValues={{
               ...Initial,
               ...state?.booking,
-              language: state?.booking?.language.languageName || search.language
+              language: state?.booking?.language?.languageName || search.language,
             }}
             validationSchema={Schema}
             onSubmit={async (values) => {
@@ -65,7 +65,10 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                 await postBooking({
                   url: `/booking/${state.booking.id}`,
                   method: 'PATCH',
-                  data: values,
+                  data: {
+                    ...values,
+                    interpreterId: interpreter?.id,
+                  },
                 })
               } else {
                 await postBooking({
@@ -124,7 +127,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
                         onClick={() => handleSubmit()}
                         disabled={isSubmitting || loading}
                       >
-                        Create Booking
+                        {state?.booking ? 'Update Booking' : 'Create Booking'}
                       </ButtonPrimary>
                     </Grid>
                   </Grid>

@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { useKeycloak } from '@react-keycloak/web'
+import { KeycloakInstance } from 'keycloak-js'
+
 import { makeStyles, Typography } from '@material-ui/core'
 
 import logo from '../../assets/images/logo-banner.svg'
@@ -67,7 +70,7 @@ const useStyles = makeStyles({
 
 export default function Header() {
   const classes = useStyles()
-
+  const { keycloak } = useKeycloak<KeycloakInstance>()
   return (
     <div className={classes.header}>
       <Link to='/' className={classes.logoWrapper}>
@@ -78,6 +81,13 @@ export default function Header() {
           Court Services Branch Scheduling System
         </Typography>
       </div>
+      {
+        keycloak?.authenticated && (
+          <div>
+            <Typography onClick={() => keycloak?.logout()} className='pointer'>Logout</Typography>
+          </div>
+        )
+      }
     </div>
   )
 }

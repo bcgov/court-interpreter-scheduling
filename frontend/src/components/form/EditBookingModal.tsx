@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import useAxios from 'axios-hooks'
+import { useAxiosPatch } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import { StyledButton, ButtonSecondary, BookingButton } from 'components/Buttons'
@@ -30,13 +30,8 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
 
   const history = useHistory()
 
-  const [open, toggleOpen] = useState(!!booking)
-  const [{ response, loading, error }, editBooking] = useAxios({
-    url: '/booking',
-    method: 'PATCH',
-  }, {
-    manual: true
-  })
+  const [open, toggleOpen] = useState(false)
+  const [{ response, loading, error }, editBooking] = useAxiosPatch({ url: '/booking' }, { manual: true })
 
   useError({ error, prefix: 'Failed to update booking.' })
 
@@ -57,7 +52,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
 
   return !booking ? null : (
 
-    <Dialog open={open} onClose={() => setBooking(null)} maxWidth='xl'>
+    <Dialog open={open} maxWidth='xl'>
       <Formik
         initialValues={{
           ...Initial,
@@ -83,7 +78,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
                   </Typography>
                 </Grid>
                 <Grid item xs={1}>
-                  <CloseIcon className='right pointer' onClick={() => toggleOpen(false)} />
+                  <CloseIcon className='right pointer' onClick={() => setBooking()} />
                 </Grid>
               </Grid>
             </DialogTitle>
@@ -106,7 +101,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
                 <Grid item xs={10}>
                   <ButtonSecondary
                     variant='outlined'
-                    onClick={() => toggleOpen(false)}
+                    onClick={() => setBooking()}
                   >
                     Cancel
                   </ButtonSecondary>

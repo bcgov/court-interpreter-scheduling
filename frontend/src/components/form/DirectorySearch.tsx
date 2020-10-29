@@ -37,12 +37,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         }}
         enableReinitialize={true}
         validationSchema={Schema}
-        onSubmit={async (values) => {
-          await getSearchResults({
-            ...values,
-            dates: search.dates,
-          })
-        }}>
+        onSubmit={async (values) => getSearchResults(values)}>
           {({ handleSubmit, errors, isSubmitting, ...props }: FormikProps<any>) => (
             <>
               <GridRow container spacing={4}>

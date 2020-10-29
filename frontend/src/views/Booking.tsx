@@ -3,14 +3,14 @@ import {
   Box,
   CircularProgress,
 } from '@material-ui/core'
-import useAxios from 'axios-hooks'
+import { useAxiosGet } from 'hooks/axios'
 
 import BookingsTable from 'components/table/BookingsTable'
 import BookingsSearch from 'components/form/BookingsSearch'
 import useError from 'hooks/useError'
 
 const Booking = () => {
-  const [{ data: bookings, error, loading }, getBookings] = useAxios('/booking')
+  const [{ data: bookings, error, loading }, getBookings] = useAxiosGet('/booking')
   useError({ error, prefix: 'Failed to load bookings.' })
   useEffect(() => {
     getBookings()

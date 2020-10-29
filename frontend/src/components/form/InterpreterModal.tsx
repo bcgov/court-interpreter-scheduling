@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import useAxios from 'axios-hooks'
+import { useAxiosPost } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import { StyledButton, ButtonSecondary } from 'components/Buttons'
@@ -23,15 +23,8 @@ import { Formik, FormikProps } from 'formik'
 
 export default function InterpreterModal({ open, toggle }: { open: boolean, toggle: Function }) {
 
-  const [{ response, loading, error }, createInterpreter] = useAxios({
-    url: '/interpreter',
-    method: 'POST',
-  }, {
-    manual: true
-  })
-
+  const [{ response, loading, error }, createInterpreter] = useAxiosPost({ url: '/interpreter' }, { manual: true })
   useError({ error, prefix: 'Failed to create interpreter.' })
-
   useEffect(() => {
     if (response?.status === 201) {
       toggle(false)

@@ -3,7 +3,7 @@ import {
   Box,
   CircularProgress,
 } from '@material-ui/core'
-import useAxios from 'axios-hooks'
+import { useAxiosGet } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import InterpreterSearch from 'components/form/InterpreterSearch'
@@ -24,7 +24,7 @@ const Directory = () => {
 
   const [open, toggle] = useState(false)
 
-  const [{ data: interpreters, loading, error }, getInterpreters] = useAxios('/interpreter')
+  const [{ data: interpreters, loading, error }, getInterpreters] = useAxiosGet('/interpreter')
   useError({ error, prefix: 'Failed to load the interpreter directory.' })
 
   const getSearchResults = async (params: InterpreterSearchParams) => {
