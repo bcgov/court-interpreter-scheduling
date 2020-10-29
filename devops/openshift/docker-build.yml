@@ -64,16 +64,16 @@ objects:
           from:
             kind: ImageStreamTag
             name: ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
+          buildArgs: 
+            - name: ${ARG_KEY_1}
+              value: ${ARG_VAL_1}
+            - name: ${ARG_KEY_2}
+              value: ${ARG_VAL_2}
+            - name: ${ARG_KEY_3}
+              value: ${ARG_VAL_3}
+            - name: ${ARG_KEY_4}
+              value: ${ARG_VAL_4}
         type: Docker
-        buildArgs: 
-          - name: ${ARG_KEY_1}
-            value: ${ARG_VAL_1}
-          - name: ${ARG_KEY_2}
-            value: ${ARG_VAL_2}
-          - name: ${ARG_KEY_3}
-            value: ${ARG_VAL_3}
-          - name: ${ARG_KEY_4}
-            value: ${ARG_VAL_4}
 parameters:
   - name: NAME
     required: true

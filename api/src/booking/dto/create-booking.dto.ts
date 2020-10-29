@@ -40,7 +40,7 @@ export class CreateBookingDto {
   })
   @IsEnum(BookingStatus)
   @IsOptional()
-  status: string;
+  status: BookingStatus;
 
   @ApiProperty({
     description: 'Booking date',

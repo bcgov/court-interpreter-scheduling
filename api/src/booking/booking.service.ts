@@ -10,6 +10,7 @@ import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
+import { BookingRO } from './ro/booking.ro';
 
 @Injectable()
 export class BookingService {
@@ -46,7 +47,7 @@ export class BookingService {
 
   async findAll(
     paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingEntity[]>> {
+  ): Promise<SuccessResponse<BookingRO[]>> {
     const { page, limit, dates } = paginateBookingQueryDto;
 
     let query = this.bookingRepository
@@ -79,7 +80,7 @@ export class BookingService {
     const bookings = await query.getMany();
 
     return {
-      data: bookings,
+      data: bookings.map(b => b.toResponseObject()),
       pagination: { page, limit },
     };
   }

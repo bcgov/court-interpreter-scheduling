@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookingPeriod } from '../enums/booking-period.enum';
+import { BookingDateRO } from '../ro/booking-date.ro';
 import { BookingEntity } from './booking.entity';
 
 @Entity('bookingDate')
@@ -47,4 +48,13 @@ export class BookingDateEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  toResponseObject(): BookingDateRO {
+    return {
+      id: this.id,
+      date: this.date,
+      period: this.period,
+      arrivalTime: this.arrivalTime,
+    };
+  }
 }

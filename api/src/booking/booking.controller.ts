@@ -19,6 +19,7 @@ import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
+import { BookingRO } from './ro/booking.ro';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -29,9 +30,7 @@ export class BookingController {
   ) {}
 
   @Post()
-  async create(
-    @Body() createBookingDto: CreateBookingDto,
-  ): Promise<BookingEntity> {
+  async create(@Body() createBookingDto: CreateBookingDto): Promise<BookingRO> {
     let bookingDates: BookingDateEntity[];
     const { dates } = createBookingDto;
     if (dates && dates.length > 0) {
@@ -41,20 +40,24 @@ export class BookingController {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
-    return await this.bookingService.create(createBookingDto, bookingDates);
+    const booking = await this.bookingService.create(
+      createBookingDto,
+      bookingDates,
+    );
+    return booking.toResponseObject();
   }
 
   @Get()
   async findAll(
     @Query() paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingEntity[]>> {
+  ): Promise<SuccessResponse<BookingRO[]>> {
     return await this.bookingService.findAll(paginateBookingQueryDto);
   }
 
   @Post('search')
   async search(
     @Body() paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingEntity[]>> {
+  ): Promise<SuccessResponse<BookingRO[]>> {
     return await this.bookingService.findAll(paginateBookingQueryDto);
   }
 

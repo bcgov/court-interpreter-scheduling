@@ -91,6 +91,15 @@ define KC_NGINX_IMAGE_NAME
 "$(KEYCLOAK_IMAGE_NAME)-nginx"
 endef
 
+define KC_AUTH_URL
+"https://$(APP_NAME).$(DOMAIN)/auth"
+endef
+
+define rollout_and_wait
+@oc rollout latest $1
+@oc rollout status $1
+endef
+
 # Openshift Build
 app-check:
 	test -n "$(BUILD_ID)"
@@ -143,7 +152,7 @@ build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
 
 build-patroni:
@@ -166,18 +175,13 @@ import:
 	@echo "+\n++ Importing image from $(BUILD_NAMESPACE):$(NAME)/$(BUILD_TAG) to $(NAMESPACE):$(NAME)$/(BUILD_TAG) \n+"
 	@oc tag $(BUILD_NAMESPACE)/$(NAME):$(TAG) $(NAMESPACE)/$(NAME):$(TAG)
 
-deploy-db:
-	@echo "+\n++ Deploying DB with tag: $(BUILD_ID)\n+"
-	@oc process -f $(DB_DEPLOY_TEMPLATE_PATH) -p NAME=$(DB_SERVICE_NAME) INSTANCE=$(DB_SERVICE_INSTANCE) PROJECT=$(APP_NAME) | oc apply -f - 
-	@oc rollout status dc/$(DB_SERVICE_NAME)
-
 deploy-api:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	oc process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" | oc apply -f -
-	@oc rollout status dc/$(API)
+	@oc process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" | oc apply -f -
+	$(call rollout_and_wait,dc/$(API))
 
 deploy-app:
 	test -n "$(NAMESPACE)"
@@ -185,19 +189,19 @@ deploy-app:
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
 	@oc process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc apply -f -
-	@oc rollout status dc/$(APP)
+	$(call rollout_and_wait,dc/$(APP))
 
 deploy-keycloak:
 	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
-	@oc rollout status dc/keycloak
+	$(call rollout_and_wait,dc/keycloak)
 
 deploy-keycloak-nginx:
 	@oc process -f openshift/keycloak-nginx-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KC_NGINX_IMAGE_NAME):latest | oc apply -f -
-	@oc rollout status dc/keycloak-nginx
+	$(call rollout_and_wait,dc/keycloak-nginx)
 
 deploy-patroni:
 	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -
-	@oc rollout status ss/patroni
+	$(call rollout_and_wait,ss/patroni)
 
 delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"

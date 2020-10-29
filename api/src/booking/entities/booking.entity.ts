@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 
 import { BookingStatus } from '../enums/booking-status.enum';
+import { BookingRO } from '../ro/booking.ro';
 import { BookingDateEntity } from './booking-date.entity';
 
 @Entity('booking')
@@ -36,7 +37,7 @@ export class BookingEntity {
     default: BookingStatus.PENDING,
     name: 'status',
   })
-  status: string;
+  status: BookingStatus;
 
   @OneToMany(
     type => BookingDateEntity,
@@ -84,4 +85,26 @@ export class BookingEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  toResponseObject(): BookingRO {
+    return {
+      id: this.id,
+      interpreter: this.interpreter.toResponseObject(),
+      caseName: this.caseName,
+      room: this.room,
+      status: this.status,
+      dates: this.dates.map(d => d.toResponseObject()),
+      registry: this.registry,
+      file: this.file,
+      interpretFor: this.interpretFor,
+      requestedBy: this.requestedBy,
+      federal: this.federal,
+      language: this.language.toResponseObject()?.name,
+      reason: this.reason,
+      prosecutor: this.prosecutor,
+      comment: this.comment,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
 }
