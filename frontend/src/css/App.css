@@ -64,6 +64,42 @@ body {
   justify-content: center;
 }
 
+/* Date Picker */
+ .rangeParent > div {
+  width: 320px;
+  margin: auto;
+}
+
+.nice-dates-navigation {
+  color: #103A72;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.nice-dates-navigation_previous:before, .nice-dates-navigation_next:before {
+  border-right: 2px solid #103A72;
+  border-top: 2px solid #103A72;
+}
+
+.nice-dates-day:before {
+  background-color: #FCBA19;
+}
+
+.nice-dates-day:before, .nice-dates-day:after {
+  border-radius: 5px;
+  width: 80%;
+  height: 80%;
+  margin: auto;
+}
+
+.nice-dates-day:not(.-disabled):hover:after {
+  opacity: 0.1;
+}
+
+.nice-dates-day.-selected:not(:hover) *, .nice-dates-day.-selected.-disabled * {
+  color: inherit;
+}
+
 .MORNING, .AFTERNOON, .WHOLE_DAY {
   border: solid 1px #313132;
   border-radius: 4px;

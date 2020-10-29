@@ -7,6 +7,7 @@ import keycloakClient from './keycloak'
 import { KeycloakInstance } from 'keycloak-js'
 
 import { ThemeProvider, Box, CircularProgress } from '@material-ui/core'
+import 'react-nice-dates/build/style.css'
 import 'css/App.css'
 import '@bcgov/bc-sans/css/BCSans.css'
 import { theme } from 'theme'

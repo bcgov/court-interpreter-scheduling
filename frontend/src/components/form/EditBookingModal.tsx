@@ -57,7 +57,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
         initialValues={{
           ...Initial,
           ...booking,
-          language: booking?.language?.name,
+          language: booking?.language,
         }}
         validationSchema={Schema}
         onSubmit={async (values) => {

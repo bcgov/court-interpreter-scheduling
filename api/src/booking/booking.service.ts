@@ -30,7 +30,7 @@ export class BookingService {
     const { interpreterId, language, dates, ...createDto } = createBookingDto;
     const interpreter = await this.interpreterRepository.findOneOrFail({
       id: interpreterId,
-    });
+    }, { relations: ['languages'] } );
 
     const booking = this.bookingRepository.create(createDto);
     booking.interpreter = interpreter;

@@ -82,6 +82,9 @@ export function PeriodRadio ({ value, label, name }: { value: string, label: str
     <FormControlLabel
       label={label}
       labelPlacement='end'
+      style={{
+        display: 'block'
+      }}
       control={
         <Field
           type='radio'
