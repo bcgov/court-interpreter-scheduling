@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { configure, makeUseAxios } from 'axios-hooks'
 import keycloak from 'keycloak'
 
-axios.defaults.baseURL = `${process.env.REACT_APP_API_HOST}/api/v1`
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || '/api/v1'
 configure({ axios, cache: false })
 
 function successInterceptor(request: AxiosRequestConfig) {
