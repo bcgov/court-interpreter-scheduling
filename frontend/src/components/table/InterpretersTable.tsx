@@ -8,7 +8,13 @@ import BaseTable from 'components/table/Base'
 import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
 
-import { Interpreter } from 'constants/interfaces'
+import { Language, Interpreter } from 'constants/interfaces'
+
+const fieldSort = (field: string) =>
+  (a: any, b: any): number =>
+    a[field] === b[field]
+      ? 0
+      : a[field] > b[field] ? 1 : -1
 
 export default function InterpretersTable({
   data,
@@ -27,11 +33,11 @@ export default function InterpretersTable({
       <BaseTable
         data={data}
         columns={[
-          { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}` },
+          { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, customSort: fieldSort('lastName') },
           { title: 'Phone', field: 'phone' },
           { title: 'Email', field: 'email' },
-          { title: 'Language', render: (row: any) => `${row.languages[0].languageName}` },
-          { title: 'Level', render: (row: any) => `${row.languages[0].level}` },
+          { title: 'Language', render: (row: any) => row.languages.map((language: Language) => <div>{language.languageName}</div>) },
+          { title: 'Level', render: (row: any) => row.languages.map((language: Language) => <div>{language.level}</div>) },
           {
             title: (
               <StyledIconButton

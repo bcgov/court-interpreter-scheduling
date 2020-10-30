@@ -58,10 +58,9 @@ export default function InterpreterInputs () {
       </Grid>
 
       <Grid item xs={12}>
-        <FieldArray
-          name='language'
-          render={arrayHelpers => values.languages && values.languages.length > 0 && values.languages.map((language: Language, index: number) => (
-            <Grid container spacing={4}>
+        <FieldArray name='languages'>
+          {(arrayHelpers) => (values.languages && values.languages.length > 0) ? values.languages.map((language: Language, index: number) => (
+            <Grid container spacing={4} key={`interpreter_language_${index}`}>
               <StyledField name={`languages[${index}].languageName`} label='Language' rows={{ xs: 10, lg: 4 }} />
               <StyledField name={`languages[${index}].level`} label='Level' rows={{ xs: 2, lg: 2 }} />
               <StyledField name={`languages[${index}].commentOnLevel`} label='Comment' rows={{ xs: 11, lg: 5 }} />
@@ -72,7 +71,7 @@ export default function InterpreterInputs () {
                     style={{ display: 'flex', alignItems: 'flex-end' }}
                     item
                     xs={1}
-                    onClick={() => arrayHelpers.push({ name: '', level: null })}
+                    onClick={() => arrayHelpers.push({ name: '', level: null, commentOnLevel: '' })}
                   >
                     <IconButton color='primary'><AddIcon /></IconButton>
                   </Grid>
@@ -88,8 +87,8 @@ export default function InterpreterInputs () {
                   </Grid>
                 )}
             </Grid>
-          ))}
-        />
+          )) : null}
+        </FieldArray>
       </Grid>
 
       <Grid item xs={12}>
@@ -114,7 +113,7 @@ export default function InterpreterInputs () {
       <StyledField name='gst' label='GST' />
 
       <Grid item xs={12} lg={4}>
-        <SingleCheck name='contractExtension' label='Contract active as of June 30 2020' />
+        <SingleCheck name='contractExtension' label='Contract Active' />
       </Grid>
 
       <Grid item xs={12} lg={8}>

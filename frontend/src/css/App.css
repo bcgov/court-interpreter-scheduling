@@ -40,7 +40,8 @@ body {
 }
 
 .content {
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: auto;
 }
 
 .login-container,

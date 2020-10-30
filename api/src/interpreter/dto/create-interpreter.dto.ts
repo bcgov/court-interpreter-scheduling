@@ -8,6 +8,7 @@ import {
   ValidateNested,
   IsPostalCode,
   IsBoolean,
+  ValidateIf,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -63,6 +64,7 @@ export class CreateInterpreterDto {
     example: faker.address.zipCode(),
   })
   @IsOptional()
+  @ValidateIf(e => e.postal !== '')
   @IsPostalCode('CA')
   postal: string;
 
@@ -71,6 +73,7 @@ export class CreateInterpreterDto {
     example: faker.phone.phoneNumber(),
   })
   @IsOptional()
+  @ValidateIf(e => e.homePhone !== '')
   @IsPhoneNumber('CA')
   homePhone: string;
 
@@ -79,6 +82,7 @@ export class CreateInterpreterDto {
     example: faker.phone.phoneNumber(),
   })
   @IsOptional()
+  @ValidateIf(e => e.businessPhone !== '')
   @IsPhoneNumber('CA')
   businessPhone: string;
 
@@ -87,6 +91,7 @@ export class CreateInterpreterDto {
     example: faker.phone.phoneNumber(),
   })
   @IsOptional()
+  @ValidateIf(e => e.phone !== '')
   @IsPhoneNumber('CA')
   phone: string;
 
@@ -95,6 +100,7 @@ export class CreateInterpreterDto {
     example: faker.internet.email(),
   })
   @IsOptional()
+  @ValidateIf(e => e.email !== '')
   @IsEmail()
   email: string;
 
@@ -103,6 +109,7 @@ export class CreateInterpreterDto {
     example: 'faker.internet.email()',
   })
   @IsOptional()
+  @ValidateIf(e => e.emailAlt !== '')
   emailAlt: string;
 
   @ApiProperty({

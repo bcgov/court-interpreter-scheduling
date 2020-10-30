@@ -9,7 +9,7 @@ import {
 import CloseIcon from '@material-ui/icons/Close'
 import moment from 'moment'
 
-import { Field, FieldArray, ArrayHelpers } from 'formik'
+import { Field, FieldArray } from 'formik'
 
 import { StyledFormControl, StyledLabel, } from 'components/form/inputs/DirectoryInputs'
 import { ArrayPeriodRadio } from 'components/form/inputs/Check'
@@ -28,9 +28,8 @@ const useStyles = makeStyles({
 export default function SearchDates({ values }: { values: { dates: BookingDate[] }}) {
   const classes = useStyles()
   return (
-    <FieldArray
-      name='dates'
-      render={(arrayHelpers: ArrayHelpers) => (
+    <FieldArray name='dates'>
+      {arrayHelpers => (
         <Grid wrap='nowrap' spacing={1} container className={classes.parent}>
           {values.dates.map((bookinDate: BookingDate, index: number) => (
             <Grid xs={2} item key={`fieldArray-dates-${index}`}>
@@ -78,6 +77,6 @@ export default function SearchDates({ values }: { values: { dates: BookingDate[]
           ))}
         </Grid>
       )}
-    />
+    </FieldArray>
   )
 }
