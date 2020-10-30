@@ -18,7 +18,6 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
-import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
 
 @ApiTags('booking')

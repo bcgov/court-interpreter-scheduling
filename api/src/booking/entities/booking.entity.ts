@@ -89,7 +89,7 @@ export class BookingEntity {
   toResponseObject(): BookingRO {
     return {
       id: this.id,
-      interpreter: this.interpreter.toResponseObject(),
+      interpreter: this.interpreter?.toResponseObject(),
       caseName: this.caseName,
       room: this.room,
       status: this.status,
@@ -99,7 +99,7 @@ export class BookingEntity {
       interpretFor: this.interpretFor,
       requestedBy: this.requestedBy,
       federal: this.federal,
-      language: this.language.toResponseObject()?.name,
+      language: this.language?.toResponseObject()?.name,
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,

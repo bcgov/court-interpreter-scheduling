@@ -48,6 +48,7 @@ export default function BaseTable({
 }) {
   const baseOptions = {
     pageSize: 10,
+    sorting: true,
     showTitle: false,
     toolbar: false,
     search: false,

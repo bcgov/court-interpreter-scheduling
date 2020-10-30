@@ -65,7 +65,7 @@ export default function MoreDetails({ interpreter, setInterpreter, search }: { i
               <b>Level</b>
             </Grid>
             <Grid xs={6} className='rowItem' item>
-              {interpreter.languages.find((l: any) => l?.language?.name === search.language)?.level}
+              {interpreter.languages.find((l: string) => l === search.language)?.level}
             </Grid>
             <Grid xs={6} className='rowItem' item>
               <b>Distance</b>

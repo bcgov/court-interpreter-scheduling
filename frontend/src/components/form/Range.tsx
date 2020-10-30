@@ -11,37 +11,67 @@ import {
   Popover,
 } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
-import { DayPickerRangeController } from 'react-dates'
 import moment from 'moment'
+
+import useKeyPress from 'hooks/useKeyPress'
 
 import SearchContext from 'contexts/SearchContext'
 import { Initial, Schema } from 'components/form/schemas/daterange-search.schema'
-import { StyledFormControl, StyledLabel, StyledTextField, GridRow } from 'components/form/inputs/DirectoryInputs'
+import { StyledFormControl, StyledLabel, StyledTextField } from 'components/form/inputs/DirectoryInputs'
 import { PeriodRadio } from 'components/form/inputs/Check'
 
+import { eachDayOfInterval, formatISO, compareAsc, isBefore, isSameDay } from 'date-fns'
+import { enUS } from 'date-fns/locale'
+import { Calendar } from 'react-nice-dates'
+
 function Picker () {
-  const [field, , helpers] = useField('dates')
-  const [focusedInput, setFocusedInput] = useState<'startDate' | 'endDate' | null>('startDate')
+  const [, , helpers] = useField('dates')
+
+  const [lastDate, setLastDate] = useState<Date>()
+  const [selectedDates, setSelectedDates] = useState<Array<Date>>([])
+
+  useEffect(() => {
+    helpers.setValue(selectedDates)
+  }, [selectedDates])
+
+  const modifiers = {
+    selected: (date: Date | number) => selectedDates.some(selectedDate => isSameDay(selectedDate, date))
+  }
+
+  const shiftKeyPressed = useKeyPress('shift')
+
+  const handleDayClick = (date: Date | null) => {
+    if (date) {
+      setLastDate(date)
+      if (selectedDates.some(selectedDate => isSameDay(selectedDate, date))) {
+        setSelectedDates(selectedDates.filter((selectedDate) => !isSameDay(selectedDate, date)).sort(compareAsc))
+      } else {
+        if (shiftKeyPressed && lastDate) {
+          const start = isBefore(lastDate, date) ? lastDate : date
+          const end = isBefore(lastDate, date) ? date : lastDate
+          const range = eachDayOfInterval({ start, end })
+          setSelectedDates([
+            ...selectedDates,
+            ...range
+          ].reduce(
+            (list: Array<Date>, currentDate: Date) => list.some((date) => isSameDay(date, currentDate)) ? list : [...list, currentDate], []
+          ).sort(compareAsc))
+        } else {
+          setSelectedDates([...selectedDates, date].sort(compareAsc))
+        }
+      }
+    }
+  }
 
   return (
-    <DayPickerRangeController
-      startDate={field.value ? moment(field.value.startDate) : null}
-      endDate={field.value ? moment(field.value.endDate) : null}
-      onDatesChange={({ startDate, endDate }) => {
-        helpers.setValue({
-          startDate: moment(startDate).format(),
-          endDate: moment(endDate).format(),
-        })
-      }}
-      focusedInput={focusedInput}
-      onFocusChange={(fI) => setFocusedInput(focusedInput === 'endDate' ? 'startDate' : fI)}
-      initialVisibleMonth={() => moment()}
-      numberOfMonths={2}
-      hideKeyboardShortcutsPanel
-      keepOpenOnDateSelect
-      minimumNights={0}
-      noBorder
-    />
+    <>
+      <Calendar
+        locale={enUS}
+        onDayClick={handleDayClick}
+        modifiers={modifiers}
+        minimumDate={new Date()}
+      />
+    </>
   )
 }
 
@@ -63,24 +93,13 @@ export default function Range() {
       validationSchema={Schema}
       onSubmit={async (values, actions) => {
 
-        const { startDate, endDate } = values.dates
         const baseDay = {
-          date: values.dates.startDate,
+          date: values.dates[0],
           period: values.period,
           arrivalTime: values.arrivalTime
         }
-        let dates = [baseDay]
+        let dates = values.dates.map(d => Object.assign({}, baseDay, { date: formatISO(d) }))
 
-        let currentDate = moment(startDate)
-        const endDateMoment = moment(endDate)
-
-        while (currentDate.isBefore(endDateMoment)) {
-          currentDate = currentDate.add(1, 'days')
-          dates.push({
-            ...baseDay,
-            date: currentDate.format(),
-          })
-        }
         updateSearchContext(Object.assign({}, search, searchValues, { dates }))
         setFieldValue('dates', dates)
         actions.resetForm()
@@ -92,7 +111,7 @@ export default function Range() {
         <>
           <StyledFormControl>
             <StyledLabel htmlFor='language'>
-              Date Range
+              Dates
             </StyledLabel>
             <StyledTextField
               ref={anchor}
@@ -126,58 +145,54 @@ export default function Range() {
               horizontal: 'left',
             }}
           >
-            <Grid container style={{ width: 'min-content' }}>
-              <Grid item xs={12}>
-                <Picker />
-                <ErrorMessage name='dates' render={() => <Box px={3} pb={1}>Please select a date range</Box>} />
+            <Grid container>
+
+              <Grid item xs={12} md={6} className='rangeParent'>
+                <Box p={1}>
+                  <Picker />
+                  <ErrorMessage name='dates' render={() => <Box px={3} pb={1}>Please select a date range</Box>} />
+                </Box>
               </Grid>
 
-              <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
+              <Grid item xs={12} md={6}>
+                <Box p={4} pt={7}>
+                  <StyledFormControl>
+                    <StyledLabel htmlFor='time-options'>
+                      Arrival Time
+                    </StyledLabel>
+                    <Box my={1}>
+                      <Field type='time' name='arrivalTime' />
+                    </Box>
+                    <Box my={1}>
+                      <ErrorMessage name='arrivalTime' />
+                    </Box>
+                  </StyledFormControl>
 
-              <GridRow mt={0.5} item xs={12}>
-                <Box px={3} py={1}>
-                  <Grid container>
-                    <Grid item xs={4}>
-                      <StyledFormControl>
-                        <StyledLabel htmlFor='time-options'>
-                          Arrival Time
-                        </StyledLabel>
-                        <Box my={1}>
-                          <Field type='time' name='arrivalTime' />
-                        </Box>
-                        <Box my={1}>
-                          <ErrorMessage name='arrivalTime' />
-                        </Box>
-                      </StyledFormControl>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <StyledFormControl>
-                        <StyledLabel htmlFor='time-options'>
-                          Time Options
-                        </StyledLabel>
-                        <div role='group' aria-labelledby='time-options'>
-                          <PeriodRadio
-                            label='Full Day'
-                            name='period'
-                            value='WHOLE_DAY'
-                          />
-                          <PeriodRadio
-                            label='Morning'
-                            name='period'
-                            value='MORNING'
-                          />
-                          <PeriodRadio
-                            label='Afternoon'
-                            name='period'
-                            value='AFTERNOON'
-                          />
-                        </div>
-                        <div><ErrorMessage name='period' /></div>
-                      </StyledFormControl>
-                    </Grid>
-                  </Grid>
+                  <StyledFormControl>
+                    <StyledLabel htmlFor='time-options'>
+                      Time Options
+                    </StyledLabel>
+                    <div role='group' aria-labelledby='time-options'>
+                    <PeriodRadio
+                        label='Full Day'
+                        name='period'
+                        value='WHOLE_DAY'
+                      />
+                      <PeriodRadio
+                        label='Morning'
+                        name='period'
+                        value='MORNING'
+                      />
+                      <PeriodRadio
+                        label='Afternoon'
+                        name='period'
+                        value='AFTERNOON'
+                      />
+                    </div>
+                    <div><ErrorMessage name='period' /></div>
+                  </StyledFormControl>
                 </Box>
-              </GridRow>
+              </Grid>
 
               <Divider style={{ flexShrink: 1, width: '100%' }} variant='middle' />
 
