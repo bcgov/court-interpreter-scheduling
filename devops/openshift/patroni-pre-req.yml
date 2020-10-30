@@ -118,7 +118,7 @@ parameters:
     generate: expression
     from: "[a-zA-Z0-9]{8}"
   - name: APP_DB_NAME
-    value: court-interpreter-scheduling
+    value: courtDB
   - name: APP_DB_PASSWORD
     generate: expression
     from: "[a-zA-Z0-9]{32}"
