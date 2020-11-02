@@ -1,17 +1,13 @@
 FROM node:13.12.0-alpine
 
-ARG REACT_APP_REALM_AUTH_URL
-ARG REACT_APP_API_HOST
-ARG CHOKIDAR_USEPOLLING=true
-
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install --silent
-RUN npm install react-scripts@3.4.1 -g --silent
+RUN npm install react-scripts@3.4.0 -g --silent
 
 COPY . ./
 
-CMD ["CHOKIDAR_USEPOLLING=true", "npm", "start"]
+CMD ["npm", "start"]
