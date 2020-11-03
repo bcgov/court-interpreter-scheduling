@@ -67,7 +67,7 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   keywords?: string;
 
   @AndWhere('intLang.level IN (:...level)', 'level')
-  @AndWhere('intLang.language.name = :language', 'language')
+  @AndWhere('LOWER(intLang.language.name) = LOWER(:language)', 'language')
   @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
   @AndWhere(
     `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:name)`,
