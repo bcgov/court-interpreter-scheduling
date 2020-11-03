@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, ValidateNested } from 'class-validator';
+import { IsOptional, ValidateNested, Max, Min, IsNumber } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
@@ -11,6 +11,19 @@ import { SelectQueryBuilder } from 'typeorm';
 import { Level } from '../enums/level.enum';
 
 export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
+  @ApiProperty({
+    description: `
+      The maximum size for every page, default is 1000
+    `,
+    example: '1000',
+    required: false,
+  })
+  @Max(1000)
+  @Min(1)
+  @IsOptional()
+  @IsNumber()
+  limit: number = 1000;
+
   @ApiProperty({
     description: `
       Multiple interpreter level from 1 to 4,

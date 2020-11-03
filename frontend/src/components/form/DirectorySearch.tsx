@@ -22,7 +22,7 @@ import Check from 'components/form/inputs/Check'
 import { StyledButton } from 'components/Buttons'
 
 import SearchContext from 'contexts/SearchContext'
-import { ErrorMessage, Field, Formik, FormikProps } from 'formik'
+import { ErrorMessage, Field, Formik, FormikProps, Form } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(SearchContext)
@@ -39,7 +39,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         validationSchema={Schema}
         onSubmit={async (values) => getSearchResults(values)}>
           {({ handleSubmit, errors, isSubmitting, ...props }: FormikProps<any>) => (
-            <>
+            <Form onSubmit={handleSubmit}>
               <GridRow container spacing={4}>
                 <Grid item xs={4}>
                   <StyledFormControl>
@@ -115,7 +115,6 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       style={{ marginTop: '1.25rem' }}
                       type='submit'
                       variant='contained'
-                      onClick={() => handleSubmit()}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? '...' : 'Search'}
@@ -124,7 +123,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </Grid>
               </GridRow>
               {search.dates.length > 0 && <SearchDates values={props.values} />}
-            </>
+            </Form>
           )}
       </Formik>
     </Box>

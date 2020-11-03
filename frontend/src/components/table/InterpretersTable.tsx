@@ -68,7 +68,8 @@ export default function InterpretersTable({
                 <Box p={1}>
                   <b>Address</b>
                   <br />
-                  {`${rowData.address} ${rowData.city} ${rowData.postal}`}</Box>
+                  {`${rowData.address} ${rowData.city} ${rowData.postal}`}
+                </Box>
               </Grid>
               <Grid item>
                 <Box p={1}>

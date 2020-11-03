@@ -1,5 +1,16 @@
 {
-  "baseUrl": "http://localhost:3333",
+  "baseUrl": "http://localhost:3000",
   "viewportWidth": 1440,
-  "viewportHeight": 1000
+  "viewportHeight": 1000,
+  "ignoreTestFiles": "**/examples/*",
+  "chromeWebSecurity": false,
+  "projectId": "ucw3ze",
+  "env": {
+    "auth_base_url": "http://keycloak.local.freshworks.club:8080/auth",
+    "auth_realm": "court",
+    "auth_client_id": "court-fe",
+    "username": "michel",
+    "password": "password",
+    "API_URL": "http://keycloak.local.freshworks.club:4000/api/v1"
+  }
 }

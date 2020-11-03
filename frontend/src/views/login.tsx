@@ -10,7 +10,6 @@ import { ButtonPrimary } from 'components/Buttons'
 
 const Login = () => {
   const { keycloak } = useKeycloak<KeycloakInstance>()
-
   return (
     <>
       <Header />
@@ -18,7 +17,7 @@ const Login = () => {
         <Grid container>
           <Grid item xs={6}>
             <div className='login-form'>
-              <ButtonPrimary onClick={() => keycloak?.login({ redirectUri: `${window.location.origin}/keycloak` })}>
+              <ButtonPrimary onClick={() => keycloak?.login({ redirectUri: window.location.origin })}>
                 Log In
               </ButtonPrimary>
             </div>

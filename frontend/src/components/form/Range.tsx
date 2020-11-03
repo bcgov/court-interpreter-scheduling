@@ -124,7 +124,7 @@ export default function Range() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
-                    <IconButton edge='end' onClick={() => setOpen(true)}>
+                    <IconButton id='rangeCalButton' edge='end' onClick={() => setOpen(true)}>
                       <CalendarTodayIcon />
                     </IconButton>
                   </InputAdornment>

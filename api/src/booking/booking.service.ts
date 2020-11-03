@@ -60,7 +60,7 @@ export class BookingService {
 
     query = paginateBookingQueryDto.filter(query);
 
-    if (dates) {
+    if (dates && dates.length > 0) {
       query.andWhere(
         new Brackets((sqb: WhereExpression) => {
           dates.reduce((acc, { startDate, endDate }) => {
