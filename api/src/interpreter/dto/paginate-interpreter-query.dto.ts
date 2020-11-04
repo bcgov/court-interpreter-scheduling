@@ -33,7 +33,7 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
     enum: [1, 2, 3, 4],
   })
   @IsOptional()
-  level?: [1, 2, 3, 4][];
+  level?: Level[];
 
   @ApiProperty({
     description: 'Interpreter Language',

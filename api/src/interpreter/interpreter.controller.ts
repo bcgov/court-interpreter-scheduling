@@ -9,6 +9,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
@@ -97,6 +98,7 @@ export class InterpreterController {
   }
 
   @Post('search')
+  @HttpCode(200)
   async search(
     @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {

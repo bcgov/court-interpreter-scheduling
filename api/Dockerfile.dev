@@ -2,9 +2,9 @@ FROM node:12.18.3-slim
 
 LABEL maintainer="Freshworks <web@freshworks.io>"
 
-ENV PATH $PATH:/usr/src/app/node_modules/.bin
+ENV PATH $PATH:/app/node_modules/.bin
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY ./package.json .
 

@@ -36,28 +36,28 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => InterpreterLanguageDTO)
-  languages: InterpreterLanguageDTO[];
+  languages?: InterpreterLanguageDTO[];
 
   @ApiProperty({
     description: 'Street Address',
     example: faker.address.streetAddress(),
   })
   @IsOptional()
-  address: string;
+  address?: string;
 
   @ApiProperty({
     description: 'City',
     example: faker.address.city(),
   })
   @IsOptional()
-  city: string;
+  city?: string;
 
   @ApiProperty({
     description: 'Province',
     example: 'BC',
   })
   @IsOptional()
-  province: string;
+  province?: string;
 
   @ApiProperty({
     description: 'Postal Code',
@@ -66,7 +66,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateIf(e => e.postal !== '')
   @IsPostalCode('CA')
-  postal: string;
+  postal?: string;
 
   @ApiProperty({
     description: 'Home phone number',
@@ -75,7 +75,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateIf(e => e.homePhone !== '')
   @IsPhoneNumber('CA')
-  homePhone: string;
+  homePhone?: string;
 
   @ApiProperty({
     description: 'Business phone number',
@@ -84,7 +84,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateIf(e => e.businessPhone !== '')
   @IsPhoneNumber('CA')
-  businessPhone: string;
+  businessPhone?: string;
 
   @ApiProperty({
     description: 'Interpreter phone number',
@@ -93,7 +93,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateIf(e => e.phone !== '')
   @IsPhoneNumber('CA')
-  phone: string;
+  phone?: string;
 
   @ApiProperty({
     description: 'Interpreter email',
@@ -102,7 +102,7 @@ export class CreateInterpreterDto {
   @IsOptional()
   @ValidateIf(e => e.email !== '')
   @IsEmail()
-  email: string;
+  email?: string;
 
   @ApiProperty({
     description: 'alt email',
@@ -110,42 +110,42 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @ValidateIf(e => e.emailAlt !== '')
-  emailAlt: string;
+  emailAlt?: string;
 
   @ApiProperty({
     description: 'fax',
     example: '1234567',
   })
   @IsOptional()
-  fax: string;
+  fax?: string;
 
   @ApiProperty({
     description: 'record check',
     example: '10-Dec-18',
   })
   @IsOptional()
-  criminalRecordCheck: string;
+  criminalRecordCheck?: string;
 
   @ApiProperty({
     description: 'Supplier number',
     example: '1234567',
   })
   @IsOptional()
-  supplier: string;
+  supplier?: string;
 
   @ApiProperty({
     description: 'GST',
     example: '123456789-RT0001',
   })
   @IsOptional()
-  gst: string;
+  gst?: string;
 
   @ApiProperty({
     description: 'Comments',
     example: 'Civil and family matters only',
   })
   @IsOptional()
-  comments: string;
+  comments?: string;
 
   @ApiProperty({
     description: 'Contract Extension',
@@ -153,7 +153,7 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @IsBoolean()
-  contractExtension: boolean;
+  contractExtension?: boolean;
 
   @ApiProperty({
     description: 'Contract Termination',
@@ -161,5 +161,5 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @IsBoolean()
-  contractTermination: boolean;
+  contractTermination?: boolean;
 }

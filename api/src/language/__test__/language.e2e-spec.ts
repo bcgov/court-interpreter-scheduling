@@ -1,12 +1,16 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as dotenv from 'dotenv';
 
 import { LanguageModule } from '../language.module';
 import { LanguageEntity } from '../entities/language.entity';
 import { CreateLanguageDto } from '../dto/create-language.dto';
+import { tearDownDatabase, useRefreshDatabase } from 'typeorm-seeding';
+
+dotenv.config();
 
 describe('Languages', () => {
   let app: INestApplication;
@@ -18,11 +22,11 @@ describe('Languages', () => {
         LanguageModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
-          host: 'localhost',
-          port: 5435,
-          username: 'court_nestapi',
-          password: 'court_nest123',
-          database: 'nest_api_test',
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT, 10) || 5432,
+          username: process.env.POSTGRESQL_USER,
+          password: process.env.POSTGRESQL_PASSWORD,
+          database: process.env.DB_TEST_DATABASE,
           entities: ['./**/*.entity.ts'],
           synchronize: true,
         }),
@@ -31,6 +35,10 @@ describe('Languages', () => {
 
     app = module.createNestApplication();
     repository = module.get(getRepositoryToken(LanguageEntity));
+
+    /** seeding */
+    await useRefreshDatabase();
+
     await app.init();
   });
 
@@ -42,7 +50,7 @@ describe('Languages', () => {
       .get('/language')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
-      .expect(200);
+      .expect(HttpStatus.OK);
 
     expect(body).toEqual([
       {
@@ -68,7 +76,7 @@ describe('Languages', () => {
       .send(dto)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
-      .expect(201);
+      .expect(HttpStatus.CREATED);
 
     expect(body).toEqual({
       name: 'French',
@@ -82,6 +90,7 @@ describe('Languages', () => {
   });
 
   afterAll(async () => {
+    await tearDownDatabase();
     await app.close();
   });
 });
