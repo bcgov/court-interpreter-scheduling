@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
+import { useKeycloak } from '@react-keycloak/web'
+import { KeycloakInstance } from 'keycloak-js'
 
 import {
   makeStyles,
@@ -60,6 +62,7 @@ export default function Header() {
   const location = useLocation()
   const history = useHistory()
   const classes = useStyles()
+  const { keycloak } = useKeycloak<KeycloakInstance>()
   const [activeTab, setActiveTab] = useState(location.pathname)
 
   const handleNav = (event: React.ChangeEvent<{}>, value: any) => {
@@ -81,7 +84,7 @@ export default function Header() {
       >
         <BCTab label='Bookings' value='/booking' />
         <BCTab label='Search Interpreters' value='/directory' />
-        <BCTab label='Interpreters' value='/interpreters' />
+        {keycloak?.hasRealmRole('court-admin') && <BCTab label='Interpreters' value='/interpreters' />}
       </BCTabs>
     </Paper>
   );

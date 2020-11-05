@@ -118,11 +118,11 @@ export default function InterpreterInputs () {
 
       <Grid item xs={12} lg={8}>
         <StyledFormControl>
-          <StyledLabel htmlFor='comment'>Comment</StyledLabel>
-          <Field name='comment'>
+          <StyledLabel htmlFor='comments'>Comment</StyledLabel>
+          <Field name='comments'>
             {({ field, form, ...props }: any) => (
               <StyledTextField
-                id='comment'
+                id='comments'
                 variant='outlined'
                 multiline
                 rows={4}

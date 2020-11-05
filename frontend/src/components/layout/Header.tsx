@@ -78,7 +78,7 @@ export default function Header() {
       </Link>
       <div className={classes.titleWrapper}>
         <Typography className={classes.topTitle}>
-          Court Services Branch Scheduling System
+          Court Interpreter Scheduling
         </Typography>
       </div>
       {

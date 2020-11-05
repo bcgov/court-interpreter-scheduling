@@ -31,7 +31,7 @@ objects:
                 - name: KEYCLOAK_CLIENT
                   value: ${KEYCLOAK_CLIENT}
                 - name: KEYCLOAK_AUTH_URL
-                  value: https://${HOST_NAME}/auth/
+                  value: ${KEYCLOAK_URL}
                 - name: KEYCLOAK_SECRET
                   valueFrom:
                     secretKeyRef:
@@ -54,7 +54,7 @@ objects:
                       key: ${DB_PASSWORD_KEY}
                       name: ${DB_SECRET_NAME}
                 - name: POSTGRESQL_DATABASE
-                  value: ${APP_DB}
+                  value: ${DB_NAME}
               image: ${IMAGE_REGISTRY}/${BUILD_NAMESPACE}/${IMAGE_STREAM_TAG}
               imagePullPolicy: Always
               name: ${NAME}
@@ -134,6 +134,8 @@ parameters:
     value: superuser-username
   - name: DB_PASSWORD_KEY
     value: superuser-password
+  - name: DB_NAME_KEY
+    value: database-name
   - name: APP_DB
     value: court-interpreter-scheduling
   - name: IMAGE_STREAM_TAG
@@ -155,3 +157,7 @@ parameters:
     value: court
   - name: KEYCLOAK_CLIENT
     value: court-client
+  - name: KEYCLOAK_URL
+    required: true
+  - name: DB_NAME
+    required: true

@@ -90,20 +90,34 @@ services:
     build:
       context: ./frontend/
       dockerfile: ./Dockerfile.dev
-      args:
-        REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-        REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000
+    environment:
+      REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
+      REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
     volumes:
       - ./frontend:/app
       - /app/node_modules
     ports:
       - "3000:3000"
+    stdin_open: true
     expose:
       - "3000"
     networks:
       - backend
     depends_on:
       - api
+
+  ### Cypress ###############################
+  cypress:
+    image: "cypress/included:4.0.2"
+    depends_on:
+      - client
+    environment:
+      - CYPRESS_baseUrl=http://client:3000
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+    networks:
+      - backend
 
 networks:
   backend:

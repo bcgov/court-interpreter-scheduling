@@ -15,7 +15,6 @@ import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
 
 const Login = lazy(() => import('views/login'))
-const KeycloakRedirect = lazy(() => import('views/Keycloak'))
 const App = lazy(() => import('App'))
 
 const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
@@ -41,7 +40,6 @@ const Routes = () => {
           <ThemeProvider theme={theme}>
             <Switch>
               <Route exact path='/login' component={Login} />
-              <Route exact path='/keycloak' component={KeycloakRedirect} />
               <PrivateRoute path='/' component={App} />
             </Switch>
           </ThemeProvider>

@@ -45,7 +45,7 @@
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "PORT=3333 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "build-prod": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",
@@ -82,6 +82,7 @@
   "devDependencies": {
     "@types/faker": "^5.1.2",
     "cypress": "^5.4.0",
+    "cypress-keycloak-commands": "^1.2.0",
     "eslint-plugin-cypress": "^2.11.2"
   },
   "proxy": "http://localhost:4000"

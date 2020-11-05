@@ -39,7 +39,8 @@ export class InterpreterService {
       .leftJoinAndSelect('interpreter.languages', 'intLang')
       .leftJoinAndSelect('intLang.language', 'lang')
       .leftJoinAndSelect('interpreter.bookings', 'booking')
-      .leftJoinAndSelect('booking.dates', 'dates');
+      .leftJoinAndSelect('booking.dates', 'dates')
+      .orderBy('interpreter.lastName', 'ASC');
 
     query = paginateInterpreterQueryDto.filter(query);
 
@@ -78,7 +79,7 @@ export class InterpreterService {
         .join(' + ');
 
       query.addSelect(`(${select})/${dates.length}`, 'avg_score');
-      query.orderBy('avg_score', 'DESC');
+      query.addOrderBy('avg_score', 'DESC');
     }
 
     if (keywords) {

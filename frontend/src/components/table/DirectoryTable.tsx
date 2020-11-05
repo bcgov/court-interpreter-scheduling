@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box } from '@material-ui/core'
+import { Box, Grid } from '@material-ui/core'
 
 import { Interpreter, Language, Level } from 'constants/interfaces'
 
@@ -33,12 +33,58 @@ export default function DirectoryTable({ data, disabled, language }: { data: Int
             data={data}
             columns={[
               { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, },
-              { title: 'Phone', field: 'phone', },
+              { title: 'Phone', render: (row: any) => (
+                <div>
+                  <div>{row.phone}</div>
+                  {row.businessPhone && row.businessPhone !== row.phone && <div>{row.businessPhone} <small>home</small></div>}
+                  {row.homePhone && row.homePhone !== row.phone && <div>{row.homePhone} <small>work</small></div>}
+                </div>
+              )},
               { title: 'Email', field: 'email', },
-              { title: 'Language', render: (row: any) => getValueFromLanguages(language, row.languages, 'languageName') },
-              { title: 'Level', render: (row: any) =>  getValueFromLanguages(language, row.languages, 'level') },
+              {
+                title: 'Language',
+                render: (row: any) =>
+                  row.languages.map(
+                    (l: Language) =>
+                      <div className={l.languageName.toUpperCase() === language?.toUpperCase() ? 'bold' : ''}>
+                        {l.languageName}  {l.level}
+                      </div>
+                  )
+              },
+              { title: 'Address', render: (row: any) => (
+                <span>
+                  {row.address}
+                  <br /> {row.city} <a target='_blank' href={encodeURI(`https://www.google.com/maps/dir/?api=1&origin=${row.address.trim()},${row.city.trim()},${row.postal}&destination=${row.city} BC courthouse`)}>{row.postal}</a>
+                </span>) },
               { render: (row: any) => <BookingButton disabled={disabled} onClick={() => setInterpreter(row)} />, align: 'right' }
             ]}
+            overrides={{
+              detailPanel: (rowData: any) => (
+                <Grid container justify='space-around'>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>Supplier #</b>
+                      <br />
+                      {rowData.supplier}
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>GST #</b>
+                      <br />
+                      {rowData.gst}
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>Comments</b>
+                      <br />
+                      {rowData.comments}
+                    </Box>
+                  </Grid>
+                </Grid>
+              )
+            }}
           /> : <Calendar setInterpreter={setInterpreter} interpreters={data} />
         }
       <BookingModal interpreter={interpreter} setInterpreter={setInterpreter} />

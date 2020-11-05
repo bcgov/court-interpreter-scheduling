@@ -1,6 +1,6 @@
 #!make
 
-include .env
+-include .env
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT_GOAL := default
@@ -13,6 +13,7 @@ export TEMPLATE_FILE_NAME := $(or $(TEMPLATE_FILE_NAME), $$FILE)
 export BRANCH := $(or $(BRANCH), dev)
 export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), $$BUILD_NS)
 export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
+export DB_NAME := $(or $(DB_NAME), court-interpreter-scheduling)
 
 default:
 	@echo "Please see README.md for usage of make commands"
@@ -96,8 +97,11 @@ define KC_AUTH_URL
 endef
 
 define rollout_and_wait
-@oc rollout latest $1
-@oc rollout status $1
+@oc -n $(NAMESPACE) rollout status $1
+endef
+
+define DB_BACKUP_APP
+"db-backup"
 endef
 
 # Openshift Build
@@ -138,7 +142,7 @@ build:
 	test -n "$(BRANCH)"
 	test -n "$(APP_KEY)"
 	@echo "+\n++ BUILDING $(APP_KEY) with tag: $(BUILD_TAG)\n+"
-	@oc process -f $(TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(TEMPLATE_PATH) -p SOURCE_REPOSITORY_REF=$(BRANCH) NAME=$(NAME) INSTANCE=$(API_INSTANCE) TAG=$(BUILD_TAG) PROJECT=$(APP_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(NAME) --wait
 
 build-api:
@@ -167,6 +171,10 @@ build-keycloak:
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=keycloak -p BASE_IMAGE_TAG="11.0.2" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_REPO="jboss/" -p SOURCE_CONTEXT_DIR=".docker/keycloak" -p NAME=$(KEYCLOAK_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KEYCLOAK_IMAGE_NAME) --wait
 
+build-db-backup:
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=$(DB_BACKUP_APP) -p TAG="12-latest" -p BASE_IMAGE_NAME="postgresql-12-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(DB_BACKUP_APP) --wait
+
 import:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
@@ -180,7 +188,7 @@ deploy-api:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" | oc apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" -p KEYCLOAK_URL=$(KC_AUTH_URL)  -p DB_NAME=$(DB_NAME)| oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(API))
 
 deploy-app:
@@ -188,7 +196,7 @@ deploy-app:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@oc process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(APP))
 
 deploy-keycloak:
@@ -201,7 +209,10 @@ deploy-keycloak-nginx:
 
 deploy-patroni:
 	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -
-	$(call rollout_and_wait,ss/patroni)
+
+deploy-db-backup:
+	@oc -n $(NAMESPACE) process -f openshift/db-backup-deploy.yml -p NAME=$(DB_BACKUP_APP) -p IMAGE_STREAM_TAG=$(DB_BACKUP_APP):12-latest -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p BUILD_ID=$(BUILD_ID) -p DB_NAME=$(DB_NAME)  | oc -n $(NAMESPACE) apply -f -
+	$(call rollout_and_wait,dc/$(DB_BACKUP_APP))
 
 delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"
@@ -213,3 +224,8 @@ delete-project:
 	@echo "+\n++ Delete all project related items\n"
 	@oc project $(NAMESPACE)
 	@oc delete all -l project=$(APP_NAME)
+
+createdb:
+	test -n $(DB_NAME)
+	@echo "+\n++ Creating DB ($(DB_NAME)) in $(NAMESPACE) patroni db cluster"
+	@oc -n $(NAMESPACE) process -f openshift/createdb-job.yml -p DB_NAME=$(DB_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) | oc -n $(NAMESPACE) apply -f -

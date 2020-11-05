@@ -8,6 +8,7 @@ on:
     branches:
       - dev
       - prod
+      - test
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -23,49 +24,52 @@ jobs:
           echo OC CLI Version: $(oc version)
 
   # Build the API
-  buildAPI:
+  build:
     name: Build API and APP
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true}}
     env:
       BUILD_ID: ${{ github.event.number }}
-      BUILD_NAMESPACE: l4izby-tools
+      BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
+      - name: Print env
+        run: |
+          echo BUILD ID: $BUILD_ID
+          echo BUILD NAMESPACE: $BUILD_NAMESPACE
+          echo BRANCH: $BRANCH
       - name: Checkout Target Branch
         uses: actions/checkout@v1
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.SA_TOKEN }}
-
+        run: | 
+          oc login --token=${{ secrets.SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
       # Build the api images
       - name: Build API Images
         working-directory: "./devops"
         run: |
           make oc-build-api
-      - name: Build APP Images
+      - name: Build APP/Front-end Images
         working-directory: "./devops"
         run: |
           make oc-build-app
   
-  
-
-  # Deploy App, API, and API-MOBILE images in Dev
+  # Deploy API/App images in Dev
   deployDev:
     name: Deploy App, API, and DB to DEV environment
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod'}}
+    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'prod' && github.base_ref != 'test'}}
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: l4izby-dev
-      BUILD_NAMESPACE: l4izby-tools
+      NAMESPACE: 1a7b16-dev
+      BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
-      HOST_PREFIX: dev
+      HOST_PREFIX: dev-
     needs:
-      - buildAPI
+      - build
     steps:
       - name: Print env
         run: |
@@ -82,22 +86,67 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.SA_TOKEN }}
-
-      # Deploy the api
-      - name: Deploy DB
+        run: | 
+          oc login --token=${{ secrets.SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Run db backup container
+      - name: Run DB Backup container
         working-directory: "./devops/"
         run: |
-          make oc-deploy-db
+          make deploy-db-backup 
+      # Deploy the api
       - name: Deploy API
         working-directory: "./devops/"
         run: |
           make oc-deploy-api
-      - name: Deploy API
+      - name: Deploy APP
         working-directory: "./devops/"
         run: |
           make oc-deploy-app
 
+  # Deploy API/App images in prod 
+  deployProd:
+    name: Deploy App, API, and DB to Prod environment
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.base_ref == 'prod'}}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+      NAMESPACE: 1a7b16-prod
+      BUILD_NAMESPACE: 1a7b16-tools
+      BRANCH: ${{ github.base_ref }}
+    needs:
+      - build
+    steps:
+      - name: Print env
+        run: |
+          echo BUILD ID: $BUILD_ID
+          echo BUILD NAMESPACE: $BUILD_NAMESPACE
+          echo NAMESPACE: $NAMESPACE
+          echo BRANCH: $BRANCH
+          echo HOST_PREFIX: $HOST_PREFIX
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v1
+
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: | 
+          oc login --token=${{ secrets.SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Run db backup container
+      - name: Run DB Backup container
+        working-directory: "./devops/"
+        run: |
+          make deploy-db-backup
+      # Deploy the api
+      - name: Deploy API
+        working-directory: "./devops/"
+        run: |
+          make oc-deploy-api
+      - name: Deploy APP
+        working-directory: "./devops/"
+        run: |
+          make oc-deploy-app
 
   
 

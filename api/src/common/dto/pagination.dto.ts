@@ -22,7 +22,7 @@ export class PaginationQueryDTO {
     example: '10',
     required: false,
   })
-  @Max(100)
+  @Max(10)
   @Min(1)
   @IsOptional()
   @IsNumber()
