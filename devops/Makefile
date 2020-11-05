@@ -100,6 +100,10 @@ define rollout_and_wait
 @oc -n $(NAMESPACE) rollout status $1
 endef
 
+define DB_BACKUP_APP
+"db-backup"
+endef
+
 # Openshift Build
 app-check:
 	test -n "$(BUILD_ID)"
@@ -167,6 +171,10 @@ build-keycloak:
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=keycloak -p BASE_IMAGE_TAG="11.0.2" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_REPO="jboss/" -p SOURCE_CONTEXT_DIR=".docker/keycloak" -p NAME=$(KEYCLOAK_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KEYCLOAK_IMAGE_NAME) --wait
 
+build-db-backup:
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=$(DB_BACKUP_APP) -p TAG="12-latest" -p BASE_IMAGE_NAME="postgresql-12-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(DB_BACKUP_APP) --wait
+
 import:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
@@ -201,6 +209,10 @@ deploy-keycloak-nginx:
 
 deploy-patroni:
 	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -
+
+deploy-db-backup:
+	@oc -n $(NAMESPACE) process -f openshift/db-backup-deploy.yml -p NAME=$(DB_BACKUP_APP) -p IMAGE_STREAM_TAG=$(DB_BACKUP_APP):12-latest -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p BUILD_ID=$(BUILD_ID) -p DB_NAME=$(DB_NAME)  | oc -n $(NAMESPACE) apply -f -
+	$(call rollout_and_wait,dc/$(DB_BACKUP_APP))
 
 delete:
 	@echo "+\n++ Deleting deployment $$APPLICATION from namespace $(NAMESPACE)\n+"

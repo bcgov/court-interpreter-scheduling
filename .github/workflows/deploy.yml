@@ -88,6 +88,11 @@ jobs:
       - name: Log in to OpenShift
         run: | 
           oc login --token=${{ secrets.SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Run db backup container
+      - name: Run DB Backup container
+        working-directory: "./devops/"
+        run: |
+          make build-db-backup 
       # Deploy the api
       - name: Deploy API
         working-directory: "./devops/"
@@ -128,6 +133,11 @@ jobs:
       - name: Log in to OpenShift
         run: | 
           oc login --token=${{ secrets.SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+      # Run db backup container
+      - name: Run DB Backup container
+        working-directory: "./devops/"
+        run: |
+          make deploy-db-backup
       # Deploy the api
       - name: Deploy API
         working-directory: "./devops/"
