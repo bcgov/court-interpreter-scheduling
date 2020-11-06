@@ -24,15 +24,15 @@ export class CreateBookingDto {
     description: 'Case name',
     example: 'Montague vs Capulet',
   })
-  @IsNotEmpty()
-  caseName: string;
+  @IsOptional()
+  caseName?: string;
 
   @ApiProperty({
     description: 'Room at courthouse for this matter',
     example: faker.random.number({ max: 9999 }),
   })
   @IsOptional()
-  room: string;
+  room?: string;
 
   @ApiProperty({
     description: 'Booking status',
@@ -40,7 +40,7 @@ export class CreateBookingDto {
   })
   @IsEnum(BookingStatus)
   @IsOptional()
-  status: BookingStatus;
+  status?: BookingStatus;
 
   @ApiProperty({
     description: 'Booking date',
@@ -63,61 +63,61 @@ export class CreateBookingDto {
     example: 'registry',
   })
   @IsOptional()
-  registry: string;
+  registry?: string;
 
   @ApiProperty({
     description: 'Court file number',
     example: 'VAN-PC-1981',
   })
-  @IsNotEmpty()
-  file: string;
+  @IsOptional()
+  file?: string;
 
   @ApiProperty({
     description: 'To interpret on behalf of whom',
     example: 'defendant',
   })
   @IsOptional()
-  interpretFor: string;
+  interpretFor?: string;
 
   @ApiProperty({
     description: 'Who the interpreter is being requested by',
     example: 'prosecutor',
   })
   @IsOptional()
-  requestedBy: string;
+  requestedBy?: string;
 
   @ApiProperty({
     description: 'Federal or provincial/civil matter',
     example: true,
   })
   @IsOptional()
-  federal: boolean;
+  federal?: boolean;
 
   @ApiProperty({
     description: 'Booking Language name from Language Entity',
     example: 'French',
   })
   @IsOptional()
-  language: string;
+  language?: string;
 
   @ApiProperty({
     description: 'Reason for this booking',
     example: faker.lorem.sentence(),
   })
   @IsOptional()
-  reason: string;
+  reason?: string;
 
   @ApiProperty({
     description: 'Prosecutor name for this matter',
     example: 'prosecutor',
   })
   @IsOptional()
-  prosecutor: string;
+  prosecutor?: string;
 
   @ApiProperty({
     description: 'Booking comment',
     example: faker.lorem.sentence(),
   })
   @IsOptional()
-  comment: string;
+  comment?: string;
 }

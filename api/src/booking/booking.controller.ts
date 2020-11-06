@@ -9,6 +9,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
@@ -54,6 +55,7 @@ export class BookingController {
   }
 
   @Post('search')
+  @HttpCode(200)
   async search(
     @Body() paginateBookingQueryDto: PaginateBookingQueryDto,
   ): Promise<SuccessResponse<BookingRO[]>> {

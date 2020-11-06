@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -9,6 +15,19 @@ import { AndWhere } from 'src/common/decorator/query.decorator';
 import { SearchDateDto } from './search-date.dto';
 
 export class PaginateBookingQueryDto extends PaginationQueryDTO {
+  @ApiProperty({
+    description: `
+      The maximum size for every page, default is 50
+    `,
+    example: '50',
+    required: false,
+  })
+  @Max(50)
+  @Min(1)
+  @IsOptional()
+  @IsNumber()
+  limit: number = 50;
+
   @ApiProperty({
     description: 'Date',
     example: [
