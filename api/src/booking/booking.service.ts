@@ -4,6 +4,7 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
+import { format } from 'date-fns';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
@@ -28,9 +29,12 @@ export class BookingService {
     bookingDates: BookingDateEntity[],
   ): Promise<BookingEntity> {
     const { interpreterId, language, dates, ...createDto } = createBookingDto;
-    const interpreter = await this.interpreterRepository.findOneOrFail({
-      id: interpreterId,
-    }, { relations: ['languages'] } );
+    const interpreter = await this.interpreterRepository.findOneOrFail(
+      {
+        id: interpreterId,
+      },
+      { relations: ['languages'] },
+    );
 
     const booking = this.bookingRepository.create(createDto);
     booking.interpreter = interpreter;
@@ -48,7 +52,7 @@ export class BookingService {
   async findAll(
     paginateBookingQueryDto: PaginateBookingQueryDto,
   ): Promise<SuccessResponse<BookingRO[]>> {
-    const { page, limit, dates } = paginateBookingQueryDto;
+    const { page, limit, dates, isStartFromToday } = paginateBookingQueryDto;
 
     let query = this.bookingRepository
       .createQueryBuilder('booking')
@@ -59,6 +63,12 @@ export class BookingService {
       .leftJoinAndSelect('languages.language', 'lang');
 
     query = paginateBookingQueryDto.filter(query);
+
+    if (isStartFromToday) {
+      query.andWhere('dates.date >= :today', {
+        today: `${format(new Date(), 'yyyy-MM-dd')}T00:00:00`,
+      });
+    }
 
     if (dates && dates.length > 0) {
       query.andWhere(

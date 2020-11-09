@@ -51,7 +51,9 @@ export class BookingController {
   async findAll(
     @Query() paginateBookingQueryDto: PaginateBookingQueryDto,
   ): Promise<SuccessResponse<BookingRO[]>> {
-    return await this.bookingService.findAll(paginateBookingQueryDto);
+    return await this.bookingService.findAll(
+      Object.assign(paginateBookingQueryDto, { isStartFromToday: true }),
+    );
   }
 
   @Post('search')

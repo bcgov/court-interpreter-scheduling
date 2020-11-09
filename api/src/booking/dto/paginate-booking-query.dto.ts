@@ -61,6 +61,13 @@ export class PaginateBookingQueryDto extends PaginationQueryDTO {
   @IsOptional()
   file?: string;
 
+  @ApiProperty({
+    description: 'Start from today',
+    example: true,
+  })
+  @IsOptional()
+  isStartFromToday?: boolean;
+
   @AndWhere(
     `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:interpreter)`,
     'interpreter',
