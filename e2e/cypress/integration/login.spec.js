@@ -12,20 +12,20 @@ describe('Login', () => {
     cy.url().should('include', 'auth/realms/court')
     cy.url().should('include', 'keycloak')
 
-    cy.fixture('users/michel.json').then(michel => {
+    cy.fixture('users/cypress-admin.json').then(admin => {
       cy.get(`input[name='username']`)
-        .type(michel.username)
-        .should('have.value', michel.username)
+        .type(admin.username)
+        .should('have.value', admin.username)
       cy.get(`input[name='password']`)
-        .type(michel.password)
-        .should('have.value', michel.password)
+        .type(admin.password)
+        .should('have.value', admin.password)
       cy.get(`input[name='login']`).click()
       cy.url().should('include', 'booking')
     })
   })
 
   it('Logs out via UI', () => {
-    cy.kcLogin('michel')
+    cy.kcLogin('cypress-admin')
     cy.visit('/')
     cy.get('p').contains('Logout').click()
     cy.url().should('include', 'login')

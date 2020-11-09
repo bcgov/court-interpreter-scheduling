@@ -64,7 +64,7 @@ local-api-workspace:
 	@echo "Make: Shelling into api workspace ..."
 	@docker-compose -f docker-compose.yml exec api bash
 
-local-api-log: 
+local-api-log:
 	@echo "Make: log api ..."
 	@docker-compose -f docker-compose.yml logs -f api
 
@@ -77,3 +77,9 @@ local-db-seed:
 
 local-db-migrate:
 	@docker exec -it $(PROJECT)-server npm run db:migrate
+
+e2e-test:
+	@echo "Make: start docker-compose.test"
+	@docker-compose -f docker-compose.test.yml build
+	@docker-compose -f docker-compose.test.yml up -d client api postgres keycloak
+	@docker-compose -f docker-compose.test.yml up cypress

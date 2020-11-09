@@ -38,7 +38,9 @@ services:
     depends_on:
       - postgres
     networks:
-      - backend
+      backend:
+        aliases:
+          - api.local.freshworks.club
 
   ### Database ##############################
   postgres:
@@ -55,52 +57,29 @@ services:
     networks:
       - backend
 
-  ### Schemaspy #############################
-  schemaspy:
-    image: schemaspy/schemaspy:latest
-    user: ${UID}:${GID}
-    depends_on:
-      - postgres
-      - api
-    command: ["-configFile", "/config/schemaspy.properties"]
-    volumes:
-      - ./api/documentation/schema:/output
-      - ./api/schemaspy.properties:/config/schemaspy.properties
-    networks:
-      - backend
-
-  ### Frontend ##############################
+  ### Webapp ##############################
   client:
-    image: court-frontend:dev
-    container_name: court-frontend
+    image: client
+    container_name: client
     build:
       context: ./frontend/
       dockerfile: ./Dockerfile
       args:
         REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-        REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
-    ports:
-      - "8888:5000"
-    expose:
-      - "8888"
-    networks:
-      - backend
-
-  ### Sonarqube #############################
-  sonarqube:
-    image: sonarqube:8.2-community
-    environment:
-      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonar
-      SONAR_JDBC_USERNAME: court_nestapi # database username
-      SONAR_JDBC_PASSWORD: court_nest123 # database password
-    ports:
-      - "9000:9000"
+        REACT_APP_API_HOST: http://api.local.freshworks.club:4000/api/v1
+    restart: always
     depends_on:
-      - postgres
+      - keycloak
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
     networks:
-      - backend
+      backend:
+        aliases:
+          - client.local.freshworks.club
 
-  ### KeyCloak ##############################
+  ### KeyCloak for Cypress ##################
   keycloak:
     image: jboss/keycloak
     environment:
@@ -109,33 +88,6 @@ services:
       DB_DATABASE: nest_api_dev
       DB_USER: court_nestapi
       DB_PASSWORD: court_nest123
-      KEYCLOAK_LOGLEVEL: DEBUG
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
-      KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
-    ports:
-      - 8080:8080
-    expose:
-      - "8080"
-    volumes:
-      - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
-    depends_on:
-      - postgres
-    networks:
-      backend:
-        aliases:
-          - keycloak.local.freshworks.club
-
-  ### KeyCloak for Cypress ##################
-  keycloak-cypress:
-    image: jboss/keycloak
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: nest_api_dev
-      DB_USER: court_nestapi
-      DB_PASSWORD: court_nest123
-      KEYCLOAK_LOGLEVEL: DEBUG
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
@@ -145,12 +97,27 @@ services:
       - "8080"
     volumes:
       - ./.docker/keycloak/realm-testing.json:/tmp/realm-testing.json
+      - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
     depends_on:
       - postgres
     networks:
       backend:
         aliases:
           - keycloak.local.freshworks.club
+
+  ### Cypress ##############################
+  cypress:
+    image: cypress
+    container_name: cypress
+    build: ./e2e
+    networks:
+      - backend
+    environment:
+      - CYPRESS_baseUrl=http://client.local.freshworks.club:5000
+    command: npx cypress run
+    volumes:
+      - ./e2e/cypress:/app/cypress
+      - ./e2e/cypress.json:/app/cypress.json
 
 networks:
   backend:

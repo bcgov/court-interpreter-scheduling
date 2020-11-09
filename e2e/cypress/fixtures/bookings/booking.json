@@ -1,0 +1,24 @@
+{
+  "interpreterId": "1",
+  "caseName": "Hello vs Hi",
+  "room": "101",
+  "status": "Pending",
+  "dates": [{
+    "date": "2020-11-17T00:00:00-08:00",
+    "period": "MORNING",
+    "arrivalTime": "09:00:00"
+  }, {
+    "date": "2020-11-21T00:00:00-08:00",
+    "period": "MORNING",
+    "arrivalTime": "09:00:00"
+  }],
+  "registry": "Victoria",
+  "file": "1230123",
+  "interpretFor": "defendant",
+  "requestedBy": "defendant",
+  "federal": "no",
+  "language": "French",
+  "reason": "Everyone likes french",
+  "prosecutor": "George",
+  "comment": "Standard issue"
+}

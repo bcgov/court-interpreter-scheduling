@@ -34,3 +34,11 @@ To populate with JSON data
 1. Login to app via a web browser
 2. Retrieve the JWT token from network tab
 3. Use Postman to POST a JSON array of interpreters to `http://localhost:4000/api/v1/interpreter/upload` using the JWT token as the Authorization header: `Bearer <token>`
+
+#### End to end testing
+
+The following three commands in order will kick off e2e testing via the docker-compose.test.yml file
+
+`docker-compose -f docker-compose.test.yml build`
+`docker-compose -f docker-compose.test.yml up webapp api postgres keycloak`
+`docker-compose -f docker-compose.test.yml up cypress --abort-on-container-exit --exit-code-from cypress`
