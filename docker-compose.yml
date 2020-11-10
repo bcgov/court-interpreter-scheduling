@@ -25,16 +25,17 @@ services:
       - MERGE_BRANCH=dev
       - KEYCLOAK_REALM=court
       - KEYCLOAK_CLIENT=court-client
+      - KEYCLOAK_FE_CLIENT=court-fe
       - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
       - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
     expose:
       - "4000"
     volumes:
       # Binds the application folder from the host inside the container for fast changes
-      - ./api:/usr/src/app
+      - ./api:/app
       # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
       # from inside the container to be used instead
-      - /usr/src/app/node_modules
+      - /app/node_modules
     depends_on:
       - postgres
     networks:
@@ -119,6 +120,7 @@ services:
       - "8080"
     volumes:
       - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
+      - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
     depends_on:
       - postgres
     networks:

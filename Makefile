@@ -83,3 +83,15 @@ e2e-test:
 	@docker-compose -f docker-compose.test.yml build
 	@docker-compose -f docker-compose.test.yml up -d client api postgres keycloak
 	@docker-compose -f docker-compose.test.yml up cypress
+####################################################################
+## Dev Docker Development
+####################################################################
+
+run-dev:
+	@echo "+\n++ Make: Running dev ...\n+"
+	@docker-compose -f docker-compose.dev.yml up
+
+
+dev-api-workspace:
+	@echo "Make: Shelling into dev api workspace ..."
+	@docker-compose -f docker-compose.dev.yml exec api bash

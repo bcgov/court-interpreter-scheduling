@@ -1,0 +1,31 @@
+name: Court Testing
+
+on:
+  pull_request:
+    branches:
+      - "dev"
+      - "prod"
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Keycloak
+        run: docker-compose --file docker-compose.dev.yml up -d --build keycloak
+
+      - name: Build Api and Database
+        run: docker-compose --file docker-compose.dev.yml up -d --build api
+
+      ## TODO
+      # - name: Build Frontend
+      #   run: docker-compose --file docker-compose.dev.yml up -d --build client
+
+      - name: Backend Testing
+        run: docker-compose --file docker-compose.dev.yml exec -T api npm run test
+
+      ## TODO
+      # - name: Frontend Testing
+      #   run: docker-compose --file docker-compose.dev.yml exec -T client npm run test
