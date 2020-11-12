@@ -109,6 +109,19 @@ services:
     depends_on:
       - api
 
+  ### Cypress ###############################
+  cypress:
+    image: "cypress/included:4.0.2"
+    depends_on:
+      - client
+    environment:
+      - CYPRESS_baseUrl=http://client:3000
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+    networks:
+      - backend
+
 networks:
   backend:
     driver: "bridge"
