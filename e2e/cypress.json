@@ -1,0 +1,14 @@
+{
+  "baseUrl": "http://client.local.freshworks.club:5000",
+  "viewportWidth": 1440,
+  "viewportHeight": 1000,
+  "ignoreTestFiles": "**/examples/*",
+  "chromeWebSecurity": false,
+  "projectId": "ucw3ze",
+  "env": {
+    "auth_base_url": "http://keycloak.local.freshworks.club:8080/auth",
+    "auth_realm": "court",
+    "auth_client_id": "court-fe",
+    "API_URL": "http://api.local.freshworks.club:4000/api/v1"
+  }
+}

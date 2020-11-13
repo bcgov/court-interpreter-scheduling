@@ -1,0 +1,130 @@
+version: "3"
+
+services:
+  ### API #############################
+  api:
+    image: court-nest-api:dev
+    container_name: court-nest
+    stdin_open: true
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=123_JWT_SECRET!
+      - NODE_ENV=development
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - POSTGRESQL_DATABASE=nest_api_dev
+      - POSTGRESQL_USER=court_nestapi
+      - POSTGRESQL_PASSWORD=court_nest123
+      - DB_TEST_DATABASE=nest_api_test
+      - DEPLOY_ENV=node-api-dev
+      - MERGE_BRANCH=dev
+      - KEYCLOAK_REALM=court
+      - KEYCLOAK_CLIENT=court-client
+      - KEYCLOAK_FE_CLIENT=court-fe
+      - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
+      - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
+    expose:
+      - "4000"
+    volumes:
+      # Binds the application folder from the host inside the container for fast changes
+      - ./api:/app
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  ### Database #############################
+  postgres:
+    image: court-nest-api-postgres:dev
+    container_name: court-nest-api-database-dev
+    build:
+      context: ./.docker/postgres
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
+      - POSTGRES_USER=court_nestapi
+      - POSTGRES_PASSWORD=court_nest123
+    volumes:
+      - ./.docker/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+  ### KeyCloak ##############################
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: nest_api_dev
+      DB_USER: court_nestapi
+      DB_PASSWORD: court_nest123
+      KEYCLOAK_LOGLEVEL: DEBUG
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    ports:
+      - 8080:8080
+    expose:
+      - "8080"
+    volumes:
+      - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
+      - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
+    depends_on:
+      - postgres
+    networks:
+      backend:
+        aliases:
+          - keycloak.local.freshworks.club
+
+  ### Frontend ###############################
+  client:
+    image: court-frontend:dev
+    container_name: court-frontend-dev
+    build:
+      context: ./frontend/
+      dockerfile: ./Dockerfile.dev
+    environment:
+      REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
+      REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "35729:35729"
+      - "3000:3000"
+    stdin_open: true
+    expose:
+      - "3000"
+    networks:
+      - backend
+    depends_on:
+      - api
+
+  ### Cypress ###############################
+  cypress:
+    image: "cypress/included:4.0.2"
+    depends_on:
+      - client
+    environment:
+      - CYPRESS_baseUrl=http://client:3000
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
+
+volumes:
+  postgres:

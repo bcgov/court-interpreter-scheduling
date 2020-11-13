@@ -1,0 +1,8 @@
+node_modules/
+.env
+dist/
+.vscode/
+*/cypress/integration/examples
+*/cypress/videos
+*/cypress/screenshots
+.DS_Store

@@ -1,0 +1,71 @@
+[{
+  "lastName": "Morray",
+  "firstName": "Mona",
+  "address": "#3 - 521 Linden Ave",
+  "city": "Victoria",
+  "province": "BC",
+  "postal": "V8V 5F5",
+  "homePhone": "",
+  "businessPhone": "",
+  "phone": "250.444.5445",
+  "email": "monamorray@hotmail.com",
+  "supplier": "2095751",
+  "gst": "",
+  "criminalRecordCheck": "5-Jan-14",
+  "comments": "",
+  "contractExtension": true,
+  "contractTermination": null,
+  "languages": [{
+    "languageName": "French",
+    "commentOnLevel": "",
+    "level": "3"
+  }]
+}, {
+  "lastName": "Motley",
+  "firstName": "Alex",
+  "address": "1110 - 1121 Adanac Str",
+  "city": "Vancouver",
+  "province": "BC",
+  "postal": "V5L 5G9",
+  "homePhone": "604.221.7834",
+  "businessPhone": "",
+  "phone": "604.221.7834",
+  "email": "almot@telus.net",
+  "supplier": "96322",
+  "gst": "",
+  "criminalRecordCheck": "28-Feb-18",
+  "comments": "",
+  "contractExtension": true,
+  "contractTermination": null,
+  "languages": [{
+    "languageName": "Russian",
+    "commentOnLevel": "",
+    "level": "2"
+  }]
+}, {
+  "lastName": "Monad",
+  "firstName": "Astra",
+  "address": "3111 West 4th Avenue",
+  "city": "Vancouver",
+  "province": "BC",
+  "postal": "V6K 2R1",
+  "homePhone": "604.772.2480",
+  "businessPhone": "",
+  "phone": "604.754.2064",
+  "email": "amonad@telus.net",
+  "supplier": "79211",
+  "gst": "",
+  "criminalRecordCheck": "19-Jun-18",
+  "comments": "",
+  "contractExtension": true,
+  "contractTermination": null,
+  "languages": [{
+    "languageName": "Russian",
+    "commentOnLevel": "certified",
+    "level": "1"
+  }, {
+    "languageName": "Lithuanian",
+    "commentOnLevel": "",
+    "level": "3"
+  }]
+}]
