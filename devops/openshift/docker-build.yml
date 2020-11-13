@@ -82,7 +82,7 @@ parameters:
     required: true
   - name: SOURCE_REPOSITORY_URL
     required: true
-    value: git@github.com:FreshworksStudio/Court-scheduler.git
+    value: https://github.com/bcgov/court-interpreter-scheduling.git
   - name: SOURCE_REPOSITORY_REF
     required: true
   - name: TAG
