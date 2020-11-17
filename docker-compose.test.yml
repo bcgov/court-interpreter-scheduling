@@ -67,6 +67,7 @@ services:
       args:
         REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
         REACT_APP_API_HOST: http://api.local.freshworks.club:4000/api/v1
+        KC_REALM: court
     restart: always
     depends_on:
       - keycloak
