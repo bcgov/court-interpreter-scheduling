@@ -32,6 +32,7 @@ jobs:
       BUILD_ID: ${{ github.event.number }}
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
+      KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
     steps:
       # Checkout the PR branch
       - name: Print env
