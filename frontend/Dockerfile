@@ -2,6 +2,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-12:1 as builder
 
 ARG REACT_APP_REALM_AUTH_URL
 ARG REACT_APP_API_HOST
+ARG KC_REALM
 
 COPY ./package*.json ./
 RUN npm ci --production

@@ -68,6 +68,7 @@ jobs:
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
       HOST_PREFIX: dev-
+      KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
     needs:
       - build
     steps:
@@ -113,6 +114,7 @@ jobs:
       NAMESPACE: 1a7b16-prod
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
+      KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
     needs:
       - build
     steps:

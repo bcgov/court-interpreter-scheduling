@@ -14,6 +14,8 @@ export BRANCH := $(or $(BRANCH), dev)
 export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), $$BUILD_NS)
 export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
 export DB_NAME := $(or $(DB_NAME), court-interpreter-scheduling)
+export KC_AUTH_URL := $(or $(KC_AUTH_URL), https://oidc.gov.bc.ca/auth/)
+export KC_REALM := $(or $(KC_REALM), joxo7v8f)
 
 default:
 	@echo "Please see README.md for usage of make commands"
@@ -92,9 +94,6 @@ define KC_NGINX_IMAGE_NAME
 "$(KEYCLOAK_IMAGE_NAME)-nginx"
 endef
 
-define KC_AUTH_URL
-"https://$(APP_NAME).$(DOMAIN)/auth"
-endef
 
 define rollout_and_wait
 @oc -n $(NAMESPACE) rollout status $1
@@ -156,7 +155,7 @@ build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) -p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
 
 build-patroni:
