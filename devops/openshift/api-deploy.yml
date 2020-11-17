@@ -154,7 +154,7 @@ parameters:
     from: "[a-zA-Z0-9]{36}"
     generate: expression
   - name: KEYCLOAK_REALM
-    value: court
+    value: joxo7v8f
   - name: KEYCLOAK_CLIENT
     value: court-client
   - name: KEYCLOAK_URL
