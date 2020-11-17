@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js';
 
 const keycloak: Keycloak.KeycloakInstance = Keycloak({
-  realm: process.env.KC_REALM || 'court',
+  realm: process.env.KC_REALM || 'joxo7v8f',
   url: process.env.REACT_APP_REALM_AUTH_URL,
   clientId: 'court-fe',
 });
