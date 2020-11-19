@@ -39,6 +39,11 @@ export default function InterpretersTable({
           { title: 'Language', render: (row: any) => row.languages.map((language: Language) => <div>{language.languageName}</div>) },
           { title: 'Level', render: (row: any) => row.languages.map((language: Language) => <div>{language.level}</div>) },
           {
+            title: 'City',
+            field: 'city',
+            render: (row: any) => <span>{row.city}</span>,
+          },
+          {
             title: (
               <StyledIconButton
                 className='pointer'
