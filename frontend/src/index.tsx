@@ -1,7 +1,8 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
+import { useAxiosGet } from 'hooks/axios';
 import {
   ReactKeycloakProvider as KeycloakProvider,
   useKeycloak,
@@ -67,4 +68,25 @@ const Routes = () => {
   );
 };
 
-render(<Routes />, document.getElementById('root'));
+const Start: React.FC = () => {
+  const [{ data, error, loading }, getConfig] = useAxiosGet('/config');
+  useEffect(() => {
+    getConfig();
+  }, []);
+  if (loading) {
+    return (
+      <Box p={2}>
+        <CircularProgress />
+      </Box>
+    );
+  } else if (error) {
+    return <div>error</div>;
+  } else {
+    const { keycloakAuthUrl, keycloakRealm } = data;
+    localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
+    localStorage.setItem('keycloakRealm', keycloakRealm);
+    return <Routes />;
+  }
+};
+
+render(<Start />, document.getElementById('root'));
