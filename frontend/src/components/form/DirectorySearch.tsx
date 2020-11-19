@@ -76,7 +76,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   <ErrorMessage name='level' />
                 </Grid>
                 <Grid item xs={4}>
-                  <StyledFormControl>
+                  {/* <StyledFormControl>
                     <StyledFormLabel htmlFor='city'>
                       Court Location
                     </StyledFormLabel>
@@ -84,7 +84,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       id='city'
                       name='city'/>
                     <ErrorMessage name='city' />
-                  </StyledFormControl>
+                  </StyledFormControl> */}
                 </Grid>
               </GridRow>
               <GridRow container spacing={4} mt={2}>

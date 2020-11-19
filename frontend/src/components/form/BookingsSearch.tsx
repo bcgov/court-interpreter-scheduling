@@ -75,17 +75,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </StyledFormControl>
               </Grid>
 
-              <Grid item xs={3}>
-                <StyledFormControl>
-                  <StyledFormLabel htmlFor='location'>
-                    Location
-                    </StyledFormLabel>
-                  <CourtLocationSelect
-                    id='location'
-                    name='location' />
-                  <ErrorMessage name='location' />
-                </StyledFormControl>
-              </Grid>
+              
               <Grid item xs={3}>
                 <StyledFormControl>
                   <StyledLabel htmlFor='file'>
@@ -105,7 +95,9 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   <ErrorMessage name='file' />
                 </StyledFormControl>
               </Grid>
-
+              
+              <Grid item xs={3} />
+              
               <Grid item xs={2}>
                 <StyledFormControl>
                   <StyledFormLabel htmlFor='submit' />
