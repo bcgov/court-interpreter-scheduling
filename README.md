@@ -42,3 +42,7 @@ The following three commands in order will kick off e2e testing via the docker-c
 `docker-compose -f docker-compose.test.yml build`
 `docker-compose -f docker-compose.test.yml up webapp api postgres keycloak`
 `docker-compose -f docker-compose.test.yml up cypress --abort-on-container-exit --exit-code-from cypress`
+
+## URL
+
+Dev: https://dev-court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/
