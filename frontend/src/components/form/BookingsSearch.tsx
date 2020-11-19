@@ -22,6 +22,7 @@ import { ButtonPrimary } from 'components/Buttons'
 import BookingsRange from 'components/form/BookingsRange'
 
 import { ErrorMessage, Field, Form, Formik, FormikProps } from 'formik'
+import { CourtLocationSelect } from './CourtLocationSelect'
 
 const dateFormat = 'MMM D, YYYY'
 
@@ -79,28 +80,13 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     <StyledFormLabel htmlFor='location'>
                       Location
                     </StyledFormLabel>
-                    <StyledNativeSelect
-                      input={
-                        <Field component={({ field, form, ...props }: any) => (
-                          <StyledSelectInput {...field} {...props} />
-                        )} />
-                      }
-                      /* TODO set default value as clerk location */
-                      id='location'
-                      name='location'
-                      variant='outlined'
-                      defaultValue='Victora'
-                    >
-                      <option value='Victoria'>Victoria</option>
-                      <option value='Nanaimo'>Nanaimo</option>
-                      <option value='Courtenay'>Courtenay</option>
-                      <option value='Abbotsford'>Abbotsford</option>
-                      <option value='Vancouver'>Vancouver</option>
-                    </StyledNativeSelect>
+                    
                     <ErrorMessage name='location' />
                   </StyledFormControl>
                 </Grid>
-
+                <CourtLocationSelect
+                  id='location'
+                  name='location'/>
                 <Grid item xs={3}>
                   <StyledFormControl>
                     <StyledLabel htmlFor='file'>

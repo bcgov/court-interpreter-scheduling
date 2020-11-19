@@ -22,6 +22,7 @@ import { StyledButton } from 'components/Buttons'
 import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 import { InterpreterSearchParams } from 'constants/interfaces'
 import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik'
+import { CourtLocationSelect } from './CourtLocationSelect'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(InterpreterSearchContext)
@@ -65,26 +66,9 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     <StyledFormLabel htmlFor='city'>
                       Court Location
                     </StyledFormLabel>
-                    <StyledNativeSelect
-                      input={
-                        <Field
-                          component={
-                            ({ field, form, ...props }: FieldProps) => (
-                              <StyledSelectInput {...field} {...props} />
-                            )
-                          }
-                        />
-                      }
+                    <CourtLocationSelect
                       id='city'
-                      name='city'
-                      variant='outlined'
-                    >
-                      <option value='Victoria'>Victoria</option>
-                      <option value='Nanaimo'>Nanaimo</option>
-                      <option value='Courtenay'>Courtenay</option>
-                      <option value='Abbotsford'>Abbotsford</option>
-                      <option value='Vancouver'>Vancouver</option>
-                    </StyledNativeSelect>
+                      name='city'/>
                     <ErrorMessage name='city' />
                   </StyledFormControl>
                 </Grid>
