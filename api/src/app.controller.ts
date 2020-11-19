@@ -24,4 +24,13 @@ export class AppController {
   keycloak() {
     return 'key cloak success';
   }
+
+  @Get('config')
+  @Public()
+  config() {
+    return {
+      keycloakAuthUrl: process.env.KEYCLOAK_AUTH_URL ?? '',
+      keycloakRealm: process.env.KEYCLOAK_REALM ?? ''
+    }
+  }
 }
