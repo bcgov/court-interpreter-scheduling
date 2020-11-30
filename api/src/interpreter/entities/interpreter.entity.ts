@@ -123,6 +123,7 @@ export class InterpreterEntity {
       email: this.email,
       supplier: this.supplier,
       gst: this.gst,
+      criminalRecordCheck: this.criminalRecordCheck,
       comments: this.comments,
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
