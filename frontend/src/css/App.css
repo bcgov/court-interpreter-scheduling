@@ -140,6 +140,10 @@ span.errorSpan {
   margin-top: 4px;
 }
 
+.commentList span {
+  display: block;
+}
+
 /* TABLE */
 
 td.MuiTableCell-root {

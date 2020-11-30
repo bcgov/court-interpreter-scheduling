@@ -50,6 +50,9 @@ export class InterpreterRO {
   gst: string;
 
   @ApiProperty()
+  criminalRecordCheck: string;
+
+  @ApiProperty()
   comments: string;
 
   @ApiProperty()
