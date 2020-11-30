@@ -9,17 +9,18 @@ import ViewToggle from 'components/calendar/ViewToggle';
 import BookingModal from 'components/form/BookingModal';
 import BookingButton from 'components/table/BookingButton';
 
-const getValueFromLanguages = (
-  language: string | undefined,
-  languages: Language[],
-  field: 'level' | 'languageName'
-): string | Level => {
-  if (!language) return languages[0][field];
-  const activeLanguage = languages.find(
-    (l: Language) => l.languageName.toUpperCase() === language.toUpperCase()
-  );
-  return activeLanguage ? activeLanguage[field] : languages[0][field];
-};
+const comments = (comment?: string, languages?: Language[]) => (
+  comment || languages?.some((language: Language) => language.commentOnLevel)
+) ? (
+  <div className='commentList'>
+    {comment ? <span>{comment}</span> : null}
+    {languages
+      ?.filter((language: Language) => language.commentOnLevel)
+      .map((language: Language) => <span>{language.languageName} ({language.level}): {language.commentOnLevel}</span> )}
+  </div>
+) : null
+
+export default function DirectoryTable({ data, disabled, language }: { data: Interpreter[], disabled: boolean, language?: string }) {
 
 export default function DirectoryTable({
   data,
@@ -88,53 +89,34 @@ export default function DirectoryTable({
               render: (row: any) => (
                 <span>
                   {row.address}
-                  <br /> {row.city}{' '}
-                  <a
-                    target="_blank"
-                    href={encodeURI(
-                      `https://www.google.com/maps/dir/?api=1&origin=${row.address.trim()},${row.city.trim()},${
-                        row.postal
-                      }&destination=${row.city} BC courthouse`
-                    )}
-                  >
-                    {row.postal}
-                  </a>
-                </span>
-              ),
-            },
-            {
-              render: (row: any) => (
-                <BookingButton
-                  disabled={disabled}
-                  onClick={() => setInterpreter(row)}
-                />
-              ),
-              align: 'right',
-            },
-          ]}
-          overrides={{
-            detailPanel: (rowData: any) => (
-              <Grid container justify="space-around">
-                <Grid item>
-                  <Box p={1}>
-                    <b>Supplier #</b>
-                    <br />
-                    {rowData.supplier}
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <Box p={1}>
-                    <b>GST #</b>
-                    <br />
-                    {rowData.gst}
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <Box p={1}>
-                    <b>Comments</b>
-                    <br />
-                    {rowData.comments}
-                  </Box>
+                  <br /> {row.city} <a target='_blank' rel='noopener noreferrer' href={encodeURI(`https://www.google.com/maps/dir/?api=1&origin=${row.address.trim()},${row.city.trim()},${row.postal}&destination=${row.city} BC courthouse`)}>{row.postal}</a>
+                </span>) },
+              { render: (row: any) => <BookingButton disabled={disabled} onClick={() => setInterpreter(row)} />, align: 'right' }
+            ]}
+            overrides={{
+              detailPanel: (rowData: any) => (
+                <Grid container justify='space-around'>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>Supplier #</b>
+                      <br />
+                      {rowData.supplier}
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>GST #</b>
+                      <br />
+                      {rowData.gst}
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <Box p={1}>
+                      <b>Comments</b>
+                      <br />
+                      {comments(rowData.comments, rowData.languages)}
+                    </Box>
+                  </Grid>
                 </Grid>
               </Grid>
             ),

@@ -16,6 +16,17 @@ const fieldSort = (field: string) =>
       ? 0
       : a[field] > b[field] ? 1 : -1
 
+const comments = (comment?: string, languages?: Language[]) => (
+  comment || languages?.some((language: Language) => language.commentOnLevel)
+) ? (
+  <div className='commentList'>
+    {comment ? <span>{comment}</span> : null}
+    {languages
+      ?.filter((language: Language) => language.commentOnLevel)
+      .map((language: Language) => <span>{language.languageName} ({language.level}): {language.commentOnLevel}</span> )}
+  </div>
+) : null
+
 export default function InterpretersTable({
   data,
   openCreateModal,
@@ -92,9 +103,16 @@ export default function InterpretersTable({
               </Grid>
               <Grid item>
                 <Box p={1}>
+                  <b>Record Check</b>
+                  <br />
+                  {rowData.criminalRecordCheck}
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box p={1}>
                   <b>Comments</b>
                   <br />
-                  {rowData.comments}
+                  {comments(rowData.comments, rowData.languages)}
                 </Box>
               </Grid>
             </Grid>
