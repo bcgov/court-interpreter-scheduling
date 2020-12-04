@@ -47,7 +47,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
       setInterpreter(null)
       history.push('/booking')
     }
-  }, [response, setInterpreter, history])
+  }, [response])
 
   return (
     <SearchContext.Consumer>
