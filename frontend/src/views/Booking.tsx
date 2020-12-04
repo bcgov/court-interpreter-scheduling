@@ -14,7 +14,7 @@ const Booking = () => {
   useError({ error, prefix: 'Failed to load bookings.' })
   useEffect(() => {
     getBookings()
-  }, [getBookings])
+  })
   return (
     <Box px='150px'>
       <BookingsSearch getSearchResults={getBookings} />
