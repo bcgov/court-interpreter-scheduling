@@ -20,6 +20,20 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
+#### Recommended local development workflow
+
+Run the application stack via `docker-compose.dev.yml` but shut down the client container.
+
+Run the front end locally outside of Docker by creating a .env file in the frontend folder with the following content:
+
+```
+REACT_APP_REALM_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
+REACT_APP_API_HOST=http://keycloak.local.freshworks.club:4000/api/v1
+REACT_APP_KC_REALM=court
+```
+
+`src/keycloak.ts` will read these env variables to initlialize keycloak and the initial call to `/api/v1/config` will be skipped.
+
 ### E2E Tests
 
 E2E testing is powered by [Cypress](https://cypress.io)
