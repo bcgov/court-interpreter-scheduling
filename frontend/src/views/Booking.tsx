@@ -11,9 +11,6 @@ import useError from 'hooks/useError'
 const Booking = () => {
   const [{ data: bookings, error, loading }, getBookings] = useAxiosGet('/booking')
   useError({ error, prefix: 'Failed to load bookings.' })
-  useEffect(() => {
-    getBookings()
-  }, [getBookings])
   return (
     <ContentBox>
       <BookingsSearch getSearchResults={getBookings} />
