@@ -9,11 +9,11 @@ import useError from 'hooks/useError'
 import ContentBox from 'components/layout/ContentBox'
 import InterpreterSearch from 'components/form/InterpreterSearch'
 import CreateInterpreter from 'components/form/InterpreterModal'
-import InterpretersTable from 'components/table/InterpretersTable'
+import InterpretersTable from 'components/table/InterpreterDirectoryTable'
 import { InterpreterSearchParams } from 'constants/interfaces'
 import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 
-const Directory = () => {
+export default function InterpreterDirectory () {
   const [search, setSearch] = useState<InterpreterSearchParams>({
     name: '',
     keywords: '',
@@ -53,4 +53,3 @@ const Directory = () => {
     </ContentBox>
   )
 }
-export default Directory
