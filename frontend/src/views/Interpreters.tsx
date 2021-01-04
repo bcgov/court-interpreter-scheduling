@@ -6,6 +6,7 @@ import {
 import { useAxiosGet } from 'hooks/axios'
 import useError from 'hooks/useError'
 
+import ContentBox from 'components/layout/ContentBox'
 import InterpreterSearch from 'components/form/InterpreterSearch'
 import CreateInterpreter from 'components/form/InterpreterModal'
 import InterpretersTable from 'components/table/InterpretersTable'
@@ -37,7 +38,7 @@ const Directory = () => {
   }
 
   return (
-    <Box px='150px'>
+    <ContentBox>
       <InterpreterSearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
         <InterpreterSearch getSearchResults={getSearchResults} />
         {
@@ -49,7 +50,7 @@ const Directory = () => {
         }
       </InterpreterSearchContext.Provider>
       <CreateInterpreter open={open} toggle={toggle} />
-    </Box>
+    </ContentBox>
   )
 }
 export default Directory

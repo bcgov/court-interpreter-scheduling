@@ -5,6 +5,7 @@ import { useKeycloak } from '@react-keycloak/web'
 import { KeycloakInstance } from 'keycloak-js'
 
 import { makeStyles, Typography } from '@material-ui/core'
+import ContentBox from 'components/layout/ContentBox'
 
 import logo from '../../assets/images/logo-banner.svg'
 
@@ -17,7 +18,6 @@ const useStyles = makeStyles({
     maxWidth: '100vw',
     boxSizing: 'border-box',
     borderBottom: '2px solid #fcba19',
-    padding: '0 65px 0 150px',
     color: '#fff',
     display: 'flex',
   },
@@ -72,7 +72,7 @@ export default function Header() {
   const classes = useStyles()
   const { keycloak } = useKeycloak<KeycloakInstance>()
   return (
-    <div className={classes.header}>
+    <ContentBox className={classes.header}>
       <Link to='/' className={classes.logoWrapper}>
         <img className={classes.logo} src={logo} alt='Go to the homepage' />
       </Link>
@@ -88,6 +88,6 @@ export default function Header() {
           </div>
         )
       }
-    </div>
+    </ContentBox>
   )
 }

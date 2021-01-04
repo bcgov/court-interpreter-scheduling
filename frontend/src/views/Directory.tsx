@@ -8,6 +8,7 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 
+import ContentBox from 'components/layout/ContentBox'
 import Search from 'components/form/DirectorySearch'
 import DirectoryTable from 'components/table/DirectoryTable'
 
@@ -57,7 +58,7 @@ const Directory = () => {
   }, [])
 
   return (
-    <Box px='150px'>
+    <ContentBox>
       <SearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
         <Search getSearchResults={getSearchResults} />
         {
@@ -68,7 +69,7 @@ const Directory = () => {
             : null
         }
       </SearchContext.Provider>
-    </Box>
+    </ContentBox>
   )
 }
 export default Directory
