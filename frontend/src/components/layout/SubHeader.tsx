@@ -5,7 +5,6 @@ import { KeycloakInstance } from 'keycloak-js'
 
 import {
   makeStyles,
-  Paper,
   Tab,
   Tabs,
   withStyles,

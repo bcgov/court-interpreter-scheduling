@@ -1,3 +1,6 @@
+import React from 'react'
+import { Language } from 'constants/interfaces'
+
 function comments (comment?: string, languages?: Language[]) {
   return (
     comment || languages?.some((language: Language) => language.commentOnLevel)
