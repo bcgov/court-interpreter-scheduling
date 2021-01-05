@@ -7,7 +7,7 @@ import { useAxiosGet } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import ContentBox from 'components/layout/ContentBox'
-import InterpreterSearch from 'components/form/InterpreterSearch'
+import DirectorySearch from 'components/form/DirectorySearch'
 import CreateInterpreter from 'components/form/InterpreterModal'
 import InterpretersTable from 'components/table/InterpreterDirectoryTable'
 import { InterpreterSearchParams } from 'constants/interfaces'
@@ -40,7 +40,7 @@ export default function InterpreterDirectory () {
   return (
     <ContentBox>
       <InterpreterSearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
-        <InterpreterSearch getSearchResults={getSearchResults} />
+        <DirectorySearch getSearchResults={getSearchResults} />
         {
           loading
             ? <Box mt={12}><CircularProgress /></Box>

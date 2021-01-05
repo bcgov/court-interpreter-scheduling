@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core'
 
 import ContentBox from 'components/layout/ContentBox'
-import Search from 'components/form/DirectorySearch'
+import Search from 'components/form/InterpreterSearch'
 import InterpreterSearchTable from 'components/table/InterpreterSearchTable'
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces'
