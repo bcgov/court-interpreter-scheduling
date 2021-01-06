@@ -69,16 +69,17 @@ describe('Search Bookings', () => {
     cy.get('@tokens').then(tokens => {
       cy.request({ url: Cypress.env('API_URL') + '/booking', auth: { bearer: tokens.access_token } })
       .then(response => {
-        cy.request({
-          method: 'DELETE',
-          url: Cypress.env('API_URL') + '/booking/' + response.body.data[0].id,
-          auth: {
-            bearer: tokens.access_token
-          }
-        }).then(async (done) => {
+        return Promise.all(response.body.data.map(booking => {
+          cy.request({
+            method: 'DELETE',
+            url: Cypress.env('API_URL') + '/booking/' + booking.id,
+            auth: { bearer: tokens.access_token }
+          })
+        }))
+        .then(async (results) => {
           cy.request({ url: Cypress.env('API_URL') + '/interpreter', auth: { bearer: tokens.access_token } })
-          .then(response => {
-            response.body.data.map(interpreter => {
+          .then(int_response => {
+            int_response.body.data.map(interpreter => {
               cy.request({
                 method: 'DELETE',
                 url: Cypress.env('API_URL') + '/interpreter/' + interpreter.id,
@@ -92,5 +93,4 @@ describe('Search Bookings', () => {
       })
     })
   })
-
 })
