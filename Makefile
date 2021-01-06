@@ -59,7 +59,6 @@ close-local:
 	@echo "+\n++ Make: Closing local container ...\n+"
 	@docker-compose -f docker-compose.yml down
 
-
 local-api-workspace:
 	@echo "Make: Shelling into api workspace ..."
 	@docker-compose -f docker-compose.yml exec api bash
@@ -81,8 +80,10 @@ local-db-migrate:
 e2e-test:
 	@echo "Make: start docker-compose.test"
 	@docker-compose -f docker-compose.test.yml build
-	@docker-compose -f docker-compose.test.yml up -d client api postgres keycloak
+	@docker-compose -f docker-compose.test.yml up -d postgres keycloak
+	@docker-compose -f docker-compose.test.yml up -d client api
 	@docker-compose -f docker-compose.test.yml up cypress
+
 ####################################################################
 ## Dev Docker Development
 ####################################################################
@@ -90,7 +91,6 @@ e2e-test:
 run-dev:
 	@echo "+\n++ Make: Running dev ...\n+"
 	@docker-compose -f docker-compose.dev.yml up
-
 
 dev-api-workspace:
 	@echo "Make: Shelling into dev api workspace ..."

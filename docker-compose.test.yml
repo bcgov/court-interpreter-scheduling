@@ -113,6 +113,8 @@ services:
     build: ./e2e
     networks:
       - backend
+    depends_on:
+      - keycloak
     environment:
       - CYPRESS_baseUrl=http://client.local.freshworks.club:5000
     command: npx cypress run
