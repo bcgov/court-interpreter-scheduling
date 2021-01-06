@@ -1,4 +1,6 @@
-describe('Search Bookings', () => {
+describe('Search Bookings', {
+  retries: 2
+}, () => {
 
   before(() => {
     cy.kcLogout()
@@ -18,9 +20,7 @@ describe('Search Bookings', () => {
             cy.request({
               method: 'POST',
               url: Cypress.env('API_URL') + '/booking',
-              auth: {
-                bearer: tokens.access_token
-              },
+              auth: { bearer: tokens.access_token },
               body: { ...booking, interpreterId: response.body[0].id }
             })
           })
