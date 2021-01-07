@@ -4,7 +4,7 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
-import { format } from 'date-fns';
+import { add, format } from 'date-fns';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
@@ -65,8 +65,12 @@ export class BookingService {
     query = paginateBookingQueryDto.filter(query);
 
     if (isStartFromToday) {
+      // default query is for bookings within next 30 days
       query.andWhere('dates.date >= :today', {
         today: `${format(new Date(), 'yyyy-MM-dd')}T00:00:00`,
+      });
+      query.andWhere('dates.date <= :monthAway', {
+        monthAway: `${format(add(new Date(), { days: 30 }), 'yyyy-MM-dd')}T00:00:00`,
       });
     }
 
