@@ -20,7 +20,6 @@ import { ButtonPrimary } from 'components/Buttons'
 import BookingsRange from 'components/form/BookingsRange'
 
 import { ErrorMessage, Field, Form, Formik, FormikProps } from 'formik'
-import { CourtLocationSelect } from './CourtLocationSelect'
 
 const dateFormat = 'MMM D, YYYY'
 
@@ -47,7 +46,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   text={
                     values.dates.startDate && values.dates.endDate
                       ? `${moment(values.dates.startDate).format(dateFormat)} to ${moment(values.dates.endDate).format(dateFormat)}`
-                      : 'Select Date'
+                      : `${moment().format(dateFormat)} to ${moment().add(30, 'days').format(dateFormat)}`
                   }
                 />
                 <ErrorMessage name='dates' render={msg => <div>{msg}</div>} />
