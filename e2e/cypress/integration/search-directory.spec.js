@@ -1,8 +1,13 @@
-describe('Create Booking', () => {
+describe('Create Booking', {
+  retries: 2
+}, () => {
 
   before(() => {
+    cy.clearDb()
+    
     cy.kcLogout()
     cy.kcLogin('cypress-admin').as('tokens')
+    
     cy.fixture('interpreters/interpreters.json').then((interpreters) => {
       cy.get('@tokens').then(tokens => {
         cy.request({
@@ -22,7 +27,7 @@ describe('Create Booking', () => {
     cy.kcLogin('cypress-admin').as('tokens')
   })
 
-  it('Loads the directory page', () => {
+  it('Loads the create booking page', () => {
     cy.visit('/directory')
     cy.location('href').should('include', 'directory')
     cy.contains('Search Interpreters')
@@ -60,24 +65,4 @@ describe('Create Booking', () => {
       }).its('status').should('eq', 200)
     })
   })
-
-  after(() => {
-    cy.kcLogout()
-    cy.kcLogin('cypress-admin').as('tokens')
-    cy.get('@tokens').then(async (tokens) => {
-      cy.request({ url: Cypress.env('API_URL') + '/interpreter', auth: { bearer: tokens.access_token } })
-      .then(response => {
-        response.body.data.map(interpreter => {
-          cy.request({
-            method: 'DELETE',
-            url: Cypress.env('API_URL') + '/interpreter/' + interpreter.id,
-            auth: {
-              bearer: tokens.access_token
-            }
-          })
-        })
-      })
-    })
-  })
-
 })

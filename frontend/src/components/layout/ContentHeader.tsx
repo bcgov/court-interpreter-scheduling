@@ -3,9 +3,10 @@ import { useLocation } from 'react-router-dom'
 
 import {
   makeStyles,
-  Paper,
   Typography,
 } from '@material-ui/core'
+
+import ContentBox from 'components/layout/ContentBox'
 
 const useStyles = makeStyles({
   contentHeader: {
@@ -15,7 +16,6 @@ const useStyles = makeStyles({
     maxWidth: '100vw',
     height: '90px',
     boxSizing: 'border-box',
-    padding: '0 65px 0 150px',
     color: '#fff',
     display: 'flex',
   },
@@ -41,8 +41,8 @@ export default function Header() {
   }
 
   return headerText ? (
-    <Paper elevation={0} square className={classes.contentHeader}>
+    <ContentBox className={classes.contentHeader}>
       <Typography color='primary' variant='h5'>{headerText}</Typography>
-    </Paper>
+    </ContentBox>
   ) : null
 }

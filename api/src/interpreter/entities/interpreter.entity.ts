@@ -67,7 +67,7 @@ export class InterpreterEntity {
   @Column({
     nullable: true,
     name: 'criminal_record_check'
-  }) 
+  })
   criminalRecordCheck: string;
 
   @Column({ nullable: true })
@@ -76,7 +76,7 @@ export class InterpreterEntity {
   @Column({
     nullable: true,
     name: 'email_alt'
-  }) 
+  })
   emailAlt: string;
 
   @Column({ nullable: true })
@@ -109,9 +109,9 @@ export class InterpreterEntity {
       id: this.id,
       firstName: this.firstName,
       lastName: this.lastName,
-      languages: this.languages.map((intLang: InterpreterLanguageEntity) =>
-        intLang.toResponseObject(),
-      ),
+      languages: this.languages
+        .map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject())
+        .sort((a, b) => a.level - b.level),
       bookings: this.bookings,
       address: this.address,
       city: this.city,

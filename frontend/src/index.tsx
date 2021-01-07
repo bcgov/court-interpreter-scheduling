@@ -70,9 +70,6 @@ const Routes = () => {
 
 const Start: React.FC = () => {
   const [{ data, error, loading }, getConfig] = useAxiosGet('/config');
-  useEffect(() => {
-    getConfig();
-  }, []);
   if (loading) {
     return (
       <Box p={2}>
@@ -80,7 +77,15 @@ const Start: React.FC = () => {
       </Box>
     );
   } else if (error) {
-    return <div>error</div>;
+    return (
+      <Box p={2}>
+        <h4>
+          Application Error.
+        </h4>
+        <p>Could not connect to keycloak.</p>
+        {error.message ? <p>Error message: {error.message}</p> : null}
+      </Box>
+    );
   } else {
     const { keycloakAuthUrl, keycloakRealm } = data;
     localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
@@ -89,4 +94,4 @@ const Start: React.FC = () => {
   }
 };
 
-render(<Start />, document.getElementById('root'));
+render(process.env.NODE_ENV === 'development' ? <Routes /> : <Start />, document.getElementById('root'));

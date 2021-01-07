@@ -12,8 +12,6 @@ import {
   StyledLabel,
   StyledTextField,
   StyledFormLabel,
-  StyledNativeSelect,
-  StyledSelectInput,
   GridRow,
 } from './inputs/DirectoryInputs'
 
@@ -44,7 +42,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
           <Form onSubmit={handleSubmit}>
             <GridRow container spacing={4}>
 
-              <Grid item xs={3}>
+              <Grid item xs={6} md={3}>
                 <BookingsRange
                   text={
                     values.dates.startDate && values.dates.endDate
@@ -55,7 +53,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 <ErrorMessage name='dates' render={msg => <div>{msg}</div>} />
               </Grid>
 
-              <Grid item xs={3}>
+              <Grid item xs={6} md={3}>
                 <StyledFormControl>
                   <StyledLabel htmlFor='interpreter'>
                     Interpreter
@@ -75,8 +73,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </StyledFormControl>
               </Grid>
 
-              
-              <Grid item xs={3}>
+              <Grid item xs={6} md={3}>
                 <StyledFormControl>
                   <StyledLabel htmlFor='file'>
                     Case Number
@@ -95,10 +92,10 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   <ErrorMessage name='file' />
                 </StyledFormControl>
               </Grid>
-              
-              <Grid item xs={3} />
-              
-              <Grid item xs={2}>
+
+            </GridRow>
+            <GridRow container spacing={4}>
+              <Grid item xs={12} md={3}>
                 <StyledFormControl>
                   <StyledFormLabel htmlFor='submit' />
                   <ButtonPrimary
@@ -108,10 +105,9 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     disabled={isSubmitting}
                   >
                     Search
-                    </ButtonPrimary>
+                  </ButtonPrimary>
                 </StyledFormControl>
               </Grid>
-
             </GridRow>
           </Form>
         )}

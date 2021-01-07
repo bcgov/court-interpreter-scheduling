@@ -40,7 +40,9 @@ To populate with JSON data
 The following three commands in order will kick off e2e testing via the docker-compose.test.yml file
 
 `docker-compose -f docker-compose.test.yml build`
-`docker-compose -f docker-compose.test.yml up webapp api postgres keycloak`
+
+`docker-compose -f docker-compose.test.yml up client api postgres keycloak`
+
 `docker-compose -f docker-compose.test.yml up cypress --abort-on-container-exit --exit-code-from cypress`
 
 ## URL

@@ -5,27 +5,28 @@ import {
   FormGroup,
   Grid,
 } from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
 import {
   StyledFormControl,
   StyledLabel,
   StyledTextField,
   StyledFormLabel,
-  StyledNativeSelect,
-  StyledSelectInput,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
-import { Schema, Initial } from 'components/form/schemas/interpreter-search.schema'
+import SearchDates from 'components/form/SearchDates'
+import { Schema, Initial } from 'components/form/schemas/search.schema'
+import Range from 'components/form/Range'
 import Check from 'components/form/inputs/Check'
 import { StyledButton } from 'components/Buttons'
 
-import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
-import { InterpreterSearchParams } from 'constants/interfaces'
-import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik'
-import { CourtLocationSelect } from './CourtLocationSelect'
+import { languages } from 'constants/languages'
+import { courtLocations } from 'constants/courtLocations'
+import SearchContext from 'contexts/SearchContext'
+import { ErrorMessage, Field, FieldProps, Formik, FormikProps, Form } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
-  const { search } = useContext(InterpreterSearchContext)
+  const { search } = useContext(SearchContext)
   return (
     <Box>
       <Formik
@@ -38,62 +39,9 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
         enableReinitialize={true}
         validationSchema={Schema}
         onSubmit={async (values) => getSearchResults(values)}>
-          {({ handleSubmit, isSubmitting }: FormikProps<InterpreterSearchParams>) => (
-            <>
+          {({ handleSubmit, errors, isSubmitting, ...props }: FormikProps<any>) => (
+            <Form onSubmit={handleSubmit}>
               <GridRow container spacing={4}>
-                <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledLabel htmlFor='name'>
-                      Name
-                    </StyledLabel>
-                    <Field name='name'>
-                      {({ field, form, ...props }: FieldProps) => (
-                        <StyledTextField
-                          id='name'
-                          variant='outlined'
-                          size='small'
-                          placeholder='First, last or both'
-                          {...field}
-                          {...props}
-                        />
-                      )}
-                    </Field>
-                    <ErrorMessage name='name' />
-                  </StyledFormControl>
-                </Grid>
-                {/* <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledFormLabel htmlFor='city'>
-                      Court Location
-                    </StyledFormLabel>
-                    <CourtLocationSelect
-                      id='city'
-                      name='city'/>
-                    <ErrorMessage name='city' />
-                  </StyledFormControl>
-                </Grid> */}
-                <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledLabel htmlFor='keywords'>
-                      Keywords
-                    </StyledLabel>
-                    <Field name='keywords'>
-                      {({ field, form, ...props }: FieldProps) => (
-                        <StyledTextField
-                          id='keywords'
-                          variant='outlined'
-                          size='small'
-                          placeholder='Email, phone etc'
-                          {...field}
-                          {...props}
-                        />
-                      )}
-                    </Field>
-                    <ErrorMessage name='keywords' />
-                  </StyledFormControl>
-                </Grid>
-              </GridRow>
-              <GridRow container spacing={4} mt={2}>
                 <Grid item xs={4}>
                   <StyledFormControl>
                     <StyledLabel htmlFor='language'>
@@ -101,12 +49,19 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     </StyledLabel>
                     <Field name='language'>
                       {({ field, form, ...props }: FieldProps) => (
-                        <StyledTextField
+                        <Autocomplete
+                          options={languages}
+                          getOptionLabel={(option) => option}
                           id='language'
-                          variant='outlined'
                           size='small'
-                          {...field}
-                          {...props}
+                          renderInput={(params) => (
+                            <StyledTextField
+                              {...params}
+                              variant='outlined'
+                              {...field}
+                              {...props}
+                            />
+                          )}
                         />
                       )}
                     </Field>
@@ -129,12 +84,43 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </Grid>
                 <Grid item xs={4}>
                   <StyledFormControl>
+                    <StyledFormLabel htmlFor='city'>
+                      Court Location
+                    </StyledFormLabel>
+                    <Field name='city'>
+                      {({ field, form, ...props }: FieldProps) => (
+                        <Autocomplete
+                          options={courtLocations}
+                          getOptionLabel={(option) => option.name}
+                          id='city'
+                          size='small'
+                          renderInput={(params) => (
+                            <StyledTextField
+                              {...params}
+                              variant='outlined'
+                              {...field}
+                              {...props}
+                            />
+                          )}
+                        />
+                      )}
+                    </Field>
+                    <ErrorMessage name='city' />
+                  </StyledFormControl>
+                </Grid>
+              </GridRow>
+              <GridRow container spacing={4} mt={2}>
+                <Grid item xs={6}>
+                  <Range />
+                </Grid>
+                <Grid item xs={2} />
+                <Grid item xs={4}>
+                  <StyledFormControl>
                     <StyledFormLabel htmlFor='submit' />
                     <StyledButton
                       style={{ marginTop: '1.25rem' }}
                       type='submit'
                       variant='contained'
-                      onClick={() => handleSubmit()}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? '...' : 'Search'}
@@ -142,7 +128,8 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   </StyledFormControl>
                 </Grid>
               </GridRow>
-            </>
+              {search.dates.length > 0 && <SearchDates values={props.values} />}
+            </Form>
           )}
       </Formik>
     </Box>

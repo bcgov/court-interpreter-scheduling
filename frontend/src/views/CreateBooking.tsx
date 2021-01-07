@@ -8,8 +8,9 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 
-import Search from 'components/form/DirectorySearch'
-import DirectoryTable from 'components/table/DirectoryTable'
+import ContentBox from 'components/layout/ContentBox'
+import Search from 'components/form/InterpreterSearch'
+import InterpreterSearchTable from 'components/table/InterpreterSearchTable'
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces'
 import SearchContext from 'contexts/SearchContext'
@@ -57,18 +58,18 @@ const Directory = () => {
   }, [])
 
   return (
-    <Box px='150px'>
+    <ContentBox>
       <SearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
         <Search getSearchResults={getSearchResults} />
         {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
             : interpreters
-            ? <DirectoryTable language={search.language} data={interpreters.data} disabled={!search.dates.length} />
+            ? <InterpreterSearchTable language={search.language} data={interpreters.data} disabled={!search.dates.length} />
             : null
         }
       </SearchContext.Provider>
-    </Box>
+    </ContentBox>
   )
 }
 export default Directory

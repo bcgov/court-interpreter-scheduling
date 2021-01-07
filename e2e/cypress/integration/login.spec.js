@@ -1,4 +1,6 @@
-describe('Login', () => {
+describe('Login', {
+  retries: 2
+}, () => {
 
   beforeEach(() => {
     cy.kcLogout()

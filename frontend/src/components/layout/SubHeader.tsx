@@ -5,12 +5,13 @@ import { KeycloakInstance } from 'keycloak-js'
 
 import {
   makeStyles,
-  Paper,
   Tab,
   Tabs,
   withStyles,
   Theme,
 } from '@material-ui/core'
+
+import ContentBox from 'components/layout/ContentBox'
 
 interface StyledTabProps {
   label: string;
@@ -25,7 +26,6 @@ const useStyles = makeStyles({
     width: '100%',
     maxWidth: '100vw',
     boxSizing: 'border-box',
-    padding: '0 65px 0 150px',
     color: '#fff',
     display: 'flex',
   },
@@ -77,7 +77,7 @@ export default function Header() {
   }, [location.pathname, activeTab])
 
   return (
-    <Paper elevation={0} square className={classes.subheader}>
+    <ContentBox className={classes.subheader}>
       <BCTabs
         value={activeTab}
         onChange={handleNav}
@@ -86,6 +86,6 @@ export default function Header() {
         <BCTab label='Search Interpreters' value='/directory' />
         {keycloak?.hasRealmRole('court-admin') && <BCTab label='Interpreters' value='/interpreters' />}
       </BCTabs>
-    </Paper>
+    </ContentBox>
   );
 }
