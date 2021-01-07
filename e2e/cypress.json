@@ -5,6 +5,7 @@
   "ignoreTestFiles": "**/examples/*",
   "chromeWebSecurity": false,
   "projectId": "ucw3ze",
+  "video": false,
   "env": {
     "auth_base_url": "http://keycloak.local.freshworks.club:8080/auth",
     "auth_realm": "court",
