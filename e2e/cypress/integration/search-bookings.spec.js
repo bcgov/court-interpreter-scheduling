@@ -3,6 +3,9 @@ describe('Search Bookings', {
 }, () => {
 
   before(() => {
+
+    cy.clearDb()
+
     cy.kcLogout()
     cy.kcLogin('cypress-admin').as('tokens')
     cy.fixture('interpreters/interpreters.json').then((interpreters) => {
@@ -60,37 +63,6 @@ describe('Search Bookings', {
           bearer: tokens.access_token
         }
       }).its('status').should('eq', 200)
-    })
-  })
-
-  after(() => {
-    cy.kcLogout()
-    cy.kcLogin('cypress-admin').as('tokens')
-    cy.get('@tokens').then(tokens => {
-      cy.request({ url: Cypress.env('API_URL') + '/booking', auth: { bearer: tokens.access_token } })
-      .then(response => {
-        return Promise.all(response.body.data.map(booking => {
-          cy.request({
-            method: 'DELETE',
-            url: Cypress.env('API_URL') + '/booking/' + booking.id,
-            auth: { bearer: tokens.access_token }
-          })
-        }))
-        .then(async (results) => {
-          cy.request({ url: Cypress.env('API_URL') + '/interpreter', auth: { bearer: tokens.access_token } })
-          .then(int_response => {
-            int_response.body.data.map(interpreter => {
-              cy.request({
-                method: 'DELETE',
-                url: Cypress.env('API_URL') + '/interpreter/' + interpreter.id,
-                auth: {
-                  bearer: tokens.access_token
-                }
-              })
-            })
-          })
-        })
-      })
     })
   })
 })
