@@ -32,7 +32,7 @@ function Picker () {
 
   useEffect(() => {
     helpers.setValue(selectedDates)
-  }, [selectedDates])
+  }, [selectedDates, helpers])
 
   const modifiers = {
     selected: (date: Date | number) => selectedDates.some(selectedDate => isSameDay(selectedDate, date))

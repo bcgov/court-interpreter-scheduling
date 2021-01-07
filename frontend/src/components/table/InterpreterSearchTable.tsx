@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Grid } from '@material-ui/core'
 
-import { Interpreter, Language, Level } from 'constants/interfaces'
+import { Interpreter, Language } from 'constants/interfaces'
 import { fieldSort, arrayFieldSort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
 

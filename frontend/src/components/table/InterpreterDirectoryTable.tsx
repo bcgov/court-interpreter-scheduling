@@ -9,7 +9,7 @@ import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
 
 import { Language, Interpreter } from 'constants/interfaces'
-import { fieldSort, arrayFieldSort } from 'util/sort'
+import { fieldSort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
 
 export default function DirectoryTable({

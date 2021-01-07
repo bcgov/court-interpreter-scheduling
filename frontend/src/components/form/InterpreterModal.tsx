@@ -29,7 +29,7 @@ export default function InterpreterModal({ open, toggle }: { open: boolean, togg
     if (response?.status === 201) {
       toggle(false)
     }
-  }, [response])
+  }, [response, toggle])
 
   return (
     <Dialog open={open} maxWidth='xl'>

@@ -44,7 +44,7 @@ export default function Range({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
   const anchor = useRef(null)
   const id = open ? 'date-range-popover' : undefined
-  const [field, , helpers] = useField('dates')
+  const [, , helpers] = useField('dates')
   return (
     <>
       <StyledFormControl>

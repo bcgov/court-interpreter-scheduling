@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
@@ -69,7 +69,7 @@ const Routes = () => {
 };
 
 const Start: React.FC = () => {
-  const [{ data, error, loading }, getConfig] = useAxiosGet('/config');
+  const [{ data, error, loading }] = useAxiosGet('/config');
   if (loading) {
     return (
       <Box p={2}>
