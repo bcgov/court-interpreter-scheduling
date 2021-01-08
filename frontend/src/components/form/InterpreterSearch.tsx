@@ -14,6 +14,7 @@ import {
   StyledFormLabel,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs'
+import AutocompleteInput from 'components/form/inputs/Autocomplete'
 import SearchDates from 'components/form/SearchDates'
 import { Schema, Initial } from 'components/form/schemas/search.schema'
 import Range from 'components/form/Range'
@@ -47,24 +48,11 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     <StyledLabel htmlFor='language'>
                       Language
                     </StyledLabel>
-                    <Field name='language'>
-                      {({ field, form, ...props }: FieldProps) => (
-                        <Autocomplete
-                          options={languages}
-                          getOptionLabel={(option) => option}
-                          id='language'
-                          size='small'
-                          renderInput={(params) => (
-                            <StyledTextField
-                              {...params}
-                              variant='outlined'
-                              {...field}
-                              {...props}
-                            />
-                          )}
-                        />
-                      )}
-                    </Field>
+                    <AutocompleteInput
+                      fieldName='language'
+                      options={languages}
+                      initialValue={search?.language}
+                    />
                     <ErrorMessage name='language' />
                   </StyledFormControl>
                 </Grid>
@@ -94,6 +82,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                           getOptionLabel={(option) => option.name}
                           id='city'
                           size='small'
+                          onChange={(event, value) => form.setFieldValue('city', value || '')}
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
