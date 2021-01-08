@@ -4,7 +4,7 @@ import moment from 'moment'
 import CalendarIcon from '@material-ui/icons/CalendarToday'
 import ClockIcon from '@material-ui/icons/Schedule'
 
-import { withStyles } from '@material-ui/core'
+import { styled } from '@material-ui/core/styles'
 import Hidden from '@material-ui/core/Hidden'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
@@ -18,7 +18,8 @@ import {
   StyledSelectInput,
   StyledTextField,
   StyledLabel,
-} from './DirectoryInputs'
+} from 'components/form/inputs/DirectoryInputs'
+import EditBookingDates from 'components/form/inputs/EditBookingDates'
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces'
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik'
@@ -94,26 +95,27 @@ const StyledSelect = ({ options = [], name, rows = { xs: 6 } }: { options: strin
   </Grid>
 )
 
-const StyledBox = withStyles({
-  root: {
-    border: 'solid 1px #979797',
-    borderRadius: '4px',
-    padding: '8px',
-    marginBottom: '8px',
-  },
-})(Box)
+const StyledGridItem = styled(Grid)({
+  border: 'solid 1px #979797',
+  borderRadius: '4px',
+  padding: '8px',
+})
 
-const Dates = ({ dates = [] }: { dates?: SearchParams['dates'] }) => (
-  <Grid item xs={12} lg={4}>
+export const Dates = ({ dates = [] }: { dates?: SearchParams['dates'] }) => (
+  <Grid container spacing={4}>
     {dates.map((bookingDate: BookingDate, index: number) => (
-      <StyledBox key={`bookingDate_${index}`}>
-        <Grid justify='space-evenly' alignItems='center' container spacing={2}>
-          <Grid style={{ alignItems: 'baseline', display: 'flex' }} xs={1} item><CalendarIcon /></Grid>
-          <Grid xs={5} item>{moment(bookingDate.date).format('dddd, MMM D')}</Grid>
-          <Grid style={{ alignItems: 'baseline', display: 'flex' }} xs={1} item><ClockIcon /></Grid>
-          <Grid xs={5} item>{moment(bookingDate.arrivalTime, 'HH:mm').format('hh:mmA')}</Grid>
-        </Grid>
-      </StyledBox>
+      <Grid item xs={12} sm={6} md={4} key={`bookingDate_${index}`}>
+        <StyledGridItem justify='space-evenly' alignItems='center' container>
+          <Grid item container alignItems='center' xs={6}>
+            <CalendarIcon />
+            <Box component='span' pl={1}>{moment(bookingDate.date).format('ddd, MMM D')}</Box>
+          </Grid>
+          <Grid item container alignItems='center' xs={6}>
+            <ClockIcon />
+            <Box component='span' pl={1}>{moment(bookingDate.arrivalTime, 'HH:mm').format('hh:mmA')}</Box>
+          </Grid>
+        </StyledGridItem>
+      </Grid>
     ))}
   </Grid>
 )
@@ -132,11 +134,12 @@ export default function BookingInputs ({
   return (
     <Grid container spacing={4}>
 
-      <StyledSelect rows={{ lg: 3, xs: 12 }} name='status' options={['Pending', 'Booked', 'Cancelled']} />
-      <Grid item xs={8} />
+      <StyledSelect rows={{ md: 3, sm: 6, xs: 12 }} name='status' options={['Pending', 'Booked', 'Cancelled']} />
+      <Hidden only='xs'><Grid item sm={6} md={9} /></Hidden>
 
-      <Dates dates={search?.dates || booking?.dates} />
-      <Grid item xs={8} />
+      <Grid item xs={12}>
+        {edit ? <EditBookingDates dates={booking?.dates} /> : <Dates dates={search?.dates} />}
+      </Grid>
 
       <StyledField name='room' label='Court Room' rows={{ xs: 6, lg: 3 }} />
       <Hidden mdDown><Grid item xs={3} /></Hidden>
