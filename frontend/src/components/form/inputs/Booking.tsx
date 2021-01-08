@@ -128,7 +128,7 @@ export default function BookingInputs ({
 }: {
   interpreter?: any,
   search?: SearchParams,
-  booking?: any,
+  booking?: Booking,
   edit?: boolean,
 }) {
   return (
