@@ -30,7 +30,7 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
         keycloak?.authenticated ? (
           <Component {...props} />
         ) : (
-          <Redirect to="/login" />
+          <Redirect to='/login' />
         )
       }
     />
@@ -58,8 +58,8 @@ const Routes = () => {
         >
           <ThemeProvider theme={theme}>
             <Switch>
-              <Route exact path="/login" component={Login} />
-              <PrivateRoute path="/" component={App} />
+              <Route exact path='/login' component={Login} />
+              <PrivateRoute path='/' component={App} />
             </Switch>
           </ThemeProvider>
         </Suspense>

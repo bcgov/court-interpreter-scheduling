@@ -10,7 +10,7 @@ import {
   Popover,
 } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
-import { DayPickerRangeController } from 'react-dates';
+import { DayPickerRangeController } from 'react-dates'
 import { StyledFormControl, StyledLabel, StyledTextField } from 'components/form/inputs/DirectoryInputs'
 
 const dateFormat = 'YYYY-MM-DD'

@@ -47,7 +47,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
   }, [response, refetch])
 
   const editInterpreter = () => {
-    history.push('/directory', { booking })
+    history.push('/create', { booking })
   }
 
   return !booking ? null : (
