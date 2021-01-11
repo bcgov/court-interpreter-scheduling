@@ -18,6 +18,10 @@ jobs:
       - name: Start app containers
         run: docker-compose -f docker-compose.test.yml up -d client api postgres keycloak
 
+      - name: Wait for Keycloak
+        working-directory: "./.docker"
+        run: bash ./wait-for.sh http://keycloak.local.freshworks.club:8080/auth/realms/court/
+
       - name: Cypress
         uses: cypress-io/github-action@v2
         with:
