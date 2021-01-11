@@ -70,7 +70,7 @@ export class BookingService {
         today: `${format(new Date(), 'yyyy-MM-dd')}T00:00:00`,
       });
       query.andWhere('dates.date <= :monthAway', {
-        monthAway: `${format(add(new Date(), { days: 30 }), 'yyyy-MM-dd')}T00:00:00`,
+        monthAway: `${format(addMonth(new Date(), 1), 'yyyy-MM-dd')}T00:00:00`,
       });
     }
 
