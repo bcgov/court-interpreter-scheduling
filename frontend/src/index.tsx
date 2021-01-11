@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
@@ -30,7 +30,7 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
         keycloak?.authenticated ? (
           <Component {...props} />
         ) : (
-          <Redirect to="/login" />
+          <Redirect to='/login' />
         )
       }
     />
@@ -58,8 +58,8 @@ const Routes = () => {
         >
           <ThemeProvider theme={theme}>
             <Switch>
-              <Route exact path="/login" component={Login} />
-              <PrivateRoute path="/" component={App} />
+              <Route exact path='/login' component={Login} />
+              <PrivateRoute path='/' component={App} />
             </Switch>
           </ThemeProvider>
         </Suspense>
@@ -69,7 +69,7 @@ const Routes = () => {
 };
 
 const Start: React.FC = () => {
-  const [{ data, error, loading }, getConfig] = useAxiosGet('/config');
+  const [{ data, error, loading }] = useAxiosGet('/config');
   if (loading) {
     return (
       <Box p={2}>

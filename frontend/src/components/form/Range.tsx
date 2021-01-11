@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Field, ErrorMessage, Formik, useField, useFormikContext } from 'formik'
+import { Field, ErrorMessage, Formik, useField, useFormikContext, FormikProps } from 'formik'
 
 import {
   Box,
@@ -26,7 +26,6 @@ import { Calendar } from 'react-nice-dates'
 
 function Picker () {
   const [, , helpers] = useField('dates')
-
   const [lastDate, setLastDate] = useState<Date>()
   const [selectedDates, setSelectedDates] = useState<Array<Date>>([])
 
@@ -81,12 +80,18 @@ export default function Range() {
   const dateFormat = 'MMM D, YYYY'
   const id = open ? 'date-range-popover' : undefined
   const { values: searchValues, setFieldValue } = useFormikContext()
+  const [field, meta] = useField('dates')
   const { search, updateSearchContext } = useContext(SearchContext)
   useEffect(() => {
-    if (search?.dates) {
+    if (search?.dates && search?.dates.length) {
       setFieldValue('dates', search.dates)
     }
   }, [setFieldValue, search])
+  const inputText = search?.dates.length ?
+    `${moment(search.dates[0]?.date).format(dateFormat)} to ${moment(search.dates[search.dates.length - 1]?.date).format(dateFormat)}` :
+      meta?.value ?
+    `${moment(meta.value[0]?.date).format(dateFormat)} to ${moment(meta.value[meta.value.length - 1]?.date).format(dateFormat)}` :
+    `${moment().format(dateFormat)} to ${moment().add(1, 'days').format(dateFormat)}`
   return (
     <Formik
       initialValues={Initial}
@@ -120,7 +125,7 @@ export default function Range() {
               aria-describedby={id}
               variant='outlined'
               size='small'
-              value={`${moment(search.dates[0]?.date).format(dateFormat)} to ${moment(search.dates[search.dates.length - 1]?.date).format(dateFormat)}`}
+              value={inputText}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -173,7 +178,7 @@ export default function Range() {
                       Time Options
                     </StyledLabel>
                     <div role='group' aria-labelledby='time-options'>
-                    <PeriodRadio
+                      <PeriodRadio
                         label='Full Day'
                         name='period'
                         value='WHOLE_DAY'

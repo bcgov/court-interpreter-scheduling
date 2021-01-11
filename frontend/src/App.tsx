@@ -22,10 +22,10 @@ const App = () => {
         <ContentHeader />
         <Suspense fallback={<Box p={2}><CircularProgress /></Box>}>
           <Switch>
-            <Route exact path='/booking' component={Booking} />
-            <Route exact path='/directory' component={CreateBooking} />
-            <Route exact path='/interpreters' component={InterpreterDirectory} />
-            <Redirect to='/booking' />
+            <Route exact path='/bookings' component={Booking} />
+            <Route exact path='/create' component={CreateBooking} />
+            <Route exact path='/directory' component={InterpreterDirectory} />
+            <Redirect to='/bookings' />
           </Switch>
         </Suspense>
       </section>

@@ -45,7 +45,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
   useEffect(() => {
     if ([200, 201].some((status) => status === response?.status)) {
       setInterpreter(null)
-      history.push('/booking')
+      history.push('/bookings')
     }
   }, [response, setInterpreter, history])
 
@@ -57,7 +57,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
             initialValues={{
               ...Initial,
               ...state?.booking,
-              language: state?.booking?.language?.languageName || search.language,
+              language: state?.booking?.language || search.language,
             }}
             validationSchema={Schema}
             onSubmit={async (values) => {

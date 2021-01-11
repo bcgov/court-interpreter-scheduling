@@ -82,9 +82,9 @@ export default function Header() {
         value={activeTab}
         onChange={handleNav}
       >
-        <BCTab label='Bookings' value='/booking' />
-        <BCTab label='Search Interpreters' value='/directory' />
-        {keycloak?.hasRealmRole('court-admin') && <BCTab label='Interpreters' value='/interpreters' />}
+        <BCTab label='Bookings' value='/bookings' />
+        <BCTab label='Search Interpreters' value='/create' />
+        {keycloak?.hasRealmRole('court-admin') && <BCTab label='Interpreters' value='/directory' />}
       </BCTabs>
     </ContentBox>
   );

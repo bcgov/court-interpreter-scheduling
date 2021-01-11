@@ -19,7 +19,7 @@ interface LocationState {
   booking: Booking;
 }
 
-const Directory = () => {
+const CreateBooking = () => {
   const { state } = useLocation<LocationState>()
   const [search, setSearch] = useState<SearchParams>({
     language: '',
@@ -30,7 +30,7 @@ const Directory = () => {
   })
 
   const [{ data: interpreters, loading, error }, getInterpreters] = useAxiosGet('/interpreter')
-  useError({ error, prefix: 'Failed to load the interpreter directory.' })
+  useError({ error, prefix: 'Failed to load search results.' })
 
   const getSearchResults = async (params: SearchParams) => {
     setSearch(params)
@@ -45,7 +45,7 @@ const Directory = () => {
     if (state?.booking) {
       const { booking } = state
       getSearchResults({
-        language: booking.language?.languageName,
+        language: booking.language,
         level: ['1', '2', '3', '4'],
         city: booking.registry || search.city,
         dates: booking.dates.map((d: BookingDate) => ({
@@ -72,4 +72,4 @@ const Directory = () => {
     </ContentBox>
   )
 }
-export default Directory
+export default CreateBooking
