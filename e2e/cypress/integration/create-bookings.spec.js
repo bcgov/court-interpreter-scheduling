@@ -4,10 +4,10 @@ describe('Create Booking', {
 
   before(() => {
     cy.clearDb()
-    
+
     cy.kcLogout()
     cy.kcLogin('cypress-admin').as('tokens')
-    
+
     cy.fixture('interpreters/interpreters.json').then((interpreters) => {
       cy.get('@tokens').then(tokens => {
         cy.request({
@@ -28,25 +28,25 @@ describe('Create Booking', {
   })
 
   it('Loads the create booking page', () => {
-    cy.visit('/directory')
-    cy.location('href').should('include', 'directory')
+    cy.visit('/create')
+    cy.location('href').should('include', 'create')
     cy.contains('Search Interpreters')
     cy.get(`button[type='submit']`).contains('Search').should('not.be.empty')
   })
 
   it('Searches by language, case insensitive', () => {
-    cy.visit('/directory')
-    cy.get('input#language').type('French')
+    cy.visit('/create')
+    cy.get(`input[name='language']`).type('French')
     cy.get(`button[type='submit']`).click()
     cy.get('tr').find('td span').contains('French').should('not.be.empty')
 
-    cy.get('input#language').clear().type('french')
+    cy.get(`input[name='language']`).clear().type('french')
     cy.get(`button[type='submit']`).click()
     cy.get('tr').find('td span').contains('French').should('not.be.empty')
   })
 
   it('Selects dates', () => {
-    cy.visit('/directory')
+    cy.visit('/create')
     cy.get('#rangeCalButton').click()
     cy.get('span.nice-dates-day:not(.-disabled) span.nice-dates-day_date').eq(1).click()
     cy.get('span.nice-dates-day:not(.-disabled) span.nice-dates-day_date').eq(2).click()

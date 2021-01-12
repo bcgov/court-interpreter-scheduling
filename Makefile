@@ -80,8 +80,8 @@ local-db-migrate:
 e2e-test:
 	@echo "Make: start docker-compose.test"
 	@docker-compose -f docker-compose.test.yml build
-	@docker-compose -f docker-compose.test.yml up -d postgres keycloak
-	@docker-compose -f docker-compose.test.yml up -d client api
+	@docker-compose -f docker-compose.test.yml up -d postgres keycloak client api
+	@bash .docker/wait-for.sh http://keycloak.local.freshworks.club:8080/auth/realms/court/
 	@docker-compose -f docker-compose.test.yml up cypress
 
 ####################################################################

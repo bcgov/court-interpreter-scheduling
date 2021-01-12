@@ -12,7 +12,7 @@ RUN apt-get update && apt-get -y install procps
 
 RUN npm install
 
-COPY . .
+COPY ./ .
 
 EXPOSE 4000
 

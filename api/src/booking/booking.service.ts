@@ -4,7 +4,7 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
-import { add, format } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
@@ -70,7 +70,7 @@ export class BookingService {
         today: `${format(new Date(), 'yyyy-MM-dd')}T00:00:00`,
       });
       query.andWhere('dates.date <= :monthAway', {
-        monthAway: `${format(addMonth(new Date(), 1), 'yyyy-MM-dd')}T00:00:00`,
+        monthAway: `${format(addMonths(new Date(), 1), 'yyyy-MM-dd')}T00:00:00`,
       });
     }
 
