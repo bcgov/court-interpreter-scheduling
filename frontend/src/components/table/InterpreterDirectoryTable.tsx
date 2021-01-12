@@ -9,25 +9,10 @@ import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
 
 import { Language, Interpreter } from 'constants/interfaces'
+import { fieldSort } from 'util/sort'
+import { comments } from 'util/tableHelpers'
 
-const fieldSort = (field: string) =>
-  (a: any, b: any): number =>
-    a[field] === b[field]
-      ? 0
-      : a[field] > b[field] ? 1 : -1
-
-const comments = (comment?: string, languages?: Language[]) => (
-  comment || languages?.some((language: Language) => language.commentOnLevel)
-) ? (
-  <div className='commentList'>
-    {comment ? <span>{comment}</span> : null}
-    {languages
-      ?.filter((language: Language) => language.commentOnLevel)
-      .map((language: Language) => <span>{language.languageName} ({language.level}): {language.commentOnLevel}</span> )}
-  </div>
-) : null
-
-export default function InterpretersTable({
+export default function DirectoryTable({
   data,
   openCreateModal,
   getInterpreters,

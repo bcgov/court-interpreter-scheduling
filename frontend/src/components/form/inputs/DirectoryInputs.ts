@@ -25,7 +25,7 @@ export const StyledTextField = withStyles({
     '& input': {
       position: 'relative',
     },
-    '& input + fieldset': {
+    '& fieldset': {
       borderWidth: 2,
       borderRadius: '4px',
       borderColor: '#979797'
@@ -98,7 +98,7 @@ export const GridRow = withStyles({
   root: {
     marginTop: (props: Partial<GridProps> & { mt?: number }) => `${props.mt || 1}rem`,
     '& .MuiGrid-item': {
-      paddingTop: 0,
+      paddingTop: '8px',
       paddingBottom: 0,
     }
   },

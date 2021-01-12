@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Box, Grid } from '@material-ui/core'
 
-import { Interpreter, Language, Level } from 'constants/interfaces'
+import { Interpreter, Language } from 'constants/interfaces'
+import { fieldSort, arrayFieldSort } from 'util/sort'
+import { comments } from 'util/tableHelpers'
 
 import BaseTable from 'components/table/Base'
 import Calendar from 'components/calendar/DirectoryCalendar'
@@ -9,18 +11,15 @@ import ViewToggle from 'components/calendar/ViewToggle'
 import BookingModal from 'components/form/BookingModal'
 import BookingButton from 'components/table/BookingButton'
 
-const comments = (comment?: string, languages?: Language[]) => (
-  comment || languages?.some((language: Language) => language.commentOnLevel)
-) ? (
-  <div className='commentList'>
-    {comment ? <span>{comment}</span> : null}
-    {languages
-      ?.filter((language: Language) => language.commentOnLevel)
-      .map((language: Language) => <span>{language.languageName} ({language.level}): {language.commentOnLevel}</span> )}
-  </div>
-) : null
-
-export default function DirectoryTable({ data, disabled, language }: { data: Interpreter[], disabled: boolean, language?: string }) {
+export default function DirectoryTable({
+  data,
+  disabled,
+  language,
+}: {
+  data: Interpreter[],
+  disabled: boolean,
+  language?: string,
+}) {
 
   const [interpreter, setInterpreter] = useState()
   const [view, setView] = useState('list')
@@ -33,7 +32,7 @@ export default function DirectoryTable({ data, disabled, language }: { data: Int
           <BaseTable
             data={data}
             columns={[
-              { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, },
+              { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, customSort: fieldSort('lastName')  },
               { title: 'Phone', render: (row: any) => (
                 <div>
                   <div>{row.phone}</div>
@@ -50,7 +49,8 @@ export default function DirectoryTable({ data, disabled, language }: { data: Int
                       <div className={l.languageName.toUpperCase() === language?.toUpperCase() ? 'bold' : ''}>
                         {l.languageName}  {l.level}
                       </div>
-                  )
+                  ),
+                customSort: arrayFieldSort('languages', 0, 'languageName')
               },
               { title: 'Address', render: (row: any) => (
                 <span>

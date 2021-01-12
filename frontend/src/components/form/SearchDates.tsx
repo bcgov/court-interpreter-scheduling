@@ -32,7 +32,7 @@ export default function SearchDates({ values }: { values: { dates: BookingDate[]
       {arrayHelpers => (
         <Grid wrap='nowrap' spacing={1} container className={classes.parent}>
           {values.dates.map((bookinDate: BookingDate, index: number) => (
-            <Grid xs={2} item key={`fieldArray-dates-${index}`}>
+            <Grid xs={4} md={2} item key={`fieldArray-dates-${index}`}>
               <Card className='searchDate'>
                 <CardContent>
                   <CloseIcon className={`pointer ${classes.closeIcon}`} onClick={() => arrayHelpers.remove(index)} />

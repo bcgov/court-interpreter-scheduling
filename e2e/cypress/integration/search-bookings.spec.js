@@ -1,6 +1,11 @@
-describe('Search Bookings', () => {
+describe('Search Bookings', {
+  retries: 2
+}, () => {
 
   before(() => {
+
+    cy.clearDb()
+
     cy.kcLogout()
     cy.kcLogin('cypress-admin').as('tokens')
     cy.fixture('interpreters/interpreters.json').then((interpreters) => {
@@ -18,9 +23,7 @@ describe('Search Bookings', () => {
             cy.request({
               method: 'POST',
               url: Cypress.env('API_URL') + '/booking',
-              auth: {
-                bearer: tokens.access_token
-              },
+              auth: { bearer: tokens.access_token },
               body: { ...booking, interpreterId: response.body[0].id }
             })
           })
@@ -35,13 +38,13 @@ describe('Search Bookings', () => {
   })
 
   it('Loads the bookings page', () => {
-    cy.visit('/booking')
+    cy.visit('/bookings')
     cy.location('href').should('include', 'booking')
     cy.get(`button[type='submit']`).contains('Search').should('not.be.empty')
   })
 
   it('Searches by name, case insensitive', () => {
-    cy.visit('/booking')
+    cy.visit('/bookings')
     cy.get('input#interpreter').type('Mona')
     cy.get(`button[type='submit']`).click()
     cy.get('tr').find('td span').contains('Mona').should('not.be.empty')
@@ -62,35 +65,4 @@ describe('Search Bookings', () => {
       }).its('status').should('eq', 200)
     })
   })
-
-  after(() => {
-    cy.kcLogout()
-    cy.kcLogin('cypress-admin').as('tokens')
-    cy.get('@tokens').then(tokens => {
-      cy.request({ url: Cypress.env('API_URL') + '/booking', auth: { bearer: tokens.access_token } })
-      .then(response => {
-        cy.request({
-          method: 'DELETE',
-          url: Cypress.env('API_URL') + '/booking/' + response.body.data[0].id,
-          auth: {
-            bearer: tokens.access_token
-          }
-        }).then(async (done) => {
-          cy.request({ url: Cypress.env('API_URL') + '/interpreter', auth: { bearer: tokens.access_token } })
-          .then(response => {
-            response.body.data.map(interpreter => {
-              cy.request({
-                method: 'DELETE',
-                url: Cypress.env('API_URL') + '/interpreter/' + interpreter.id,
-                auth: {
-                  bearer: tokens.access_token
-                }
-              })
-            })
-          })
-        })
-      })
-    })
-  })
-
 })

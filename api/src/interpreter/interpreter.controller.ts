@@ -107,6 +107,7 @@ export class InterpreterController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<InterpreterEntity> {
+    // TODO ask if this should not use `toResponseObject()`
     return await this.interpreterService.findOne(+id);
   }
 

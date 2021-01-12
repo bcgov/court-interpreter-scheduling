@@ -9,8 +9,8 @@ import Error from 'components/Error'
 import ErrorContext from 'contexts/ErrorContext'
 
 const Booking = lazy(() => import('views/Booking'))
-const Directory = lazy(() => import('views/Directory'))
-const Interpreters = lazy(() => import('views/Interpreters'))
+const CreateBooking = lazy(() => import('views/CreateBooking'))
+const InterpreterDirectory = lazy(() => import('views/InterpreterDirectory'))
 
 const App = () => {
   const [errorMessage, setError] = useState('')
@@ -22,10 +22,10 @@ const App = () => {
         <ContentHeader />
         <Suspense fallback={<Box p={2}><CircularProgress /></Box>}>
           <Switch>
-            <Route exact path='/booking' component={Booking} />
-            <Route exact path='/directory' component={Directory} />
-            <Route exact path='/interpreters' component={Interpreters} />
-            <Redirect to='/booking' />
+            <Route exact path='/bookings' component={Booking} />
+            <Route exact path='/create' component={CreateBooking} />
+            <Route exact path='/directory' component={InterpreterDirectory} />
+            <Redirect to='/bookings' />
           </Switch>
         </Suspense>
       </section>

@@ -47,6 +47,12 @@ export class BookingController {
     return booking.toResponseObject();
   }
 
+  /*
+    This route is invoked on load of the booking page
+    It will return bookings for today and the next 30 days only
+    Subsequent requests should use the /search endpoint for control of all available filters
+  */
+  
   @Get()
   async findAll(
     @Query() paginateBookingQueryDto: PaginateBookingQueryDto,

@@ -8,7 +8,7 @@ services:
     stdin_open: true
     build:
       context: ./api
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "4000:4000"
     environment:
@@ -67,7 +67,7 @@ services:
       args:
         REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
         REACT_APP_API_HOST: http://api.local.freshworks.club:4000/api/v1
-        KC_REALM: court
+        REACT_APP_KC_REALM: court
     restart: always
     depends_on:
       - keycloak
@@ -113,6 +113,8 @@ services:
     build: ./e2e
     networks:
       - backend
+    depends_on:
+      - keycloak
     environment:
       - CYPRESS_baseUrl=http://client.local.freshworks.club:5000
     command: npx cypress run

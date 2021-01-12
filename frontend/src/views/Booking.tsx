@@ -1,22 +1,18 @@
-import React, { useEffect } from 'react'
-import {
-  Box,
-  CircularProgress,
-} from '@material-ui/core'
+import React from 'react'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Box from '@material-ui/core/Box'
 import { useAxiosGet } from 'hooks/axios'
 
 import BookingsTable from 'components/table/BookingsTable'
 import BookingsSearch from 'components/form/BookingsSearch'
+import ContentBox from 'components/layout/ContentBox'
 import useError from 'hooks/useError'
 
 const Booking = () => {
   const [{ data: bookings, error, loading }, getBookings] = useAxiosGet('/booking')
   useError({ error, prefix: 'Failed to load bookings.' })
-  useEffect(() => {
-    getBookings()
-  }, [getBookings])
   return (
-    <Box px='150px'>
+    <ContentBox>
       <BookingsSearch getSearchResults={getBookings} />
       {
         loading
@@ -30,7 +26,7 @@ const Booking = () => {
               data={bookings?.data || []}
             />
       }
-    </Box>
+    </ContentBox>
   )
 }
 export default Booking

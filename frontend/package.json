@@ -21,7 +21,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/store": "^2.0.2",
     "@types/yup": "^0.29.7",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "axios-hooks": "^2.1.0",
     "date-fns": "^2.16.1",
     "faker": "^5.1.0",

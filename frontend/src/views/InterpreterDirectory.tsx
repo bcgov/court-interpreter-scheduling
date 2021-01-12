@@ -6,13 +6,14 @@ import {
 import { useAxiosGet } from 'hooks/axios'
 import useError from 'hooks/useError'
 
-import InterpreterSearch from 'components/form/InterpreterSearch'
+import ContentBox from 'components/layout/ContentBox'
+import DirectorySearch from 'components/form/DirectorySearch'
 import CreateInterpreter from 'components/form/InterpreterModal'
-import InterpretersTable from 'components/table/InterpretersTable'
+import InterpretersTable from 'components/table/InterpreterDirectoryTable'
 import { InterpreterSearchParams } from 'constants/interfaces'
 import InterpreterSearchContext from 'contexts/InterpreterSearchContext'
 
-const Directory = () => {
+export default function InterpreterDirectory () {
   const [search, setSearch] = useState<InterpreterSearchParams>({
     name: '',
     keywords: '',
@@ -37,9 +38,9 @@ const Directory = () => {
   }
 
   return (
-    <Box px='150px'>
+    <ContentBox>
       <InterpreterSearchContext.Provider value={{ search, updateSearchContext: setSearch }}>
-        <InterpreterSearch getSearchResults={getSearchResults} />
+        <DirectorySearch getSearchResults={getSearchResults} />
         {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
@@ -49,7 +50,6 @@ const Directory = () => {
         }
       </InterpreterSearchContext.Provider>
       <CreateInterpreter open={open} toggle={toggle} />
-    </Box>
+    </ContentBox>
   )
 }
-export default Directory

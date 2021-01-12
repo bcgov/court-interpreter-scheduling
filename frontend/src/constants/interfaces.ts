@@ -17,7 +17,7 @@ export interface BookingCreate extends BookingBase {
 
 export interface Booking extends BookingBase {
   id: number;
-  language: Language;
+  language: string;
   dates: BookingDate[];
   interpreter: Interpreter;
   status: BookingStatus;
