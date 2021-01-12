@@ -38,13 +38,13 @@ describe('Search Bookings', {
   })
 
   it('Loads the bookings page', () => {
-    cy.visit('/booking')
+    cy.visit('/bookings')
     cy.location('href').should('include', 'booking')
     cy.get(`button[type='submit']`).contains('Search').should('not.be.empty')
   })
 
   it('Searches by name, case insensitive', () => {
-    cy.visit('/booking')
+    cy.visit('/bookings')
     cy.get('input#interpreter').type('Mona')
     cy.get(`button[type='submit']`).click()
     cy.get('tr').find('td span').contains('Mona').should('not.be.empty')
