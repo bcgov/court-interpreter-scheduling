@@ -12,7 +12,9 @@ RUN apt-get update && apt-get -y install procps
 
 RUN npm install
 
-COPY . .
+COPY ./ .
+
+RUN cat ./src/app.controller
 
 EXPOSE 4000
 
