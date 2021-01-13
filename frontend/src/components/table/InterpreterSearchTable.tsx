@@ -52,7 +52,7 @@ export default function DirectoryTable({
                 render: (row: any) =>
                   row.languages.map(
                     (l: Language) =>
-                      <div className={l.languageName.toUpperCase() === language?.toUpperCase() ? 'bold' : ''}>
+                      <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
                         {l.languageName}  {l.level}
                       </div>
                   ),

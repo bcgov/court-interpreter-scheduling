@@ -45,7 +45,12 @@ export default function InterpreterDirectory () {
           loading
             ? <Box mt={12}><CircularProgress /></Box>
             : interpreters
-            ? <InterpretersTable getInterpreters={getInterpreters} openCreateModal={toggle} data={interpreters.data} />
+            ? <InterpretersTable
+                getInterpreters={getInterpreters}
+                openCreateModal={toggle}
+                data={interpreters.data}
+                language={search.language}
+              />
             : null
         }
       </InterpreterSearchContext.Provider>
