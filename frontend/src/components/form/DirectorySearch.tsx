@@ -4,8 +4,10 @@ import {
   Box,
   FormGroup,
   Grid,
+  Hidden,
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import AutocompleteInput from 'components/form/inputs/Autocomplete'
 
 import {
   StyledFormControl,
@@ -63,30 +65,32 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   </StyledFormControl>
                 </Grid>
                 <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledFormLabel htmlFor='city'>
-                      Court Location
-                    </StyledFormLabel>
-                    <Field name='city'>
-                      {({ field, form, ...props }: FieldProps) => (
-                        <Autocomplete
-                          options={courtLocations}
-                          getOptionLabel={(option) => option.name}
-                          id='city'
-                          size='small'
-                          renderInput={(params) => (
-                            <StyledTextField
-                              {...params}
-                              variant='outlined'
-                              {...field}
-                              {...props}
-                            />
-                          )}
-                        />
-                      )}
-                    </Field>
-                    <ErrorMessage name='city' />
-                  </StyledFormControl>
+                  <Hidden xsUp>
+                    <StyledFormControl>
+                      <StyledFormLabel htmlFor='city'>
+                        Court Location
+                      </StyledFormLabel>
+                      <Field name='city'>
+                        {({ field, form, ...props }: FieldProps) => (
+                          <Autocomplete
+                            options={courtLocations}
+                            getOptionLabel={(option) => option.name}
+                            id='city'
+                            size='small'
+                            renderInput={(params) => (
+                              <StyledTextField
+                                {...params}
+                                variant='outlined'
+                                {...field}
+                                {...props}
+                              />
+                            )}
+                          />
+                        )}
+                      </Field>
+                      <ErrorMessage name='city' />
+                    </StyledFormControl>
+                  </Hidden>
                 </Grid>
                 <Grid item xs={4}>
                   <StyledFormControl>
@@ -115,24 +119,11 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     <StyledLabel htmlFor='language'>
                       Language
                     </StyledLabel>
-                    <Field name='language'>
-                      {({ field, form, ...props }: FieldProps) => (
-                         <Autocomplete
-                          options={languages}
-                          getOptionLabel={(option) => option}
-                          id='language'
-                          size='small'
-                          renderInput={(params) => (
-                            <StyledTextField
-                              {...params}
-                              variant='outlined'
-                              {...field}
-                              {...props}
-                            />
-                          )}
-                        />
-                      )}
-                    </Field>
+                    <AutocompleteInput
+                      fieldName='language'
+                      options={languages}
+                      initialValue={search?.language}
+                    />
                     <ErrorMessage name='language' />
                   </StyledFormControl>
                 </Grid>

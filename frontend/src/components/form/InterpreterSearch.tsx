@@ -4,6 +4,7 @@ import {
   Box,
   FormGroup,
   Grid,
+  Hidden,
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
@@ -71,31 +72,33 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                   <ErrorMessage name='level' />
                 </Grid>
                 <Grid item xs={4}>
-                  <StyledFormControl>
-                    <StyledFormLabel htmlFor='city'>
-                      Court Location
-                    </StyledFormLabel>
-                    <Field name='city'>
-                      {({ field, form, ...props }: FieldProps) => (
-                        <Autocomplete
-                          options={courtLocations}
-                          getOptionLabel={(option) => option.name}
-                          id='city'
-                          size='small'
-                          onChange={(event, value) => form.setFieldValue('city', value || '')}
-                          renderInput={(params) => (
-                            <StyledTextField
-                              {...params}
-                              variant='outlined'
-                              {...field}
-                              {...props}
-                            />
-                          )}
-                        />
-                      )}
-                    </Field>
-                    <ErrorMessage name='city' />
-                  </StyledFormControl>
+                  <Hidden xsUp>
+                    <StyledFormControl>
+                      <StyledFormLabel htmlFor='city'>
+                        Court Location
+                      </StyledFormLabel>
+                      <Field name='city'>
+                        {({ field, form, ...props }: FieldProps) => (
+                          <Autocomplete
+                            options={courtLocations}
+                            getOptionLabel={(option) => option.name}
+                            id='city'
+                            size='small'
+                            onChange={(event, value) => form.setFieldValue('city', value || '')}
+                            renderInput={(params) => (
+                              <StyledTextField
+                                {...params}
+                                variant='outlined'
+                                {...field}
+                                {...props}
+                              />
+                            )}
+                          />
+                        )}
+                      </Field>
+                      <ErrorMessage name='city' />
+                    </StyledFormControl>
+                  </Hidden>
                 </Grid>
               </GridRow>
               <GridRow container spacing={4} mt={2}>
