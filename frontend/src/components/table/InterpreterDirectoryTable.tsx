@@ -16,10 +16,12 @@ export default function DirectoryTable({
   data,
   openCreateModal,
   getInterpreters,
+  language,
 }: {
   data: Array<Interpreter>,
   openCreateModal: Function,
   getInterpreters: Function,
+  language?: string,
 }) {
 
   const [interpreter, setInterpreter] = useState()
@@ -32,7 +34,14 @@ export default function DirectoryTable({
           { title: 'Name', render: (row: any) => `${row.firstName} ${row.lastName}`, customSort: fieldSort('lastName') },
           { title: 'Phone', field: 'phone' },
           { title: 'Email', field: 'email' },
-          { title: 'Language', render: (row: any) => row.languages.map((language: Language) => <div>{language.languageName}</div>) },
+          {
+            title: 'Language',
+            render: (row: any) => row.languages.map((l: Language) => (
+              <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
+                {l.languageName}
+              </div>
+            ))
+          },
           { title: 'Level', render: (row: any) => row.languages.map((language: Language) => <div>{language.level}</div>) },
           {
             title: 'City',

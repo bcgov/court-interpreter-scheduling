@@ -12,7 +12,7 @@ export default function AutocompleteInput ({
   options: string[];
   initialValue?: string;
 }) {
-  const [field, meta, helpers] = useField(fieldName)
+  const [field, , helpers] = useField(fieldName)
   useEffect(() => {
     if (initialValue) helpers.setValue(initialValue)
   }, [initialValue])

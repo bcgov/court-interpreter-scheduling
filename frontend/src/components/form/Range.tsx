@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Field, ErrorMessage, Formik, useField, useFormikContext, FormikProps } from 'formik'
+import { Field, ErrorMessage, Formik, useField, useFormikContext } from 'formik'
 
 import {
   Box,
@@ -80,7 +80,7 @@ export default function Range() {
   const dateFormat = 'MMM D, YYYY'
   const id = open ? 'date-range-popover' : undefined
   const { values: searchValues, setFieldValue } = useFormikContext()
-  const [field, meta] = useField('dates')
+  const [, meta] = useField('dates')
   const { search, updateSearchContext } = useContext(SearchContext)
   useEffect(() => {
     if (search?.dates && search?.dates.length) {
