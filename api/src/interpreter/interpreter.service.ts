@@ -32,7 +32,7 @@ export class InterpreterService {
   async findAll(
     paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    const { page, limit, dates, keywords } = paginateInterpreterQueryDto;
+    const { page, limit, dates, keywords, language } = paginateInterpreterQueryDto;
 
     let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
@@ -43,6 +43,12 @@ export class InterpreterService {
       .orderBy('interpreter.lastName', 'ASC');
 
     query = paginateInterpreterQueryDto.filter(query);
+
+    if (language) {
+      query
+        .leftJoinAndSelect('interpreter.languages', 'int_languages')
+        .leftJoinAndSelect('int_languages.language', 'languages_lang')
+    }
 
     if (dates && dates.length > 0) {
       const metric = (date: string, time: string, period: BookingPeriod) => {

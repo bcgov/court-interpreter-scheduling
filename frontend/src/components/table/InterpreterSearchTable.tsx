@@ -46,7 +46,7 @@ export default function DirectoryTable({
                   </div>
                 )
               },
-              { title: 'Email', field: 'email', },
+              { title: 'Email', field: 'email' },
               {
                 title: 'Language',
                 render: (row: any) =>
