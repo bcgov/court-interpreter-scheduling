@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Box, Grid } from '@material-ui/core'
 
 import { Interpreter, Language } from 'constants/interfaces'
-import { fieldSort, arrayFieldSort } from 'util/sort'
+import { fieldSort, arrayFieldSort, levelSort, languageArraySort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
 
 import BaseTable from 'components/table/Base'
@@ -30,7 +30,7 @@ export default function DirectoryTable({
       {
         view === 'list' ?
           <BaseTable
-            data={data}
+            data={language ? levelSort(data, language) : data}
             columns={[
               {
                 title: 'Name',
@@ -56,7 +56,7 @@ export default function DirectoryTable({
                         {l.languageName}  {l.level}
                       </div>
                   ),
-                customSort: arrayFieldSort('languages', 0, 'languageName')
+                customSort: language ? languageArraySort(language, 'level') : arrayFieldSort('languages', 0, 'languageName')
               },
               {
                 title: 'Address',
