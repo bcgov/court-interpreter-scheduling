@@ -37,6 +37,7 @@ export class InterpreterEntity {
   @OneToMany(
     type => BookingEntity,
     (booking: BookingEntity) => booking.interpreter,
+    { onDelete: 'SET NULL' }
   )
   bookings: BookingEntity[];
 
@@ -67,7 +68,7 @@ export class InterpreterEntity {
   @Column({
     nullable: true,
     name: 'criminal_record_check'
-  }) 
+  })
   criminalRecordCheck: string;
 
   @Column({ nullable: true })
@@ -76,7 +77,7 @@ export class InterpreterEntity {
   @Column({
     nullable: true,
     name: 'email_alt'
-  }) 
+  })
   emailAlt: string;
 
   @Column({ nullable: true })
@@ -93,6 +94,9 @@ export class InterpreterEntity {
 
   @Column({ nullable: true, name: 'contract_termination' })
   contractTermination: boolean;
+
+  @Column({ nullable: true, name: 'page12_contract' })
+  page12ContractReceived: boolean;
 
   @CreateDateColumn({
     name: 'created_at',
