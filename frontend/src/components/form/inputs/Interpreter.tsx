@@ -111,6 +111,7 @@ export default function InterpreterInputs () {
 
       <StyledField name='supplier' label='Supplier #' />
       <StyledField name='gst' label='GST' />
+      <StyledField name='criminalRecordCheck' label='Record Check Received' />
 
       <Grid item xs={12} lg={4}>
         <SingleCheck name='contractExtension' label='Contract Active' />
