@@ -14,11 +14,21 @@ const arrayFieldSort = (field: string, index: number, subField: string) =>
 
 const languageArraySort = (language: string, subField: string = 'level') => {
   return (a: any, b: any): number => {
-    const aI = a.languages.map((f: Language) => f.languageName).indexOf(language)
-    const bI = b.languages.map((f: Language) => f.languageName).indexOf(language)
-    return a.languages[aI][subField] === b.languages[bI][subField]
+    const aLanguages = a.languages.map((f: Language) => f.languageName)
+    const bLanguages = b.languages.map((f: Language) => f.languageName)
+    let aI = aLanguages.indexOf(language)
+    let bI = bLanguages.indexOf(language)
+    if (aI === -1) {
+      const match = aLanguages.find((al: string) => al.includes(language))
+      aI = aLanguages.indexOf(match)
+    }
+    if (bI === -1) {
+      const match = bLanguages.find((bl: string) => bl.includes(language))
+      bI = bLanguages.indexOf(match)
+    }
+    return a.languages[aI === -1 ? 0 : aI][subField] === b.languages[bI === -1 ? 0 : bI][subField]
       ? 0
-      : a.languages[aI][subField] > b.languages[bI][subField] ? 1 : -1
+      : a.languages[aI === -1 ? 0 : aI][subField] > b.languages[bI === -1 ? 0 : bI][subField] ? 1 : -1
   }
 }
 
