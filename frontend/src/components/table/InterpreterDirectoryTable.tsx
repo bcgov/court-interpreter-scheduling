@@ -9,7 +9,7 @@ import { StyledIconButton } from 'components/Buttons'
 import EditInterpreterModal from 'components/form/EditInterpreterModal'
 
 import { Language, Interpreter } from 'constants/interfaces'
-import { fieldSort } from 'util/sort'
+import { fieldSort, languageArraySort, arrayFieldSort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
 
 export default function DirectoryTable({
@@ -40,9 +40,14 @@ export default function DirectoryTable({
               <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
                 {l.languageName}
               </div>
-            ))
+            )),
+            customSort: language ? languageArraySort(language, 'languageName') : arrayFieldSort('languages', 0, 'languageName')
           },
-          { title: 'Level', render: (row: any) => row.languages.map((language: Language) => <div>{language.level}</div>) },
+          {
+            title: 'Level',
+            render: (row: any) => row.languages.map((language: Language) => <div>{language.level}</div>),
+            customSort: language ? languageArraySort(language, 'level') : arrayFieldSort('languages', 0, 'level')
+          },
           {
             title: 'City',
             field: 'city',
