@@ -37,7 +37,6 @@ export class InterpreterEntity {
   @OneToMany(
     type => BookingEntity,
     (booking: BookingEntity) => booking.interpreter,
-    { onDelete: 'SET NULL' }
   )
   bookings: BookingEntity[];
 
