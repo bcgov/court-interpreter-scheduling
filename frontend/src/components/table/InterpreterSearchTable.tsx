@@ -4,6 +4,7 @@ import { Box, Grid } from '@material-ui/core'
 import { Interpreter, Language } from 'constants/interfaces'
 import { fieldSort, arrayFieldSort, levelSort, languageArraySort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
+import { fixLanguageName } from 'constants/languages'
 
 import BaseTable from 'components/table/Base'
 import Calendar from 'components/calendar/DirectoryCalendar'
@@ -23,6 +24,9 @@ export default function DirectoryTable({
 
   const [interpreter, setInterpreter] = useState()
   const [view, setView] = useState('list')
+
+  // Remove "non-active" interpreters
+  data = data.filter(lang => lang.contractExtension || false)
 
   return (
     <Box mt={8}>
@@ -50,12 +54,14 @@ export default function DirectoryTable({
               {
                 title: 'Language',
                 render: (row: any) =>
-                  row.languages.map(
-                    (l: Language) =>
-                      <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
-                        {l.languageName}  {l.level}
-                      </div>
-                  ),
+                  row.languages
+                    .map(fixLanguageName)
+                    .map(
+                      (l: Language) =>
+                        <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
+                          {l.languageName}  {l.level}
+                        </div>
+                    ),
                 customSort: language ? languageArraySort(language, 'level') : arrayFieldSort('languages', 0, 'languageName')
               },
               {
@@ -101,7 +107,7 @@ export default function DirectoryTable({
               )
             }}
           /> : <Calendar setInterpreter={setInterpreter} interpreters={data} />
-        }
+      }
       <BookingModal interpreter={interpreter} setInterpreter={setInterpreter} />
     </Box>
   )
