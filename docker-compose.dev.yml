@@ -79,42 +79,42 @@ services:
           - keycloak.local.freshworks.club
 
   ### Frontend ###############################
-  # client:
-  #   image: court-frontend:dev
-  #   container_name: court-frontend-dev
-  #   build:
-  #     context: ./frontend/
-  #     dockerfile: Dockerfile.dev
-  #   environment:
-  #     REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-  #     REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
-  #     KC_REALM: court
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "35729:35729"
-  #     - "3000:3000"
-  #   stdin_open: true
-  #   expose:
-  #     - "3000"
-  #   networks:
-  #     - backend
-  #   depends_on:
-  #     - api
+  client:
+    image: court-frontend:dev
+    container_name: court-frontend-dev
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile.dev
+    environment:
+      REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
+      REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
+      KC_REALM: court
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "35729:35729"
+      - "3000:3000"
+    stdin_open: true
+    expose:
+      - "3000"
+    networks:
+      - backend
+    depends_on:
+      - api
 
-  # ### Cypress ###############################
-  # cypress:
-  #   image: "cypress/included:4.0.2"
-  #   depends_on:
-  #     - client
-  #   environment:
-  #     - CYPRESS_baseUrl=http://client:3000
-  #   working_dir: /e2e
-  #   volumes:
-  #     - ./:/e2e
-  #   networks:
-  #     - backend
+  ### Cypress ###############################
+  cypress:
+    image: "cypress/included:4.0.2"
+    depends_on:
+      - client
+    environment:
+      - CYPRESS_baseUrl=http://client:3000
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+    networks:
+      - backend
 
 networks:
   backend:
