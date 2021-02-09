@@ -316,9 +316,17 @@ describe('interpreter', () => {
       expect(personB2.firstName).toBeTruthy
       expect(personB2.firstName).not.toEqual(personB1.firstName)
 
+      // Anonymisation adds extra fields if they don't exist
       expect(personA2.email).toBeTruthy
+
+      // Double check the record is overwritten
+      const personA3: InterpreterRO = await request(app.getHttpServer())
+        .get(`/interpreter/${personA1.id}`)
+        .send()
+        .then(r => r.body)
+      expect(personA3.firstName).toEqual(personA2.firstName)
     })
-  })
+  });
 
   afterEach(async () => {
     await interpreterRepository.query(`DELETE FROM interpreter;`);
