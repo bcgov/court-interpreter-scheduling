@@ -19,8 +19,43 @@ import CreateInterpreter from 'src/database/seeds/2-create-interpreter.seed';
 import { PaginateInterpreterQueryDto } from '../dto/paginate-interpreter-query.dto';
 import { CreateInterpreterDto } from '../dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from '../dto/update-interpreter.dto';
+import { InterpreterRO } from '../ro/interpreter.ro';
 
 dotenv.config();
+
+const EXAMPLE_INTERPRETER_UPLOAD = [
+  {
+    firstName: "Steve",
+    lastName: "Stevenson",
+    languages: [
+      {
+        languageName: "Kurdish (sorani)",
+        level: 3
+      },
+      {
+        languageName: "Arabic",
+        level: 3,
+        commentOnLevel: null
+      }
+    ],
+    bookings: [],
+    city: "Richmond",
+    province: "BC",
+  },
+  {
+    firstName: "Jane",
+    lastName: "Janeson",
+    languages: [
+      {
+        languageName: "Japanese",
+        level: 2,
+        commentOnLevel: null
+      }
+    ],
+    city: "Vancouver",
+    province: "BC",
+  }
+]
 
 describe('interpreter', () => {
   let app: INestApplication;
@@ -227,6 +262,63 @@ describe('interpreter', () => {
       expect(interpreter.firstName).toBe(updateInterpreterDto.firstName);
     });
   });
+
+  describe("upload", () => {
+    it("should create new interpreters", async () => {
+      const resp = await request(app.getHttpServer())
+        .post('/interpreter/upload')
+        .send(EXAMPLE_INTERPRETER_UPLOAD)
+      const body = resp.body as InterpreterRO[]
+      expect(body.length).toEqual(2)
+      expect(body[0].firstName).toEqual('Steve')
+      expect(body[1].firstName).toEqual('Jane')
+      expect(body[0].id).toBeTruthy
+    })
+
+    it("should create new interpreters with anonymisation", async () => {
+      const resp = await request(app.getHttpServer())
+        .post('/interpreter/upload?anonymise=true')
+        .send(EXAMPLE_INTERPRETER_UPLOAD)
+      const body = resp.body as InterpreterRO[]
+      expect(body.length).toEqual(2)
+      expect(body[0].firstName).not.toEqual('Steve')
+      expect(body[0].firstName).toBeTruthy
+      expect(body[1].firstName).not.toEqual('Jane')
+      expect(body[0].firstName).toBeTruthy
+
+      // Adds new values for anonymisation
+      expect(body[0].email).toBeTruthy
+    })
+
+    it("should update and anonymise existing interpreters", async () => {
+      const resp1 = await request(app.getHttpServer())
+        .post('/interpreter/upload')
+        .send(EXAMPLE_INTERPRETER_UPLOAD)
+      const [ personA1, personB1 ] = resp1.body as InterpreterRO[]
+      expect(personA1.firstName).toEqual('Steve')
+      expect(personB1.firstName).toEqual('Jane')
+      expect(personA1.email).toBeFalsy
+
+      const uploadA2 = {...EXAMPLE_INTERPRETER_UPLOAD[0], id: personA1.id}
+      const uploadB2 = {...EXAMPLE_INTERPRETER_UPLOAD[1], id: personB1.id}
+    
+      const resp2 = await request(app.getHttpServer())
+        .post('/interpreter/upload?anonymise=true')
+        .send([uploadA2, uploadB2])
+      const [ personA2, personB2 ] = resp2.body as InterpreterRO[]
+
+      expect(personA2.id).toEqual(personA1.id)
+      expect(personB2.id).toEqual(personB1.id)
+      
+      expect(personA2.firstName).toBeTruthy
+      expect(personA2.firstName).not.toEqual(personA1.firstName)
+
+      expect(personB2.firstName).toBeTruthy
+      expect(personB2.firstName).not.toEqual(personB1.firstName)
+
+      expect(personA2.email).toBeTruthy
+    })
+  })
 
   afterEach(async () => {
     await interpreterRepository.query(`DELETE FROM interpreter;`);

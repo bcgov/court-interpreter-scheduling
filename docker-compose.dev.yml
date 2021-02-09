@@ -3,9 +3,6 @@ version: "3"
 services:
   ### API #############################
   api:
-    image: court-nest-api:dev
-    container_name: court-nest
-    stdin_open: true
     build:
       context: ./api
       dockerfile: Dockerfile.dev
@@ -43,8 +40,6 @@ services:
 
   ### Database #############################
   postgres:
-    image: court-nest-api-postgres:dev
-    container_name: court-nest-api-database-dev
     build:
       context: ./.docker/postgres
     ports:
@@ -53,14 +48,12 @@ services:
       - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
-    volumes:
-      - ./.docker/postgres:/docker-entrypoint-initdb.d
     networks:
       - backend
 
   ### KeyCloak ##############################
   keycloak:
-    image: jboss/keycloak
+    image: jboss/keycloak:11.0.2
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
@@ -86,42 +79,42 @@ services:
           - keycloak.local.freshworks.club
 
   ### Frontend ###############################
-  client:
-    image: court-frontend:dev
-    container_name: court-frontend-dev
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile.dev
-    environment:
-      REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-      REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
-      KC_REALM: court
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "35729:35729"
-      - "3000:3000"
-    stdin_open: true
-    expose:
-      - "3000"
-    networks:
-      - backend
-    depends_on:
-      - api
+  # client:
+  #   image: court-frontend:dev
+  #   container_name: court-frontend-dev
+  #   build:
+  #     context: ./frontend/
+  #     dockerfile: Dockerfile.dev
+  #   environment:
+  #     REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
+  #     REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
+  #     KC_REALM: court
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "35729:35729"
+  #     - "3000:3000"
+  #   stdin_open: true
+  #   expose:
+  #     - "3000"
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - api
 
-  ### Cypress ###############################
-  cypress:
-    image: "cypress/included:4.0.2"
-    depends_on:
-      - client
-    environment:
-      - CYPRESS_baseUrl=http://client:3000
-    working_dir: /e2e
-    volumes:
-      - ./:/e2e
-    networks:
-      - backend
+  # ### Cypress ###############################
+  # cypress:
+  #   image: "cypress/included:4.0.2"
+  #   depends_on:
+  #     - client
+  #   environment:
+  #     - CYPRESS_baseUrl=http://client:3000
+  #   working_dir: /e2e
+  #   volumes:
+  #     - ./:/e2e
+  #   networks:
+  #     - backend
 
 networks:
   backend:

@@ -11,6 +11,8 @@ import { InterpreterLanguageEntity } from './entities/interpreter-language.entit
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { InterpreterRO } from './ro/interpreter.ro';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
+import { typeormUpsert } from 'src/utils/upsert'
+import { camelToSnakeCase } from 'src/utils';
 
 @Injectable()
 export class InterpreterService {
@@ -23,8 +25,8 @@ export class InterpreterService {
     createInterpreterDto: Partial<CreateInterpreterDto>,
     interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
-    const { languages, ...insertInterpreter } = createInterpreterDto;
-    const interpreter = this.interpreterRepository.create(insertInterpreter);
+    const { languages, ...insertInterpreter } = createInterpreterDto 
+    const interpreter = this.interpreterRepository.create(insertInterpreter)
     interpreter.languages = interpreterLangs;
     return await this.interpreterRepository.save(interpreter);
   }
