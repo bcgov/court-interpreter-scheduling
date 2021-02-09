@@ -93,7 +93,7 @@ export type InterpreterBase = {
   supplier?: string;
   gst?: string;
   comments?: string;
-  contractExtension?: boolean;
+  contractExtension?: boolean;  // Right now this flag means "Active"
   contractTermination?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
