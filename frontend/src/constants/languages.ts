@@ -1,3 +1,5 @@
+import { LanguageBase } from "./interfaces";
+
 export const languages = [
   "Albanian",
   "Amharic",
@@ -7,11 +9,11 @@ export const languages = [
   "Bosnian",
   "Bulgarian",
   "Burmese",
-  "Cambodian (khmer)",
+  "Cambodian (Khmer)",
   "Cantonese",
   "CART",
   "Cebuano",
-  "Chiu chow (swatow)",
+  "Chiu chow (Swatow)",
   "Croatian",
   "Czech",
   "Dari",
@@ -38,8 +40,8 @@ export const languages = [
   "Kirundi",
   "Korean",
   "Kurdish",
-  "Kurdish (kurmanji)",
-  "Kurdish (sorani)",
+  "Kurdish (Kurmanji)",
+  "Kurdish (Sorani)",
   "Laotian",
   "Lithuanian",
   "Malay",
@@ -71,3 +73,16 @@ export const languages = [
   "Vietnamese",
   "Xinhui"
 ]
+
+const languageByLowerCaseName: { [lowerCase: string]: string } = {}
+
+for (const lang of languages) {
+  languageByLowerCaseName[lang.toLowerCase()] = lang
+}
+
+export function fixLanguageName<T extends { languageName: string }>(toFix: T): T {
+  return {
+    ...toFix, 
+    languageName: languageByLowerCaseName[toFix.languageName.toLowerCase()] || toFix.languageName
+  }
+}

@@ -11,6 +11,7 @@ import EditInterpreterModal from 'components/form/EditInterpreterModal'
 import { Language, Interpreter } from 'constants/interfaces'
 import { fieldSort, languageArraySort, arrayFieldSort } from 'util/sort'
 import { comments } from 'util/tableHelpers'
+import { fixLanguageName } from 'constants/languages'
 
 export default function DirectoryTable({
   data,
@@ -36,11 +37,13 @@ export default function DirectoryTable({
           { title: 'Email', field: 'email' },
           {
             title: 'Language',
-            render: (row: any) => row.languages.map((l: Language) => (
-              <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
-                {l.languageName}
-              </div>
-            )),
+            render: (row: any) => row.languages
+              .map(fixLanguageName)
+              .map((l: Language) => (
+                <div className={language && l.languageName.toUpperCase().includes(language?.toUpperCase()) ? 'bold' : ''}>
+                  {l.languageName}
+                </div>
+              )),
             customSort: language ? languageArraySort(language, 'languageName') : arrayFieldSort('languages', 0, 'languageName')
           },
           {

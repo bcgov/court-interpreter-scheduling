@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -12,6 +13,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1')
   app.enableCors();
+  app.use(bodyParser.json({limit: '50mb'}));
+  
   documentation(app);
   if (process.env.NODE_ENV !== 'production') {
     global['nestAppServer'] = app.getHttpServer();
