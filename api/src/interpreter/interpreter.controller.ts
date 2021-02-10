@@ -23,6 +23,19 @@ import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dt
 import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { anonymiseObject, ValueType } from 'src/utils/anonymisation';
+
+const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
+  'address': 'address',
+  'firstName': 'firstName',
+  'lastName': 'lastName',
+  'city': 'city',
+  'email': 'email',
+  'emailAlt': 'email',
+  'phone': 'phone',
+  'postal': 'postalCode',
+  'homePhone': 'phone',
+}
 
 @ApiTags('interpreter')
 @Controller('interpreter')
@@ -61,9 +74,13 @@ export class InterpreterController {
   @Post('/upload')
   async upload(
     @Body() createInterpreterDtos: CreateInterpreterDto[],
+    @Query() { anonymise }: { anonymise?: boolean }
   ): Promise<InterpreterRO[]> {
+    const anonymised = anonymise || false 
+      ? createInterpreterDtos.map(dto => anonymiseObject(dto, KEYS_TO_ANONYMISE))
+      : createInterpreterDtos
     return Promise.all(
-      createInterpreterDtos.map(
+      anonymised.map(
         async (createInterpreterDto: CreateInterpreterDto) => {
           let interpreterLangs: InterpreterLanguageEntity[] = [];
 

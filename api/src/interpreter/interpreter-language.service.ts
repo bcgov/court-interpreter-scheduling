@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterLanguageDTO } from './dto/interpreter-language.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
-import { capFirstAndSmallRest } from 'src/utils/utils';
+import { capFirstAndSmallRest } from 'src/utils';
 
 @Injectable()
 export class InterpreterLanguageService {

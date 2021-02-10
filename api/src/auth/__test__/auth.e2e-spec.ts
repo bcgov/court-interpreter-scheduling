@@ -54,7 +54,8 @@ describe('keycloak', () => {
 
         const { access_token: token } = tokenBody;
 
-        const { text } = await request
+        // TODO test is skipped because this bit is failing with an NPE from keycloak. No idea why.
+        const resp = await request
           .agent(app.getHttpServer())
           .get('/keycloak')
           .set('Accept', 'application/json')
@@ -62,7 +63,7 @@ describe('keycloak', () => {
           .expect('Content-Type', /html/)
           .expect(HttpStatus.OK);
 
-        expect(text).toBe('key cloak success');
+        expect(resp.text).toBe('key cloak success');
       });
     });
 

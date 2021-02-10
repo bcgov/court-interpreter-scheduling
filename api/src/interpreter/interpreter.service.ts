@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
+import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { Repository } from 'typeorm';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { InterpreterRO } from './ro/interpreter.ro';
-import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
+
 
 @Injectable()
 export class InterpreterService {
@@ -23,8 +23,8 @@ export class InterpreterService {
     createInterpreterDto: Partial<CreateInterpreterDto>,
     interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
-    const { languages, ...insertInterpreter } = createInterpreterDto;
-    const interpreter = this.interpreterRepository.create(insertInterpreter);
+    const { languages, ...insertInterpreter } = createInterpreterDto 
+    const interpreter = this.interpreterRepository.create(insertInterpreter)
     interpreter.languages = interpreterLangs;
     return await this.interpreterRepository.save(interpreter);
   }
