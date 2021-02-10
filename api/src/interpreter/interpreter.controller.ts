@@ -35,6 +35,7 @@ const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> 
   'phone': 'phone',
   'postal': 'postalCode',
   'homePhone': 'phone',
+  'businessPhone': 'phone'
 }
 
 @ApiTags('interpreter')
