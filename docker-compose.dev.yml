@@ -3,9 +3,6 @@ version: "3"
 services:
   ### API #############################
   api:
-    image: court-nest-api:dev
-    container_name: court-nest
-    stdin_open: true
     build:
       context: ./api
       dockerfile: Dockerfile.dev
@@ -43,8 +40,6 @@ services:
 
   ### Database #############################
   postgres:
-    image: court-nest-api-postgres:dev
-    container_name: court-nest-api-database-dev
     build:
       context: ./.docker/postgres
     ports:
@@ -53,14 +48,12 @@ services:
       - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
-    volumes:
-      - ./.docker/postgres:/docker-entrypoint-initdb.d
     networks:
       - backend
 
   ### KeyCloak ##############################
   keycloak:
-    image: jboss/keycloak
+    image: jboss/keycloak:11.0.2
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres

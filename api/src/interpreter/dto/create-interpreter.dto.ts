@@ -16,6 +16,12 @@ import { InterpreterLanguageDTO } from './interpreter-language.dto';
 
 export class CreateInterpreterDto {
   @ApiProperty({
+    description: 'Interpreter ID. Provide this is if you want to update an existing entry.'
+  })
+  @IsOptional()
+  id?: number;
+
+  @ApiProperty({
     description: 'Interpreter name',
     example: faker.name.firstName(),
   })

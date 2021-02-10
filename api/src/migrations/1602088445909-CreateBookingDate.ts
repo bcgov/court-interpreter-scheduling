@@ -1,4 +1,3 @@
-import { query } from 'express';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateBookingDate1602088445909 implements MigrationInterface {
