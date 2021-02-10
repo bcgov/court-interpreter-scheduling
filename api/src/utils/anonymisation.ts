@@ -1,4 +1,5 @@
 import { MersenneTwister19937, integer, Engine } from 'random-js'
+import { first_name, last_name } from 'faker/lib/locales/en/name'
 import * as crypto from 'crypto'
 
 export type ValueType = 'firstName' | 'lastName' | 'email' | 'phone' | 'address' | 'city' | 'postalCode' | 'province'
@@ -15,110 +16,8 @@ const choose = <T>(engine: Engine, from: T[]): T => {
     return from[integer(0, from.length - 1)(engine)]
 }
 
-const FIRST_NAMES = [
-    'Adelia',
-    'Nenita',
-    'Zella',
-    'Leonor',
-    'Jerri',
-    'Mari',
-    'Alejandrina',
-    'Andreas',
-    'Shawnee',
-    'Kisha',
-    'Amberly',
-    'Gaylord',
-    'Leola',
-    'Ashli',
-    'Treasa',
-    'Yoshiko',
-    'Virgie',
-    'Faith',
-    'Jade',
-    'Rima',
-    'Henriette',
-    'Nikki',
-    'Sumiko',
-    'Janna',
-    'Cherly',
-    'Gertude',
-    'Crystle',
-    'Floria',
-    'Sanford',
-    'Marquitta',
-    'Marcella',
-    'Danelle',
-    'Freddy',
-    'Korey',
-    'Andrew',
-    'Debi',
-    'Mica',
-    'Twana',
-    'Deandre',
-    'Ardell',
-    'Zachariah',
-    'Zachery',
-    'Billi',
-    'Candie',
-    'Yon',
-    'Julieann',
-    'Stefani',
-    'Jerrell',
-    'Chester',
-    'Noriko',
-]
-
-const LAST_NAMES = [
-    'Ridge',
-    'Picou',
-    'Helsley',
-    'Henrikson',
-    'Westergard',
-    'Montesano',
-    'Steck',
-    'Champlin',
-    'Rahim',
-    'Perreira',
-    'Kopczynski',
-    'Stagg',
-    'Boster',
-    'Spiers',
-    'Boydston',
-    'Smit',
-    'Tellier',
-    'Leeds',
-    'Dalessio',
-    'Vensel',
-    'Senegal',
-    'Rau',
-    'Forrest',
-    'Marcellus',
-    'Mccown',
-    'Delafuente',
-    'Julian',
-    'Bisignano',
-    'Downie',
-    'Sober',
-    'Crivello',
-    'Rondeau',
-    'Summerfield',
-    'Markell',
-    'Duhn',
-    'Sabatini',
-    'Dipietro',
-    'Spofford',
-    'Deardorff',
-    'Dumond',
-    'Lepak',
-    'Fielding',
-    'Booe',
-    'Paradiso',
-    'Archibald',
-    'Paul',
-    'Schiff',
-    'Manders',
-    'Deininger',
-]
+const LAST_NAMES = last_name as string[]
+const FIRST_NAMES = first_name as string[]
 
 const CITIES = [
     'Abbotsford',
@@ -184,7 +83,7 @@ export const anonymousValue = (valueType: ValueType, randomSeed?: number): strin
         case 'lastName':
             return choose(gen, LAST_NAMES)
         case 'email':
-            return `${choose(gen, FIRST_NAMES).toLowerCase()}.${choose(gen, LAST_NAMES).toLowerCase()}@fake.com`
+            return `${anonymousValue('firstName', randomSeed).toLowerCase()}.${anonymousValue('lastName', randomSeed).toLowerCase()}@fake.com`
         case 'phone':
             return '555-555-5555'
         case 'address':
