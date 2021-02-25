@@ -52,6 +52,11 @@ export default function DirectoryTable({
             customSort: language ? languageArraySort(language, 'level') : arrayFieldSort('languages', 0, 'level')
           },
           {
+            title: 'Active',
+            field: 'contractExtension',
+            render: (row: any) => <span>{row.contractExtension ? 'Active' : 'Inactive'}</span>
+          },
+          {
             title: 'City',
             field: 'city',
             render: (row: any) => <span>{row.city}</span>,

@@ -23,11 +23,11 @@ services:
       - DB_TEST_DATABASE=nest_api_test
       - DEPLOY_ENV=node-api-dev
       - MERGE_BRANCH=dev
-      - KEYCLOAK_REALM=court
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
       - KEYCLOAK_CLIENT=court-client
       - KEYCLOAK_FE_CLIENT=court-fe
-      - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
-      - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
+      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
+      - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
     expose:
       - "4000"
     volumes:
