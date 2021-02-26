@@ -4,9 +4,9 @@
 ## Define default environment variables for local development
 ####################################################################
 
-include ./api/.env
+-include ./api/.env
 
-export $(shell sed 's/=.*//' .env)
+export $(shell sed 's/=.*//' ./api/.env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
@@ -23,6 +23,8 @@ export GIT_LOCAL_BRANCH := $(or $(GIT_LOCAL_BRANCH),dev)
 define deployTag
 "${PROJECT}-${DEPLOY_DATE}"
 endef
+
+local-api: | print-status build-local run-local-db run-local-api
 
 ####################################################################
 ## Status Output
@@ -42,6 +44,14 @@ print-status:
 ####################################################################
 ## Local Development
 ####################################################################
+build-local:
+	@echo "+\n++ Make: Building locally ...\n+"
+	@docker-compose -f docker-compose.yml build
+
+
+build-local-dev:
+	@echo "+\n++ Make: Building locally ...\n+"
+	@docker-compose -f docker-compose.dev.yml build
 
 run-local:
 	@echo "+\n++ Make: Running locally ...\n+"
@@ -53,7 +63,7 @@ run-local-api:
 
 run-local-db:
 	@echo "+\n++ Make: Running db locally ...\n+"
-	@docker-compose -f docker-compose.yml up postgres
+	@docker-compose -f docker-compose.yml up -d postgres 
 
 close-local:
 	@echo "+\n++ Make: Closing local container ...\n+"
@@ -72,10 +82,10 @@ local-db-workspace:
 	@docker-compose -f docker-compose.yml exec postgres psql -U $(DB_USER) -W $(DB_DATABASE)
 
 local-db-seed:
-	@docker exec -it $(PROJECT)-server npm run db:seed
+	@docker exec -it $(PROJECT)-nest npm run seed:run
 
 local-db-migrate:
-	@docker exec -it $(PROJECT)-server npm run db:migrate
+	@docker exec -it $(PROJECT)-nest npm run migrate:run
 
 e2e-test:
 	@echo "Make: start docker-compose.test"
