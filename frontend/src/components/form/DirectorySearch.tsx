@@ -143,6 +143,19 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                 </Grid>
                 <Grid item xs={4}>
                   <StyledFormControl>
+                    <StyledLabel htmlFor='active'>
+                      Active/Inactive
+                    </StyledLabel>
+                    <AutocompleteInput
+                      fieldName='active'
+                      options={['Active', 'Inactive']}
+                      initialValue={search?.active}
+                    />
+                    <ErrorMessage name='active' />
+                  </StyledFormControl>
+                </Grid>
+                <Grid item xs={4}>
+                  <StyledFormControl>
                     <StyledFormLabel htmlFor='submit' />
                     <StyledButton
                       style={{ marginTop: '1.25rem' }}
