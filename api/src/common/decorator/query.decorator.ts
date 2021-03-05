@@ -9,7 +9,7 @@ export function AndWhere(sql: string, column: string) {
         args,
       ) as SelectQueryBuilder<any>;
       const val = this[column];
-      if (val) {
+      if (val !== undefined && val !== '') { // Now allowing other filter elements like false and null
         if (Array.isArray(val) && val.length === 0) {
           return queryBuilder;
         }

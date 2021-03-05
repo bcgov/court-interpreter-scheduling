@@ -11,7 +11,6 @@ const InterpreterSearchContext = createContext<{
     keywords: '',
     level: [],
     city: '',
-    active: ''
   },
   updateSearchContext: () => {}
 })

@@ -21,7 +21,6 @@ export default function InterpreterDirectory () {
     city: 'Victoria',
     language: '',
     level: [],
-    active: '',
   })
 
   const [open, toggle] = useState(false)
@@ -31,15 +30,11 @@ export default function InterpreterDirectory () {
 
   const getSearchResults = async (params: InterpreterSearchParams) => {
     setSearch(params)
-    // Changing query options as per user selection
-    const query: InterpreterSearchParams = { 
-      ... params,
-      active: params.active === 'Active' ? 'TRUE' : 'FALSE',
-    };
+    
     await getInterpreters({
       url: '/interpreter/search',
       method: 'POST',
-      data: query,
+      data: params,
     })
   }
 

@@ -84,7 +84,7 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
     example: faker.random.boolean(),
   })
   @IsOptional()
-  active?: string;
+  active?: boolean;
 
   @AndWhere('intLang.level IN (:...level)', 'level')
   @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
