@@ -79,12 +79,20 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   @IsOptional()
   keywords?: string;
 
+  @ApiProperty({
+    description: 'Interpreter Active/Inactive indicator',
+    example: faker.random.boolean(),
+  })
+  @IsOptional()
+  active?: boolean;
+
   @AndWhere('intLang.level IN (:...level)', 'level')
   @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
   @AndWhere(
     `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:name)`,
     'name',
   )
+  @AndWhere('interpreter.contract_extension = :active', 'active')
   filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
     return super
       .filter(query)

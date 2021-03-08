@@ -29,6 +29,11 @@ import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik'
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(InterpreterSearchContext)
+  const activeStatusString = () => {
+    if(search.active !== undefined) {
+      return search.active ? "Active" : "Inactive";
+    }
+  };
   return (
     <Box>
       <Formik
@@ -140,6 +145,19 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                     </FormGroup>
                   </StyledFormControl>
                   <ErrorMessage name='level' />
+                </Grid>
+                <Grid item xs={4}>
+                  <StyledFormControl>
+                    <StyledLabel htmlFor='active'>
+                      Active/Inactive
+                    </StyledLabel>
+                    <AutocompleteInput
+                      fieldName='active'
+                      options={["Active", "Inactive"]}
+                      initialValue={activeStatusString()}
+                    />
+                    <ErrorMessage name='active' />
+                  </StyledFormControl>
                 </Grid>
                 <Grid item xs={4}>
                   <StyledFormControl>

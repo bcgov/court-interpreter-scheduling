@@ -13,6 +13,9 @@ export default function AutocompleteInput ({
   initialValue?: string;
 }) {
   const [field, , helpers] = useField(fieldName)
+  const transformToBoolean = (value: string | null) => {
+    return value ? ((value === 'Active') ? true : false) : undefined;
+  }; 
   useEffect(() => {
     if (initialValue) helpers.setValue(initialValue)
   }, [initialValue])
@@ -22,7 +25,7 @@ export default function AutocompleteInput ({
       getOptionLabel={(option) => option}
       size='small'
       inputValue={field.value}
-      onChange={(event, value) => helpers.setValue(value || '')}
+      onChange={(event, value) => helpers.setValue(transformToBoolean(value))}
       renderInput={(params) => (
         <StyledTextField
           {...params}

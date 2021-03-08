@@ -54,6 +54,7 @@ export type InterpreterSearchParams = {
   keywords: string;
   language: string;
   level: string[];
+  active?: boolean;
 }
 
 export enum Level {

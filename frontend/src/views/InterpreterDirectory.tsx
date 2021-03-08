@@ -30,10 +30,11 @@ export default function InterpreterDirectory () {
 
   const getSearchResults = async (params: InterpreterSearchParams) => {
     setSearch(params)
+    
     await getInterpreters({
       url: '/interpreter/search',
       method: 'POST',
-      data: params
+      data: params,
     })
   }
 
