@@ -66,9 +66,15 @@ export class InterpreterEntity {
 
   @Column({
     nullable: true,
-    name: 'criminal_record_check'
+    name: 'criminal_record_check_comment'
   })
   criminalRecordCheck: string;
+
+  @Column({
+    nullable: true,
+    name: 'criminal_record_check_date'
+  })
+  criminalRecordCheckDate: Date;
 
   @Column({ nullable: true })
   fax: string;
@@ -126,7 +132,7 @@ export class InterpreterEntity {
       email: this.email,
       supplier: this.supplier,
       gst: this.gst,
-      criminalRecordCheck: this.criminalRecordCheck,
+      criminalRecordCheck: this.criminalRecordCheckComment,
       comments: this.comments,
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
