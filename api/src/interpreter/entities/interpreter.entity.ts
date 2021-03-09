@@ -133,6 +133,7 @@ export class InterpreterEntity {
       supplier: this.supplier,
       gst: this.gst,
       criminalRecordCheck: this.criminalRecordCheck,
+      criminalRecordCheckDate: this.criminalRecordCheckDate,
       comments: this.comments,
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
