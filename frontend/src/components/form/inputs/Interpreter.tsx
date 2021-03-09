@@ -34,6 +34,7 @@ const setDateFormat = (date?: Date): string => {
   }
 };
 
+// TODO: Create more effective check
 const showNotDateDate = (data?: string): boolean => {
   if (!data) {
     return false;
