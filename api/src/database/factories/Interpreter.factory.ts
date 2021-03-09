@@ -1,5 +1,6 @@
 import { define } from 'typeorm-seeding';
 import * as Faker from 'faker';
+import { format } from 'date-fns';
 
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 
@@ -30,6 +31,14 @@ define(InterpreterEntity, (faker: typeof Faker, settings) => {
   interpreter.comments = faker.lorem.sentence();
   interpreter.contractExtension = faker.random.boolean();
   interpreter.contractTermination = faker.random.boolean();
+
+  if (faker.random.boolean()) {
+    const date = faker.date.past();
+    interpreter.criminalRecordCheck = format(date, 'dd-MMM-yyyy');
+    interpreter.criminalRecordCheckDate = date;
+  } else {
+    interpreter.criminalRecordCheck = 'MNS';
+  }
 
   return interpreter;
 });

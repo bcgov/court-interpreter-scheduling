@@ -66,9 +66,15 @@ export class InterpreterEntity {
 
   @Column({
     nullable: true,
-    name: 'criminal_record_check'
+    name: 'criminal_record_check_comment'
   })
   criminalRecordCheck: string;
+
+  @Column({
+    nullable: true,
+    name: 'criminal_record_check_date'
+  })
+  criminalRecordCheckDate: Date;
 
   @Column({ nullable: true })
   fax: string;

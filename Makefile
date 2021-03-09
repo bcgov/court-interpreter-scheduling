@@ -79,7 +79,7 @@ local-api-log:
 
 local-db-workspace:
 	@echo "Make: Shelling into database workspace ..."
-	@docker-compose -f docker-compose.yml exec postgres psql -U $(DB_USER) -W $(DB_DATABASE)
+	@docker-compose -f docker-compose.yml exec postgres psql -U $(POSTGRESQL_USER) -W $(POSTGRESQL_DATABASE)
 
 local-db-seed:
 	@docker exec -it $(PROJECT)-nest npm run seed:run

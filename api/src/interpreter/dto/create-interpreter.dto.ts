@@ -9,6 +9,7 @@ import {
   IsPostalCode,
   IsBoolean,
   ValidateIf,
+  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -126,11 +127,19 @@ export class CreateInterpreterDto {
   fax?: string;
 
   @ApiProperty({
-    description: 'record check',
-    example: '10-Dec-18',
+    description: 'record check comment',
+    example: '10-Dec-18 or any free from string',
   })
   @IsOptional()
   criminalRecordCheck?: string;
+
+  @ApiProperty({
+    description: 'record check date',
+    example: '10-Dec-18/DD-MMM-YY',
+  })
+  @IsDate()
+  @IsOptional()
+  criminalRecordCheckDate?: Date;
 
   @ApiProperty({
     description: 'Supplier number',

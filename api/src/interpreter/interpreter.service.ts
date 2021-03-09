@@ -32,7 +32,7 @@ export class InterpreterService {
   async findAll(
     paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    const { page, limit, dates, keywords, language, active: contractExtension } = paginateInterpreterQueryDto;
+    const { page, limit, dates, keywords, language } = paginateInterpreterQueryDto;
 
     let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
