@@ -27,6 +27,10 @@ import { courtLocations } from 'constants/courtLocations'
 import { InterpreterSearchParams } from 'constants/interfaces'
 import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik'
 
+const transformToBoolean = (value: string | null) => {
+  return value ? ((value === 'Active') ? true : false) : undefined;
+};
+
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(InterpreterSearchContext)
   const activeStatusString = () => {
@@ -155,6 +159,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
                       fieldName='active'
                       options={["Active", "Inactive"]}
                       initialValue={activeStatusString()}
+                      transform={transformToBoolean}
                     />
                     <ErrorMessage name='active' />
                   </StyledFormControl>
