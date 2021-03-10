@@ -26,7 +26,7 @@ type GridItemInputProps = {
   initialValue?: any;
 };
 
-const setDateFormat = (date?: Date): string => {
+const dateFormat = (date?: Date): string => {
   if (date) {
     return moment(date).format('yyyy-MM-DD');
   } else {
@@ -69,12 +69,12 @@ const StyledDateField = ({
   initialValue,
 }: GridItemInputProps) => {
   const [date, setDate] = React.useState('');
-  const [, , setField] = useField(name);
+  const [, , fieldHelper] = useField(name);
 
   React.useEffect(() => {
     if (initialValue) {
-      setField.setValue(initialValue);
-      setDate(setDateFormat(initialValue));
+      fieldHelper.setValue(initialValue);
+      setDate(dateFormat(initialValue));
     }
   }, [initialValue]);
   return (
@@ -88,7 +88,9 @@ const StyledDateField = ({
           type="date"
           value={date}
           onChange={(event) => {
-            setField.setValue(moment(event.target.value).format('YYYY-MM-DD'));
+            fieldHelper.setValue(
+              moment(event.target.value).format('YYYY-MM-DD')
+            );
             return setDate(event.target.value);
           }}
         />
