@@ -27,7 +27,7 @@ export default function AutocompleteInput({
       options={options}
       getOptionLabel={(option) => option}
       size="small"
-      inputValue={field.value || ''}
+      inputValue={field.value}
       onChange={(event, value) =>
         transform ? helpers.setValue(transform(value)) : helpers.setValue(value)
       }
