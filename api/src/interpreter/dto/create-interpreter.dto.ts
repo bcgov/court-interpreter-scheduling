@@ -9,15 +9,16 @@ import {
   IsPostalCode,
   IsBoolean,
   ValidateIf,
-  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { parse } from 'date-fns';
 
 import { InterpreterLanguageDTO } from './interpreter-language.dto';
 
 export class CreateInterpreterDto {
   @ApiProperty({
-    description: 'Interpreter ID. Provide this is if you want to update an existing entry.'
+    description:
+      'Interpreter ID. Provide this is if you want to update an existing entry.',
   })
   @IsOptional()
   id?: number;
@@ -137,9 +138,16 @@ export class CreateInterpreterDto {
     description: 'record check date',
     example: '10-Dec-18/DD-MMM-YY',
   })
-  @IsDate()
+  @ValidateIf((e: string) => {
+    try {
+      const d = parse(e, 'yyyy-MM-dd', new Date());
+      return d !== undefined;
+    } catch (e) {
+      return false;
+    }
+  })
   @IsOptional()
-  criminalRecordCheckDate?: Date;
+  criminalRecordCheckDate?: string;
 
   @ApiProperty({
     description: 'Supplier number',

@@ -53,6 +53,9 @@ export class InterpreterRO {
   criminalRecordCheck: string;
 
   @ApiProperty()
+  criminalRecordCheckDate: Date;
+
+  @ApiProperty()
   comments: string;
 
   @ApiProperty()
