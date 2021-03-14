@@ -5,11 +5,11 @@ export type BookingBase = {
   interpretFor: string;
   caseName: string;
   requestedBy: string;
-  federal: boolean | undefined,
+  federal: boolean | undefined;
   reason: string;
   prosecutor: string;
   comment: string;
-}
+};
 
 export interface BookingCreate extends BookingBase {
   language: string;
@@ -39,14 +39,14 @@ export type BookingDate = {
   date: Date;
   period?: BookingPeriod;
   arrivalTime?: Date;
-}
+};
 
 export type SearchParams = {
   language: string;
   level: string[];
   city: string;
-  dates: Array<BookingDate>
-}
+  dates: Array<BookingDate>;
+};
 
 export type InterpreterSearchParams = {
   name: string;
@@ -55,7 +55,8 @@ export type InterpreterSearchParams = {
   language: string;
   level: string[];
   active?: boolean;
-}
+  criminalRecordCheck?: string;
+};
 
 export enum Level {
   one = 1,
@@ -67,7 +68,7 @@ export enum Level {
 export type LanguageBase = {
   languageName: string;
   commentOnLevel: string;
-}
+};
 
 export interface Language extends LanguageBase {
   level: Level;
@@ -94,13 +95,13 @@ export type InterpreterBase = {
   supplier?: string;
   gst?: string;
   comments?: string;
-  contractExtension?: boolean;  // Right now this flag means "Active"
+  contractExtension?: boolean; // Right now this flag means "Active"
   contractTermination?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   criminalRecordCheck?: string; // Legacy comment object
   criminalRecordCheckDate?: string; // TODO: Currently Material TextField type=date returns date string not date object, so keeping as string here, In future use material date picker
-}
+};
 
 export interface InterpreterCreate extends InterpreterBase {
   languages: LanguageCreate[];
@@ -108,5 +109,5 @@ export interface InterpreterCreate extends InterpreterBase {
 
 export interface Interpreter extends InterpreterBase {
   languages: Language[];
-  bookings: Booking[]
+  bookings: Booking[];
 }
