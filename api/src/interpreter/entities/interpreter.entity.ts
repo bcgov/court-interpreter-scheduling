@@ -155,6 +155,7 @@ export class InterpreterEntity {
       'gst',
       'comments',
       'contractExtension',
+      'criminal'
     ];
   }
 }

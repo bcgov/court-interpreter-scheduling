@@ -55,7 +55,7 @@ export type InterpreterSearchParams = {
   language: string;
   level: string[];
   active?: boolean;
-  criminalRecordCheck?: string;
+  criminalRecordCheck?: Date;
 };
 
 export enum Level {
