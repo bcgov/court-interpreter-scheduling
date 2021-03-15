@@ -38,7 +38,6 @@ const option: any = {
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
   keepConnectionAlive: true,
-  logging: ['query'],
 };
 
 @Module({
