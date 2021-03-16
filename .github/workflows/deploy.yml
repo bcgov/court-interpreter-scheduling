@@ -160,6 +160,7 @@ jobs:
       NAMESPACE: 1a7b16-test
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
+      HOST_PREFIX: test-
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
     needs:
       - build
