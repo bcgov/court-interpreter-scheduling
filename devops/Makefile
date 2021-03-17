@@ -127,7 +127,7 @@ print-status:
 
 init-project:
 	@echo "Run initial set-up for the project, including network security\n" 
-	@oc process -f openshift/security-init.yml -p NAMESPACE=$$(oc project --short) | oc apply -f -
+	@oc process -f openshift/networkpolicy.yml -p NAMESPACE=$$(oc project --short) | oc apply -f -
 	@oc -n $(BUILD_NAMESPACE) policy add-role-to-group system:image-puller system:serviceaccounts:$$(oc project --short)
 
 init-keycloak:
