@@ -18,6 +18,7 @@ import { SingleCheck } from 'components/form/inputs/Check';
 import { Interpreter, Language } from 'constants/interfaces';
 import { Field, useFormikContext, FieldArray, useField } from 'formik';
 import moment from 'moment';
+import { StyledFormDatePicker } from './StyledDateAndTimeInput';
 
 type GridItemInputProps = {
   name: string;
@@ -26,20 +27,13 @@ type GridItemInputProps = {
   initialValue?: any;
 };
 
-const dateFormat = (date?: Date): string => {
-  if (date) {
-    return moment(date).format('yyyy-MM-DD');
-  } else {
-    return moment(new Date()).format('yyyy-MM-DD');
-  }
-};
-
 // TODO: Create more effective check
-const showNotDateDate = (data?: string): boolean => {
+const showNotDateData = (data?: string): boolean => {
   if (!data) {
     return false;
   }
-  return data.length < 4;
+  const regx = /^\d{2}-\w{3}-\d{2}$/gi;
+  return !regx.test(data);
 };
 
 const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
@@ -68,32 +62,30 @@ const StyledDateField = ({
   rows = { xs: 6 },
   initialValue,
 }: GridItemInputProps) => {
-  const [date, setDate] = React.useState('');
-  const [, , fieldHelper] = useField(name);
-
-  React.useEffect(() => {
-    if (initialValue) {
-      fieldHelper.setValue(initialValue);
-      setDate(dateFormat(initialValue));
-    }
-  }, [initialValue]);
   return (
     <Grid item {...rows}>
       <StyledFormControl>
         <StyledLabel htmlFor={name}>{label}</StyledLabel>
-        <StyledTextField
-          id={name}
-          variant="outlined"
-          size="small"
-          type="date"
-          value={date}
-          onChange={(event) => {
-            fieldHelper.setValue(
-              moment(event.target.value).format('YYYY-MM-DD')
-            );
-            return setDate(event.target.value);
-          }}
-        />
+        <Field name={name}>
+          {({ field, form, ...props }: any) => (
+            <StyledFormDatePicker
+              {...field}
+              form={form}
+              inputVariant="outlined"
+              size="small"
+              clearable={true}
+              label="Input date"
+              placeholder="Select Date"
+              labelFunc={(date: any, invalidLabel: string) => {
+                if (field.value) {
+                  return moment(date).format('YYYY-MM-DD');
+                } else {
+                  return '';
+                }
+              }}
+            />
+          )}
+        </Field>
       </StyledFormControl>
       <FieldError name={name} />
     </Grid>
@@ -220,7 +212,7 @@ export default function InterpreterInputs() {
         label="Criminal Record Check Date"
         initialValue={values.criminalRecordCheckDate}
       />
-      {showNotDateDate(values.criminalRecordCheck) ? (
+      {showNotDateData(values.criminalRecordCheck) ? (
         <StyledField
           name="criminalRecordCheck"
           label="Comment On Criminal Record Check"

@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, ValidateNested, Max, Min, IsNumber } from 'class-validator';
+import {
+  IsOptional,
+  ValidateNested,
+  Max,
+  Min,
+  IsNumber,
+  IsDate,
+} from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
@@ -86,6 +93,14 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   @IsOptional()
   active?: boolean;
 
+  @ApiProperty({
+    description: 'Interpreter Criminal record date object',
+    example: faker.date.recent(),
+  })
+  @IsDate()
+  @IsOptional()
+  criminalRecordCheck: Date;
+
   @AndWhere('intLang.level IN (:...level)', 'level')
   @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
   @AndWhere(
@@ -97,7 +112,7 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
     return super
       .filter(query)
       .andWhere('LOWER(intLang.language.name) LIKE LOWER(:language)', {
-        language: `${this.language || ''}%`
-      })
+        language: `${this.language || ''}%`,
+      });
   }
 }

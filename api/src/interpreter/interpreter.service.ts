@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { format } from 'date-fns';
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
@@ -10,7 +11,6 @@ import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { InterpreterRO } from './ro/interpreter.ro';
-
 
 @Injectable()
 export class InterpreterService {
@@ -23,8 +23,8 @@ export class InterpreterService {
     createInterpreterDto: Partial<CreateInterpreterDto>,
     interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
-    const { languages, ...insertInterpreter } = createInterpreterDto 
-    const interpreter = this.interpreterRepository.create(insertInterpreter)
+    const { languages, ...insertInterpreter } = createInterpreterDto;
+    const interpreter = this.interpreterRepository.create(insertInterpreter);
     interpreter.languages = interpreterLangs;
     return await this.interpreterRepository.save(interpreter);
   }
@@ -32,7 +32,14 @@ export class InterpreterService {
   async findAll(
     paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    const { page, limit, dates, keywords, language } = paginateInterpreterQueryDto;
+    const {
+      page,
+      limit,
+      dates,
+      keywords,
+      language,
+      criminalRecordCheck,
+    } = paginateInterpreterQueryDto;
 
     let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
@@ -47,7 +54,7 @@ export class InterpreterService {
     if (language) {
       query
         .leftJoinAndSelect('interpreter.languages', 'int_languages')
-        .leftJoinAndSelect('int_languages.language', 'languages_lang')
+        .leftJoinAndSelect('int_languages.language', 'languages_lang');
     }
 
     if (dates && dates.length > 0) {
@@ -99,6 +106,15 @@ export class InterpreterService {
       query.andWhere(`LOWER(CONCAT(${searchColumns})) like LOWER(:keywords)`, {
         keywords: `%${keywords}%`,
       });
+    }
+
+    if (criminalRecordCheck) {
+      query.andWhere(
+        `interpreter.criminalRecordCheckDate  > TO_TIMESTAMP(:criminalRecordCheckDate, 'YYYY-MM-DD') - interval '5 year'`,
+        {
+          criminalRecordCheckDate: format(criminalRecordCheck, 'yyyy-MM-dd'),
+        },
+      );
     }
 
     const interpreters = await query.getMany();
