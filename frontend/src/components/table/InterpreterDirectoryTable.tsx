@@ -5,6 +5,9 @@ import { Grid, Box } from '@material-ui/core';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import AddIcon from '@material-ui/icons/Add';
 
+import Tooltip from '@material-ui/core/Tooltip';
+import CopyIcon from '../../assets/images/copy.png';
+
 import BaseTable from 'components/table/Base';
 import { StyledIconButton } from 'components/Buttons';
 import EditInterpreterModal from 'components/form/EditInterpreterModal';
@@ -19,11 +22,13 @@ export default function DirectoryTable({
   openCreateModal,
   getInterpreters,
   language,
+  handleCopyEmails,
 }: {
   data: Array<Interpreter>;
   openCreateModal: Function;
   getInterpreters: Function;
   language?: string;
+  handleCopyEmails?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const [interpreter, setInterpreter] = useState();
 
@@ -38,7 +43,24 @@ export default function DirectoryTable({
             customSort: fieldSort('lastName'),
           },
           { title: 'Phone', field: 'phone' },
-          { title: 'Email', field: 'email' },
+          {
+            title: (
+              <>
+                <span>Email </span>
+                <Tooltip title="Copy emails to clipboard">
+                  <StyledIconButton
+                    className="pointer"
+                    onClick={handleCopyEmails}
+                    color="primary"
+                    style={{ marginLeft: '1rem' }}
+                  >
+                    <img src={CopyIcon} />
+                  </StyledIconButton>
+                </Tooltip>
+              </>
+            ),
+            field: 'email',
+          },
           {
             title: 'Language',
             render: (row: any) =>
