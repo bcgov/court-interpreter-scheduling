@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
-import { useKeycloak } from '@react-keycloak/web'
-import { KeycloakInstance } from 'keycloak-js'
+import React, { useEffect, useState } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
+import { useKeycloak } from '@react-keycloak/web';
+import { KeycloakInstance } from 'keycloak-js';
 
-import {
-  makeStyles,
-  Tab,
-  Tabs,
-  withStyles,
-  Theme,
-} from '@material-ui/core'
+import { makeStyles, Tab, Tabs, withStyles, Theme } from '@material-ui/core';
 
-import ContentBox from 'components/layout/ContentBox'
+import ContentBox from 'components/layout/ContentBox';
+import { withFlag } from 'components/reusable/withFlag';
 
 interface StyledTabProps {
   label: string;
@@ -29,13 +24,13 @@ const useStyles = makeStyles({
     color: '#fff',
     display: 'flex',
   },
-})
+});
 
 const BCTabs = withStyles({
   indicator: {
     display: 'none',
   },
-})(Tabs)
+})(Tabs);
 
 const BCTab = withStyles((theme: Theme) => ({
   root: {
@@ -54,37 +49,38 @@ const BCTab = withStyles((theme: Theme) => ({
     },
   },
   selected: {
-    borderBottom: 'solid 2px #FCBA19'
+    borderBottom: 'solid 2px #FCBA19',
   },
-}))((props: StyledTabProps) => <Tab disableRipple {...props} />)
+}))((props: StyledTabProps) => <Tab disableRipple {...props} />);
+
+const WithFlagTab = withFlag(BCTab);
 
 export default function Header() {
-  const location = useLocation()
-  const history = useHistory()
-  const classes = useStyles()
-  const { keycloak } = useKeycloak<KeycloakInstance>()
-  const [activeTab, setActiveTab] = useState(location.pathname)
+  const location = useLocation();
+  const history = useHistory();
+  const classes = useStyles();
+  const { keycloak } = useKeycloak<KeycloakInstance>();
+  const [activeTab, setActiveTab] = useState(location.pathname);
 
   const handleNav = (event: React.ChangeEvent<{}>, value: any) => {
-    setActiveTab(value)
-    history.push(value)
-  }
+    setActiveTab(value);
+    history.push(value);
+  };
 
   useEffect(() => {
     if (activeTab !== location.pathname) {
-      setActiveTab(location.pathname)
+      setActiveTab(location.pathname);
     }
-  }, [location.pathname, activeTab])
+  }, [location.pathname, activeTab]);
 
   return (
     <ContentBox className={classes.subheader}>
-      <BCTabs
-        value={activeTab}
-        onChange={handleNav}
-      >
-        <BCTab label='Bookings' value='/bookings' />
-        <BCTab label='Search Interpreters' value='/create' />
-        {keycloak?.hasRealmRole('court-admin') && <BCTab label='Interpreters' value='/directory' />}
+      <BCTabs value={activeTab} onChange={handleNav}>
+        <WithFlagTab label="Bookings" value="/bookings" />
+        <BCTab label="Search Interpreters" value="/create" />
+        {keycloak?.hasRealmRole('court-admin') && (
+          <BCTab label="Interpreters" value="/directory" />
+        )}
       </BCTabs>
     </ContentBox>
   );
