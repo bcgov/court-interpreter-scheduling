@@ -36,7 +36,6 @@ export class AppController {
     return {
       keycloakAuthUrl: process.env.KEYCLOAK_AUTH_URL ?? '',
       keycloakRealm: process.env.KEYCLOAK_REALM ?? '',
-      deploymentEnv: process.env.DEPLOYMENT_ENV ?? '',
     }
   }
 }
