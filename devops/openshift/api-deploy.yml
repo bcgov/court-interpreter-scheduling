@@ -165,3 +165,7 @@ parameters:
     required: true
   - name: DB_NAME
     required: true
+  - name: DEPLOYMENT_ENV
+    required: true
+  - name: DEPLOYMENT_ENV_HIDDEN_FLAG
+    required: true
