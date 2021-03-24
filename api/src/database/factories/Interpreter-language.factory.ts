@@ -11,6 +11,7 @@ define(InterpreterLanguageEntity, (faker: typeof Faker, settings) => {
     'Portuguese',
     'Chinese',
     'Japanese',
+    'Asl'
   ]);
 
   const level = faker.random.arrayElement([1, 2, 3, 4]);

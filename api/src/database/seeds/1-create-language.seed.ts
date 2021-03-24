@@ -14,6 +14,7 @@ export default class CreateLanguage implements Seeder {
         { name: 'Portuguese' },
         { name: 'Chinese' },
         { name: 'Japanese' },
+        { name: 'Asl'}
       ])
       .execute();
   }

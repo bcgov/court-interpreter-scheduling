@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import {
   IsEnum,
   IsNotEmpty,
@@ -10,6 +10,10 @@ import * as faker from 'faker/locale/en_CA';
 import { BookingPeriod } from '../enums/booking-period.enum';
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingDateDto } from './booking-date.dto';
+
+const LanguageMap:Map<string, string> = new Map<string, string>([
+  ['ASL', 'Asl']
+]);
 
 export class CreateBookingDto {
   @ApiProperty({
@@ -98,6 +102,7 @@ export class CreateBookingDto {
     example: 'French',
   })
   @IsOptional()
+  @Transform(({ value }: {value: string}) => LanguageMap.get(value) || value)
   language?: string;
 
   @ApiProperty({
