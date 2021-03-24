@@ -10,10 +10,13 @@ import Footer from 'components/layout/Footer';
 import Error from 'components/Error';
 import ErrorContext from 'contexts/ErrorContext';
 import { AlertProvider } from 'hooks/useAlert';
+import { checkIfFlag, withFlag } from 'components/reusable/withFlag';
 
 const Booking = lazy(() => import('views/Booking'));
 const CreateBooking = lazy(() => import('views/CreateBooking'));
 const InterpreterDirectory = lazy(() => import('views/InterpreterDirectory'));
+
+const WithFlagRoute = withFlag(Route);
 
 const App = () => {
   const [errorMessage, setError] = useState('');
@@ -35,14 +38,14 @@ const App = () => {
               }
             >
               <Switch>
-                <Route exact path="/bookings" component={Booking} />
+                <WithFlagRoute exact path="/bookings" component={Booking} />
                 <Route exact path="/create" component={CreateBooking} />
                 <Route
                   exact
                   path="/directory"
                   component={InterpreterDirectory}
                 />
-                <Redirect to="/bookings" />
+                <Redirect to={checkIfFlag() ? '/create' : '/bookings'} />
               </Switch>
             </Suspense>
           </section>
