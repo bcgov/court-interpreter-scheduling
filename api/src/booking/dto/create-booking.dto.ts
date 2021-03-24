@@ -11,8 +11,9 @@ import { BookingPeriod } from '../enums/booking-period.enum';
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingDateDto } from './booking-date.dto';
 
-const LanguageMap:Map<string, string> = new Map<string, string>([
-  ['ASL', 'Asl']
+const LanguageMap: Map<string, string> = new Map<string, string>([
+  ['ASL', 'Asl'],
+  ['CART', 'Cart'],
 ]);
 
 export class CreateBookingDto {
@@ -102,7 +103,7 @@ export class CreateBookingDto {
     example: 'French',
   })
   @IsOptional()
-  @Transform(({ value }: {value: string}) => LanguageMap.get(value) || value)
+  @Transform(({ value }: { value: string }) => LanguageMap.get(value) || value)
   language?: string;
 
   @ApiProperty({
