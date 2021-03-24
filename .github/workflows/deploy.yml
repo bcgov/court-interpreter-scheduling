@@ -71,7 +71,7 @@ jobs:
       HOST_PREFIX: dev-
       KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: dev
-      DEPLOYMENT_ENV_HIDDEN_FLAG: prod,dev
+      DEPLOYMENT_ENV_HIDDEN_FLAG: prod
     needs:
       - build
     steps:
