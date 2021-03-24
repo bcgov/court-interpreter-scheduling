@@ -17,6 +17,9 @@ export DB_NAME := $(or $(DB_NAME), court-interpreter-scheduling)
 export KC_AUTH_URL := $(or $(KC_AUTH_URL), https://oidc.gov.bc.ca/auth/)
 export KC_REALM := $(or $(KC_REALM), joxo7v8f)
 
+export DEPLOYMENT_ENV := $(or $(DEPLOYMENT_ENV), dev)
+export DEPLOYMENT_ENV_HIDDEN_FLAG := $(or $(DEPLOYMENT_ENV_HIDDEN_FLAG), prod)
+
 default:
 	@echo "Please see README.md for usage of make commands"
 
@@ -187,7 +190,7 @@ deploy-api:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" -p KEYCLOAK_URL=$(KC_AUTH_URL)  -p DB_NAME=$(DB_NAME)| oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" -p KEYCLOAK_URL=$(KC_AUTH_URL)  -p DB_NAME=$(DB_NAME) -p DEPLOYMENT_ENV=$(DEPLOYMENT_ENV) -p DEPLOYMENT_ENV_HIDDEN_FLAG=$(DEPLOYMENT_ENV_HIDDEN_FLAG)| oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(API))
 
 deploy-app:

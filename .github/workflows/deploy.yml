@@ -70,6 +70,8 @@ jobs:
       BRANCH: ${{ github.base_ref }}
       HOST_PREFIX: dev-
       KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
+      DEPLOYMENT_ENV: dev
+      DEPLOYMENT_ENV_HIDDEN_FLAG: prod,dev
     needs:
       - build
     steps:
@@ -116,6 +118,8 @@ jobs:
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
+      DEPLOYMENT_ENV: prod
+      DEPLOYMENT_ENV_HIDDEN_FLAG: prod
     needs:
       - build
     steps:
@@ -162,6 +166,8 @@ jobs:
       BRANCH: ${{ github.base_ref }}
       HOST_PREFIX: test-
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
+      DEPLOYMENT_ENV: test
+      DEPLOYMENT_ENV_HIDDEN_FLAG: prod
     needs:
       - build
     steps:
