@@ -55,6 +55,10 @@ objects:
                       name: ${DB_SECRET_NAME}
                 - name: POSTGRESQL_DATABASE
                   value: ${DB_NAME}
+                - name: DEPLOYMENT_ENV
+                  value: ${DEPLOYMENT_ENV}
+                - name: DEPLOYMENT_ENV_HIDDEN_FLAG
+                  value: ${DEPLOYMENT_ENV_HIDDEN_FLAG}
               image: ${IMAGE_REGISTRY}/${BUILD_NAMESPACE}/${IMAGE_STREAM_TAG}
               imagePullPolicy: Always
               name: ${NAME}

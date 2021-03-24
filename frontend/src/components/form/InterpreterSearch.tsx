@@ -26,6 +26,9 @@ import { languages } from 'constants/languages'
 import { courtLocations } from 'constants/courtLocations'
 import SearchContext from 'contexts/SearchContext'
 import { ErrorMessage, Field, FieldProps, Formik, FormikProps, Form } from 'formik'
+import { withFlag } from 'components/reusable/withFlag'
+
+const WithFlagRange = withFlag(Range);
 
 export default function Search({ getSearchResults }: { getSearchResults: Function }) {
   const { search } = useContext(SearchContext)
@@ -103,7 +106,7 @@ export default function Search({ getSearchResults }: { getSearchResults: Functio
               </GridRow>
               <GridRow container spacing={4} mt={2}>
                 <Grid item xs={6}>
-                  <Range />
+                  <WithFlagRange />
                 </Grid>
                 <Grid item xs={2} />
                 <Grid item xs={4}>

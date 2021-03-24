@@ -9,6 +9,7 @@ import {
 } from '@react-keycloak/web';
 import keycloakClient from './keycloak';
 import { KeycloakInstance } from 'keycloak-js';
+import * as localStorageUtil from 'util/localStorageUtil';
 
 import { ThemeProvider, Box, CircularProgress } from '@material-ui/core';
 import 'react-nice-dates/build/style.css';
@@ -30,7 +31,7 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
         keycloak?.authenticated ? (
           <Component {...props} />
         ) : (
-          <Redirect to='/login' />
+          <Redirect to="/login" />
         )
       }
     />
@@ -58,8 +59,8 @@ const Routes = () => {
         >
           <ThemeProvider theme={theme}>
             <Switch>
-              <Route exact path='/login' component={Login} />
-              <PrivateRoute path='/' component={App} />
+              <Route exact path="/login" component={Login} />
+              <PrivateRoute path="/" component={App} />
             </Switch>
           </ThemeProvider>
         </Suspense>
@@ -79,19 +80,21 @@ const Start: React.FC = () => {
   } else if (error) {
     return (
       <Box p={2}>
-        <h4>
-          Application Error.
-        </h4>
+        <h4>Application Error.</h4>
         <p>Could not connect to keycloak.</p>
         {error.message ? <p>Error message: {error.message}</p> : null}
       </Box>
     );
   } else {
-    const { keycloakAuthUrl, keycloakRealm } = data;
+    const { keycloakAuthUrl, keycloakRealm, flag } = data;
     localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
     localStorage.setItem('keycloakRealm', keycloakRealm);
+    localStorageUtil.storeData<boolean>(flag, 'flag');
     return <Routes />;
   }
 };
 
-render(process.env.NODE_ENV === 'development' ? <Routes /> : <Start />, document.getElementById('root'));
+render(
+  process.env.NODE_ENV === 'development' ? <Routes /> : <Start />,
+  document.getElementById('root')
+);
