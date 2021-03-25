@@ -103,7 +103,7 @@ export class CreateBookingDto {
     example: 'French',
   })
   @IsOptional()
-  @Transform(({ value }: { value: string }) => LanguageMap.get(value) || value)
+  @Transform((value: string) => LanguageMap.get(value) || value)
   language?: string;
 
   @ApiProperty({
