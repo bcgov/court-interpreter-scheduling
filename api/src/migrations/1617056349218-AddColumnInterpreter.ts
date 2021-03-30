@@ -13,7 +13,7 @@ export class AddColumnInterpreter1617056349218 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // general interpreters
-    await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "page12_contract" BOOL`);
+    await queryRunner.query(`ALTER TABLE ${Table} ALTER COLUMN "page12_contract" TYPE BOOL`);
 
     // visual interpreters
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "admin_comments"`);
