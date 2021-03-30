@@ -101,6 +101,7 @@ export type InterpreterBase = {
   updatedAt?: Date;
   criminalRecordCheck?: string; // Legacy comment object
   criminalRecordCheckDate?: Date; // TODO: Currently Material TextField type=date returns date string not date object, so keeping as string here, In future use material date picker
+  adminComments?: string;
 };
 
 export interface InterpreterCreate extends InterpreterBase {

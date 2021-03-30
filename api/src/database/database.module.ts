@@ -12,10 +12,7 @@ const entities =
     ? join(__dirname, '../**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
 
-const synchronize =
-  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? true
-    : false;
+const synchronize = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? true : false;
 
 const option: any = {
   type: 'postgres',
@@ -23,10 +20,7 @@ const option: any = {
   port: parseInt(process.env.DB_PORT, 10) || 5432,
   username: process.env.POSTGRESQL_USER,
   password: process.env.POSTGRESQL_PASSWORD,
-  database:
-    process.env.NODE_ENV !== 'test'
-      ? process.env.POSTGRESQL_DATABASE
-      : process.env.DB_TEST_DATABASE,
+  database: process.env.NODE_ENV !== 'test' ? process.env.POSTGRESQL_DATABASE : process.env.DB_TEST_DATABASE,
   entities: [entities],
   migrations: ['dist/migrations/*{.ts,.js}'],
   cli: {

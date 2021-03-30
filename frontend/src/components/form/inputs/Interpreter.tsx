@@ -6,6 +6,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { useKeycloak } from '@react-keycloak/web';
+import { KeycloakInstance } from 'keycloak-js';
 
 import {
   StyledFormControl,
@@ -94,8 +96,9 @@ const StyledDateField = ({
 
 export default function InterpreterInputs() {
   const { values } = useFormikContext<Interpreter>();
+  const { keycloak } = useKeycloak<KeycloakInstance>();
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={6}>
       <StyledField
         name="firstName"
         label="First Name"
@@ -222,7 +225,7 @@ export default function InterpreterInputs() {
         <SingleCheck name="contractExtension" label="Contract Active" />
       </Grid>
 
-      <Grid item xs={12} lg={8}>
+      <Grid item xs={8} lg={8}>
         <StyledFormControl>
           <StyledLabel htmlFor="comments">Comment</StyledLabel>
           <Field name="comments">
@@ -231,7 +234,7 @@ export default function InterpreterInputs() {
                 id="comments"
                 variant="outlined"
                 multiline
-                rows={4}
+                rows={3}
                 {...field}
                 {...props}
               />
@@ -239,6 +242,25 @@ export default function InterpreterInputs() {
           </Field>
         </StyledFormControl>
       </Grid>
+      {keycloak?.hasRealmRole('court-admin') ? (
+        <Grid item xs={8} lg={8}>
+          <StyledFormControl>
+            <StyledLabel htmlFor="adminComments">Admin Comment</StyledLabel>
+            <Field name="adminComments">
+              {({ field, form, ...props }: any) => (
+                <StyledTextField
+                  id="adminComments"
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  {...field}
+                  {...props}
+                />
+              )}
+            </Field>
+          </StyledFormControl>
+        </Grid>
+      ) : null}
     </Grid>
   );
 }
