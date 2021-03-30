@@ -5,7 +5,7 @@ const Table = 'interpreter';
 export class AddColumnInterpreter1617056349218 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // general interpreters
-    await queryRunner.query(`ALTER TABLE ${Table} UPDATE COLUMN "page12_contract" VARCHAR`);
+    await queryRunner.query(`ALTER TABLE ${Table} ALTER COLUMN "page12_contract" TYPE VARCHAR`);
 
     // visual interpreters
     await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "admin_comments" TEXT`);
