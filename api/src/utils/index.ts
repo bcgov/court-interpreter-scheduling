@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-
 import { CreateInterpreterDto } from 'src/interpreter/dto/create-interpreter.dto';
 
 export function capFirstAndSmallRest(string: string) {
@@ -12,8 +11,9 @@ export const camelToSnakeCase = (str: string): string => str.replace(/[A-Z]/g, l
  * 
  * @param directories 
  * 
+ * convert the data like the following to type CreateInterpreterDto:
  * [{
-    languages: { level: 'Level 2', commentOnLevel: '', languageName: 'Korean' },
+    languages: [{ level: 'Level 2', commentOnLevel: '', languageName: 'Korean' }],
     lastName: 'Fiedler',
     firstName: 'Jungwon (Julie)',
     address: '605-283 Davie Street',
@@ -33,7 +33,7 @@ export const camelToSnakeCase = (str: string): string => str.replace(/[A-Z]/g, l
   },...],
  */
 
-export const mappingDirectories = (directories: any[]): any => {
+export const mappingDirectories = (directories: any[]): CreateInterpreterDto[] => {
   return _.chain(directories)
     .groupBy('email')
     .map(value => _.mergeWith({ languages: [] }, ...value, customizer))
@@ -42,6 +42,15 @@ export const mappingDirectories = (directories: any[]): any => {
 
 /**
  * helpers
+ */
+
+/**
+ * used in lodash _.mergeWith to refactor the langauges to array
+ *
+ * @param objValue
+ * @param srcValue
+ * @param key
+ * @returns
  */
 function customizer(objValue: any, srcValue: any, key: string) {
   if (_.isArray(objValue)) {
@@ -57,19 +66,26 @@ function customizer(objValue: any, srcValue: any, key: string) {
   }
 }
 
+/**
+ * some type/value of fields are not suitable, using this function to transform
+ *
+ * @param key
+ * @param value
+ * @returns
+ */
 function keyMapping(key: string, value: string): any {
   // contractExtension, contractTermination to boolean
   if (['contractExtension', 'contractTermination'].includes(key)) {
-    if (value === 'Yes') {
+    if (value.toLowerCase() === 'yes') {
       return true;
-    } else if (value === 'No') {
+    } else if (value.toLowerCase() === 'no') {
       return false;
     } else {
       return null;
     }
   }
 
-  // Level 3 => 3
+  // 'Level 3' => 3
   if (key === 'level') {
     const arr = value.split(' ');
     if (arr.length > 1) {

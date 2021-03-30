@@ -29,6 +29,7 @@ import { anonymiseObject, ValueType } from 'src/utils/anonymisation';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as csvtojson from 'csvtojson';
 import { mappingDirectories } from 'src/utils';
+import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -130,47 +131,117 @@ export class InterpreterController {
 
   @Post('csv')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() fileUploadInterpreterDto: FileUploadInterpreterDto,
+  ) {
     try {
+      /**
+       * check if it's correct file type
+       */
       if (file.mimetype !== 'text/csv') {
         throw new Error('file type not correct');
       }
-      const json = await csvtojson({
-        noheader: false,
-        headers: [
-          // the order of csv file must be consistent as sample file
+
+      /**
+       * check if it's visual
+       */
+      let headers = [
+        // the order of csv file must be consistent as sample file
+        'languages.0.level',
+        'languages.0.commentOnLevel',
+        'languages.0.languageName',
+        'lastName',
+        'firstName',
+        'address',
+        'city',
+        'province',
+        'postal',
+        'homePhone',
+        'businessPhone',
+        'phone',
+        'email',
+        'supplier',
+        'gst',
+        'criminalRecordCheck',
+        'comments',
+        'contractExtension',
+        'contractTermination',
+        'page12ContractReceived',
+      ];
+      if (fileUploadInterpreterDto.isVisual) {
+        headers = [
           'languages.0.level',
           'languages.0.commentOnLevel',
           'languages.0.languageName',
+          'supplier',
+          'gst',
           'lastName',
           'firstName',
           'address',
           'city',
-          'province',
           'postal',
           'homePhone',
           'businessPhone',
           'phone',
+          'fax',
           'email',
-          'supplier',
-          'gst',
           'criminalRecordCheck',
           'comments',
+          'adminComments',
           'contractExtension',
-          'contractTermination',
-        ],
+          'page12ContractReceived',
+        ];
+      }
+
+      /**
+       * convert csv to json
+       */
+      let json = await csvtojson({
+        noheader: false,
+        headers,
       }).fromString(file.buffer.toString());
-      const directories = mappingDirectories(json);
+      console.log(json);
+
+      /**
+       * mapping function to organize the dirty row json data
+       */
+      let directories = mappingDirectories(json);
+
+      /**
+       * before insert to database: check othter parameters
+       */
+      if (fileUploadInterpreterDto.isEmptyTable) {
+        await this.interpreterService.emptyTable();
+      }
+      if (fileUploadInterpreterDto.isAnonymous) {
+        directories = directories.map(dto => anonymiseObject(dto, KEYS_TO_ANONYMISE));
+      }
+
+      /**
+       * insert json to database
+       */
       const uploadedDirectories = await this.uploadDirectoriesToDatabase(directories);
+
+      /**
+       * return detail info
+       */
       return {
         num: uploadedDirectories.length,
         uploadedDirectories,
+        fileUploadInterpreterDto,
       };
     } catch (err) {
-      console.error(err);
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
+  /**
+   * insert json to database
+   *
+   * @param directories
+   * @returns
+   */
   private async uploadDirectoriesToDatabase(directories: CreateInterpreterDto[]) {
     return Promise.all(
       directories.map(async (createInterpreterDto: CreateInterpreterDto) => {

@@ -17,8 +17,7 @@ import { InterpreterLanguageDTO } from './interpreter-language.dto';
 
 export class CreateInterpreterDto {
   @ApiProperty({
-    description:
-      'Interpreter ID. Provide this is if you want to update an existing entry.',
+    description: 'Interpreter ID. Provide this is if you want to update an existing entry.',
   })
   @IsOptional()
   id?: number;
@@ -169,6 +168,13 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   comments?: string;
+
+  @ApiProperty({
+    description: 'Admin Comments',
+    example: 'Admin comments: Civil and family matters only',
+  })
+  @IsOptional()
+  adminComments?: string;
 
   @ApiProperty({
     description: 'Contract Extension',
