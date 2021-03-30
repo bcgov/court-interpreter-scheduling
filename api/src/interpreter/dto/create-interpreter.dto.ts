@@ -191,4 +191,11 @@ export class CreateInterpreterDto {
   @IsOptional()
   @IsBoolean()
   contractTermination?: boolean;
+
+  @ApiProperty({
+    description: 'Admin Comments',
+    example: 'Civil and family matters only',
+  })
+  @IsOptional()
+  adminComments?: string;
 }

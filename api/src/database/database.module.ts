@@ -32,8 +32,8 @@ const option: any = {
   cli: {
     migrationsDir: 'src/migrations',
   },
-  synchronize,
-  migrationsRun: process.env.NODE_ENV === 'production',
+  synchronize: false,
+  migrationsRun: true,
   dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
