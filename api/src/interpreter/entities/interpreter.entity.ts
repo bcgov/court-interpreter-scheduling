@@ -110,9 +110,6 @@ export class InterpreterEntity {
   })
   updatedAt: Date;
 
-  @Column({ nullable: true, name: 'admin_comments' })
-  adminComments: string;
-
   toResponseObject(): InterpreterRO {
     return {
       id: this.id,
@@ -139,7 +136,6 @@ export class InterpreterEntity {
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      adminComments: this.adminComments,
     };
   }
 

@@ -98,7 +98,7 @@ export class InterpreterService {
 
     if (criminalRecordCheck) {
       query.andWhere(
-        `interpreter.criminalRecordCheckDate  > TO_TIMESTAMP(:criminalRecordCheckDate, 'YYYY-MM-DD') - interval '5 year'`,
+        `interpreter.criminalRecordCheckDate  < TO_TIMESTAMP(:criminalRecordCheckDate, 'YYYY-MM-DD') - interval '5 year'`,
         {
           criminalRecordCheckDate: format(criminalRecordCheck, 'yyyy-MM-dd'),
         },
