@@ -1,18 +1,13 @@
 import { BookingEntity } from 'src/booking/entities/booking.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { InterpreterRO } from '../ro/interpreter.ro';
 
 import { InterpreterLanguageEntity } from './interpreter-language.entity';
 
-@Entity('interpreter')
+const TABLE_NAME = 'interpreter';
+
+@Entity(TABLE_NAME)
 export class InterpreterEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,8 +24,7 @@ export class InterpreterEntity {
 
   @OneToMany(
     type => InterpreterLanguageEntity,
-    (interpreterLanguage: InterpreterLanguageEntity) =>
-      interpreterLanguage.interpreter,
+    (interpreterLanguage: InterpreterLanguageEntity) => interpreterLanguage.interpreter,
   )
   languages: InterpreterLanguageEntity[];
 
@@ -66,13 +60,13 @@ export class InterpreterEntity {
 
   @Column({
     nullable: true,
-    name: 'criminal_record_check_comment'
+    name: 'criminal_record_check_comment',
   })
   criminalRecordCheck: string;
 
   @Column({
     nullable: true,
-    name: 'criminal_record_check_date'
+    name: 'criminal_record_check_date',
   })
   criminalRecordCheckDate: Date;
 
@@ -81,7 +75,7 @@ export class InterpreterEntity {
 
   @Column({
     nullable: true,
-    name: 'email_alt'
+    name: 'email_alt',
   })
   emailAlt: string;
 
@@ -94,6 +88,9 @@ export class InterpreterEntity {
   @Column({ nullable: true })
   comments: string;
 
+  @Column({ nullable: true, name: 'admin_comments' })
+  adminComments: string;
+
   @Column({ nullable: true, name: 'contract_extension' })
   contractExtension: boolean;
 
@@ -101,7 +98,7 @@ export class InterpreterEntity {
   contractTermination: boolean;
 
   @Column({ nullable: true, name: 'page12_contract' })
-  page12ContractReceived: boolean;
+  page12ContractReceived: string;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -135,6 +132,7 @@ export class InterpreterEntity {
       criminalRecordCheck: this.criminalRecordCheck,
       criminalRecordCheckDate: this.criminalRecordCheckDate,
       comments: this.comments,
+      adminComments: this.adminComments,
       contractExtension: this.contractExtension,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
@@ -155,7 +153,9 @@ export class InterpreterEntity {
       'gst',
       'comments',
       'contractExtension',
-      'criminalRecordCheckDate'
+      'criminalRecordCheckDate',
     ];
   }
+
+  static tableName = TABLE_NAME;
 }

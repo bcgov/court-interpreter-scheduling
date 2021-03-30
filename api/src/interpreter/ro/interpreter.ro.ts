@@ -3,7 +3,6 @@ import { BookingEntity } from 'src/booking/entities/booking.entity';
 import { LanguageRO } from './interpreter-language.ro';
 
 export class InterpreterRO {
-
   @ApiProperty()
   id: number;
 
@@ -59,6 +58,9 @@ export class InterpreterRO {
   comments: string;
 
   @ApiProperty()
+  adminComments: string;
+
+  @ApiProperty()
   contractExtension: boolean;
 
   @ApiProperty()
@@ -66,5 +68,4 @@ export class InterpreterRO {
 
   @ApiProperty()
   updatedAt: Date;
-
 }

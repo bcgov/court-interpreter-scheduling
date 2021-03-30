@@ -29,17 +29,8 @@ export class InterpreterService {
     return await this.interpreterRepository.save(interpreter);
   }
 
-  async findAll(
-    paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
-  ): Promise<SuccessResponse<InterpreterRO>> {
-    const {
-      page,
-      limit,
-      dates,
-      keywords,
-      language,
-      criminalRecordCheck,
-    } = paginateInterpreterQueryDto;
+  async findAll(paginateInterpreterQueryDto: PaginateInterpreterQueryDto): Promise<SuccessResponse<InterpreterRO>> {
+    const { page, limit, dates, keywords, language, criminalRecordCheck } = paginateInterpreterQueryDto;
 
     let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
@@ -73,10 +64,7 @@ export class InterpreterService {
         query.leftJoinAndSelect(
           subQuery => {
             return subQuery
-              .select(
-                metric(date.date.toISOString(), date.arrivalTime, date.period),
-                `score_${idx}`,
-              )
+              .select(metric(date.date.toISOString(), date.arrivalTime, date.period), `score_${idx}`)
               .addSelect(`b.interpreter`, 'interpreterId')
               .from(BookingDateEntity, 'd')
               .leftJoin('d.booking', 'b')
@@ -154,5 +142,15 @@ export class InterpreterService {
       id,
     });
     await this.interpreterRepository.remove(interpreter);
+  }
+
+  /**
+   * empty table
+   */
+  async emptyTable(): Promise<void> {
+    await this.interpreterRepository.query(`DELETE FROM ${InterpreterEntity.tableName};`);
+
+    // maybe in the future, we can enable this set auto-increment index to 1
+    // await this.interpreterRepository.query(`ALTER SEQUENCE ${InterpreterEntity.tableName}_id_seq RESTART WITH 1`);
   }
 }
