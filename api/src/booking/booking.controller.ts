@@ -102,4 +102,9 @@ export class BookingController {
   remove(@Param('id') id: string) {
     return this.bookingService.remove(+id);
   }
+
+  @Get('/export/:id')
+  async exportExcel(@Param('id') id:string):Promise<Buffer> {
+    return Buffer.from(id);
+  }
 }
