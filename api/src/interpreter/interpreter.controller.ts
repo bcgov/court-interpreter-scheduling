@@ -165,9 +165,8 @@ export class InterpreterController {
         'gst',
         'criminalRecordCheck',
         'comments',
+        'adminComments',
         'contractExtension',
-        'contractTermination',
-        'page12ContractReceived',
       ];
       if (fileUploadInterpreterDto.isVisual) {
         headers = [
@@ -190,7 +189,6 @@ export class InterpreterController {
           'comments',
           'adminComments',
           'contractExtension',
-          'page12ContractReceived',
         ];
       }
 
@@ -201,7 +199,6 @@ export class InterpreterController {
         noheader: false,
         headers,
       }).fromString(file.buffer.toString());
-      console.log(json);
 
       /**
        * mapping function to organize the dirty row json data

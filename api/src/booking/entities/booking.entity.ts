@@ -22,6 +22,7 @@ export class BookingEntity {
   @ManyToOne(
     type => InterpreterEntity,
     interpreter => interpreter.id,
+    { onDelete: 'SET NULL' },
   )
   interpreter: InterpreterEntity;
 
