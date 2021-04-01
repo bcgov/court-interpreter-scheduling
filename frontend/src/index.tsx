@@ -93,6 +93,11 @@ const Start: React.FC = () => {
     localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
     localStorage.setItem('keycloakRealm', keycloakRealm);
     localStorageUtil.storeData<boolean>(flag, 'flag');
+    console.info(
+      localStorageUtil.getData('keycloakAuthUrl'),
+      localStorageUtil.getData('keycloakRealm'),
+      localStorageUtil.getData('flag')
+    );
     return <Routes />;
   }
   return null;
