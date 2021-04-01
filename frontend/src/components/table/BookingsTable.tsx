@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { Box, IconButton, withStyles } from '@material-ui/core';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -76,7 +77,12 @@ export default function BookingsTable({
                       new Blob([file.data])
                     );
                     const link = document.createElement('a');
-                    link.download = `booking_${Date.now()}.xlsx`;
+                    link.download = `booking_${row.interpreter.firstName}_${
+                      row.language
+                    }_${format(
+                      new Date(row.dates[0].date),
+                      'yyyy-LLL-dd'
+                    )}.xlsx`;
                     link.href = url;
                     link.click();
                     link.href = '';

@@ -71,6 +71,9 @@ const Routes = () => {
 
 const Start: React.FC = () => {
   const [{ data, error, loading }] = useAxiosGet('/config');
+  // for debug the login issue on TEST env.
+  console.log(data, error, loading);
+
   if (loading) {
     return (
       <Box p={2}>
