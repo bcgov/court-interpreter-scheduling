@@ -103,7 +103,7 @@ export class BookingController {
     // query booking
     const booking = await this.bookingService.findOne(+id);
 
-    // write to workbook
+    // get the workbook
     const workbook = await this.bookingService.writeToWorkbook(booking);
 
     return await workbook.xlsx.write(res);
