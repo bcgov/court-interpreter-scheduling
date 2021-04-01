@@ -148,7 +148,7 @@ export class BookingService {
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
     // A10 Last name + First Name
-    setCell({ row: 10, column: 'A', value: `${interpreter.firstName} ${booking.interpreter.lastName}` });
+    setCell({ row: 10, column: 'A', value: `${interpreter.firstName} ${interpreter.lastName}` });
 
     // A15 Phone
     setCell({ row: 15, column: 'A', value: interpreter.phone });
