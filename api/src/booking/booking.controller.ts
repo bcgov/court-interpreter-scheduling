@@ -16,8 +16,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
+import * as path from 'path';
 
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { Level } from 'src/interpreter/enums/level.enum';
 import { BookingDateService } from './booking-date.service';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -102,15 +104,54 @@ export class BookingController {
   async exportExcel(@Param('id') id: string, @Res() res: Response) {
     //query booking
     const booking = await this.bookingService.findOne(+id);
-    console.log(booking);
+    const { interpreter } = booking;
     //TODO generate excel file
     const workbook = new ExcelJS.Workbook();
-    let worksheet = workbook.addWorksheet('Tutorials');
+    // read adm322 template
+    await workbook.xlsx.readFile(path.join(__dirname, '..', '..', '/assets/adm322.xlsx'));
 
-    worksheet.columns = [{ header: 'Interpreter Name', key: 'name', width: 5 }];
-    const data = [{ name: booking.interpreter.firstName + ' ' + booking.interpreter.lastName }];
-    // Add Array Rows
-    worksheet.addRows(data);
+    // A10
+    const worksheet = workbook.getWorksheet(1);
+    let row = worksheet.getRow(10);
+    row.getCell(1).value = `${interpreter.firstName} ${booking.interpreter.lastName}`;
+    row.commit();
+
+    // A15
+    row = worksheet.getRow(15);
+    row.getCell(1).value = interpreter.phone;
+    row.commit();
+
+    // G15
+    row = worksheet.getRow(15);
+    row.getCell(7).value = interpreter.email;
+    row.commit();
+
+    // B16, E16, H16, K16
+    const bookLang = booking.language;
+    const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
+    row = worksheet.getRow(16);
+    switch (intpLang?.level) {
+      case Level.one: {
+        row.getCell(2).value = 'X';
+        break;
+      }
+      case Level.two: {
+        row.getCell(5).value = 'X';
+        break;
+      }
+      case Level.three: {
+        row.getCell(8).value = 'X';
+        break;
+      }
+      case Level.four: {
+        row.getCell(11).value = 'X';
+        break;
+      }
+      default: {
+        row.getCell(2).value = 'X';
+      }
+    }
+    row.commit();
 
     return await workbook.xlsx.write(res);
   }

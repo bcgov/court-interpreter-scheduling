@@ -24,10 +24,7 @@ export class BookingService {
     private readonly interpreterRepository: Repository<InterpreterEntity>,
   ) {}
 
-  async create(
-    createBookingDto: CreateBookingDto,
-    bookingDates: BookingDateEntity[],
-  ): Promise<BookingEntity> {
+  async create(createBookingDto: CreateBookingDto, bookingDates: BookingDateEntity[]): Promise<BookingEntity> {
     const { interpreterId, language, dates, ...createDto } = createBookingDto;
     const interpreter = await this.interpreterRepository.findOneOrFail(
       {
@@ -49,9 +46,7 @@ export class BookingService {
     return await this.bookingRepository.save(booking);
   }
 
-  async findAll(
-    paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingRO[]>> {
+  async findAll(paginateBookingQueryDto: PaginateBookingQueryDto): Promise<SuccessResponse<BookingRO[]>> {
     const { page, limit, dates, isStartFromToday } = paginateBookingQueryDto;
 
     let query = this.bookingRepository
@@ -78,13 +73,10 @@ export class BookingService {
       query.andWhere(
         new Brackets((sqb: WhereExpression) => {
           dates.reduce((acc, { startDate, endDate }) => {
-            acc.orWhere(
-              '(dates.date >= :startDate AND dates.date <= :endDate)',
-              {
-                startDate: `${startDate}T00:00:00`,
-                endDate: `${endDate}T23:59:59`,
-              },
-            );
+            acc.orWhere('(dates.date >= :startDate AND dates.date <= :endDate)', {
+              startDate: `${startDate}T00:00:00`,
+              endDate: `${endDate}T23:59:59`,
+            });
             return acc;
           }, sqb);
         }),
