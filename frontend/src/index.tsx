@@ -85,13 +85,14 @@ const Start: React.FC = () => {
         {error.message ? <p>Error message: {error.message}</p> : null}
       </Box>
     );
-  } else {
+  } else if (data) {
     const { keycloakAuthUrl, keycloakRealm, flag } = data;
     localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
     localStorage.setItem('keycloakRealm', keycloakRealm);
     localStorageUtil.storeData<boolean>(flag, 'flag');
     return <Routes />;
   }
+  return null;
 };
 
 render(
