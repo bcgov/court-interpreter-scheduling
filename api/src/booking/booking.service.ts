@@ -5,6 +5,8 @@ import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
 import { addMonths, format } from 'date-fns';
+import * as ExcelJS from 'exceljs';
+import * as path from 'path';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
@@ -12,6 +14,8 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
+import { Level } from 'src/interpreter/enums/level.enum';
+import { formatYesNo, setCellHelper } from 'src/utils';
 
 @Injectable()
 export class BookingService {
@@ -130,5 +134,87 @@ export class BookingService {
   async remove(id: number): Promise<void> {
     const booking = await this.bookingRepository.findOneOrFail({ id });
     await this.bookingRepository.remove(booking);
+  }
+
+  async writeToWorkbook(booking: BookingEntity): Promise<ExcelJS.Workbook> {
+    const workbook = new ExcelJS.Workbook();
+    const { interpreter } = booking;
+
+    // read adm322 template
+    await workbook.xlsx.readFile(path.join(__dirname, '..', '..', '/assets/adm322.xlsx'));
+
+    // get the worksheet
+    const worksheet = workbook.getWorksheet(1);
+    const setCell = setCellHelper(worksheet); // taking advantage of "closure"
+
+    // A10 Last name + First Name
+    setCell({ row: 10, column: 'A', value: `${interpreter.firstName} ${booking.interpreter.lastName}` });
+
+    // A15 Phone
+    setCell({ row: 15, column: 'A', value: interpreter.phone });
+
+    // G15 Email
+    setCell({ row: 15, column: 'G', value: interpreter.email });
+
+    // B16, E16, H16, K16 Language Level
+    const bookLang = booking.language;
+    const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
+
+    switch (intpLang?.level) {
+      case Level.one: {
+        setCell({ row: 16, column: 'B', value: 'X' });
+        break;
+      }
+      case Level.two: {
+        setCell({ row: 16, column: 'E', value: 'X' });
+        break;
+      }
+      case Level.three: {
+        setCell({ row: 16, column: 'H', value: 'X' });
+        break;
+      }
+      case Level.four: {
+        setCell({ row: 16, column: 'K', value: 'X' });
+        break;
+      }
+      default: {
+        setCell({ row: 16, column: 'B', value: 'X' });
+      }
+    }
+
+    // P16 Date of Export
+    setCell({ row: 16, column: 'P', value: format(new Date(), 'yyyy-LLL-dd') });
+
+    // D18 Federal
+    setCell({ row: 18, column: 'D', value: formatYesNo(booking.federal) });
+
+    // A19 Comments
+    setCell({ row: 19, column: 'A', value: booking.comment });
+
+    // A25 Date of first Booking
+    setCell({ row: 25, column: 'A', value: format(new Date(booking.dates[0].date), 'yyyy-LLL-dd') });
+
+    // C25 Court File Number
+    setCell({ row: 25, column: 'C', value: booking.file });
+
+    // G25 Case Number
+    setCell({ row: 25, column: 'G', value: booking.caseName });
+
+    // L25 Language
+    setCell({ row: 25, column: 'L', value: booking.language.name });
+
+    // P25 Reason
+    setCell({ row: 25, column: 'P', value: booking.reason });
+
+    // V25 Cour Room
+    setCell({ row: 25, column: 'V', value: booking.room });
+
+    // H39 Federal prosecuters name
+    setCell({ row: 39, column: 'H', value: booking.prosecutor });
+
+    // K75 GST
+    setCell({ row: 75, column: 'K', value: interpreter.gst });
+
+    return workbook;
   }
 }

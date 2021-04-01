@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import * as ExcelJS from 'exceljs';
+
 import { CreateInterpreterDto } from 'src/interpreter/dto/create-interpreter.dto';
 
 export function capFirstAndSmallRest(string: string) {
@@ -99,6 +101,11 @@ function keyMapping(key: string, value: string): any {
 }
 
 /**
+ *
+ * Generate Spreadsheet related:
+ */
+
+/**
  * Get index from [a, b, c, ..., z]
  * @param char
  * @returns 1, 2, ..., 26
@@ -111,3 +118,17 @@ export const getIndexOfAlphabet = (char: string) => char.toLowerCase().charCodeA
  * @returns Yes | No
  */
 export const formatYesNo = (bool: boolean): 'Yes' | 'No' => (bool ? 'Yes' : 'No');
+
+export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
+  row,
+  column,
+  value,
+}: {
+  row: number;
+  column: string;
+  value: string;
+}) => {
+  const Row = workSheet.getRow(row);
+  Row.getCell(getIndexOfAlphabet(column)).value = value;
+  Row.commit();
+};
