@@ -54,3 +54,5 @@ The following three commands in order will kick off e2e testing via the `docker-
 ## URL
 
 Dev: https://dev-court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/
+
+Test: https://test-court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/
