@@ -64,7 +64,7 @@ export class BookingEntity {
   @ManyToOne(
     type => LanguageEntity,
     (language: LanguageEntity) => language.name,
-    { eager: true },
+    { eager: true, onDelete: 'SET NULL' },
   )
   language: LanguageEntity;
 
