@@ -45,7 +45,7 @@ services:
     ports:
       - "5435:5432"
     environment:
-      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar","keycloak"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
     networks:
@@ -57,7 +57,7 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
-      DB_DATABASE: nest_api_dev
+      DB_DATABASE: keycloak
       DB_USER: court_nestapi
       DB_PASSWORD: court_nest123
       KEYCLOAK_LOGLEVEL: DEBUG

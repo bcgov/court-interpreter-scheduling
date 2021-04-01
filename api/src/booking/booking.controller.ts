@@ -10,8 +10,13 @@ import {
   HttpException,
   HttpStatus,
   HttpCode,
+  Header,
+  Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import * as ExcelJS from 'exceljs';
+import { Response } from 'express';
+
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
 import { BookingDateService } from './booking-date.service';
 import { BookingService } from './booking.service';
@@ -40,10 +45,7 @@ export class BookingController {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
-    const booking = await this.bookingService.create(
-      createBookingDto,
-      bookingDates,
-    );
+    const booking = await this.bookingService.create(createBookingDto, bookingDates);
     return booking.toResponseObject();
   }
 
@@ -52,21 +54,15 @@ export class BookingController {
     It will return bookings for today and the next 30 days only
     Subsequent requests should use the /search endpoint for control of all available filters
   */
-  
+
   @Get()
-  async findAll(
-    @Query() paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingRO[]>> {
-    return await this.bookingService.findAll(
-      Object.assign(paginateBookingQueryDto, { isStartFromToday: true }),
-    );
+  async findAll(@Query() paginateBookingQueryDto: PaginateBookingQueryDto): Promise<SuccessResponse<BookingRO[]>> {
+    return await this.bookingService.findAll(Object.assign(paginateBookingQueryDto, { isStartFromToday: true }));
   }
 
   @Post('search')
   @HttpCode(200)
-  async search(
-    @Body() paginateBookingQueryDto: PaginateBookingQueryDto,
-  ): Promise<SuccessResponse<BookingRO[]>> {
+  async search(@Body() paginateBookingQueryDto: PaginateBookingQueryDto): Promise<SuccessResponse<BookingRO[]>> {
     return await this.bookingService.findAll(paginateBookingQueryDto);
   }
 
@@ -76,10 +72,7 @@ export class BookingController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateBookingDto: UpdateBookingDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     const { dates, ...updateDto } = updateBookingDto;
     const originBooking = await this.bookingService.findOne(+id);
     const originBookingDates = originBooking.dates;
@@ -101,5 +94,18 @@ export class BookingController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bookingService.remove(+id);
+  }
+
+  @Get('/export/:id')
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename=test.xlsx')
+  async exportExcel(@Param('id') id: string, @Res() res: Response) {
+    // query booking
+    const booking = await this.bookingService.findOne(+id);
+
+    // get the workbook
+    const workbook = await this.bookingService.writeToWorkbook(booking);
+
+    return await workbook.xlsx.write(res);
   }
 }
