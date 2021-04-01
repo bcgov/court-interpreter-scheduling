@@ -56,3 +56,27 @@ The following three commands in order will kick off e2e testing via the `docker-
 Dev: https://dev-court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/
 
 Test: https://test-court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/
+
+## Upload CSV
+
+1. save excel file to csv
+
+2. postman: `POST /interpreter/csv`
+
+Body:
+
+- `file`: select the csv file
+- `isEmptyTable` (boolean): Empty the `interpreter` table
+- `isAnonymous` (boolean): Anonymize the interpreter
+- `isVisual` (boolean): When uploading the `visual` interpreters, please use value: `true`
+
+3. For Regular Interpreters:
+
+- `file`
+- `isEmptyTable`: true
+- `isAnonymous`: true, if env = 'test', 'dev'
+
+4. For Visual Interpreters:
+
+- `file`
+- `isAnonymous`: true, if env = 'test', 'dev'
