@@ -97,3 +97,17 @@ function keyMapping(key: string, value: string): any {
 
   return value;
 }
+
+/**
+ * Get index from [a, b, c, ..., z]
+ * @param char
+ * @returns 1, 2, ..., 26
+ */
+export const getIndexOfAlphabet = (char: string) => char.toLowerCase().charCodeAt(0) - 96;
+
+/**
+ * convert bool to Yes/No
+ * @param bool
+ * @returns Yes | No
+ */
+export const formatYesNo = (bool: boolean): 'Yes' | 'No' => (bool ? 'Yes' : 'No');
