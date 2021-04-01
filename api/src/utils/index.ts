@@ -119,6 +119,11 @@ export const getIndexOfAlphabet = (char: string) => char.toLowerCase().charCodeA
  */
 export const formatYesNo = (bool: boolean): 'Yes' | 'No' => (bool ? 'Yes' : 'No');
 
+/**
+ * helper of setting the cell value
+ * @param workSheet
+ * @returns setCell function
+ */
 export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
   row,
   column,
