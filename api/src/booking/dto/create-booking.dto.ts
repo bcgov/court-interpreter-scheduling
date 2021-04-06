@@ -1,20 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type, Transform } from 'class-transformer';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { BookingPeriod } from '../enums/booking-period.enum';
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingDateDto } from './booking-date.dto';
-
-const LanguageMap: Map<string, string> = new Map<string, string>([
-  ['ASL', 'Asl'],
-  ['CART', 'Cart'],
-]);
+import { LanguageMap } from '../../common/constant';
 
 export class CreateBookingDto {
   @ApiProperty({
