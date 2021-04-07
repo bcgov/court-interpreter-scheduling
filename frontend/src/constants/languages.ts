@@ -1,13 +1,19 @@
 import { LanguageBase } from './interfaces';
 
 export const languages = [
+<<<<<<< HEAD
   'Afghani-Dari',
+=======
+>>>>>>> [web][api]
   'Albanian',
   'Amharic',
   'Arabic',
   'ASL',
+<<<<<<< HEAD
   'Azerbaijan-Turkish',
   'Azerbaijani',
+=======
+>>>>>>> [web][api]
   'Bengali',
   'Bosnian',
   'Bulgarian',
@@ -16,15 +22,23 @@ export const languages = [
   'Cantonese',
   'CART',
   'Cebuano',
+<<<<<<< HEAD
   'Chiu Chow (Swatow)',
+=======
+  'Chiu chow (Swatow)',
+>>>>>>> [web][api]
   'Croatian',
   'Czech',
   'Dari',
   'Dinka',
   'Dutch',
   'Farsi',
+<<<<<<< HEAD
   'Farsi-Persian',
   'Fiji-Hindi',
+=======
+  'Farsi-persian',
+>>>>>>> [web][api]
   'Filipino',
   'French',
   'Fukien',
@@ -32,6 +46,7 @@ export const languages = [
   'Fuzhou',
   'German',
   'Greek',
+<<<<<<< HEAD
   'Gujarati',
   'Hakha Chin',
   'Hakka',
@@ -39,6 +54,11 @@ export const languages = [
   'Hindi',
   'Hindi',
   'Hmong',
+=======
+  'Hakka',
+  'Hakha chin',
+  'Hindi',
+>>>>>>> [web][api]
   'Hungarian',
   'Igbo',
   'Ilocano',
@@ -72,7 +92,10 @@ export const languages = [
   'Slovak',
   'Somali',
   'Spanish',
+<<<<<<< HEAD
   'Sudanese',
+=======
+>>>>>>> [web][api]
   'Swahili',
   'Tagalog',
   'Tamil',
