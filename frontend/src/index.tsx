@@ -71,6 +71,9 @@ const Routes = () => {
 
 const Start: React.FC = () => {
   const [{ data, error, loading }] = useAxiosGet('/config');
+  // for debug the login issue on TEST env.
+  console.info(data, error, loading);
+
   if (loading) {
     return (
       <Box p={2}>
@@ -85,13 +88,19 @@ const Start: React.FC = () => {
         {error.message ? <p>Error message: {error.message}</p> : null}
       </Box>
     );
-  } else {
+  } else if (data) {
     const { keycloakAuthUrl, keycloakRealm, flag } = data;
     localStorage.setItem('keycloakAuthUrl', keycloakAuthUrl);
     localStorage.setItem('keycloakRealm', keycloakRealm);
     localStorageUtil.storeData<boolean>(flag, 'flag');
+    console.info(
+      localStorage.getItem('keycloakAuthUrl'),
+      localStorage.getItem('keycloakRealm'),
+      localStorage.getItem('flag')
+    );
     return <Routes />;
   }
+  return null;
 };
 
 render(

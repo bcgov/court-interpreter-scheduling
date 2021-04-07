@@ -25,6 +25,7 @@ export class InterpreterEntity {
   @OneToMany(
     type => InterpreterLanguageEntity,
     (interpreterLanguage: InterpreterLanguageEntity) => interpreterLanguage.interpreter,
+    { eager: true },
   )
   languages: InterpreterLanguageEntity[];
 
