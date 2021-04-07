@@ -97,6 +97,7 @@ function keyMapping(key: string, value: string, objValue?: string): any {
     }
   }
 
+  //if coming value is empty and exists value is non-empty, then use non-empty value. ex. phone field
   if (!value && !!objValue) {
     return objValue;
   }
