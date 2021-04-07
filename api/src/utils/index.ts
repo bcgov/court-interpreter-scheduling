@@ -64,7 +64,7 @@ function customizer(objValue: any, srcValue: any, key: string) {
     }
     return objValue.concat(srcValue);
   } else {
-    return keyMapping(key, srcValue);
+    return keyMapping(key, srcValue, objValue);
   }
 }
 
@@ -75,7 +75,7 @@ function customizer(objValue: any, srcValue: any, key: string) {
  * @param value
  * @returns
  */
-function keyMapping(key: string, value: string): any {
+function keyMapping(key: string, value: string, objValue?: string): any {
   // contractExtension, contractTermination to boolean
   if (['contractExtension', 'contractTermination'].includes(key)) {
     if (value.toLowerCase() === 'yes') {
@@ -95,6 +95,11 @@ function keyMapping(key: string, value: string): any {
     } else {
       return arr[0];
     }
+  }
+
+  //if coming value is empty and exists value is non-empty, then use non-empty value. ex. phone field
+  if (!value && !!objValue) {
+    return objValue;
   }
 
   return value;
