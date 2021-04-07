@@ -88,6 +88,7 @@ export class BookingEntity {
   updatedAt: Date;
 
   toResponseObject(): BookingRO {
+    const languageName = this.language?.toResponseObject()?.name;
     return {
       id: this.id,
       interpreter: this.interpreter?.toResponseObject(),
@@ -100,7 +101,7 @@ export class BookingEntity {
       interpretFor: this.interpretFor,
       requestedBy: this.requestedBy,
       federal: this.federal,
-      language: this.language?.toResponseObject()?.name,
+      language: languageName,
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,

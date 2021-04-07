@@ -9,7 +9,7 @@ import DateTimeCell from 'components/table/DateTimeCell';
 import StatusButton from 'components/table/Status';
 import InterpreterName from 'components/table/InterpreterName';
 import EditBookingModal from 'components/form/EditBookingModal';
-
+import { fixLanguageName } from 'constants/languages';
 import { Booking } from 'constants/interfaces';
 import { useAxiosFileGet } from 'hooks/axios';
 
@@ -51,7 +51,12 @@ export default function BookingsTable({
           },
           { field: 'file', title: 'Court File Number' },
           { field: 'caseName', title: 'Case Name' },
-          { field: 'language', title: 'Language' },
+          {
+            title: 'Language',
+            render: (row: any) => (
+              <div>{fixLanguageName(row).languageName}</div>
+            ),
+          },
           {
             render: (row: any) => (
               <InterpreterName interpreter={row.interpreter} />

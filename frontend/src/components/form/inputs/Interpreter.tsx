@@ -27,15 +27,13 @@ type GridItemInputProps = {
   label: string;
   rows?: any;
   initialValue?: any;
+  disabled?: boolean;
 };
 
 // TODO: Create more effective check
 const showNotDateData = (data?: string): boolean => {
-  if (!data) {
-    return false;
-  }
-  const regx = /^\d{2}-\w{3}-\d{2}$/gi;
-  return !regx.test(data);
+  const regx = /^\d{1,2}-\w{3}-\d{2}$/gi;
+  return !regx.test(data || '');
 };
 
 const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
@@ -219,13 +217,14 @@ export default function InterpreterInputs() {
         <StyledField
           name="criminalRecordCheck"
           label="Comment On Criminal Record Check"
+          rows={{ xs: 4 }}
         />
       ) : null}
-      <Grid item xs={12} lg={4}>
+      <Grid item xs={2}>
         <SingleCheck name="contractExtension" label="Contract Active" />
       </Grid>
 
-      <Grid item xs={8} lg={8}>
+      <Grid item xs={12} lg={8}>
         <StyledFormControl>
           <StyledLabel htmlFor="comments">Comment</StyledLabel>
           <Field name="comments">
