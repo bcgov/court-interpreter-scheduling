@@ -1,4 +1,3 @@
-import { ReverseLanguageMap } from 'src/common/constant';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import {
@@ -102,7 +101,7 @@ export class BookingEntity {
       interpretFor: this.interpretFor,
       requestedBy: this.requestedBy,
       federal: this.federal,
-      language: ReverseLanguageMap.get(languageName) || languageName,
+      language: languageName,
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,

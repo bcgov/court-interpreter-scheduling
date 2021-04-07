@@ -5,7 +5,7 @@ import * as faker from 'faker/locale/en_CA';
 import { BookingPeriod } from '../enums/booking-period.enum';
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingDateDto } from './booking-date.dto';
-import { LanguageMap } from '../../common/constant';
+import { LanguageDisplayNameToNameMap } from '../../common/constant';
 
 export class CreateBookingDto {
   @ApiProperty({
@@ -94,7 +94,7 @@ export class CreateBookingDto {
     example: 'French',
   })
   @IsOptional()
-  @Transform((value: string) => LanguageMap.get(value) || value)
+  @Transform((value: string) => LanguageDisplayNameToNameMap.get(value) || value)
   language?: string;
 
   @ApiProperty({
