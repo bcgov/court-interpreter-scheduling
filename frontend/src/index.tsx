@@ -41,7 +41,7 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
 const Routes = () => {
   return (
     <KeycloakProvider
-      authClient={keycloakClient}
+      authClient={keycloakClient(localStorage.getItem('keycloakAuthUrl'))}
       LoadingComponent={
         <Box p={2}>
           <CircularProgress />
