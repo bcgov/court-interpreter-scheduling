@@ -15,7 +15,7 @@ import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
 import { Level } from 'src/interpreter/enums/level.enum';
-import { formatYesNo, setCellHelper } from 'src/utils';
+import { concat, formatYesNo, setCellHelper } from 'src/utils';
 
 @Injectable()
 export class BookingService {
@@ -147,73 +147,68 @@ export class BookingService {
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
-    // A10 Last name + First Name
-    setCell({ row: 10, column: 'A', value: `${interpreter.firstName} ${interpreter.lastName}` });
+    // B9 Last name + First Name
+    setCell({
+      row: 9,
+      column: 'B',
+      value: concat([interpreter.firstName, interpreter.lastName], ', ', (str: string) => str.toUpperCase()),
+    });
 
-    // A15 Phone
-    setCell({ row: 15, column: 'A', value: interpreter.phone });
-
-    // G15 Email
-    setCell({ row: 15, column: 'G', value: interpreter.email });
-
-    // B16, E16, H16, K16 Language Level
+    // R9 Language Level
     const bookLang = booking.language;
     const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
+    setCell({ row: 9, column: 'R', value: String(intpLang.level) });
 
-    switch (intpLang?.level) {
-      case Level.one: {
-        setCell({ row: 16, column: 'B', value: 'X' });
-        break;
+    // B11 address + city + province + postcode
+    setCell({ row: 11, column: 'B', value: concat([interpreter.address, interpreter.city, interpreter.province]) });
+
+    // U9 Phone
+    setCell({ row: 9, column: 'U', value: interpreter.phone });
+
+    // U11 Email
+    setCell({ row: 11, column: 'U', value: interpreter.email });
+
+    // A15, B21 Date of Export
+    const exportDate = new Date();
+    setCell({ row: 5, column: 'AI', value: format(exportDate, 'yyyy-MM-dd'), alignment: 'center' });
+    setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd') });
+
+    // L21 Federal
+    setCell({ row: 21, column: 'L', value: formatYesNo(booking.federal) });
+
+    // B23 Comments
+    setCell({ row: 23, column: 'B', value: booking.comment });
+
+    // K79 GST
+    setCell({ row: 79, column: 'K', value: interpreter.gst });
+
+    // booking dates
+    booking.dates.forEach((date, idx) => {
+      // as there are only max 9 rows in adm322
+      if (idx < 9) {
+        const row = idx * 3 + 28;
+        // B28 date
+        setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd') });
+
+        // D28 Court File Number
+        setCell({ row, column: 'D', value: booking.file });
+
+        // H28 Case Number
+        setCell({ row, column: 'H', value: booking.caseName, alignment: 'center' });
+
+        // M28 Language
+        setCell({ row, column: 'M', value: booking.language.name });
+
+        // Q28 Reason
+        setCell({ row, column: 'Q', value: booking.reason });
+
+        // W28 Cour Room
+        setCell({ row, column: 'W', value: booking.room });
+
+        // H29 Federal prosecuters name
+        setCell({ row: 3 * idx + 29, column: 'H', value: booking.prosecutor });
       }
-      case Level.two: {
-        setCell({ row: 16, column: 'E', value: 'X' });
-        break;
-      }
-      case Level.three: {
-        setCell({ row: 16, column: 'H', value: 'X' });
-        break;
-      }
-      case Level.four: {
-        setCell({ row: 16, column: 'K', value: 'X' });
-        break;
-      }
-      default: {
-        setCell({ row: 16, column: 'B', value: 'X' });
-      }
-    }
-
-    // P16 Date of Export
-    setCell({ row: 16, column: 'P', value: format(new Date(), 'yyyy-LLL-dd') });
-
-    // D18 Federal
-    setCell({ row: 18, column: 'D', value: formatYesNo(booking.federal) });
-
-    // A19 Comments
-    setCell({ row: 19, column: 'A', value: booking.comment });
-
-    // A25 Date of first Booking
-    setCell({ row: 25, column: 'A', value: format(new Date(booking.dates[0].date), 'yyyy-LLL-dd') });
-
-    // C25 Court File Number
-    setCell({ row: 25, column: 'C', value: booking.file });
-
-    // G25 Case Number
-    setCell({ row: 25, column: 'G', value: booking.caseName });
-
-    // L25 Language
-    setCell({ row: 25, column: 'L', value: booking.language.name });
-
-    // P25 Reason
-    setCell({ row: 25, column: 'P', value: booking.reason });
-
-    // V25 Cour Room
-    setCell({ row: 25, column: 'V', value: booking.room });
-
-    // H39 Federal prosecuters name
-    setCell({ row: 39, column: 'H', value: booking.prosecutor });
-
-    // K75 GST
-    setCell({ row: 75, column: 'K', value: interpreter.gst });
+    });
 
     return workbook;
   }
