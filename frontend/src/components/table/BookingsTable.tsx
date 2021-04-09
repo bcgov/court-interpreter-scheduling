@@ -12,6 +12,7 @@ import EditBookingModal from 'components/form/EditBookingModal';
 import { fixLanguageName } from 'constants/languages';
 import { Booking } from 'constants/interfaces';
 import { useAxiosFileGet } from 'hooks/axios';
+import { useAlert } from 'hooks/useAlert';
 
 const StyledIconButton = withStyles({
   root: {
@@ -34,6 +35,8 @@ export default function BookingsTable({
     { data: fileGetData, error, loading },
     downloadExcel,
   ] = useAxiosFileGet({ url: '/booking/export' }, { manual: true });
+
+  const { addAlert } = useAlert();
 
   return (
     <Box mt={4}>
@@ -74,6 +77,7 @@ export default function BookingsTable({
                 <StyledIconButton
                   className="pointer"
                   onClick={async () => {
+                    addAlert('Exporting the Excel...', null);
                     const file = await downloadExcel({
                       url: `/booking/export/${row.id}`,
                     });
@@ -91,6 +95,7 @@ export default function BookingsTable({
                     link.href = url;
                     link.click();
                     link.href = '';
+                    addAlert('Sucessfully Exporting the Excel!');
                   }}
                   color="primary"
                 >
