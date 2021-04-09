@@ -3,12 +3,19 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 type AlertProviderProps = { children: React.ReactNode };
 
 const AlertContext = createContext<any>(null);
 
-function RenderSnack({ id, message, open, handleClose }: any) {
+function RenderSnack({
+  id,
+  message,
+  open,
+  handleClose,
+  autoHideDuration,
+}: any) {
   const messageId = `message-${id}`;
   return (
     <Snackbar
@@ -17,22 +24,27 @@ function RenderSnack({ id, message, open, handleClose }: any) {
         horizontal: 'right',
       }}
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={autoHideDuration}
       onClose={handleClose}
       ContentProps={{
         'aria-describedby': messageId,
       }}
       message={<span id={messageId}>{message}</span>}
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          onClick={handleClose}
-        >
-          <CloseIcon />
-        </IconButton>,
-      ]}
+      action={
+        <>
+          {autoHideDuration === null && (
+            <CircularProgress color="secondary" size="2rem" />
+          )}
+          <IconButton
+            key="close"
+            aria-label="Close"
+            color="inherit"
+            onClick={handleClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        </>
+      }
     />
   );
 }
@@ -45,9 +57,9 @@ function AlertProvider({ children }: AlertProviderProps) {
     queue: [],
   });
 
-  function addAlert(message: any, options: any) {
+  function addAlert(message: any, autoHideDuration: number | null = 4000) {
     const id = uniqueId++;
-    const snack = { id, message, open: true, options };
+    const snack = { id, message, open: true, autoHideDuration };
 
     if (current) {
       setState({ current, queue: queue.concat(snack) });

@@ -111,11 +111,18 @@ function keyMapping(key: string, value: string, objValue?: string): any {
  */
 
 /**
- * Get index from [a, b, c, ..., z]
+ * Get index from [a, b, c, ..., z, aa, ab, ..., az, ba, bb, ..., bz...]
+ * actually, this is base 26
  * @param char
  * @returns 1, 2, ..., 26
  */
-export const getIndexOfAlphabet = (char: string) => char.toLowerCase().charCodeAt(0) - 96;
+export const getIndexOfAlphabet = (char: string): number => {
+  const singleCharIndex = (single: string) => single.toLowerCase().charCodeAt(0) - 96;
+  if (char.length === 1) return singleCharIndex(char);
+
+  const charArr = char.split('').reverse();
+  return charArr.reduce((total, val, idx) => total + singleCharIndex(val) * Math.pow(26, idx), 0);
+};
 
 /**
  * convert bool to Yes/No
@@ -133,12 +140,28 @@ export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
   row,
   column,
   value,
+  alignment,
 }: {
   row: number;
   column: string;
   value: string;
+  alignment?: ExcelJS.Alignment['horizontal'];
 }) => {
   const Row = workSheet.getRow(row);
   Row.getCell(getIndexOfAlphabet(column)).value = value;
+  if (alignment) {
+    Row.alignment = { horizontal: alignment };
+  }
   Row.commit();
+};
+
+/**
+ * map and join strings arrary
+ */
+export const mapAndJoin = (
+  strings: string[],
+  delimiter: string = ', ',
+  transform: (str: string) => string = (str: string) => str,
+): string => {
+  return strings.map(transform).join(delimiter);
 };
