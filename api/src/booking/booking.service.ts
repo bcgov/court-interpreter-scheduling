@@ -15,7 +15,7 @@ import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
 import { Level } from 'src/interpreter/enums/level.enum';
-import { concat, formatYesNo, setCellHelper } from 'src/utils';
+import { mapAndJoin, formatYesNo, setCellHelper } from 'src/utils';
 
 @Injectable()
 export class BookingService {
@@ -151,7 +151,7 @@ export class BookingService {
     setCell({
       row: 9,
       column: 'B',
-      value: concat([interpreter.firstName, interpreter.lastName], ', ', (str: string) => str.toUpperCase()),
+      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ', ', (str: string) => str.toUpperCase()),
     });
 
     // R9 Language Level
@@ -160,7 +160,7 @@ export class BookingService {
     setCell({ row: 9, column: 'R', value: String(intpLang.level) });
 
     // B11 address + city + province + postcode
-    setCell({ row: 11, column: 'B', value: concat([interpreter.address, interpreter.city, interpreter.province]) });
+    setCell({ row: 11, column: 'B', value: mapAndJoin([interpreter.address, interpreter.city, interpreter.province]) });
 
     // U9 Phone
     setCell({ row: 9, column: 'U', value: interpreter.phone });

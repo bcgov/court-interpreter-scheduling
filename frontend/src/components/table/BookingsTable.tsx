@@ -77,7 +77,7 @@ export default function BookingsTable({
                 <StyledIconButton
                   className="pointer"
                   onClick={async () => {
-                    addAlert('Exporting the Excel...', null);
+                    addAlert('Exporting the ADM322 Excel file...', null);
                     const file = await downloadExcel({
                       url: `/booking/export/${row.id}`,
                     });
@@ -95,7 +95,7 @@ export default function BookingsTable({
                     link.href = url;
                     link.click();
                     link.href = '';
-                    addAlert('Sucessfully Exporting the Excel!');
+                    addAlert('Successfully exported the ADM322 Excel file');
                   }}
                   color="primary"
                 >

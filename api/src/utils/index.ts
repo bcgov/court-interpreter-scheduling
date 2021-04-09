@@ -156,9 +156,9 @@ export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
 };
 
 /**
- * concate string
+ * map and join strings arrary
  */
-export const concat = (
+export const mapAndJoin = (
   strings: string[],
   delimiter: string = ', ',
   transform: (str: string) => string = (str: string) => str,
