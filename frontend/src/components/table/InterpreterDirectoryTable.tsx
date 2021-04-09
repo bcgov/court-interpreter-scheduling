@@ -5,7 +5,7 @@ import { Grid, Box } from '@material-ui/core';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import AddIcon from '@material-ui/icons/Add';
 
-import Tooltip from '@material-ui/core/Tooltip';
+import { StyledTooltip } from 'components/reusable/StyledTooltip';
 import CopyIcon from '../../assets/images/copy.png';
 
 import BaseTable from 'components/table/Base';
@@ -47,7 +47,7 @@ export default function DirectoryTable({
             title: (
               <>
                 <span>Email </span>
-                <Tooltip title="Copy emails to clipboard">
+                <StyledTooltip title="Copy emails to clipboard">
                   <StyledIconButton
                     className="pointer"
                     onClick={handleCopyEmails}
@@ -56,7 +56,7 @@ export default function DirectoryTable({
                   >
                     <img src={CopyIcon} />
                   </StyledIconButton>
-                </Tooltip>
+                </StyledTooltip>
               </>
             ),
             field: 'email',
