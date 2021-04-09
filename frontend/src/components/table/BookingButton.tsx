@@ -1,7 +1,7 @@
-import React from 'react'
-import { withStyles } from '@material-ui/core'
-import Button, { ButtonProps } from '@material-ui/core/Button'
-import Tooltip from '@material-ui/core/Tooltip'
+import React from 'react';
+import { withStyles } from '@material-ui/core';
+import Button, { ButtonProps } from '@material-ui/core/Button';
+import { StyledTooltip } from 'components/reusable/StyledTooltip';
 
 export const StyledButton = withStyles({
   root: {
@@ -11,14 +11,18 @@ export const StyledButton = withStyles({
     width: '95px',
     textTransform: 'none',
     fontWeight: 'bold',
-    fontSize: '16px'
+    fontSize: '16px',
   },
-})(Button)
+})(Button);
 
 export default function BookingButton(props: ButtonProps) {
   return props.disabled ? (
-    <Tooltip title='Please select dates to create a new booking'>
-      <span><StyledButton {...props}>Book</StyledButton></span>
-    </Tooltip>
-  ) : <StyledButton {...props}>Book</StyledButton>
+    <StyledTooltip title="Please select dates to create a new booking">
+      <span>
+        <StyledButton {...props}>Book</StyledButton>
+      </span>
+    </StyledTooltip>
+  ) : (
+    <StyledButton {...props}>Book</StyledButton>
+  );
 }
