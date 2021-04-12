@@ -80,24 +80,28 @@ export default function BookingsTable({
                     className="pointer"
                     onClick={async () => {
                       addAlert('Exporting the ADM322 Excel file...', null);
-                      const file = await downloadExcel({
-                        url: `/booking/export/${row.id}`,
-                      });
+                      try {
+                        const file = await downloadExcel({
+                          url: `/booking/export/${row.id}`,
+                        });
 
-                      const url = window.URL.createObjectURL(
-                        new Blob([file.data])
-                      );
-                      const link = document.createElement('a');
-                      link.download = `booking_${row.interpreter.firstName}_${
-                        row.language
-                      }_${format(
-                        new Date(row.dates[0].date),
-                        'yyyy-LLL-dd'
-                      )}.xlsx`;
-                      link.href = url;
-                      link.click();
-                      link.href = '';
-                      addAlert('Successfully exported the ADM322 Excel file');
+                        const url = window.URL.createObjectURL(
+                          new Blob([file.data])
+                        );
+                        const link = document.createElement('a');
+                        link.download = `booking_${row.interpreter.firstName}_${
+                          row.language
+                        }_${format(
+                          new Date(row.dates[0].date),
+                          'yyyy-LLL-dd'
+                        )}.xlsx`;
+                        link.href = url;
+                        link.click();
+                        window.URL.revokeObjectURL(link.href);
+                        addAlert('Successfully exported the ADM322 Excel file');
+                      } catch (err) {
+                        addAlert(err.message);
+                      }
                     }}
                     color="primary"
                   >
