@@ -148,13 +148,14 @@ export class BookingService {
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
-    // W5 invoice, [first three letters of first name] + [first letter of last name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
+    // W5, F113 invoice, [first three letters of first name] + [first letter of last name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
     const invoice = (
       interpreter.firstName.substring(0, 3) +
       interpreter.lastName.substring(0, 1) +
       format(exportDate, 'ddMMMyy')
     ).toUpperCase();
     setCell({ row: 5, column: 'W', value: invoice });
+    setCell({ row: 113, column: 'F', value: invoice });
 
     // B9 Last name + First Name
     setCell({
