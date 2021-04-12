@@ -60,13 +60,7 @@ function AlertProvider({ children }: AlertProviderProps) {
   function addAlert(message: any, autoHideDuration: number | null = 4000) {
     const id = uniqueId++;
     const snack = { id, message, open: true, autoHideDuration };
-
-    if (current) {
-      setState({ current, queue: queue.concat(snack) });
-    } else {
-      setState({ queue, current: snack });
-    }
-
+    setState({ queue, current: snack });
     return id;
   }
 
