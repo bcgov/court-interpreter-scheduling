@@ -148,7 +148,7 @@ export class BookingService {
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
-    // W5 invoice, force formula calculated
+    // W5 invoice, [first three letters of first name] + [first letter of last name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
     const invoice = (
       interpreter.firstName.substring(0, 3) +
       interpreter.lastName.substring(0, 1) +
