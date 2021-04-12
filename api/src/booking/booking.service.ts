@@ -139,6 +139,7 @@ export class BookingService {
   async writeToWorkbook(booking: BookingEntity): Promise<ExcelJS.Workbook> {
     const workbook = new ExcelJS.Workbook();
     const { interpreter } = booking;
+    const exportDate = new Date();
 
     // read adm322 template
     await workbook.xlsx.readFile(path.join(__dirname, '..', '..', '/assets/adm322.xlsx'));
@@ -146,6 +147,14 @@ export class BookingService {
     // get the worksheet
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
+
+    // W5 invoice, force formula calculated
+    const invoice = (
+      interpreter.firstName.substring(0, 3) +
+      interpreter.lastName.substring(0, 1) +
+      format(exportDate, 'ddMMMyy')
+    ).toUpperCase();
+    setCell({ row: 5, column: 'W', value: invoice });
 
     // B9 Last name + First Name
     setCell({
@@ -169,7 +178,6 @@ export class BookingService {
     setCell({ row: 11, column: 'U', value: interpreter.email });
 
     // A15, B21 Date of Export
-    const exportDate = new Date();
     setCell({ row: 5, column: 'AI', value: format(exportDate, 'yyyy-MM-dd'), alignment: 'center' });
     setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd') });
 
