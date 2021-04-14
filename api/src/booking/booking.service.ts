@@ -16,6 +16,7 @@ import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
 import { Level } from 'src/interpreter/enums/level.enum';
 import { mapAndJoin, formatYesNo, setCellHelper } from 'src/utils';
+import { LocationEntity } from 'src/location/entities/location.entity';
 
 @Injectable()
 export class BookingService {
@@ -26,6 +27,7 @@ export class BookingService {
     private readonly bookingRepository: Repository<BookingEntity>,
     @InjectRepository(InterpreterEntity)
     private readonly interpreterRepository: Repository<InterpreterEntity>,
+    @InjectRepository(LocationEntity) private readonly locationRepository: Repository<LocationEntity>,
   ) {}
 
   async create(createBookingDto: CreateBookingDto, bookingDates: BookingDateEntity[]): Promise<BookingEntity> {
@@ -36,8 +38,12 @@ export class BookingService {
       },
       { relations: ['languages'] },
     );
+    let location: LocationEntity;
+    if (createDto.locationId) {
+      location = await this.locationRepository.findOne(createDto.locationId);
+    }
 
-    const booking = this.bookingRepository.create(createDto);
+    const booking = this.bookingRepository.create({ ...createDto, location });
     booking.interpreter = interpreter;
     booking.dates = bookingDates;
 
