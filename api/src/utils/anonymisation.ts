@@ -1,5 +1,6 @@
 import { MersenneTwister19937, integer, Engine } from 'random-js'
 import { first_name, last_name } from 'faker/lib/locales/en/name'
+import * as faker from 'faker/locale/en_CA';
 import * as crypto from 'crypto'
 
 export type ValueType = 'firstName' | 'lastName' | 'email' | 'phone' | 'address' | 'city' | 'postalCode' | 'province'
@@ -85,7 +86,7 @@ export const anonymousValue = (valueType: ValueType, randomSeed?: number): strin
         case 'email':
             return `${anonymousValue('firstName', randomSeed).toLowerCase()}.${anonymousValue('lastName', randomSeed).toLowerCase()}@fake.com`
         case 'phone':
-            return '555-555-5555'
+            return faker.phone.phoneNumberFormat() //returns like "779-582-9724"
         case 'address':
             return `${integer(1, 1000000)(gen)} Main Street`
         case 'province':
