@@ -123,5 +123,5 @@ export class CreateBookingDto {
     example: '1',
   })
   @IsOptional()
-  location: number;
+  location?: number;
 }
