@@ -43,9 +43,10 @@ export class BookingService {
       location = await this.locationRepository.findOne(createDto.locationId);
     }
 
-    const booking = this.bookingRepository.create({ ...createDto, location });
+    const booking = this.bookingRepository.create({ ...createDto });
     booking.interpreter = interpreter;
     booking.dates = bookingDates;
+    booking.location = location;
 
     if (language) {
       booking.language = await this.languageRepository.findOneOrFail({
