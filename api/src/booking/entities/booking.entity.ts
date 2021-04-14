@@ -1,9 +1,11 @@
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
+import { LocationEntity } from 'src/location/entities/location.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -67,6 +69,13 @@ export class BookingEntity {
     { eager: true, onDelete: 'SET NULL' },
   )
   language: LanguageEntity;
+
+  @ManyToOne(type => LocationEntity, { eager: true, onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({
+    name: 'court_location_id',
+    referencedColumnName: 'id',
+  })
+  location: LocationEntity;
 
   @Column({ nullable: true })
   reason: string;
