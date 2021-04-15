@@ -39,8 +39,10 @@ export class BookingService {
       { relations: ['languages'] },
     );
     let location: LocationEntity;
-    if (createDto.locationId) {
-      location = await this.locationRepository.findOne(createDto.locationId);
+    if (createDto.locationName) {
+      location = await this.locationRepository.findOne({
+        name: createDto.locationName.toUpperCase(),
+      });
     }
 
     const booking = this.bookingRepository.create({ ...createDto });
@@ -66,7 +68,8 @@ export class BookingService {
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
       .leftJoinAndSelect('interpreter.languages', 'languages')
-      .leftJoinAndSelect('languages.language', 'lang');
+      .leftJoinAndSelect('languages.language', 'lang')
+      .leftJoinAndSelect('booking.location', 'location');
 
     query = paginateBookingQueryDto.filter(query);
 
@@ -133,6 +136,14 @@ export class BookingService {
 
     if (bookingDates && bookingDates.length > 0) {
       booking.dates = bookingDates;
+    }
+
+    let location: LocationEntity;
+    if (updateDto.locationName) {
+      location = await this.locationRepository.findOne({
+        name: updateDto.locationName.toUpperCase(),
+      });
+      booking.location = location;
     }
 
     await this.bookingRepository.save(booking);

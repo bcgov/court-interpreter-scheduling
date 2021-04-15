@@ -120,8 +120,8 @@ export class CreateBookingDto {
 
   @ApiProperty({
     description: 'Id of the location object',
-    example: '1',
+    example: 'KELOWNA',
   })
   @IsOptional()
-  locationId?: number;
+  locationName?: string;
 }

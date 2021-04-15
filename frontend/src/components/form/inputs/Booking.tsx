@@ -24,6 +24,7 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
 import { fixLanguageName } from 'constants/languages';
+import { StaticCourtLocation } from 'constants/courtLocations';
 
 type GridItemInputProps = {
   name: string;
@@ -93,14 +94,16 @@ const StyledSelect = ({
   options = [],
   name,
   rows = { xs: 6 },
+  label,
 }: {
   options: string[];
   name: string;
   rows?: GridItemInputProps['rows'];
+  label?: string;
 }) => (
   <Grid item {...rows}>
     <StyledFormControl>
-      <StyledLabel htmlFor={name}>{name}</StyledLabel>
+      <StyledLabel htmlFor={label || name}>{label || name}</StyledLabel>
       <StyledNativeSelect
         input={
           <Field
@@ -187,11 +190,15 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledField
-        name="registry"
-        label="Registry Location"
-        rows={{ xs: 6, lg: 5 }}
-      />
+      {edit ? (
+        <StyledField name="locationName" label="Registry Location" />
+      ) : (
+        <StyledSelect
+          name="locationName"
+          label="Registry Location"
+          options={StaticCourtLocation}
+        />
+      )}
 
       <StyledField
         name="file"
