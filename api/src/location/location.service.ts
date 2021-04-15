@@ -9,4 +9,6 @@ export class LocationService {
   async findAll(): Promise<LocationEntity[]> {
     return this.locationRepository.find();
   }
+
+  private async 
 }

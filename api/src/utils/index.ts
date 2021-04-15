@@ -165,3 +165,5 @@ export const mapAndJoin = (
 ): string => {
   return strings.map(transform).join(delimiter);
 };
+
+export const isProduction = process.env.NODE_ENV === 'production'
