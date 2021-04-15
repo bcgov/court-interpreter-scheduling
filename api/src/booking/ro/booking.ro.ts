@@ -56,4 +56,7 @@ export class BookingRO {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty()
+  locationName?: string;
 }
