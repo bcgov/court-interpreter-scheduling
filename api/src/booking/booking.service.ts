@@ -16,6 +16,7 @@ import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
 import { Level } from 'src/interpreter/enums/level.enum';
 import { mapAndJoin, formatYesNo, setCellHelper } from 'src/utils';
+import { LocationEntity } from 'src/location/entities/location.entity';
 
 @Injectable()
 export class BookingService {
@@ -26,6 +27,7 @@ export class BookingService {
     private readonly bookingRepository: Repository<BookingEntity>,
     @InjectRepository(InterpreterEntity)
     private readonly interpreterRepository: Repository<InterpreterEntity>,
+    @InjectRepository(LocationEntity) private readonly locationRepository: Repository<LocationEntity>,
   ) {}
 
   async create(createBookingDto: CreateBookingDto, bookingDates: BookingDateEntity[]): Promise<BookingEntity> {
@@ -36,10 +38,17 @@ export class BookingService {
       },
       { relations: ['languages'] },
     );
+    let location: LocationEntity;
+    if (createDto.locationName) {
+      location = await this.locationRepository.findOne({
+        name: createDto.locationName.toUpperCase(),
+      });
+    }
 
-    const booking = this.bookingRepository.create(createDto);
+    const booking = this.bookingRepository.create({ ...createDto });
     booking.interpreter = interpreter;
     booking.dates = bookingDates;
+    booking.location = location;
 
     if (language) {
       booking.language = await this.languageRepository.findOneOrFail({
@@ -59,7 +68,8 @@ export class BookingService {
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
       .leftJoinAndSelect('interpreter.languages', 'languages')
-      .leftJoinAndSelect('languages.language', 'lang');
+      .leftJoinAndSelect('languages.language', 'lang')
+      .leftJoinAndSelect('booking.location', 'location');
 
     query = paginateBookingQueryDto.filter(query);
 
@@ -126,6 +136,14 @@ export class BookingService {
 
     if (bookingDates && bookingDates.length > 0) {
       booking.dates = bookingDates;
+    }
+
+    let location: LocationEntity;
+    if (updateDto.locationName) {
+      location = await this.locationRepository.findOne({
+        name: updateDto.locationName.toUpperCase(),
+      });
+      booking.location = location;
     }
 
     await this.bookingRepository.save(booking);
