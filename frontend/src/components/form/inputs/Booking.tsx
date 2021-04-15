@@ -190,15 +190,11 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      {edit ? (
-        <StyledField name="locationName" label="Registry Location" />
-      ) : (
-        <StyledSelect
-          name="locationName"
-          label="Registry Location"
-          options={StaticCourtLocation}
-        />
-      )}
+      <StyledSelect
+        name="locationName"
+        label="Registry Location"
+        options={StaticCourtLocation}
+      />
 
       <StyledField
         name="file"
