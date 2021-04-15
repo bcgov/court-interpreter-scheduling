@@ -38,10 +38,10 @@ export class UpdateLocationColumns1618521340231 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE ${Table} 
      ADD COLUMN location_number int;`);
 
-    // add new column location_code
+    //  delete location_code
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "location_code"`);
 
-    // add lat, lng
+    // delete lat, lng
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "lat" NUMERIC`);
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "lng" NUMERIC`);
 
@@ -53,7 +53,7 @@ export class UpdateLocationColumns1618521340231 implements MigrationInterface {
         INSERT INTO court_location(location_name,location_number) VALUES ('RICHMOND','2025');
         INSERT INTO court_location(location_name,location_number) VALUES ('ROBSON SQUARE','2045');
         INSERT INTO court_location(location_name,location_number) VALUES ('VANCOUVER','2040');
-        `,
+       `,
     );
   }
 }
