@@ -1,4 +1,4 @@
-import  * as yup from 'yup'
+import * as yup from 'yup';
 
 const Initial = {
   room: '',
@@ -12,7 +12,8 @@ const Initial = {
   reason: '',
   prosecutor: '',
   comment: '',
-}
+  locationName: '',
+};
 
 const Schema = yup.object({
   room: yup.string(),
@@ -26,6 +27,7 @@ const Schema = yup.object({
   reason: yup.string(),
   prosecutor: yup.string(),
   comment: yup.string(),
-})
+  locationName: yup.string(),
+});
 
-export { Initial, Schema }
+export { Initial, Schema };
