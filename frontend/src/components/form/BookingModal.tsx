@@ -57,7 +57,7 @@ export default function BookingModal({ interpreter, setInterpreter }: BookingMod
             initialValues={{
               ...Initial,
               ...state?.booking,
-              language: state?.booking?.language || search.language,
+              language: state?.booking?.language || search.language || interpreter?.languages[0]?.languageName,
             }}
             validationSchema={Schema}
             onSubmit={async (values) => {
