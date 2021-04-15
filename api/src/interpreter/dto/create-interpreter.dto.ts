@@ -81,7 +81,6 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @ValidateIf(e => e.homePhone !== '')
-  @IsPhoneNumber('CA')
   homePhone?: string;
 
   @ApiProperty({
@@ -90,7 +89,6 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @ValidateIf(e => e.businessPhone !== '')
-  @IsPhoneNumber('CA')
   businessPhone?: string;
 
   @ApiProperty({
@@ -99,7 +97,6 @@ export class CreateInterpreterDto {
   })
   @IsOptional()
   @ValidateIf(e => e.phone !== '')
-  @IsPhoneNumber('CA')
   phone?: string;
 
   @ApiProperty({
