@@ -8,6 +8,7 @@ import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
 import { documentation } from './common/common.documentation';
 import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
+import { isProduction } from './utils';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,7 +17,7 @@ async function bootstrap() {
   app.use(bodyParser.json({limit: '50mb'}));
   
   documentation(app);
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProduction) {
     global['nestAppServer'] = app.getHttpServer();
   }
 

@@ -4,6 +4,7 @@ import { DatabaseService } from './database.service';
 
 import { join } from 'path';
 import * as dotenv from 'dotenv';
+import { isProduction } from 'src/utils';
 
 dotenv.config();
 

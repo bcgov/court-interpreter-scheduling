@@ -120,6 +120,8 @@ jobs:
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: prod
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
+      SS_API_USERNAME: ${{ secrets.SS_API_USERNAME }}
+      SS_API_PASSWORD: ${{ secrets.SS_API_PASSWORD }}
     needs:
       - build
     steps:
