@@ -202,6 +202,7 @@ deploy-api:
 		-p DEPLOYMENT_ENV_HIDDEN_FLAG=$(DEPLOYMENT_ENV_HIDDEN_FLAG) \
 		-p SS_API_PASSWORD=$(SS_API_PASSWORD) \
 		-p SS_API_USERNAME=$(SS_API_USERNAME) \
+		-p MAP_BOX_TOKEN=$(MAP_BOX_TOKEN) \
 		| oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(API))
 

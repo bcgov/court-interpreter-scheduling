@@ -33,6 +33,7 @@ export class UpdateLocationColumns1618521340231 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "location_code"`);
 
     // delete lat, lng
+    await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "location_short_desc" NUMERIC`);
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "lat" NUMERIC`);
     await queryRunner.query(`ALTER TABLE ${Table} DROP COLUMN "lng" NUMERIC`);
 

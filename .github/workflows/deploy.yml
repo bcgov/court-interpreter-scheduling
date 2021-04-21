@@ -72,6 +72,7 @@ jobs:
       KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: dev
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
+      MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
     needs:
       - build
     steps:
@@ -122,6 +123,7 @@ jobs:
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
       SS_API_USERNAME: ${{ secrets.SS_API_USERNAME }}
       SS_API_PASSWORD: ${{ secrets.SS_API_PASSWORD }}
+      MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
     needs:
       - build
     steps:
@@ -170,6 +172,7 @@ jobs:
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: test
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
+      MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
     needs:
       - build
     steps:

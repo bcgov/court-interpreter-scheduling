@@ -25,6 +25,7 @@ services:
       - KEYCLOAK_FE_CLIENT=court-fe
       - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
       - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
+      - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
     expose:
       - "4000"
     volumes:
