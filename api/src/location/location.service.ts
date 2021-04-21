@@ -9,4 +9,12 @@ export class LocationService {
   async findAll(): Promise<LocationEntity[]> {
     return this.locationRepository.find();
   }
+
+  async findAllAddress(): Promise<{ address: string }[]> {
+    return this.locationRepository.query(`
+      SELECT concat(address_line1, ' ', address_line2, ', ', city, ', BC ', postal_code) address 
+      FROM "court_location"
+      WHERE address_line1 IS NOT NULL
+    `);
+  }
 }

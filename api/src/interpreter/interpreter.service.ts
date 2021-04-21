@@ -153,4 +153,12 @@ export class InterpreterService {
     // maybe in the future, we can enable this set auto-increment index to 1
     // await this.interpreterRepository.query(`ALTER SEQUENCE ${InterpreterEntity.tableName}_id_seq RESTART WITH 1`);
   }
+
+  async findAllAddress(): Promise<{ address: string }[]> {
+    return await this.interpreterRepository.query(`
+    SELECT concat(address, ', ', city, ', ', province, ' ', postal) address 
+      FROM "interpreter"
+      WHERE address IS NOT NULL
+    `);
+  }
 }
