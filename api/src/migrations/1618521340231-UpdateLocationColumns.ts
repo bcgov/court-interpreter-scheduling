@@ -14,20 +14,11 @@ export class UpdateLocationColumns1618521340231 implements MigrationInterface {
     // add new column location_code
     await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "location_code" VARCHAR NOT NULL`);
 
+    await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "location_short_desc" VARCHAR NOT NULL`);
+
     // add lat, lng
     await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "lat" NUMERIC`);
     await queryRunner.query(`ALTER TABLE ${Table} ADD COLUMN "lng" NUMERIC`);
-
-    // Initial Data
-    await queryRunner.query(
-      ` 
-        INSERT INTO court_location(location_name,location_code) VALUES ('KELOWNA','4801');
-        INSERT INTO court_location(location_name,location_code) VALUES ('NEW WESTMINSTER','3581');
-        INSERT INTO court_location(location_name,location_code) VALUES ('RICHMOND','2025');
-        INSERT INTO court_location(location_name,location_code) VALUES ('ROBSON SQUARE','2045');
-        INSERT INTO court_location(location_name,location_code) VALUES ('VANCOUVER','2040');
-       `,
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

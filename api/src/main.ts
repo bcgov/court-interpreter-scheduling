@@ -9,13 +9,14 @@ import { CONFIG } from './common/common.config';
 import { documentation } from './common/common.documentation';
 import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
 import { isProduction } from './utils';
+import { LocationFetchScheduleService } from './location/location-fetch-schedule.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setGlobalPrefix('api/v1')
+  app.setGlobalPrefix('api/v1');
   app.enableCors();
-  app.use(bodyParser.json({limit: '50mb'}));
-  
+  app.use(bodyParser.json({ limit: '50mb' }));
+
   documentation(app);
   if (!isProduction) {
     global['nestAppServer'] = app.getHttpServer();
@@ -40,9 +41,15 @@ async function bootstrap() {
   app.useGlobalFilters(new ErrorExceptionFilter());
   await app.listen(CONFIG.applicationPort);
 
-  Logger.log(
-    `Server running on http://localhost:${CONFIG.applicationPort}`,
-    'Bootstrap',
+  // Call service
+  const locationFetchService: LocationFetchScheduleService = app.get<LocationFetchScheduleService>(
+    LocationFetchScheduleService,
   );
+  if (locationFetchService) {
+    await locationFetchService.fetchAndStoreLocation();
+    Logger.log(`Location service fetch [DONE]`);
+  }
+
+  Logger.log(`Server running on http://localhost:${CONFIG.applicationPort}`, 'Bootstrap');
 }
 bootstrap();
