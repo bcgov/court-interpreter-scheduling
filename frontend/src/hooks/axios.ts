@@ -37,7 +37,7 @@ const axiosPatch = axios.create({
   },
 });
 
-const axiosGet = axios.create({
+export const axiosGet = axios.create({
   method: 'GET',
 });
 
@@ -56,6 +56,12 @@ axiosPatch.interceptors.request.use(successInterceptor);
 axiosGet.interceptors.request.use(successInterceptor);
 axiosFileGet.interceptors.request.use(successInterceptor);
 axiosDelete.interceptors.request.use(successInterceptor);
+
+export function axiosGetter() {
+  return {
+    axiosGet,
+  };
+}
 
 export const useAxiosPost = makeUseAxios({
   cache: false,

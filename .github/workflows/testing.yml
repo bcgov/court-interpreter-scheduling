@@ -17,6 +17,8 @@ jobs:
         run: docker-compose --file docker-compose.dev.yml up -d --build keycloak
 
       - name: Build Api and Database
+        env:
+          MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
         run: docker-compose --file docker-compose.dev.yml up -d --build api
 
       ## TODO
@@ -24,6 +26,8 @@ jobs:
       #   run: docker-compose --file docker-compose.dev.yml up -d --build client
 
       - name: Backend Testing
+        env:
+          MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }} 
         run: docker-compose --file docker-compose.dev.yml exec -T api npm run test
 
       ## TODO

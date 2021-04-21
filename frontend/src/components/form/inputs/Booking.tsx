@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
 import CalendarIcon from '@material-ui/icons/CalendarToday';
@@ -11,6 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { getLocationDetails } from 'util/locationFetch';
 
 import {
   StyledFormControl,
@@ -167,6 +168,14 @@ export default function BookingInputs({
   booking?: Booking;
   edit?: boolean;
 }) {
+  const [locations, setLocations] = useState(['Loading...']);
+  useEffect(() => {
+    async function fetchLocation() {
+      const fetchedLocations: string[] = await getLocationDetails();
+      setLocations(fetchedLocations);
+    }
+    fetchLocation();
+  }, [setLocations]);
   return (
     <Grid container spacing={4}>
       <StyledSelect
@@ -193,7 +202,7 @@ export default function BookingInputs({
       <StyledSelect
         name="locationName"
         label="Registry Location"
-        options={StaticCourtLocation}
+        options={locations}
       />
 
       <StyledField
