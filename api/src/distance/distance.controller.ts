@@ -15,6 +15,7 @@ export class DistanceController {
   async generateDistance() {
     const courtAddrs = await this.locationService.findAllAddress();
     const intpAddrs = await this.interpreterService.findAllAddress();
-    return await this.distanceService.generate({ courtAddrs, intpAddrs });
+    const distanceData = await this.distanceService.generate({ courtAddrs, intpAddrs });
+    return { length: distanceData.length, data: distanceData };
   }
 }

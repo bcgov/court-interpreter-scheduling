@@ -7,7 +7,9 @@ export class CreateDistance1618871540070 implements MigrationInterface {
                 id SERIAL PRIMARY KEY,
                 intp_addr character varying NOT NULL,
                 court_addr character varying NOT NULL,
-                distance numeric
+                distance real,
+                created_at timestamp without time zone NOT NULL DEFAULT now(),
+                updated_at timestamp without time zone NOT NULL DEFAULT now()
             )
         `);
   }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
 
 import { DistanceEntity } from './entities/distance.entity';
+import { googleMapMock } from './mock/googleMapApi.mock';
 
 @Injectable()
 export class DistanceService {
@@ -17,27 +18,32 @@ export class DistanceService {
   }): Promise<DistanceEntity[]> {
     // exists data
 
-    intpAddrs.forEach(({ address: intpAddr }) => {
-      courtAddrs.forEach(async ({ address: courtAddr }) => {
-        if (!this.isDistanceExist({ courtAddr, intpAddr })) {
-          const distance = await this.calcDistance(courtAddr, intpAddr);
-          const disEntity: DistanceEntity = this.distanceRepository.create({ courtAddr, intpAddr, distance });
-          console.log(disEntity);
-          await this.distanceRepository.save(disEntity);
-        }
-      });
-    });
+    const newInserts: DistanceEntity[][] = await Promise.all(
+      intpAddrs.map(async ({ address: intpAddr }) => {
+        return await Promise.all(
+          courtAddrs.map(async ({ address: courtAddr }) => {
+            if (!this.isDistanceExist({ courtAddr, intpAddr })) {
+              const distance = await this.calcDistance(courtAddr, intpAddr);
+              const disEntity: DistanceEntity = this.distanceRepository.create({ courtAddr, intpAddr, distance });
+              return await this.distanceRepository.save(disEntity);
+            }
+          }),
+        );
+      }),
+    );
 
-    const distances = await this.distanceRepository.find();
-    return distances;
+    // flat array
+    return [].concat(...newInserts);
   }
 
   private async calcDistance(addr1: string, addr2: string): Promise<string> {
+    // In non-production env, using mock google api
     if (process.env.DEPLOYMENT_ENV !== 'prod') {
-      return String(100);
+      return googleMapMock(addr1, addr2);
     }
-    return String(200.123);
+
     // google api
+    return String(200.123);
   }
 
   private isDistanceExist({ courtAddr, intpAddr }: { courtAddr: string; intpAddr: string }): boolean {
