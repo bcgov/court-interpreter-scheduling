@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as ExcelJS from 'exceljs';
 
 import { CreateInterpreterDto } from 'src/interpreter/dto/create-interpreter.dto';
+import { GoogleDistance } from 'src/distance/googleMap';
 
 export function capFirstAndSmallRest(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -173,7 +174,7 @@ export const isProduction = process.env.NODE_ENV === 'production';
  * refering to googleMapApi.mock.ts file for the data structure
  * @param data
  */
-export const parseDistanceFromGoogleApi = (data: any) => {
+export const parseDistanceFromGoogleApi = (data: GoogleDistance) => {
   if (data?.routes && data?.routes?.length > 0) {
     const { legs } = data.routes[0];
     if (legs.length > 0) {

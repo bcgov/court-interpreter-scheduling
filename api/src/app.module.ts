@@ -19,7 +19,7 @@ import { DistanceModule } from './distance/distance.module';
     LanguageModule,
     LocationModule,
     BookingModule,
-    AuthModule,
+    // AuthModule,
     DistanceModule,
   ],
   controllers: [AppController],

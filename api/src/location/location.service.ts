@@ -12,7 +12,7 @@ export class LocationService {
 
   async findAllAddress(): Promise<{ address: string }[]> {
     return this.locationRepository.query(`
-      SELECT concat(address_line1, ' ', address_line2, ', ', city, ', BC ', postal_code) address 
+      SELECT DISTINCT(CONCAT(address_line1)) address 
       FROM "court_location"
       WHERE address_line1 IS NOT NULL
     `);

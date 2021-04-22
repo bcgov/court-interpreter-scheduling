@@ -156,7 +156,7 @@ export class InterpreterService {
 
   async findAllAddress(): Promise<{ address: string }[]> {
     return await this.interpreterRepository.query(`
-    SELECT concat(address, ', ', city, ', ', province, ' ', postal) address 
+    SELECT DISTINCT(CONCAT(address, ', ', city, ', ', province, ' ', postal)) AS address 
       FROM "interpreter"
       WHERE address IS NOT NULL
     `);
