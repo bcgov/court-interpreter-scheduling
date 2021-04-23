@@ -203,7 +203,7 @@ deploy-api:
 		-p SS_API_PASSWORD=$(SS_API_PASSWORD) \
 		-p SS_API_USERNAME=$(SS_API_USERNAME) \
 		-p MAP_BOX_TOKEN=$(MAP_BOX_TOKEN) \
-		-p GOOGLE_API_URL=$(GOOGLE_API_URL) \
+		-p GOOGLE_API_KEY=$(GOOGLE_API_KEY) \
 		| oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(API))
 
