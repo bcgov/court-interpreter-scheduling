@@ -29,6 +29,7 @@ services:
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
       - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
       - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     expose:
       - "4000"
     volumes:
