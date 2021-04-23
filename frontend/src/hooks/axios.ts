@@ -7,6 +7,7 @@ configure({ axios, cache: false });
 
 function successInterceptor(request: AxiosRequestConfig) {
   if (request.headers) {
+    keycloak().updateToken(30);
     request.headers['Authorization'] = `Bearer ${keycloak()?.token}`;
   } else {
     request.headers = {

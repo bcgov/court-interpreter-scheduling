@@ -112,4 +112,5 @@ export interface InterpreterCreate extends InterpreterBase {
 export interface Interpreter extends InterpreterBase {
   languages: Language[];
   bookings: Booking[];
+  distance?: number;
 }
