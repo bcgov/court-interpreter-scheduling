@@ -1,10 +1,11 @@
-import { Controller, Get, Post, UseInterceptors, UploadedFile, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, UseInterceptors, UploadedFile, HttpException, HttpStatus, Body } from '@nestjs/common';
 import * as csvtojson from 'csvtojson';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { InterpreterService } from 'src/interpreter/interpreter.service';
 import { LocationService } from 'src/location/location.service';
 import { DistanceService } from './distance.service';
+import { FileUploadDistanceDto } from './dto/file-upload-distance.dto';
 
 @Controller('distance')
 export class DistanceController {
@@ -18,13 +19,13 @@ export class DistanceController {
   async generateDistance() {
     const courtAddrs = await this.locationService.findAllAddress();
     const intpAddrs = await this.interpreterService.findAllAddress();
-    const distanceData = await this.distanceService.generate({ courtAddrs, intpAddrs });
-    return { length: distanceData.length, data: distanceData };
+    await this.distanceService.generate({ courtAddrs, intpAddrs });
+    return { success: true };
   }
 
   @Post('csv')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadCSV(@UploadedFile() file: Express.Multer.File) {
+  async uploadCSV(@UploadedFile() file: Express.Multer.File, @Body() fileUploadDistanceDto: FileUploadDistanceDto) {
     try {
       /**
        * check if it's correct file type
@@ -52,17 +53,21 @@ export class DistanceController {
         headers,
       }).fromString(file.buffer.toString());
 
+      // empty table if needed
+      if (fileUploadDistanceDto.isEmptyTable) {
+        await this.distanceService.emptyTable();
+      }
+
       /**
        * insert json to database
        */
-      const uploadedData = await this.distanceService.createMany(json);
+      await this.distanceService.createMany(json);
 
       /**
        * return detail info
        */
       return {
-        num: uploadedData.length,
-        uploadedData,
+        success: true,
       };
     } catch (err) {
       throw new HttpException(err, HttpStatus.BAD_REQUEST);
