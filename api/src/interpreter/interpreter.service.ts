@@ -112,16 +112,6 @@ export class InterpreterService {
         `CONCAT(interpreter.address, ', ', interpreter.city, ', ', interpreter.province, ' ', interpreter.postal)`,
         'interpreter_intpAddr',
       );
-      // query.leftJoinAndSelect(
-      //   subQuery => {
-      //     return subQuery
-      //       .select()
-      //       .from(DistanceEntity, 'd')
-      //       .where('d."court_addr" = :courtAddr', { courtAddr });
-      //   },
-      //   `distance`,
-      //   `distance."intp_addr" = interpreter."address"`,
-      // );
     }
 
     const interpreters = await query.getMany();
