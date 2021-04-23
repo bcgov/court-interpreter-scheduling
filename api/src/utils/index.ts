@@ -167,7 +167,7 @@ export const mapAndJoin = (
   return strings.map(transform).join(delimiter);
 };
 
-export const isProduction = process.env.NODE_ENV === 'production';
+export const isProduction = process.env.DEPLOYMENT_ENV === 'prod';
 
 /**
  * Return distance from the data fetched from google map api
