@@ -39,7 +39,8 @@ async function bootstrap() {
 
   // exception filter
   app.useGlobalFilters(new ErrorExceptionFilter());
-  await app.listen(CONFIG.applicationPort);
+  const server = await app.listen(CONFIG.applicationPort);
+  server.setTimeout(30 * 60 * 1000);
 
   // Call service
   const locationFetchService: LocationFetchScheduleService = app.get<LocationFetchScheduleService>(
