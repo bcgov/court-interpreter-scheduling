@@ -41,7 +41,7 @@ export class BookingService {
     let location: LocationEntity;
     if (createDto.locationName) {
       location = await this.locationRepository.findOne({
-        name: createDto.locationName.toUpperCase(),
+        name: createDto.locationName,
       });
     }
 
@@ -97,6 +97,10 @@ export class BookingService {
       );
     }
 
+    if (paginateBookingQueryDto.locationName) {
+      query.andWhere('location.name = :locationName', { locationName: paginateBookingQueryDto.locationName });
+    }
+
     const bookings = await query.getMany();
 
     return {
@@ -141,7 +145,7 @@ export class BookingService {
     let location: LocationEntity;
     if (updateDto.locationName) {
       location = await this.locationRepository.findOne({
-        name: updateDto.locationName.toUpperCase(),
+        name: updateDto.locationName,
       });
       booking.location = location;
     }
@@ -167,7 +171,7 @@ export class BookingService {
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
     // W5, F113 invoice, [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
-    const firstBookingDate =  booking.dates[0];
+    const firstBookingDate = booking.dates[0];
     const invoice = (
       interpreter.lastName.substring(0, 3) +
       interpreter.firstName.substring(0, 1) +
