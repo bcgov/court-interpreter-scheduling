@@ -65,6 +65,8 @@ objects:
                   value: ${SS_API_USERNAME}
                 - name: MAP_BOX_TOKEN
                   value: ${MAP_BOX_TOKEN}
+                - name: GOOGLE_API_KEY
+                  value: ${GOOGLE_API_KEY}
               image: ${IMAGE_REGISTRY}/${BUILD_NAMESPACE}/${IMAGE_STREAM_TAG}
               imagePullPolicy: Always
               name: ${NAME}
@@ -178,5 +180,7 @@ parameters:
   - name: SS_API_PASSWORD
   - name: SS_API_USERNAME
   - name: MAP_BOX_TOKEN
+    required: true
+  - name: GOOGLE_API_KEY
     required: true
 

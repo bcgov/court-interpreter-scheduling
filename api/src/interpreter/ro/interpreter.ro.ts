@@ -64,6 +64,12 @@ export class InterpreterRO {
   contractExtension: boolean;
 
   @ApiProperty()
+  intpAddr: string;
+
+  @ApiProperty()
+  distance: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

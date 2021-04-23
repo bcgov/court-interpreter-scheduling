@@ -30,6 +30,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as csvtojson from 'csvtojson';
 import { mappingDirectories } from 'src/utils';
 import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
+import { DistanceService } from 'src/distance/distance.service';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -50,6 +51,7 @@ export class InterpreterController {
   constructor(
     private readonly interpreterService: InterpreterService,
     private readonly interpreterLanguageService: InterpreterLanguageService,
+    private readonly distanceService: DistanceService,
   ) {}
 
   @Post()
@@ -96,7 +98,19 @@ export class InterpreterController {
   async search(
     @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
+    const interpreters = await this.interpreterService.findAll(paginateInterpreterQueryDTO);
+    const { courtAddr, distanceLimit } = paginateInterpreterQueryDTO;
+    if (courtAddr) {
+      const { data } = interpreters;
+      const newIntps = await this.distanceService.addDistanceToInterpreters(
+        data as InterpreterRO[],
+        courtAddr,
+        distanceLimit,
+      );
+      interpreters.data = newIntps;
+    }
+
+    return interpreters;
   }
 
   @Get(':id')
