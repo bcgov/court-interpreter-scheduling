@@ -33,14 +33,14 @@ import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
 import { DistanceService } from 'src/distance/distance.service';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
-  address: 'address',
+  // address: 'address',
   firstName: 'firstName',
   lastName: 'lastName',
-  city: 'city',
+  // city: 'city',
   email: 'email',
   emailAlt: 'email',
   phone: 'phone',
-  postal: 'postalCode',
+  // postal: 'postalCode',
   homePhone: 'phone',
   businessPhone: 'phone',
 };

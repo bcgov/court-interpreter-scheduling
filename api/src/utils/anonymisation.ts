@@ -86,14 +86,14 @@ export const anonymousValue = (valueType: ValueType, randomSeed?: number): strin
             return `${anonymousValue('firstName', randomSeed).toLowerCase()}.${anonymousValue('lastName', randomSeed).toLowerCase()}@fake.com`
         case 'phone':
             return '555-555-5555'
-        // case 'address':
-        //     return `${integer(1, 1000000)(gen)} Main Street`
-        // case 'province':
-        //     return 'BC'
-        // case 'postalCode':
-        //     return 'V8V 2L8'
-        // case 'city':
-        //     return choose(gen, CITIES)
+        case 'address':
+            return `${integer(1, 1000000)(gen)} Main Street`
+        case 'province':
+            return 'BC'
+        case 'postalCode':
+            return 'V8V 2L8'
+        case 'city':
+            return choose(gen, CITIES)
     }
 }
 
