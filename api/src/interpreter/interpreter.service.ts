@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { format } from 'date-fns';
+import { Repository } from 'typeorm';
+
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
-import { Repository } from 'typeorm';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
@@ -30,7 +31,7 @@ export class InterpreterService {
   }
 
   async findAll(paginateInterpreterQueryDto: PaginateInterpreterQueryDto): Promise<SuccessResponse<InterpreterRO>> {
-    const { page, limit, dates, keywords, language, criminalRecordCheck } = paginateInterpreterQueryDto;
+    const { page, limit, dates, keywords, language, criminalRecordCheck, courtAddr } = paginateInterpreterQueryDto;
 
     let query = this.interpreterRepository
       .createQueryBuilder('interpreter')
@@ -105,6 +106,24 @@ export class InterpreterService {
       );
     }
 
+    // order on court addr
+    if (courtAddr) {
+      query.addSelect(
+        `CONCAT(interpreter.address, ', ', interpreter.city, ', ', interpreter.province, ' ', interpreter.postal)`,
+        'interpreter_intpAddr',
+      );
+      // query.leftJoinAndSelect(
+      //   subQuery => {
+      //     return subQuery
+      //       .select()
+      //       .from(DistanceEntity, 'd')
+      //       .where('d."court_addr" = :courtAddr', { courtAddr });
+      //   },
+      //   `distance`,
+      //   `distance."intp_addr" = interpreter."address"`,
+      // );
+    }
+
     const interpreters = await query.getMany();
 
     return {
@@ -152,5 +171,13 @@ export class InterpreterService {
 
     // maybe in the future, we can enable this set auto-increment index to 1
     // await this.interpreterRepository.query(`ALTER SEQUENCE ${InterpreterEntity.tableName}_id_seq RESTART WITH 1`);
+  }
+
+  async findAllAddress(): Promise<{ address: string }[]> {
+    return await this.interpreterRepository.query(`
+    SELECT DISTINCT(CONCAT(address, ', ', city, ', ', province, ' ', postal)) AS address 
+      FROM "interpreter"
+      WHERE address IS NOT NULL
+    `);
   }
 }

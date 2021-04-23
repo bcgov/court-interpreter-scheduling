@@ -1,4 +1,4 @@
 export interface LocationRO {
   name: string;
-  locationNumber: number;
+  locationCode: string;
 }

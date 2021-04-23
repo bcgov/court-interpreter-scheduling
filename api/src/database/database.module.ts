@@ -4,6 +4,7 @@ import { DatabaseService } from './database.service';
 
 import { join } from 'path';
 import * as dotenv from 'dotenv';
+import { isProduction } from 'src/utils';
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ const option: any = {
     migrationsDir: 'src/migrations',
   },
   synchronize,
-  migrationsRun: process.env.NODE_ENV === 'production',
+  migrationsRun: !synchronize,
   dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],

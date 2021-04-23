@@ -12,9 +12,9 @@ export class LocationEntity {
   name: string;
 
   @Column({
-    name: 'location_number',
+    name: 'location_code',
   })
-  locationNumber: number;
+  locationCode: string;
 
   @Column({
     name: 'address_line1',
@@ -50,10 +50,20 @@ export class LocationEntity {
   })
   updatedAt: Date;
 
+  // location_short_desc
+  @Column({ name: 'location_short_desc' })
+  shortDescription: string;
+
+  @Column({ name: 'lat', type: 'numeric', nullable: true })
+  latitude: number;
+
+  @Column({ name: 'lng', type: 'numeric', nullable: true })
+  longitude: number;
+
   toResponseObject(): LocationRO {
     return {
       name: this.name,
-      locationNumber: this.locationNumber,
+      locationCode: this.locationCode,
     };
   }
 }

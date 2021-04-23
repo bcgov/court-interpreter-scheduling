@@ -101,6 +101,12 @@ export class InterpreterEntity {
   @Column({ nullable: true, name: 'page12_contract' })
   page12ContractReceived: string;
 
+  @Column({ nullable: true, select: false, insert: false, readonly: true })
+  intpAddr?: string;
+
+  @Column({ nullable: true, select: false, insert: false, readonly: true })
+  distance?: number;
+
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -135,6 +141,8 @@ export class InterpreterEntity {
       comments: this.comments,
       adminComments: this.adminComments,
       contractExtension: this.contractExtension,
+      intpAddr: this.intpAddr,
+      distance: this.distance,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

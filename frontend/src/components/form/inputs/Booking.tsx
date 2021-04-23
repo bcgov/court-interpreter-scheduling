@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
 import CalendarIcon from '@material-ui/icons/CalendarToday';
@@ -11,6 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { getLocationDetails } from 'util/locationFetch';
 
 import {
   StyledFormControl,
@@ -24,6 +25,7 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
 import { fixLanguageName } from 'constants/languages';
+import { StaticCourtLocation } from 'constants/courtLocations';
 
 type GridItemInputProps = {
   name: string;
@@ -93,14 +95,16 @@ const StyledSelect = ({
   options = [],
   name,
   rows = { xs: 6 },
+  label,
 }: {
   options: string[];
   name: string;
   rows?: GridItemInputProps['rows'];
+  label?: string;
 }) => (
   <Grid item {...rows}>
     <StyledFormControl>
-      <StyledLabel htmlFor={name}>{name}</StyledLabel>
+      <StyledLabel htmlFor={label || name}>{label || name}</StyledLabel>
       <StyledNativeSelect
         input={
           <Field
@@ -164,6 +168,14 @@ export default function BookingInputs({
   booking?: Booking;
   edit?: boolean;
 }) {
+  const [locations, setLocations] = useState(['Loading...']);
+  useEffect(() => {
+    async function fetchLocation() {
+      const fetchedLocations: string[] = await getLocationDetails();
+      setLocations(fetchedLocations);
+    }
+    fetchLocation();
+  }, [setLocations]);
   return (
     <Grid container spacing={4}>
       <StyledSelect
@@ -187,10 +199,10 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledField
-        name="registry"
+      <StyledSelect
+        name="locationName"
         label="Registry Location"
-        rows={{ xs: 6, lg: 5 }}
+        options={locations}
       />
 
       <StyledField

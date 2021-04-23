@@ -9,6 +9,7 @@ export type BookingBase = {
   reason: string;
   prosecutor: string;
   comment: string;
+  locationName: string;
 };
 
 export interface BookingCreate extends BookingBase {
@@ -111,4 +112,5 @@ export interface InterpreterCreate extends InterpreterBase {
 export interface Interpreter extends InterpreterBase {
   languages: Language[];
   bookings: Booking[];
+  distance?: number;
 }

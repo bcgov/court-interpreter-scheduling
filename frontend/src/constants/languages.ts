@@ -57,7 +57,6 @@ export const languages = [
   'Malay',
   'Malayalam',
   'Mandarin',
-  'Mandarin',
   'Nepali',
   'Oromo',
   'Pashto',

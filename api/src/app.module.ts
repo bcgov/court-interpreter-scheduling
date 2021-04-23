@@ -9,6 +9,7 @@ import { LanguageModule } from './language/language.module';
 import { LocationModule } from './location/location.module';
 import { BookingModule } from './booking/booking.module';
 import { AuthModule } from './auth/auth.module';
+import { DistanceModule } from './distance/distance.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
     LocationModule,
     BookingModule,
     AuthModule,
+    DistanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
