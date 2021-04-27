@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Logger } from 'nestjs-pino';
 
-import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
 import { documentation } from './common/common.documentation';
 import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
@@ -23,9 +23,11 @@ async function bootstrap() {
   }
 
   // logger
-  app.use(logger);
-  Logger.log(`Running Court API in ${process.env.NODE_ENV} mode`);
-  Logger.log(`attempting connection to db host: ${process.env.DB_HOST}`);
+  const logger = app.get(Logger);
+  app.useLogger(logger);
+  logger.log(`Running Court API in ${process.env.NODE_ENV} mode`);
+  logger.log(`Running Court Api in ${process.env.DEPLOYMENT_ENV} env`);
+  logger.log(`attempting connection to db host: ${process.env.DB_HOST}`);
 
   // pipes
   app.useGlobalPipes(
@@ -48,9 +50,9 @@ async function bootstrap() {
   );
   if (locationFetchService) {
     await locationFetchService.fetchAndStoreLocation();
-    Logger.log(`Location service fetch [DONE]`);
+    logger.log(`Location service fetch [DONE]`);
   }
 
-  Logger.log(`Server running on http://localhost:${CONFIG.applicationPort}`, 'Bootstrap');
+  logger.log(`Server running on http://localhost:${CONFIG.applicationPort}`, 'Bootstrap');
 }
 bootstrap();

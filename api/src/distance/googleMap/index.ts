@@ -18,9 +18,15 @@ const axios = Axios.create({
 
 export async function fetchGoogleMapDistance(addr1: string, addr2: string): Promise<string | null> {
   const params = { origin: addr1, destination: addr2, key: GOOGLE_API_KEY };
-  const response = await axios.get<GoogleDistance>(GOOGLE_API_URL, { params });
-  if (parseDistanceFromGoogleApi(response.data)) {
-    return String(parseDistanceFromGoogleApi(response.data));
+  try {
+    const response = await axios.get<GoogleDistance>(GOOGLE_API_URL, { params });
+    console.info(`Google Distance Api Fetch Result: ${response.data}`);
+    if (parseDistanceFromGoogleApi(response.data)) {
+      return String(parseDistanceFromGoogleApi(response.data));
+    }
+  } catch (err) {
+    console.error(`Google Distance Api Fetch Error: ${addr1} - ${addr2}: ${err.message}`);
   }
+
   return null;
 }

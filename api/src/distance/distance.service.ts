@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InterpreterRO } from 'src/interpreter/ro/interpreter.ro';
 import { Repository } from 'typeorm';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 import { DistanceEntity } from './entities/distance.entity';
 import { fetchGoogleMapDistance } from './googleMap';
@@ -9,7 +10,10 @@ import { googleMapMock } from './mock/googleMapApi.mock';
 
 @Injectable()
 export class DistanceService {
-  constructor(@InjectRepository(DistanceEntity) private readonly distanceRepository: Repository<DistanceEntity>) {}
+  constructor(
+    @InjectRepository(DistanceEntity) private readonly distanceRepository: Repository<DistanceEntity>,
+    @InjectPinoLogger(DistanceService.name) private readonly logger: PinoLogger,
+  ) {}
 
   async generate({
     courtAddrs,
@@ -27,7 +31,8 @@ export class DistanceService {
           const distance = await this.calcDistance(courtAddr, intpAddr);
           if (distance) {
             const disEntity: DistanceEntity = this.distanceRepository.create({ courtAddr, intpAddr, distance });
-            this.distanceRepository.save(disEntity);
+            const data = await this.distanceRepository.save(disEntity);
+            this.logger.info(`Generate Distance data: ${data}`);
           }
         }
       });
@@ -37,11 +42,14 @@ export class DistanceService {
   private async calcDistance(addr1: string, addr2: string): Promise<string | null> {
     //In non-production env, using mock google api
     if (process.env.DEPLOYMENT_ENV !== 'prod') {
+      this.logger.info('mocking distance');
       return googleMapMock();
     }
 
     // google api
-    return await fetchGoogleMapDistance(addr1, addr2);
+    const googleDistance = await fetchGoogleMapDistance(addr1, addr2);
+    this.logger.info(`Intp address: ${addr1} - Court address: ${addr2} : Distance: ${googleDistance}`);
+    return googleDistance;
   }
 
   private isDistanceExist({
@@ -65,11 +73,13 @@ export class DistanceService {
       distance: string;
     }[],
   ) {
+    this.logger.info(`Start: Batch Insert to "distance": ${data}`);
     this.distanceRepository
       .createQueryBuilder()
       .insert()
       .values(data)
-      .execute();
+      .execute()
+      .then(res => this.logger.info(`Complete: Batch Insert to "distance": ${res}`));
   }
 
   async addDistanceToInterpreters(
@@ -104,5 +114,6 @@ export class DistanceService {
    */
   async emptyTable(): Promise<void> {
     await this.distanceRepository.query(`DELETE FROM distance;`);
+    this.logger.info('Empty Table "distance"');
   }
 }

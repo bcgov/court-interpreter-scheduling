@@ -41,7 +41,7 @@ In root folder:
 - Start Keycloak and Database in docker first
 
 ```
-docker-compose up keycloak
+docker-compose -f docker-compose.dev.yml  up keycloak
 ```
 
 - Application

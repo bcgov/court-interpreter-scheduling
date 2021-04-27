@@ -4,13 +4,8 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as dotenv from 'dotenv';
-import {
-  factory,
-  runSeeder,
-  tearDownDatabase,
-  useRefreshDatabase,
-  useSeeding,
-} from 'typeorm-seeding';
+import { factory, runSeeder, tearDownDatabase, useRefreshDatabase, useSeeding } from 'typeorm-seeding';
+import { LoggerModule } from 'nestjs-pino';
 
 import { InterpreterEntity } from '../entities/interpreter.entity';
 import { InterpreterModule } from '../interpreter.module';
@@ -25,37 +20,37 @@ dotenv.config();
 
 const EXAMPLE_INTERPRETER_UPLOAD = [
   {
-    firstName: "Steve",
-    lastName: "Stevenson",
+    firstName: 'Steve',
+    lastName: 'Stevenson',
     languages: [
       {
-        languageName: "Kurdish (sorani)",
-        level: 3
+        languageName: 'Kurdish (sorani)',
+        level: 3,
       },
       {
-        languageName: "Arabic",
+        languageName: 'Arabic',
         level: 3,
-        commentOnLevel: null
-      }
+        commentOnLevel: null,
+      },
     ],
     bookings: [],
-    city: "Richmond",
-    province: "BC",
+    city: 'Richmond',
+    province: 'BC',
   },
   {
-    firstName: "Jane",
-    lastName: "Janeson",
+    firstName: 'Jane',
+    lastName: 'Janeson',
     languages: [
       {
-        languageName: "Japanese",
+        languageName: 'Japanese',
         level: 2,
-        commentOnLevel: null
-      }
+        commentOnLevel: null,
+      },
     ],
-    city: "Vancouver",
-    province: "BC",
-  }
-]
+    city: 'Vancouver',
+    province: 'BC',
+  },
+];
 
 describe('interpreter', () => {
   let app: INestApplication;
@@ -65,6 +60,7 @@ describe('interpreter', () => {
     const module = await Test.createTestingModule({
       imports: [
         InterpreterModule,
+        LoggerModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.DB_HOST,
@@ -116,9 +112,7 @@ describe('interpreter', () => {
           .expect('Content-Type', /json/)
           .expect(HttpStatus.OK);
 
-        const languages = body.data
-          .map((intp: InterpreterEntity) => intp.languages)
-          .flat();
+        const languages = body.data.map((intp: InterpreterEntity) => intp.languages).flat();
         expect(languages).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -159,9 +153,7 @@ describe('interpreter', () => {
       const createInterpreterDto: CreateInterpreterDto = {
         firstName: 'first',
         lastName: 'last',
-        languages: [
-          { languageName: 'French', level: 3, commentOnLevel: 'comment' },
-        ],
+        languages: [{ languageName: 'French', level: 3, commentOnLevel: 'comment' }],
       };
 
       const { body } = await request
@@ -213,9 +205,7 @@ describe('interpreter', () => {
        * create interpreter and check if exists
        */
       const createInterpreter = await factory(InterpreterEntity)().create();
-      let interpreter = await interpreterRepository.findOne(
-        createInterpreter.id,
-      );
+      let interpreter = await interpreterRepository.findOne(createInterpreter.id);
       expect(interpreter).toBeDefined();
       expect(createInterpreter.id).toBe(interpreter.id);
 
@@ -238,9 +228,7 @@ describe('interpreter', () => {
        * create interpreter and check if exists
        */
       const createInterpreter = await factory(InterpreterEntity)().create();
-      let interpreter = await interpreterRepository.findOne(
-        createInterpreter.id,
-      );
+      let interpreter = await interpreterRepository.findOne(createInterpreter.id);
       expect(interpreter).toBeDefined();
       expect(createInterpreter.id).toBe(interpreter.id);
 
@@ -251,9 +239,7 @@ describe('interpreter', () => {
         firstName: 'update firstname',
       };
       const { status } = await request(app.getHttpServer())
-        .patch(
-          '/interpreter/:id'.replace(':id', createInterpreter.id.toString()),
-        )
+        .patch('/interpreter/:id'.replace(':id', createInterpreter.id.toString()))
         .send(updateInterpreterDto);
       expect(status).toBe(HttpStatus.OK);
 
@@ -263,69 +249,69 @@ describe('interpreter', () => {
     });
   });
 
-  describe("upload", () => {
-    it("should create new interpreters", async () => {
+  describe('upload', () => {
+    it('should create new interpreters', async () => {
       const resp = await request(app.getHttpServer())
         .post('/interpreter/upload')
-        .send(EXAMPLE_INTERPRETER_UPLOAD)
-      const body = resp.body as InterpreterRO[]
-      expect(body.length).toEqual(2)
-      expect(body[0].firstName).toEqual('Steve')
-      expect(body[1].firstName).toEqual('Jane')
-      expect(body[0].id).toBeTruthy
-    })
+        .send(EXAMPLE_INTERPRETER_UPLOAD);
+      const body = resp.body as InterpreterRO[];
+      expect(body.length).toEqual(2);
+      expect(body[0].firstName).toEqual('Steve');
+      expect(body[1].firstName).toEqual('Jane');
+      expect(body[0].id).toBeTruthy;
+    });
 
-    it("should create new interpreters with anonymisation", async () => {
+    it('should create new interpreters with anonymisation', async () => {
       const resp = await request(app.getHttpServer())
         .post('/interpreter/upload?anonymise=true')
-        .send(EXAMPLE_INTERPRETER_UPLOAD)
-      const body = resp.body as InterpreterRO[]
-      expect(body.length).toEqual(2)
-      expect(body[0].firstName).not.toEqual('Steve')
-      expect(body[0].firstName).toBeTruthy
-      expect(body[1].firstName).not.toEqual('Jane')
-      expect(body[0].firstName).toBeTruthy
+        .send(EXAMPLE_INTERPRETER_UPLOAD);
+      const body = resp.body as InterpreterRO[];
+      expect(body.length).toEqual(2);
+      expect(body[0].firstName).not.toEqual('Steve');
+      expect(body[0].firstName).toBeTruthy;
+      expect(body[1].firstName).not.toEqual('Jane');
+      expect(body[0].firstName).toBeTruthy;
 
       // Adds new values for anonymisation
-      expect(body[0].email).toBeTruthy
-    })
+      expect(body[0].email).toBeTruthy;
+    });
 
-    it("should update and anonymise existing interpreters", async () => {
+    it('should update and anonymise existing interpreters', async () => {
       const resp1 = await request(app.getHttpServer())
         .post('/interpreter/upload')
-        .send(EXAMPLE_INTERPRETER_UPLOAD)
-      const [ personA1, personB1 ] = resp1.body as InterpreterRO[]
-      expect(personA1.firstName).toEqual('Steve')
-      expect(personB1.firstName).toEqual('Jane')
-      expect(personA1.email).toBeFalsy
+        .send(EXAMPLE_INTERPRETER_UPLOAD);
+      const [personA1, personB1] = resp1.body as InterpreterRO[];
+      expect(personA1.firstName).toEqual('Steve');
+      expect(personB1.firstName).toEqual('Jane');
+      expect(personA1.email).toBeFalsy;
 
-      const uploadA2 = {...EXAMPLE_INTERPRETER_UPLOAD[0], id: personA1.id}
-      const uploadB2 = {...EXAMPLE_INTERPRETER_UPLOAD[1], id: personB1.id}
-    
+      const uploadA2 = { ...EXAMPLE_INTERPRETER_UPLOAD[0], id: personA1.id };
+      const uploadB2 = { ...EXAMPLE_INTERPRETER_UPLOAD[1], id: personB1.id };
+
       const resp2 = await request(app.getHttpServer())
         .post('/interpreter/upload?anonymise=true')
-        .send([uploadA2, uploadB2])
-      const [ personA2, personB2 ] = resp2.body as InterpreterRO[]
+        .send([uploadA2, uploadB2]);
+      const [personA2, personB2] = resp2.body as InterpreterRO[];
 
-      expect(personA2.id).toEqual(personA1.id)
-      expect(personB2.id).toEqual(personB1.id)
-      
-      expect(personA2.firstName).toBeTruthy
-      expect(personA2.firstName).not.toEqual(personA1.firstName)
+      expect(personA2.id).toEqual(personA1.id);
+      expect(personB2.id).toEqual(personB1.id);
 
-      expect(personB2.firstName).toBeTruthy
-      expect(personB2.firstName).not.toEqual(personB1.firstName)
+      expect(personA2.firstName).toBeTruthy;
+      expect(personA2.firstName).not.toEqual(personA1.firstName);
+
+      expect(personB2.firstName).toBeTruthy;
+      expect(personB2.firstName).not.toEqual(personB1.firstName);
 
       // Anonymisation adds extra fields if they don't exist
-      expect(personA2.email).toBeTruthy
+      expect(personA2.email).toBeTruthy;
 
       // Double check the record is overwritten
       const personA3: InterpreterRO = await request(app.getHttpServer())
         .get(`/interpreter/${personA1.id}`)
         .send()
-        .then(r => r.body)
-      expect(personA3.firstName).toEqual(personA2.firstName)
-    })
+        .then(r => r.body);
+      expect(personA3.firstName).toEqual(personA2.firstName);
+    });
   });
 
   afterEach(async () => {
