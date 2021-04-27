@@ -12,8 +12,6 @@ RUN apt-get update && apt-get -y install procps
 
 RUN npm install
 
-RUN npm install -g @nestjs/cli@latest
-
 COPY ./ .
 
 EXPOSE 4000
