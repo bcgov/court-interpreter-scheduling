@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,6 +15,9 @@ import { DistanceModule } from './distance/distance.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    LoggerModule.forRoot({
+      pinoHttp: { prettyPrint: { colorize: true, singleLine: process.env.NODE_ENV === 'production' } },
+    }),
     DatabaseModule,
     InterpreterModule,
     LanguageModule,
