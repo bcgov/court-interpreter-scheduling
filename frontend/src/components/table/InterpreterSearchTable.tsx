@@ -34,11 +34,16 @@ export default function DirectoryTable({
   data = data.filter((lang) => lang.contractExtension || false);
 
   // check if distance exists
-  const distanceColumn = !!data.find((intp) => intp?.distance || intp?.distance === null)
+  const distanceColumn = !!data.find(
+    (intp) => intp?.distance || intp?.distance === null
+  )
     ? [
         {
           title: 'Distance (km)',
-          render: (row: any) => <div>{row?.distance === null ? 'n/a' : row?.distance}</div>,
+          render: (row: any) => (
+            <div>{row?.distance === null ? 'n/a' : row?.distance}</div>
+          ),
+          customSort: fieldSort('distance'),
         },
       ]
     : [];
