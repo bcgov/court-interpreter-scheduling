@@ -20,6 +20,7 @@ export async function fetchGoogleMapDistance(addr1: string, addr2: string): Prom
   const params = { origin: addr1, destination: addr2, key: GOOGLE_API_KEY };
   try {
     const response = await axios.get<GoogleDistance>(GOOGLE_API_URL, { params });
+    console.info(`Google Distance Api Fetch Result: ${response.data}`);
     if (parseDistanceFromGoogleApi(response.data)) {
       return String(parseDistanceFromGoogleApi(response.data));
     }
