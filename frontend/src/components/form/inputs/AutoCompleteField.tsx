@@ -37,7 +37,6 @@ export const AutoCompleteField: ACFC = ({
           id={name}
           size="small"
           onChange={onChange(form)}
-          // value={field.value}
           defaultValue={defaultValue}
           renderInput={(params) => (
             <StyledTextField
