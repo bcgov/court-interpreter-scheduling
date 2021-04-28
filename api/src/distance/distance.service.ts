@@ -85,8 +85,9 @@ export class DistanceService {
   async addDistanceToInterpreters(
     interpreters: InterpreterRO[],
     courtAddr: string,
-    distanceLimit?: number,
+    distanceLimit?: boolean,
   ): Promise<InterpreterRO[]> {
+    const DISTANCE_LIMIT = 32;
     let intpWithDistance = await Promise.all(
       interpreters.map(async intp => {
         const newIntp = { ...intp };
@@ -101,7 +102,7 @@ export class DistanceService {
     );
 
     if (distanceLimit) {
-      intpWithDistance = intpWithDistance.filter(intp => intp.distance <= distanceLimit);
+      intpWithDistance = intpWithDistance.filter(intp => intp.distance <= DISTANCE_LIMIT);
     }
 
     return intpWithDistance.sort(

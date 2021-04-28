@@ -11,7 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { getLocationDetails } from 'util/locationFetch';
+import { getLocations } from 'util/locationFetch';
+import { Location } from 'constants/interfaces';
 
 import {
   StyledFormControl,
@@ -25,15 +26,18 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
 import { fixLanguageName } from 'constants/languages';
-import { StaticCourtLocation } from 'constants/courtLocations';
+import { AutoCompleteField, ACFC } from './AutoCompleteField';
+
+const ACField = AutoCompleteField as ACFC<Location>;
 
 type GridItemInputProps = {
   name: string;
   label: string;
   rows?: any;
+  placeholder?: string;
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
+const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -43,6 +47,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
             id={name}
             variant="outlined"
             size="small"
+            placeholder={placeholder}
             {...field}
             {...props}
           />
@@ -168,14 +173,15 @@ export default function BookingInputs({
   booking?: Booking;
   edit?: boolean;
 }) {
-  const [locations, setLocations] = useState(['Loading...']);
+  const [locations, setLocations] = useState<Location[]>([]);
   useEffect(() => {
     async function fetchLocation() {
-      const fetchedLocations: string[] = await getLocationDetails();
+      const fetchedLocations = await getLocations();
       setLocations(fetchedLocations);
     }
     fetchLocation();
-  }, [setLocations]);
+  }, []);
+
   return (
     <Grid container spacing={4}>
       <StyledSelect
@@ -199,11 +205,19 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledSelect
-        name="locationName"
-        label="Registry Location"
-        options={locations}
-      />
+
+      {/* location */}
+      <Grid item xs={6}>
+        <ACField
+          name="locationId"
+          label="Registry Location"
+          options={locations}
+          getOptionLabel={(option) => option.name}
+          defaultValue={booking?.location || search?.location}
+          onChange={(form) => (event, value) =>
+            form.setFieldValue('locationId', value?.id)}
+        />
+      </Grid>
 
       <StyledField
         name="file"
@@ -239,7 +253,7 @@ export default function BookingInputs({
 
       <StyledRadios />
 
-      <StyledField name="reason" label="Reason" />
+      <StyledField name="reason" label="Reason Code" placeholder="FA, HR - max limit 6 characters"/>
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
 
       <Grid item xs={6}>

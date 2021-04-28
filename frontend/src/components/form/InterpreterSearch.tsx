@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, FormGroup, Grid, Hidden } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Box, FormGroup, Grid } from '@material-ui/core';
 
 import {
   StyledFormControl,
   StyledLabel,
-  StyledTextField,
   StyledFormLabel,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs';
@@ -14,23 +12,20 @@ import AutocompleteInput from 'components/form/inputs/Autocomplete';
 import SearchDates from 'components/form/SearchDates';
 import { Schema, Initial } from 'components/form/schemas/search.schema';
 import Range from 'components/form/Range';
-import Check, { TextCheck } from 'components/form/inputs/Check';
+import Check, { SingleCheck } from 'components/form/inputs/Check';
 import { StyledButton } from 'components/Buttons';
 
 import { languages } from 'constants/languages';
 import SearchContext from 'contexts/SearchContext';
-import {
-  ErrorMessage,
-  Field,
-  FieldProps,
-  Formik,
-  FormikProps,
-  Form,
-} from 'formik';
+import { ErrorMessage, Formik, FormikProps, Form } from 'formik';
 import { withFlag } from 'components/reusable/withFlag';
-import { getLocations, Location } from 'util/locationFetch';
+import { getLocations } from 'util/locationFetch';
+import { Location } from 'constants/interfaces';
+import { AutoCompleteField, ACFC } from './inputs/AutoCompleteField';
 
 const WithFlagRange = withFlag(Range);
+
+const ACField = AutoCompleteField as ACFC<Location>;
 
 export default function Search({
   getSearchResults,
@@ -55,20 +50,10 @@ export default function Search({
         initialValues={{
           ...Initial,
           ...search,
-          city: '',
-          courtAddr: '',
-          distanceLimit: [],
         }}
         enableReinitialize={true}
         validationSchema={Schema}
-        onSubmit={async (values) => {
-          const payload:any = {...values};
-          if(payload.distanceLimit.length > 0) {
-            payload.distanceLimit = payload.distanceLimit[0]
-          }else {
-            payload.distanceLimit = null;
-          }
-          getSearchResults(payload)}}
+        onSubmit={async (values) => getSearchResults(values)}
       >
         {({
           handleSubmit,
@@ -102,38 +87,18 @@ export default function Search({
                 <ErrorMessage name="level" />
               </Grid>
               <Grid item xs={4}>
-                <StyledFormControl>
-                  <StyledFormLabel htmlFor="courtAddr">
-                    Court Location
-                  </StyledFormLabel>
-                  <Field name="courtAddr">
-                    {({ field, form, ...props }: FieldProps) => (
-                      <Autocomplete
-                        options={locations}
-                        getOptionLabel={(option) => option.name}
-                        id="courtAddr"
-                        size="small"
-                        onChange={(event, value) =>
-                          form.setFieldValue(
-                            'courtAddr',
-                            value?.addressLine1 || ''
-                          )
-                        }
-                        renderInput={(params) => (
-                          <StyledTextField
-                            {...params}
-                            variant="outlined"
-                            {...field}
-                            {...props}
-                          />
-                        )}
-                      />
-                    )}
-                  </Field>
-                  <ErrorMessage name="city" />
-                </StyledFormControl>
-                <TextCheck
-                  value={'32'}
+                <ACField
+                  name="courtAddr"
+                  label="Court Location"
+                  options={locations}
+                  getOptionLabel={(option) => option.name}
+                  onChange={(form) => (event, value) => {
+                    form.setFieldValue('courtAddr', value?.addressLine1 || '');
+                    form.setFieldValue('location', value);
+                  }
+                }
+                />
+                <SingleCheck
                   label="Limit Search to 32KM"
                   name="distanceLimit"
                   disabled={!props.values.courtAddr}

@@ -1,18 +1,9 @@
 import { axiosGetter } from 'hooks/axios';
-import { type } from 'os';
+import { Location } from 'constants/interfaces';
 
 type LocationResp = {
   name: string;
 };
-
-export interface Location {
-  id: number;
-  name: string;
-  locationCode: string;
-  addressLine1: string;
-  city: string;
-  postalCode: string;
-}
 
 export async function getLocationDetails(): Promise<string[]> {
   const axios = axiosGetter().axiosGet;
