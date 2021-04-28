@@ -31,7 +31,7 @@ export class BookingService {
   ) {}
 
   async create(createBookingDto: CreateBookingDto, bookingDates: BookingDateEntity[]): Promise<BookingEntity> {
-    const { interpreterId, language, dates, ...createDto } = createBookingDto;
+    const { interpreterId, language, dates, locationId, ...createDto } = createBookingDto;
     const interpreter = await this.interpreterRepository.findOneOrFail(
       {
         id: interpreterId,
@@ -39,9 +39,9 @@ export class BookingService {
       { relations: ['languages'] },
     );
     let location: LocationEntity;
-    if (createDto.locationName) {
+    if (locationId) {
       location = await this.locationRepository.findOne({
-        name: createDto.locationName,
+        id: locationId,
       });
     }
 
@@ -121,7 +121,7 @@ export class BookingService {
     updateBookingDto: Omit<UpdateBookingDto, 'dates'>,
     bookingDates?: BookingDateEntity[],
   ): Promise<void> {
-    const { language, interpreterId, ...updateDto } = updateBookingDto;
+    const { language, interpreterId, locationId, ...updateDto } = updateBookingDto;
     const booking = this.bookingRepository.create({ id, ...updateDto });
 
     if (language) {
@@ -143,9 +143,9 @@ export class BookingService {
     }
 
     let location: LocationEntity;
-    if (updateDto.locationName) {
+    if (locationId) {
       location = await this.locationRepository.findOne({
-        name: updateDto.locationName,
+        id: locationId,
       });
       booking.location = location;
     }
