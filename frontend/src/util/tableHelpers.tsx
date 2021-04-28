@@ -14,6 +14,17 @@ function comments (comment?: string, languages?: Language[]) {
   ) : null
 }
 
+/**
+ * return full name with format: **LastName**, FirstName
+ * @param firstName 
+ * @param lastName 
+ * @returns 
+ */
+function fullName(firstName: string, lastName: string) {
+  return <p><strong>{lastName}</strong>{`, ${firstName}`}</p>
+}
+
 export {
   comments,
+  fullName,
 }

@@ -8,7 +8,7 @@ import {
   levelSort,
   languageArraySort,
 } from 'util/sort';
-import { comments } from 'util/tableHelpers';
+import { comments, fullName } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 import BaseTable from 'components/table/Base';
@@ -50,29 +50,9 @@ export default function DirectoryTable({
   let columns: Column<any>[] = [
     {
       title: 'Name',
-      render: (row: any) => `${row.firstName} ${row.lastName}`,
+      render: (row: any) => fullName(row.firstName, row.lastName),
       customSort: fieldSort('lastName'),
     },
-    ...distanceColumn,
-    {
-      title: 'Phone',
-      render: (row: any) => (
-        <div>
-          <div>{row.phone}</div>
-          {row.businessPhone && row.businessPhone !== row.phone && (
-            <div>
-              {row.businessPhone} <small>home</small>
-            </div>
-          )}
-          {row.homePhone && row.homePhone !== row.phone && (
-            <div>
-              {row.homePhone} <small>work</small>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    { title: 'Email', field: 'email' },
     {
       title: 'Language',
       render: (row: any) =>
@@ -92,6 +72,7 @@ export default function DirectoryTable({
         ? languageArraySort(language, 'level')
         : arrayFieldSort('languages', 0, 'languageName'),
     },
+   
     {
       title: 'Address',
       render: (row: any) => (
@@ -113,6 +94,27 @@ export default function DirectoryTable({
       ),
       customSort: fieldSort('city'),
     },
+    {
+      title: 'Phone',
+      render: (row: any) => (
+        <div>
+          <div>{row.phone} <small>mobile</small></div>
+          {row.businessPhone && row.businessPhone !== row.phone && (
+            <div>
+              {row.businessPhone} <small>home</small>
+            </div>
+          )}
+          {row.homePhone && row.homePhone !== row.phone && (
+            <div>
+              {row.homePhone} <small>work</small>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    { title: 'Email', field: 'email' },
+    ...distanceColumn,
+    
     {
       render: (row: any) => (
         <BookingButton

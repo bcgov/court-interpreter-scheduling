@@ -34,9 +34,10 @@ type GridItemInputProps = {
   name: string;
   label: string;
   rows?: any;
+  placeholder?: string;
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
+const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -46,6 +47,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
             id={name}
             variant="outlined"
             size="small"
+            placeholder={placeholder}
             {...field}
             {...props}
           />
@@ -251,7 +253,7 @@ export default function BookingInputs({
 
       <StyledRadios />
 
-      <StyledField name="reason" label="Reason" />
+      <StyledField name="reason" label="Reason Code" placeholder="FA, HR - max limit 6 characters"/>
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
 
       <Grid item xs={6}>
