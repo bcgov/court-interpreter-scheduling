@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 export class LocationService {
   constructor(@InjectRepository(LocationEntity) private readonly locationRepository: Repository<LocationEntity>) {}
   async findAll(): Promise<LocationEntity[]> {
-    return this.locationRepository.find();
+    return this.locationRepository.find({ order: { name: 'ASC' } });
   }
 
   async findAllAddress(): Promise<{ address: string }[]> {

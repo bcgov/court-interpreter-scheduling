@@ -4,6 +4,7 @@ import { BookingStatus } from '../enums/booking-status.enum';
 import { LangRO } from 'src/language/ro/lang.ro';
 import { BookingDateRO } from './booking-date.ro';
 import { InterpreterRO } from 'src/interpreter/ro/interpreter.ro';
+import { LocationEntity } from 'src/location/entities/location.entity';
 
 export class BookingRO {
   @ApiProperty()
@@ -50,6 +51,9 @@ export class BookingRO {
 
   @ApiProperty()
   comment: string;
+
+  @ApiProperty()
+  location: LocationEntity;
 
   @ApiProperty()
   createdAt: Date;
