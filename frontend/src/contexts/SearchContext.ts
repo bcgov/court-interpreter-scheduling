@@ -1,17 +1,17 @@
-import { createContext } from 'react'
-import { SearchParams } from 'constants/interfaces'
+import { createContext } from 'react';
+import { SearchParams } from 'constants/interfaces';
 
 const SearchContext = createContext<{
-  search: SearchParams,
-  updateSearchContext: Function,
+  search: SearchParams;
+  updateSearchContext: Function;
 }>({
   search: {
     language: '',
     level: [],
-    city: '',
-    dates: []
+    location: null,
+    dates: [],
   },
-  updateSearchContext: () => {}
-})
+  updateSearchContext: () => {},
+});
 
-export default SearchContext
+export default SearchContext;

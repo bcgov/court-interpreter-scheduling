@@ -68,8 +68,7 @@ export default function BookingModal({
                 state?.booking?.language ||
                 search.language ||
                 interpreter?.languages[0]?.languageName,
-              locationName:
-                state?.booking?.locationName || StaticCourtLocation[0],
+              locationId: search?.location?.id,
             }}
             validationSchema={Schema}
             onSubmit={async (values) => {
