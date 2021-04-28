@@ -14,7 +14,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
 
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
