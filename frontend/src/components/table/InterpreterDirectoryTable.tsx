@@ -14,7 +14,7 @@ import EditInterpreterModal from 'components/form/EditInterpreterModal';
 
 import { Language, Interpreter } from 'constants/interfaces';
 import { fieldSort, languageArraySort, arrayFieldSort } from 'util/sort';
-import { comments } from 'util/tableHelpers';
+import { comments, fullName } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 export default function DirectoryTable({
@@ -39,7 +39,7 @@ export default function DirectoryTable({
         columns={[
           {
             title: 'Name',
-            render: (row: any) => `${row.firstName} ${row.lastName}`,
+            render: (row: any) => fullName(row.firstName, row.lastName),
             customSort: fieldSort('lastName'),
           },
           { title: 'Phone', field: 'phone' },
