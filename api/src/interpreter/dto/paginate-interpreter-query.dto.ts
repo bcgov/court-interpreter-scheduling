@@ -58,10 +58,10 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
 
   @ApiProperty({
     description: 'Distance limit between Courthouse address',
-    example: 32,
+    example: true,
   })
   @IsOptional()
-  distanceLimit?: number;
+  distanceLimit?: boolean;
 
   @ApiProperty({
     description: 'Booking date',

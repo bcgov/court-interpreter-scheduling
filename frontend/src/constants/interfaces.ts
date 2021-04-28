@@ -9,7 +9,7 @@ export type BookingBase = {
   reason: string;
   prosecutor: string;
   comment: string;
-  locationName: string;
+  location: Location;
 };
 
 export interface BookingCreate extends BookingBase {
@@ -42,10 +42,19 @@ export type BookingDate = {
   arrivalTime?: Date;
 };
 
+export interface Location {
+  id: number;
+  name: string;
+  locationCode: string;
+  addressLine1: string;
+  city: string;
+  postalCode: string;
+}
+
 export type SearchParams = {
   language: string;
   level: string[];
-  city: string;
+  location: Location | null;
   dates: Array<BookingDate>;
 };
 

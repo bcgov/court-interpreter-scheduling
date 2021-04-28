@@ -116,7 +116,7 @@ export class BookingEntity {
       comment: this.comment,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      locationName: this.location?.name,
+      location: this.location,
     };
   }
 }

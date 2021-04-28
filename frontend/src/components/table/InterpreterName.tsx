@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 
 import { Interpreter } from 'constants/interfaces'
+import { fullName } from 'util/tableHelpers'
 
 export default function InterpreterName({ interpreter }: { interpreter?: Interpreter }) {
   const [open, toggle] = useState(false)
@@ -18,7 +19,7 @@ export default function InterpreterName({ interpreter }: { interpreter?: Interpr
         className='linkSpan pointer'
         onClick={() => toggle(true)}
       >
-        {interpreter.firstName} {interpreter.lastName}
+        {fullName(interpreter.firstName, interpreter.lastName)}
       </span>
       <Popover
         anchorEl={anchorEl.current}
@@ -36,7 +37,7 @@ export default function InterpreterName({ interpreter }: { interpreter?: Interpr
           <Box mb={2}>
             <Grid justify='space-between' alignItems='center' container>
               <Grid xs={11} item>
-                <Typography color='primary' variant='h4'>{interpreter.firstName} {interpreter.lastName}</Typography>
+                <Typography color='primary' variant='h4'>{fullName(interpreter.firstName, interpreter.lastName)}</Typography>
               </Grid>
               <Grid xs={1} item>
                 <CloseIcon className='pointer' onClick={() => toggle(false)} />
