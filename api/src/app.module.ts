@@ -12,6 +12,7 @@ import { BookingModule } from './booking/booking.module';
 import { AuthModule } from './auth/auth.module';
 import { DistanceModule } from './distance/distance.module';
 import { EventModule } from './event/event.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EventModule } from './event/event.module';
     AuthModule,
     DistanceModule,
     EventModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
