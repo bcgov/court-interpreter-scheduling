@@ -1,10 +1,11 @@
-import { ManyToOne } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 
 import { BookingEntity } from 'src/booking/entities/booking.entity';
 import { EventEntity } from 'src/event/entities/event.entity';
 
 import { EventRO } from 'src/event/ro/event.ro';
 
+@Entity('booking_event')
 export class BookingEventEntity extends EventEntity {
 
   @ManyToOne(
