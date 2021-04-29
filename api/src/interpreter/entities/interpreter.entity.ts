@@ -1,4 +1,5 @@
 import { BookingEntity } from 'src/booking/entities/booking.entity';
+import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { InterpreterRO } from '../ro/interpreter.ro';
@@ -34,6 +35,12 @@ export class InterpreterEntity {
     (booking: BookingEntity) => booking.interpreter,
   )
   bookings: BookingEntity[];
+
+  @OneToMany(
+    type => InterpreterEventEntity,
+    (event: InterpreterEventEntity) => event.interpreter,
+  )
+  events: InterpreterEventEntity[];
 
   @Column({ nullable: true })
   address: string;
@@ -125,6 +132,7 @@ export class InterpreterEntity {
       languages: this.languages
         .map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject())
         .sort((a, b) => a.level - b.level),
+      events: this.events.map(e => e.toResponseObject()),
       bookings: this.bookings,
       address: this.address,
       city: this.city,
