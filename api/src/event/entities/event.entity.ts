@@ -25,10 +25,10 @@ export abstract class EventEntity {
   field: string;
   
   @Column()
-  previous: any;
+  previous: string;
 
   @Column()
-  updated: any;
+  updated: string;
 
   @CreateDateColumn({
     name: 'created_at',
