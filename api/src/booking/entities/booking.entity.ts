@@ -121,7 +121,7 @@ export class BookingEntity {
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,
-      events: this.events.map(e => e.toResponseObject()),
+      events: this.events?.map(e => e.toResponseObject()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       location: this.location,

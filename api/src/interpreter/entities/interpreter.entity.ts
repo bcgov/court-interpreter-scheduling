@@ -132,7 +132,7 @@ export class InterpreterEntity {
       languages: this.languages
         .map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject())
         .sort((a, b) => a.level - b.level),
-      events: this.events.map(e => e.toResponseObject()),
+      events: this.events?.map(e => e.toResponseObject()),
       bookings: this.bookings,
       address: this.address,
       city: this.city,
