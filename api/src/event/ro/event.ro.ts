@@ -9,7 +9,7 @@ export class EventRO {
 
   @ApiProperty()
   updated: string;
-  
+
   @ApiProperty()
   user?: string;
 
