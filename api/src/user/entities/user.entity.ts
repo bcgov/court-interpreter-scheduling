@@ -6,7 +6,7 @@ import { UserRO } from '../ro/user.ro';
 const TABLE_NAME = 'user';
 
 @Entity(TABLE_NAME)
-export class InterpreterEntity {
+export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
