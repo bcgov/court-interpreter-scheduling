@@ -12,6 +12,7 @@ import { LocationModule } from './location/location.module';
 import { BookingModule } from './booking/booking.module';
 import { AuthModule } from './auth/auth.module';
 import { DistanceModule } from './distance/distance.module';
+import { UserModule } from './user/user.module';
 import { EventModule } from './event/event.module';
 import { UserModule } from './user/user.module';
 import { UserInterceptor } from './common/interceptors/user.interceptors';
@@ -31,6 +32,7 @@ import { UserEntity } from './user/entities/user.entity';
     BookingModule,
     AuthModule,
     DistanceModule,
+    UserModule,
     EventModule,
     UserModule,
     TypeOrmModule.forFeature([UserEntity]),
