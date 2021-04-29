@@ -11,8 +11,8 @@ import {
 
 @Entity('event')
 export abstract class EventEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   // leaving this here for when user entity is ready
   // @ManyToOne(

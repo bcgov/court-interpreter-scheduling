@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class EventRO {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
   previous: string;
@@ -15,5 +15,4 @@ export class EventRO {
 
   @ApiProperty()
   createdAt: Date;
-
 }
