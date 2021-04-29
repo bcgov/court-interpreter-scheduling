@@ -18,6 +18,7 @@ export class InterpreterEventEntity extends EventEntity {
   toResponseObject(): EventRO {
     return {
       id: this.id,
+      field: this.field,
       previous: this.previous,
       updated: this.updated,
       // placeholder until user table is ready
