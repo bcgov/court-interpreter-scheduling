@@ -1,5 +1,13 @@
 import { LocationEntity } from 'src/location/entities/location.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 
 import { UserRO } from '../ro/user.ro';
 
@@ -9,6 +17,11 @@ const TABLE_NAME = 'user';
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({
+    name: 'kc_id',
+  })
+  kcId: string;
 
   @Column({
     name: 'first_name',
@@ -21,12 +34,9 @@ export class UserEntity {
   })
   lastName: string;
 
-  @OneToOne(
-    type => LocationEntity,
-    (locationEntity: LocationEntity) => locationEntity.id,
-    { eager: true },
-  )
-  location: LocationEntity;
+  @OneToOne(() => LocationEntity)
+  @JoinColumn()
+  location?: LocationEntity;
 
   @CreateDateColumn({
     name: 'created_at',

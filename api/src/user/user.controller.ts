@@ -1,12 +1,13 @@
-import { Controller, Get, Req } from '@nestjs/common';
-import { Request } from 'express';
-import { User } from './interfaces/user.interface';
+import { Body, Controller, Patch } from '@nestjs/common';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  @Get('/')
-  async hello(@Req() req: any) {
-    // return req.accessTokenJWT;
-    return req.user;
+  constructor(private readonly userService: UserService) {}
+
+  @Patch()
+  async update(@Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(updateUserDto);
   }
 }
