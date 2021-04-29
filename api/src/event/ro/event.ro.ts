@@ -5,6 +5,9 @@ export class EventRO {
   id: string;
 
   @ApiProperty()
+  field: string;
+
+  @ApiProperty()
   previous: string;
 
   @ApiProperty()

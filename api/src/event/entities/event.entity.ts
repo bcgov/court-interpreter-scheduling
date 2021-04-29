@@ -22,10 +22,13 @@ export abstract class EventEntity {
   // user: UserEntity;
 
   @Column()
-  previous: string;
+  field: string;
+  
+  @Column()
+  previous: any;
 
   @Column()
-  updated: string;
+  updated: any;
 
   @CreateDateColumn({
     name: 'created_at',
