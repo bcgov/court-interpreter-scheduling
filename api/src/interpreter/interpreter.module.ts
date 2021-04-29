@@ -8,7 +8,10 @@ import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { DistanceService } from 'src/distance/distance.service';
 import { DistanceEntity } from 'src/distance/entities/distance.entity';
-import { EventModule } from 'src/event/event.module';
+
+import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
+import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
+import { EventService } from 'src/event/event.service';
 
 @Module({
   imports: [
@@ -16,11 +19,12 @@ import { EventModule } from 'src/event/event.module';
       InterpreterEntity,
       LanguageEntity,
       InterpreterLanguageEntity,
-      DistanceEntity
+      DistanceEntity,
+      InterpreterEventEntity,
+      BookingEventEntity,
     ]),
-    EventModule,
   ],
   controllers: [InterpreterController],
-  providers: [InterpreterService, InterpreterLanguageService, DistanceService],
+  providers: [InterpreterService, InterpreterLanguageService, DistanceService, EventService],
 })
 export class InterpreterModule {}

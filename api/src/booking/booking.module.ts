@@ -8,7 +8,9 @@ import { LanguageEntity } from 'src/language/entities/language.entity';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { InterpreterModule } from 'src/interpreter/interpreter.module';
 
-import { EventModule } from 'src/event/event.module';
+import { EventService } from 'src/event/event.service';
+import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
+import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
 
 import { BookingEntity } from './entities/booking.entity';
 import { BookingDateService } from './booking-date.service';
@@ -22,12 +24,13 @@ import { LocationEntity } from 'src/location/entities/location.entity';
       InterpreterEntity,
       BookingEntity,
       BookingDateEntity,
-      LocationEntity
+      LocationEntity,
+      InterpreterEventEntity,
+      BookingEventEntity,
     ]),
     InterpreterModule,
-    EventModule,
   ],
   controllers: [BookingController],
-  providers: [BookingService, BookingDateService],
+  providers: [BookingService, BookingDateService, EventService],
 })
 export class BookingModule {}
