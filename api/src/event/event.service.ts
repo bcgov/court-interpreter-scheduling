@@ -5,6 +5,11 @@ import { Repository } from 'typeorm';
 import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
 import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
 
+import { BookingEntity } from 'src/booking/entities/booking.entity';
+import { UpdateBookingDto } from 'src/booking/dto/update-booking.dto';
+import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
+import { UpdateInterpreterDto } from 'src/interpreter/dto/update-interpreter.dto';
+
 @Injectable()
 export class EventService {
   constructor(
@@ -32,5 +37,33 @@ export class EventService {
       booking: bookingId,
     });
     return e;
+  }
+
+  async parseInterpreterUpdate(original: InterpreterEntity, updateDto: UpdateInterpreterDto) {
+    const updates = [];
+    for (const k in original) {
+      if (original[k] !== updateDto[k] && updateDto[k]) {
+        updates.push({
+          field: k,
+          previous: original[k],
+          updated: updateDto[k],
+        })
+      }
+    }
+    return updates;
+  }
+  
+  async parseBookingUpdate(original: BookingEntity, updateDto: UpdateBookingDto) {
+    const updates = [];
+    for (const k in original) {
+      if (original[k] !== updateDto[k] && updateDto[k]) {
+        updates.push({
+          field: k,
+          previous: original[k],
+          updated: updateDto[k],
+        })
+      }
+    }
+    return updates;
   }
 }

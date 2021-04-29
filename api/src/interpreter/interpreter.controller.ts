@@ -12,6 +12,7 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
+  Logger,
 } from '@nestjs/common';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
@@ -21,6 +22,7 @@ import { InterpreterRO } from './ro/interpreter.ro';
 import { ApiTags } from '@nestjs/swagger';
 
 import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
+import { UpdateObject } from 'src/common/interface/UpdateObject.interface';
 
 import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
@@ -31,6 +33,7 @@ import * as csvtojson from 'csvtojson';
 import { mappingDirectories } from 'src/utils';
 import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
 import { DistanceService } from 'src/distance/distance.service';
+import { EventService } from 'src/event/event.service'
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -52,6 +55,7 @@ export class InterpreterController {
     private readonly interpreterService: InterpreterService,
     private readonly interpreterLanguageService: InterpreterLanguageService,
     private readonly distanceService: DistanceService,
+    private readonly eventService: EventService,
   ) {}
 
   @Post()
@@ -135,7 +139,16 @@ export class InterpreterController {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
-    await this.interpreterService.update(+id, updateDto, langs);
+
+    try {
+      const updatedFields = await this.eventService.parseInterpreterUpdate(interpreter, updateInterpreterDto);
+      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ bookingId: id, ...update }));
+    } catch (error) {
+      Logger.log(`Failed to create update events: ${error.message}`)
+    } finally {
+      await this.interpreterService.update(+id, updateDto, langs);
+    }
+
   }
 
   @Delete(':id')
