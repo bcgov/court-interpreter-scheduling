@@ -6,7 +6,7 @@ export class CreateUser1619716338943 implements MigrationInterface {
       CREATE TABLE  IF NOT EXISTS "user" (
         id uuid NOT NULL DEFAULT uuid_generate_v4(),
         kc_id character varying  NOT NULL,
-        first_name character varying  NOT NULL,
+        first_name character varying,
         last_name character varying,
         created_at timestamp without time zone NOT NULL DEFAULT now(),
         updated_at timestamp without time zone NOT NULL DEFAULT now(),

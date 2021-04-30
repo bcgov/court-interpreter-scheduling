@@ -4,6 +4,7 @@ import { LocationEntity } from 'src/location/entities/location.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import { UserRO } from './ro/user.ro';
 
 @Injectable()
 export class UserService {
@@ -14,11 +15,29 @@ export class UserService {
     private readonly locationRepository: Repository<LocationEntity>,
   ) {}
 
-  async update(updateUserDto: UpdateUserDto) {
-    const { kcId, locationId } = updateUserDto;
-    const location = await this.locationRepository.findOneOrFail({ id: locationId });
-    const user = await this.userRepository.findOneOrFail({ kcId });
-    user.location = location;
-    return await this.userRepository.save(user);
+  async update(updateUserDto: UpdateUserDto): Promise<UserRO> {
+    const { id, kcId, locationId, firstName, lastName } = updateUserDto;
+    let user: UserEntity;
+    if (kcId) {
+      user = await this.userRepository.findOneOrFail({ kcId });
+    } else {
+      user = await this.userRepository.findOneOrFail({ id });
+    }
+
+    if (locationId) {
+      const location = await this.locationRepository.findOneOrFail({ id: locationId });
+      user.location = location;
+    }
+
+    if (firstName) {
+      user.firstName = firstName;
+    }
+
+    if (lastName) {
+      user.lastName = lastName;
+    }
+
+    const saveUser = await this.userRepository.save(user);
+    return saveUser.toResponseObject();
   }
 }

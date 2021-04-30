@@ -25,6 +25,7 @@ export class UserEntity {
 
   @Column({
     name: 'first_name',
+    nullable: true,
   })
   firstName: string;
 
@@ -51,6 +52,7 @@ export class UserEntity {
   toResponseObject(): UserRO {
     return {
       id: this.id,
+      kcId: this.kcId,
       firstName: this.firstName,
       lastName: this.lastName,
       location: this.location.toResponseObject(),
