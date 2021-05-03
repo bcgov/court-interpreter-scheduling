@@ -1,4 +1,5 @@
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
+import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { LocationEntity } from 'src/location/entities/location.entity';
 import {
@@ -86,6 +87,12 @@ export class BookingEntity {
   @Column({ nullable: true })
   comment: string;
 
+  @OneToMany(
+    type => BookingEventEntity,
+    (event: BookingEventEntity) => event.booking,
+  )
+  events: BookingEventEntity[];
+
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -114,6 +121,7 @@ export class BookingEntity {
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,
+      events: this.events?.map(e => e.toResponseObject()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       location: this.location,

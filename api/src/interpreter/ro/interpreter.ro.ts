@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookingEntity } from 'src/booking/entities/booking.entity';
 import { LanguageRO } from './interpreter-language.ro';
+import { EventRO } from 'src/event/ro/event.ro';
 
 export class InterpreterRO {
   @ApiProperty()
@@ -17,6 +18,9 @@ export class InterpreterRO {
 
   @ApiProperty()
   bookings: Array<BookingEntity>;
+
+  @ApiProperty()
+  events: EventRO[];
 
   @ApiProperty()
   address: string;
