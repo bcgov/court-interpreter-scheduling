@@ -9,9 +9,22 @@ import { InterpreterLanguageEntity } from './entities/interpreter-language.entit
 import { DistanceService } from 'src/distance/distance.service';
 import { DistanceEntity } from 'src/distance/entities/distance.entity';
 
+import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
+import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
+import { EventService } from 'src/event/event.service';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([InterpreterEntity, LanguageEntity, InterpreterLanguageEntity, DistanceEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      InterpreterEntity,
+      LanguageEntity,
+      InterpreterLanguageEntity,
+      DistanceEntity,
+      InterpreterEventEntity,
+      BookingEventEntity,
+    ]),
+  ],
   controllers: [InterpreterController],
-  providers: [InterpreterService, InterpreterLanguageService, DistanceService],
+  providers: [InterpreterService, InterpreterLanguageService, DistanceService, EventService],
 })
 export class InterpreterModule {}

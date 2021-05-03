@@ -19,6 +19,7 @@ export class BookingEventEntity extends EventEntity {
     // we don't need to return the booking as this entity will be joined off the booking table
     return {
       id: this.id,
+      field: this.field,
       previous: this.previous,
       updated: this.updated,
       // placeholder until user table is ready

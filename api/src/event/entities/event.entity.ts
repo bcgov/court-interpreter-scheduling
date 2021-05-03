@@ -22,6 +22,9 @@ export abstract class EventEntity {
   // user: UserEntity;
 
   @Column()
+  field: string;
+  
+  @Column()
   previous: string;
 
   @Column()

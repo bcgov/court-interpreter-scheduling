@@ -12,11 +12,13 @@ import {
   HttpCode,
   Header,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { UpdateObject } from 'src/common/interface/UpdateObject.interface';
 import { BookingDateService } from './booking-date.service';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -24,6 +26,7 @@ import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingRO } from './ro/booking.ro';
+import { EventService } from 'src/event/event.service'
 
 @ApiTags('booking')
 @Controller('booking')
@@ -31,6 +34,7 @@ export class BookingController {
   constructor(
     private readonly bookingService: BookingService,
     private readonly bookingDateService: BookingDateService,
+    private readonly eventService: EventService,
   ) {}
 
   @Post()
@@ -87,7 +91,15 @@ export class BookingController {
       }
     }
 
-    return this.bookingService.update(+id, updateDto, bookingDates);
+    try {
+      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateBookingDto);
+      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ bookingId: id, ...update }));
+    } catch (error) {
+      Logger.log(`Failed to create update events: ${error.message}`)
+    } finally {
+      return this.bookingService.update(+id, updateDto, bookingDates);
+    }
+
   }
 
   @Delete(':id')
