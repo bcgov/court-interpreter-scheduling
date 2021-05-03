@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 export abstract class EventEntity {
   @PrimaryGeneratedColumn('uuid')
