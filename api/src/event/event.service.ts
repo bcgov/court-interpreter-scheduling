@@ -20,7 +20,6 @@ export class EventService {
   ) {}
 
   async createInterpreterEvent({ interpreter, field, previous, updated }) {
-    const allEvents = await this.interpreterEventRepository.find()
     const e = this.interpreterEventRepository.create({
       field,
       previous,
@@ -30,14 +29,14 @@ export class EventService {
     return await this.interpreterEventRepository.save(e);
   }
 
-  async createBookingEvent({ bookingId, field, previous, updated}) {
+  async createBookingEvent({ booking, field, previous, updated}) {
     const e = this.bookingEventRepository.create({
       field,
       previous,
       updated,
-      booking: bookingId,
+      booking,
     });
-    return e;
+    return await this.bookingEventRepository.save(e);
   }
 
   async parseInterpreterUpdate(original: InterpreterEntity, updateDto: UpdateInterpreterDto) {

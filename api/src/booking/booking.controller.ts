@@ -12,6 +12,7 @@ import {
   HttpCode,
   Header,
   Res,
+  UseInterceptors,
   Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -27,6 +28,9 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingRO } from './ro/booking.ro';
 import { EventService } from 'src/event/event.service'
+
+import { User as IUser } from 'src/common/interface/user.interface';
+import { User as UseUser } from 'src/common/interceptors/user.interceptors';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -75,7 +79,11 @@ export class BookingController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateBookingDto: UpdateBookingDto,
+    @UseUser() user: IUser,
+  ) {
     const { dates, ...updateDto } = updateBookingDto;
     const originBooking = await this.bookingService.findOne(+id);
     const originBookingDates = originBooking.dates;
@@ -92,8 +100,11 @@ export class BookingController {
     }
 
     try {
-      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateBookingDto);
-      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ bookingId: id, ...update }));
+      // TODO booking dates will need special attention, similar to interpreter language
+      // TODO booking languages will need special attention, similar to interpreter language
+      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateDto);
+      const { language, ...b } = originBooking;
+      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ booking: b, ...update }));
     } catch (error) {
       Logger.log(`Failed to create update events: ${error.message}`)
     } finally {
