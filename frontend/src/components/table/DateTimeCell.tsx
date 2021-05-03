@@ -1,5 +1,5 @@
-import React from 'react'
-import moment from 'moment'
+import React from 'react';
+import moment from 'moment';
 
 export default function DateTimeCell({ date, arrival }: { date: string, arrival: string }) {
   return (

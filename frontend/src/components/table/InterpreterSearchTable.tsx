@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
+import moment from 'moment';
 
 import { Interpreter, Language } from 'constants/interfaces';
 import {
@@ -16,9 +17,10 @@ import Calendar from 'components/calendar/DirectoryCalendar';
 import ViewToggle from 'components/calendar/ViewToggle';
 import BookingModal from 'components/form/BookingModal';
 import BookingButton from 'components/table/BookingButton';
+import Tag from 'components/reusable/Tag';
 import { Column } from 'material-table';
 
-export default function DirectoryTable({
+export default function SearchTable({
   data,
   disabled,
   language,
@@ -72,7 +74,6 @@ export default function DirectoryTable({
         ? languageArraySort(language, 'level')
         : arrayFieldSort('languages', 0, 'languageName'),
     },
-   
     {
       title: 'Address',
       render: (row: any) => (
@@ -114,13 +115,15 @@ export default function DirectoryTable({
     },
     { title: 'Email', field: 'email' },
     ...distanceColumn,
-    
     {
       render: (row: any) => (
-        <BookingButton
-          disabled={disabled}
-          onClick={() => setInterpreter(row)}
-        />
+        <>
+          {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
+          <BookingButton
+            disabled={disabled}
+            onClick={() => setInterpreter(row)}
+          />
+        </>
       ),
       align: 'right',
     },

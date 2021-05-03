@@ -6,7 +6,8 @@ import BorderColorIcon from '@material-ui/icons/BorderColor';
 import AddIcon from '@material-ui/icons/Add';
 
 import { StyledTooltip } from 'components/reusable/StyledTooltip';
-import CopyIcon from '../../assets/images/copy.png';
+import Tag from 'components/reusable/Tag';
+import CopyIcon from 'assets/images/copy.png';
 
 import BaseTable from 'components/table/Base';
 import { StyledIconButton } from 'components/Buttons';
@@ -107,6 +108,9 @@ export default function DirectoryTable({
             render: (row: any) => <span>{row.city}</span>,
           },
           {
+            render: (row: any) => moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null
+          },
+          {
             title: (
               <StyledIconButton
                 className="pointer"
@@ -118,13 +122,15 @@ export default function DirectoryTable({
             ),
             sorting: false,
             render: (row: any) => (
-              <StyledIconButton
-                className="pointer"
-                onClick={() => setInterpreter(row)}
-                color="primary"
-              >
-                <BorderColorIcon />
-              </StyledIconButton>
+              <>
+                <StyledIconButton
+                  className="pointer"
+                  onClick={() => setInterpreter(row)}
+                  color="primary"
+                >
+                  <BorderColorIcon />
+                </StyledIconButton>
+              </>
             ),
             width: 75,
           },
