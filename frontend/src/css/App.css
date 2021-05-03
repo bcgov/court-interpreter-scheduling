@@ -33,6 +33,10 @@ body {
   margin-right: 0.5rem;
 }
 
+.flat, p.flat {
+  margin: 0;
+}
+
 .linkSpan {
   text-decoration: underline;
   color: #1A5A96;
@@ -184,4 +188,12 @@ td.MuiTableCell-root:last-child, th.MuiTableCell-root:last-child {
 
 tr.MuiTableRow-root:empty {
   height: 0!important;
+}
+
+svg.cellAlertIcon {
+  font-size: 1.15rem;
+  color: #1A5A96;
+  margin-left: 4px;
+  margin-bottom: -2px;
+  cursor: pointer;
 }

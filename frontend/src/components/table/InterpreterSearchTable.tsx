@@ -9,7 +9,7 @@ import {
   levelSort,
   languageArraySort,
 } from 'util/sort';
-import { comments, fullName } from 'util/tableHelpers';
+import { comments, fullName, withEvent } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 import BaseTable from 'components/table/Base';
@@ -52,7 +52,7 @@ export default function SearchTable({
   let columns: Column<any>[] = [
     {
       title: 'Name',
-      render: (row: any) => fullName(row.firstName, row.lastName),
+      render: (row: any) => fullName(row.firstName, row.lastName, row.events),
       customSort: fieldSort('lastName'),
     },
     {
@@ -91,6 +91,7 @@ export default function SearchTable({
           >
             {row.postal}
           </a>
+          {withEvent(['address', 'city', 'postal'], row.events)}
         </span>
       ),
       customSort: fieldSort('city'),
@@ -99,21 +100,21 @@ export default function SearchTable({
       title: 'Phone',
       render: (row: any) => (
         <div>
-          <div>{row.phone} <small>mobile</small></div>
+          <p className="flat">{row.phone} <small>mobile</small></p>{withEvent('phone', row.events)}
           {row.businessPhone && row.businessPhone !== row.phone && (
-            <div>
-              {row.businessPhone} <small>home</small>
-            </div>
+            <p className="flat">
+              {row.businessPhone} <small>home</small>{withEvent('businessPhone', row.events)}
+            </p>
           )}
           {row.homePhone && row.homePhone !== row.phone && (
-            <div>
-              {row.homePhone} <small>work</small>
-            </div>
+            <p className="flat">
+              {row.homePhone} <small>work</small>{withEvent('homePhone', row.events)}
+            </p>
           )}
         </div>
       ),
     },
-    { title: 'Email', field: 'email' },
+    { title: 'Email', field: 'email', render: (row: any) => <span>{row.email}{withEvent('email', row.events)}</span> },
     ...distanceColumn,
     {
       render: (row: any) => (

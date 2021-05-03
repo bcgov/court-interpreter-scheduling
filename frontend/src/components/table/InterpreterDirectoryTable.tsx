@@ -15,7 +15,7 @@ import EditInterpreterModal from 'components/form/EditInterpreterModal';
 
 import { Language, Interpreter } from 'constants/interfaces';
 import { fieldSort, languageArraySort, arrayFieldSort } from 'util/sort';
-import { comments, fullName } from 'util/tableHelpers';
+import { comments, fullName, withEvent } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 export default function DirectoryTable({
@@ -43,7 +43,7 @@ export default function DirectoryTable({
             render: (row: any) => fullName(row.firstName, row.lastName),
             customSort: fieldSort('lastName'),
           },
-          { title: 'Phone', field: 'phone' },
+          { title: 'Phone', field: 'phone', render: (row: any) => <span>{row.phone}{withEvent('phone', row.events)}</span> },
           {
             title: (
               <>
@@ -61,6 +61,7 @@ export default function DirectoryTable({
               </>
             ),
             field: 'email',
+            render: (row: any) => <span>{row.email}{withEvent('email', row.events)}</span>
           },
           {
             title: 'Language',
@@ -99,13 +100,13 @@ export default function DirectoryTable({
             title: 'Active',
             field: 'contractExtension',
             render: (row: any) => (
-              <span>{row.contractExtension ? 'Active' : 'Inactive'}</span>
+              <span>{row.contractExtension ? 'Active' : 'Inactive'}{withEvent('contractExtension', row.events)}</span>
             ),
           },
           {
             title: 'City',
             field: 'city',
-            render: (row: any) => <span>{row.city}</span>,
+            render: (row: any) => <span>{row.city}{withEvent('city', row.events)}</span>,
           },
           {
             render: (row: any) => moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null
@@ -143,6 +144,7 @@ export default function DirectoryTable({
                   <b>Address</b>
                   <br />
                   {`${rowData.address} ${rowData.city} ${rowData.postal}`}
+                  {withEvent(['address', 'city', 'postal'], rowData.events)}
                 </Box>
               </Grid>
               <Grid item>
@@ -150,6 +152,7 @@ export default function DirectoryTable({
                   <b>Supplier #</b>
                   <br />
                   {rowData.supplier}
+                  {withEvent('supplier', rowData.events)}
                 </Box>
               </Grid>
               <Grid item>
@@ -157,6 +160,7 @@ export default function DirectoryTable({
                   <b>GST #</b>
                   <br />
                   {rowData.gst}
+                  {withEvent('gst', rowData.events)}
                 </Box>
               </Grid>
               <Grid item>
@@ -168,6 +172,7 @@ export default function DirectoryTable({
                         'YYYY-MM-DD'
                       )
                     : rowData.criminalRecordCheck}
+                    {withEvent(['criminalRecordCheck', 'criminalRecordCheckDate'], rowData.events)}
                 </Box>
               </Grid>
               <Grid item>
@@ -175,6 +180,7 @@ export default function DirectoryTable({
                   <b>Comments</b>
                   <br />
                   {comments(rowData.comments, rowData.languages)}
+                  {withEvent('comments', rowData.events)}
                 </Box>
               </Grid>
             </Grid>
