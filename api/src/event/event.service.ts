@@ -29,12 +29,13 @@ export class EventService {
     return await this.interpreterEventRepository.save(e);
   }
 
-  async createBookingEvent({ booking, field, previous, updated}) {
+  async createBookingEvent({ booking, user, field, previous, updated}) {
     const e = this.bookingEventRepository.create({
       field,
       previous,
       updated,
       booking,
+      user,
     });
     return await this.bookingEventRepository.save(e);
   }
