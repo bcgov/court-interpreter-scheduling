@@ -13,17 +13,16 @@ export abstract class EventEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // leaving this here for when user entity is ready
-  // @ManyToOne(
-  //   type => UserEntity,
-  //   user => user.id,
-  //   { onDelete: 'SET NULL' },
-  // )
-  // user: UserEntity;
+  @ManyToOne(
+    type => UserEntity,
+    user => user.id,
+    { onDelete: 'SET NULL' },
+  )
+  user: UserEntity;
 
   @Column()
   field: string;
-  
+
   @Column()
   previous: string;
 
