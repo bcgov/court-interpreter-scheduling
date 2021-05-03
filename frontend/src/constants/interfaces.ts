@@ -134,5 +134,5 @@ export interface Event {
   previous: string;
   updated: string;
   createdAt: Date;
-
+  user: string;
 }
