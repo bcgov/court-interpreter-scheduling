@@ -38,7 +38,7 @@ export class UserEntity {
   @OneToOne(() => LocationEntity, { eager: true })
   @JoinColumn({
     referencedColumnName: 'id',
-    name: 'locationId',
+    name: 'location_id',
   })
   location?: LocationEntity;
 

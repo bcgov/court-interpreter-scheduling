@@ -10,7 +10,7 @@ export class CreateUser1619716338943 implements MigrationInterface {
         last_name character varying,
         created_at timestamp without time zone NOT NULL DEFAULT now(),
         updated_at timestamp without time zone NOT NULL DEFAULT now(),
-        "locationId" integer,
+        location_id integer,
         CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY (id),
         CONSTRAINT "REL_93e37a8413a5745a9b52bc3c0c" UNIQUE ("locationId"),
         CONSTRAINT "FK_93e37a8413a5745a9b52bc3c0c1" FOREIGN KEY ("locationId")
