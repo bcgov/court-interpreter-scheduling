@@ -102,8 +102,8 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
               <TabContext value={view}>
 
                 <TabList indicatorColor="primary" onChange={(e, v) => toggleView(v)} aria-label="tabs to toggle between booking details and changes history">
-                  <Tab label="Schedule details" id="schedule-details-tab" value="schedule" />
-                  <Tab label="Update history" id="update-history-tab" value="changes" />
+                  <Tab style={{ textTransform: "none", fontWeight: view === "schedule" ? 600 : 400  }} label="Schedule details" id="schedule-details-tab" value="schedule" />
+                  <Tab style={{ textTransform: "none", fontWeight: view === "changes" ? 600 : 400  }} label="History" id="update-history-tab" value="changes" />
                 </TabList>
 
                 <TabPanel value="schedule">
