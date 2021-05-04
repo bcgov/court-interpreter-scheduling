@@ -14,7 +14,6 @@ import { AuthModule } from './auth/auth.module';
 import { DistanceModule } from './distance/distance.module';
 import { UserModule } from './user/user.module';
 import { EventModule } from './event/event.module';
-import { UserModule } from './user/user.module';
 import { UserInterceptor } from './common/interceptors/user.interceptors';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './user/entities/user.entity';

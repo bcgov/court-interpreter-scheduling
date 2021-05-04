@@ -30,7 +30,7 @@ import { BookingRO } from './ro/booking.ro';
 import { EventService } from 'src/event/event.service'
 
 import { User as IUser } from 'src/common/interface/user.interface';
-import { User as UseUser } from 'src/common/interceptors/user.interceptors';
+import { DBUser } from 'src/common/decorator/user.decorator';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -82,7 +82,7 @@ export class BookingController {
   async update(
     @Param('id') id: string,
     @Body() updateBookingDto: UpdateBookingDto,
-    @UseUser() user: IUser,
+    @DBUser() user: IUser,
   ) {
     const { dates, ...updateDto } = updateBookingDto;
     const originBooking = await this.bookingService.findOne(+id);
