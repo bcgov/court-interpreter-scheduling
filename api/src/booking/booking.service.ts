@@ -170,6 +170,9 @@ export class BookingService {
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
+    // F2 Title
+    setCell({ row: 2, column: 'F', value: 'COURT INTERPRETER REQUEST AND RECORD', alignment: 'center' });
+
     // W5, W68, F113 invoice, [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
     const firstBookingDate = booking.dates[0];
     const invoice = (
