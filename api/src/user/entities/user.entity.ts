@@ -35,8 +35,11 @@ export class UserEntity {
   })
   lastName: string;
 
-  @OneToOne(() => LocationEntity)
-  @JoinColumn()
+  @OneToOne(() => LocationEntity, { eager: true })
+  @JoinColumn({
+    referencedColumnName: 'id',
+    name: 'locationId',
+  })
   location?: LocationEntity;
 
   @CreateDateColumn({
@@ -55,7 +58,7 @@ export class UserEntity {
       kcId: this.kcId,
       firstName: this.firstName,
       lastName: this.lastName,
-      location: this.location.toResponseObject(),
+      location: this.location?.toResponseObject(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

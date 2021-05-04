@@ -49,6 +49,13 @@ export class PaginateBookingQueryDto extends PaginationQueryDTO {
   locationName?: string;
 
   @ApiProperty({
+    description: 'Courthouse location id',
+    example: '1',
+  })
+  @IsOptional()
+  locationId?: number;
+
+  @ApiProperty({
     description: 'Case File Number',
     example: 'VAN-P-C-123456',
   })

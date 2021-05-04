@@ -1,11 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  ExecutionContext,
-  createParamDecorator,
-  NestInterceptor,
-  CallHandler,
-} from '@nestjs/common';
+import { Inject, Injectable, ExecutionContext, NestInterceptor, CallHandler } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Observable } from 'rxjs';
@@ -35,17 +28,18 @@ export class UserInterceptor implements NestInterceptor {
           lastName: user.family_name,
         });
         existUser = await this.userRepo.save(newUser);
+      } else {
+        // Existing user update it
+        if (existUser.firstName !== user.given_name || existUser.lastName !== user.family_name) {
+          existUser.firstName = user.given_name;
+          existUser.lastName = user.family_name;
+          existUser = await this.userRepo.save(existUser);
+        }
       }
 
-      request.user = existUser;
+      request.dbUser = existUser;
     }
 
     return next.handle();
   }
 }
-
-/** Get User Data */
-export const User = createParamDecorator((data, ctx: ExecutionContext) => {
-  const req = ctx.switchToHttp().getRequest();
-  return req.user;
-});

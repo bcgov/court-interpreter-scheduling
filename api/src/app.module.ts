@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
@@ -13,6 +14,9 @@ import { AuthModule } from './auth/auth.module';
 import { DistanceModule } from './distance/distance.module';
 import { EventModule } from './event/event.module';
 import { UserModule } from './user/user.module';
+import { UserInterceptor } from './common/interceptors/user.interceptors';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -29,8 +33,15 @@ import { UserModule } from './user/user.module';
     DistanceModule,
     EventModule,
     UserModule,
+    TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UserInterceptor,
+    },
+  ],
 })
 export class AppModule {}

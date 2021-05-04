@@ -101,6 +101,10 @@ export class BookingService {
       query.andWhere('location.name = :locationName', { locationName: paginateBookingQueryDto.locationName });
     }
 
+    if (paginateBookingQueryDto.locationId) {
+      query.andWhere('location.id = :locationId', { locationId: paginateBookingQueryDto.locationId });
+    }
+
     const bookings = await query.getMany();
 
     return {

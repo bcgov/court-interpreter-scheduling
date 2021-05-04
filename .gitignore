@@ -6,3 +6,4 @@ dist/
 */cypress/videos
 */cypress/screenshots
 .DS_Store
+**/.DS_Store
