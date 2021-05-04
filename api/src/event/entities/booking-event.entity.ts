@@ -16,14 +16,12 @@ export class BookingEventEntity extends EventEntity {
   booking: BookingEntity;
 
   toResponseObject(): EventRO {
-    // we don't need to return the booking as this entity will be joined off the booking table
     return {
       id: this.id,
       field: this.field,
       previous: this.previous,
       updated: this.updated,
-      // placeholder until user table is ready
-      // user: this.user.firstName,
+      user: `${this.user?.firstName} ${this.user?.lastName}`,
       createdAt: this.createdAt,
     }
   }

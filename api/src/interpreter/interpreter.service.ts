@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { format } from 'date-fns';
+import { format, sub } from 'date-fns';
 import { Repository } from 'typeorm';
 
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
@@ -38,6 +38,10 @@ export class InterpreterService {
       .leftJoinAndSelect('interpreter.languages', 'intLang')
       .leftJoinAndSelect('intLang.language', 'lang')
       .leftJoinAndSelect('interpreter.bookings', 'booking')
+      .leftJoinAndSelect(
+        'interpreter.events',
+        'event',
+        `event.createdAt > :thirtyDaysAgo`, { thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd') })
       .leftJoinAndSelect('booking.dates', 'dates')
       .orderBy('interpreter.lastName', 'ASC');
 
@@ -99,7 +103,7 @@ export class InterpreterService {
 
     if (criminalRecordCheck) {
       query.andWhere(
-        `interpreter.criminalRecordCheckDate  < TO_TIMESTAMP(:criminalRecordCheckDate, 'YYYY-MM-DD') - interval '5 year'`,
+        `interpreter.criminalRecordCheckDate < TO_TIMESTAMP(:criminalRecordCheckDate, 'YYYY-MM-DD') - interval '5 year'`,
         {
           criminalRecordCheckDate: format(criminalRecordCheck, 'yyyy-MM-dd'),
         },
@@ -165,7 +169,7 @@ export class InterpreterService {
 
   async findAllAddress(): Promise<{ address: string }[]> {
     return await this.interpreterRepository.query(`
-    SELECT DISTINCT(CONCAT(address, ', ', city, ', ', province, ' ', postal)) AS address 
+    SELECT DISTINCT(CONCAT(address, ', ', city, ', ', province, ' ', postal)) AS address
       FROM "interpreter"
       WHERE address IS NOT NULL
     `);

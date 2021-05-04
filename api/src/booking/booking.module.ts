@@ -16,6 +16,7 @@ import { BookingEntity } from './entities/booking.entity';
 import { BookingDateService } from './booking-date.service';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { LocationEntity } from 'src/location/entities/location.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LocationEntity } from 'src/location/entities/location.entity';
       LocationEntity,
       InterpreterEventEntity,
       BookingEventEntity,
+      UserEntity,
     ]),
     InterpreterModule,
   ],

@@ -21,8 +21,6 @@ export class InterpreterEventEntity extends EventEntity {
       field: this.field,
       previous: this.previous,
       updated: this.updated,
-      // placeholder until user table is ready
-      // user: this.user.firstName,
       createdAt: this.createdAt,
     }
   }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
+import moment from 'moment';
 
 import { Interpreter, Language } from 'constants/interfaces';
 import {
@@ -8,7 +9,7 @@ import {
   levelSort,
   languageArraySort,
 } from 'util/sort';
-import { comments, fullName } from 'util/tableHelpers';
+import { comments, fullName, withEvent } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 import BaseTable from 'components/table/Base';
@@ -16,9 +17,10 @@ import Calendar from 'components/calendar/DirectoryCalendar';
 import ViewToggle from 'components/calendar/ViewToggle';
 import BookingModal from 'components/form/BookingModal';
 import BookingButton from 'components/table/BookingButton';
+import Tag from 'components/reusable/Tag';
 import { Column } from 'material-table';
 
-export default function DirectoryTable({
+export default function SearchTable({
   data,
   disabled,
   language,
@@ -50,7 +52,7 @@ export default function DirectoryTable({
   let columns: Column<any>[] = [
     {
       title: 'Name',
-      render: (row: any) => fullName(row.firstName, row.lastName),
+      render: (row: any) => fullName(row.firstName, row.lastName, row.events),
       customSort: fieldSort('lastName'),
     },
     {
@@ -72,7 +74,6 @@ export default function DirectoryTable({
         ? languageArraySort(language, 'level')
         : arrayFieldSort('languages', 0, 'languageName'),
     },
-   
     {
       title: 'Address',
       render: (row: any) => (
@@ -90,6 +91,7 @@ export default function DirectoryTable({
           >
             {row.postal}
           </a>
+          {withEvent(['address', 'city', 'postal'], row.events)}
         </span>
       ),
       customSort: fieldSort('city'),
@@ -98,29 +100,31 @@ export default function DirectoryTable({
       title: 'Phone',
       render: (row: any) => (
         <div>
-          <div>{row.phone} <small>mobile</small></div>
+          <p className="flat">{row.phone} <small>mobile</small></p>{withEvent('phone', row.events)}
           {row.businessPhone && row.businessPhone !== row.phone && (
-            <div>
-              {row.businessPhone} <small>home</small>
-            </div>
+            <p className="flat">
+              {row.businessPhone} <small>home</small>{withEvent('businessPhone', row.events)}
+            </p>
           )}
           {row.homePhone && row.homePhone !== row.phone && (
-            <div>
-              {row.homePhone} <small>work</small>
-            </div>
+            <p className="flat">
+              {row.homePhone} <small>work</small>{withEvent('homePhone', row.events)}
+            </p>
           )}
         </div>
       ),
     },
-    { title: 'Email', field: 'email' },
+    { title: 'Email', field: 'email', render: (row: any) => <span>{row.email}{withEvent('email', row.events)}</span> },
     ...distanceColumn,
-    
     {
       render: (row: any) => (
-        <BookingButton
-          disabled={disabled}
-          onClick={() => setInterpreter(row)}
-        />
+        <>
+          {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
+          <BookingButton
+            disabled={disabled}
+            onClick={() => setInterpreter(row)}
+          />
+        </>
       ),
       align: 'right',
     },

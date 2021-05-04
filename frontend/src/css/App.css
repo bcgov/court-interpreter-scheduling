@@ -29,6 +29,14 @@ body {
   font-weight: bold;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.flat, p.flat {
+  margin: 0;
+}
+
 .linkSpan {
   text-decoration: underline;
   color: #1A5A96;
@@ -47,6 +55,8 @@ body {
   overflow-y: scroll;
   overflow-x: auto;
 }
+
+/* Login */
 
 .login-container,
 .signup-container {
@@ -144,6 +154,20 @@ span.errorSpan {
   display: block;
 }
 
+span.tag {
+  border: solid 1px black;
+  border-radius: 4px;
+  padding: 0.25rem;
+  font-size: 12px;
+  line-height: 17px;
+  cursor: pointer;
+}
+
+span.tag.green {
+  color: #2E8540;
+  border-color: #2E8540;
+}
+
 /* TABLE */
 
 td.MuiTableCell-root {
@@ -164,4 +188,12 @@ td.MuiTableCell-root:last-child, th.MuiTableCell-root:last-child {
 
 tr.MuiTableRow-root:empty {
   height: 0!important;
+}
+
+svg.cellAlertIcon {
+  font-size: 1.15rem;
+  color: #1A5A96;
+  margin-left: 4px;
+  margin-bottom: -2px;
+  cursor: pointer;
 }

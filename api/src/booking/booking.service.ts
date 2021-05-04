@@ -4,7 +4,7 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
-import { addMonths, format } from 'date-fns';
+import { addMonths, format, sub } from 'date-fns';
 import * as ExcelJS from 'exceljs';
 import * as path from 'path';
 
@@ -67,6 +67,11 @@ export class BookingService {
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
+      .leftJoinAndSelect(
+        'booking.events',
+        'event',
+        `event.createdAt > :thirtyDaysAgo`, { thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd') })
+      .leftJoinAndSelect('event.user', 'eventUser')
       .leftJoinAndSelect('interpreter.languages', 'languages')
       .leftJoinAndSelect('languages.language', 'lang')
       .leftJoinAndSelect('booking.location', 'location');

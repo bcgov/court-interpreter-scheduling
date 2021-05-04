@@ -4,6 +4,7 @@ import { useAxiosPatch } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import { StyledButton, ButtonSecondary, BookingButton } from 'components/Buttons'
+import ChangeLog from 'components/ChangeLog'
 import BookingInputs from 'components/form/inputs/Booking'
 import { Schema, Initial } from 'components/form/schemas/booking.schema'
 
@@ -11,6 +12,10 @@ import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
+import Tab from '@material-ui/core/Tab'
+import TabContext from '@material-ui/lab/TabContext';
+import TabList from '@material-ui/lab/TabList'
+import TabPanel from '@material-ui/lab/TabPanel';
 
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -31,6 +36,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
   const history = useHistory()
 
   const [open, toggleOpen] = useState(false)
+  const [view, toggleView] = useState('schedule')
   const [{ response, loading, error }, editBooking] = useAxiosPatch({ url: '/booking' }, { manual: true })
 
   useError({ error, prefix: 'Failed to update booking.' })
@@ -52,7 +58,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
 
   return !booking ? null : (
 
-    <Dialog open={open} maxWidth='xl'>
+    <Dialog open={open} maxWidth='xl' fullWidth>
       <Formik
         initialValues={{
           ...Initial,
@@ -86,12 +92,29 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
             <Divider variant='middle' />
 
             <DialogContent>
+
               <Box mt={2} mb={2}>
                 <Typography variant='h4'>
                   {booking.interpreter?.firstName} {booking.interpreter?.lastName} (Level {booking.interpreter?.languages[0].level}) <BookingButton onClick={editInterpreter}>Edit</BookingButton>
                 </Typography>
               </Box>
-              <BookingInputs edit={true} interpreter={booking.interpreter} booking={booking} />
+
+              <TabContext value={view}>
+
+                <TabList indicatorColor="primary" onChange={(e, v) => toggleView(v)} aria-label="tabs to toggle between booking details and changes history">
+                  <Tab style={{ textTransform: "none", fontWeight: view === "schedule" ? 600 : 400  }} label="Schedule details" id="schedule-details-tab" value="schedule" />
+                  <Tab style={{ textTransform: "none", fontWeight: view === "changes" ? 600 : 400  }} label="History" id="update-history-tab" value="changes" />
+                </TabList>
+
+                <TabPanel value="schedule">
+                  <BookingInputs edit={true} interpreter={booking.interpreter} booking={booking} />
+                </TabPanel>
+                <TabPanel value="changes">
+                  <ChangeLog events={booking.events} />
+                </TabPanel>
+
+              </TabContext>
+
             </DialogContent>
 
             <Divider variant='middle' />

@@ -19,24 +19,25 @@ export class EventService {
     private readonly bookingEventRepository: Repository<BookingEventEntity>,
   ) {}
 
-  async createInterpreterEvent({ interpreterId, field, previous, updated }) {
+  async createInterpreterEvent({ interpreter, field, previous, updated }) {
     const e = this.interpreterEventRepository.create({
       field,
       previous,
       updated,
-      interpreter: interpreterId,
+      interpreter,
     });
-    return e;
+    return await this.interpreterEventRepository.save(e);
   }
-  
-  async createBookingEvent({ bookingId, field, previous, updated}) {
+
+  async createBookingEvent({ booking, user, field, previous, updated}) {
     const e = this.bookingEventRepository.create({
       field,
       previous,
       updated,
-      booking: bookingId,
+      booking,
+      user,
     });
-    return e;
+    return await this.bookingEventRepository.save(e);
   }
 
   async parseInterpreterUpdate(original: InterpreterEntity, updateDto: UpdateInterpreterDto) {
@@ -52,7 +53,7 @@ export class EventService {
     }
     return updates;
   }
-  
+
   async parseBookingUpdate(original: BookingEntity, updateDto: UpdateBookingDto) {
     const updates = [];
     for (const k in original) {

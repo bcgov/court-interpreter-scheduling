@@ -128,3 +128,11 @@ export interface UserResponse {
   id: string;
   location: Location;
 }
+
+export interface Event {
+  field: string;
+  previous: string;
+  updated: string;
+  createdAt: Date;
+  user: string;
+}
