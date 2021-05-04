@@ -61,6 +61,8 @@ axiosDelete.interceptors.request.use(successInterceptor);
 export function axiosGetter() {
   return {
     axiosGet,
+    axiosPost,
+    axiosPatch,
   };
 }
 

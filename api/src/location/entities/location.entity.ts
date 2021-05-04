@@ -62,8 +62,12 @@ export class LocationEntity {
 
   toResponseObject(): LocationRO {
     return {
+      id: this.id,
       name: this.name,
       locationCode: this.locationCode,
+      addressLine1: this.addressLine1,
+      city: this.city,
+      postalCode: this.postalCode,
     };
   }
 }

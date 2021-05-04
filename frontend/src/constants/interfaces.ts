@@ -123,3 +123,8 @@ export interface Interpreter extends InterpreterBase {
   bookings: Booking[];
   distance?: number;
 }
+
+export interface UserResponse {
+  id: string;
+  location: Location;
+}
