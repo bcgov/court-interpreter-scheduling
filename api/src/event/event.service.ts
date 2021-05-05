@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { format } from 'date-fns';
 
 import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
 import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
 
 import { BookingEntity } from 'src/booking/entities/booking.entity';
+import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { UpdateBookingDto } from 'src/booking/dto/update-booking.dto';
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { InterpreterLanguageEntity } from 'src/interpreter/entities/interpreter-language.entity';
@@ -112,14 +114,33 @@ export class EventService {
   async parseBookingUpdate(original: BookingEntity, updateDto: UpdateBookingDto) {
     const updates = [];
     for (const k in original) {
-      if (original[k] !== updateDto[k] && updateDto[k]) {
+      if (k === 'language') {
+        if (original[k].name !== updateDto[k] && updateDto[k]) {
+          updates.push({
+            field: k,
+            previous: original[k].name,
+            updated: updateDto[k],
+          })
+        }
+      } else if (original[k] !== updateDto[k] && updateDto[k]) {
         updates.push({
           field: k,
-          previous: k === 'language' ? original[k].name : original[k],
+          previous: original[k],
           updated: updateDto[k],
         })
       }
     }
     return updates;
+  }
+
+  datesToString (dates: BookingDateEntity[]) {
+    const periodMap = {
+      MORNING: 'morning',
+      WHOLE_DAY: 'all day',
+      AFTERNOON: 'afternoon',
+    }
+    return dates
+      .map(d => `${format(d.date, 'MMM do')} - ${d.arrivalTime.substring(0, 5)} (${periodMap[d.period]})`)
+      .reduce((string, section) => string ? section.concat(`, ${string}`) : section, '');
   }
 }
