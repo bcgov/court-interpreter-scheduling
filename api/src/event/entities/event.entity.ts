@@ -40,5 +40,4 @@ export abstract class EventEntity {
     name: 'created_at',
   })
   createdAt: Date;
-
 }

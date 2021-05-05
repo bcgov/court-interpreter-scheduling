@@ -115,7 +115,7 @@ export class EventService {
       if (original[k] !== updateDto[k] && updateDto[k]) {
         updates.push({
           field: k,
-          previous: original[k],
+          previous: k === 'language' ? original[k].name : original[k],
           updated: updateDto[k],
         })
       }

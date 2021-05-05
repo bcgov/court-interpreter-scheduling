@@ -100,10 +100,8 @@ export class BookingController {
     }
 
     try {
-      // TODO booking dates will need special attention, similar to interpreter language
-      // TODO booking languages will need special attention, similar to interpreter language
-      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateDto);
       const { language, ...b } = originBooking;
+      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateDto);
       updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ booking: b, user, ...update }));
     } catch (error) {
       Logger.log(`Failed to create update events: ${error.message}`)
