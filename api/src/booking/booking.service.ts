@@ -111,7 +111,7 @@ export class BookingService {
 
   async findOne(id: number): Promise<BookingEntity> {
     return await this.bookingRepository.findOneOrFail({
-      relations: ['interpreter', 'language', 'dates'],
+      relations: ['interpreter', 'language', 'dates', 'location'],
       where: { id },
     });
   }
@@ -160,7 +160,7 @@ export class BookingService {
 
   async writeToWorkbook(booking: BookingEntity): Promise<ExcelJS.Workbook> {
     const workbook = new ExcelJS.Workbook();
-    const { interpreter } = booking;
+    const { interpreter, location } = booking;
     const exportDate = new Date();
 
     // read adm322 template
@@ -170,7 +170,7 @@ export class BookingService {
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
-    // W5, F113 invoice, [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
+    // W5, W68, F113 invoice, [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
     const firstBookingDate = booking.dates[0];
     const invoice = (
       interpreter.lastName.substring(0, 3) +
@@ -178,7 +178,20 @@ export class BookingService {
       format(firstBookingDate.date, 'ddMMMyy')
     ).toUpperCase();
     setCell({ row: 5, column: 'W', value: invoice });
+    setCell({ row: 68, column: 'W', value: invoice });
     setCell({ row: 113, column: 'F', value: invoice });
+
+    // R4, R68 registry, AF111 Site#, B15 Scheduling Info, Registry Location
+    if (location) {
+      const { shortDescription } = location;
+      setCell({ row: 4, column: 'R', value: shortDescription });
+      setCell({ row: 68, column: 'R', value: shortDescription });
+      setCell({ row: 111, column: 'AF', value: shortDescription });
+      setCell({ row: 15, column: 'B', value: `${location?.name?.toUpperCase()} ${location.shortDescription}` });
+    }
+
+    // V111 supplier#
+    setCell({ row: 111, column: 'V', value: interpreter.supplier });
 
     // B9 Last name + First Name
     setCell({

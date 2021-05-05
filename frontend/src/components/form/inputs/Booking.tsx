@@ -53,6 +53,9 @@ const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInp
           />
         )}
       </Field>
+      <ErrorMessage name={name}>
+        { msg => <div style={{ color: '#D0454C' }}>{msg}</div> }
+      </ErrorMessage>
     </StyledFormControl>
   </Grid>
 );
@@ -128,7 +131,6 @@ const StyledSelect = ({
           </option>
         ))}
       </StyledNativeSelect>
-      <ErrorMessage name={name} />
     </StyledFormControl>
   </Grid>
 );
@@ -253,7 +255,7 @@ export default function BookingInputs({
 
       <StyledRadios />
 
-      <StyledField name="reason" label="Reason Code" placeholder="FA, HR - max limit 6 characters"/>
+      <StyledField name="reason" label="Reason Code" placeholder="FA, HR"/>
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
 
       <Grid item xs={6}>
