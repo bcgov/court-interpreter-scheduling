@@ -15,7 +15,7 @@ import EditInterpreterModal from 'components/form/EditInterpreterModal';
 
 import { Language, Interpreter } from 'constants/interfaces';
 import { fieldSort, languageArraySort, arrayFieldSort } from 'util/sort';
-import { comments, fullName, withEvent } from 'util/tableHelpers';
+import { comments, fullName, withEvent, withLanguageEvent } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 export default function DirectoryTable({
@@ -80,6 +80,7 @@ export default function DirectoryTable({
                     }
                   >
                     {l.languageName}
+                    {withLanguageEvent(l.languageName, 'name', row.events)}
                   </div>
                 )),
             customSort: language
@@ -89,8 +90,8 @@ export default function DirectoryTable({
           {
             title: 'Level',
             render: (row: any) =>
-              row.languages.map((language: Language) => (
-                <div>{language.level}</div>
+              row.languages.map(fixLanguageName).map((language: Language) => (
+                <div>{language.level}{withLanguageEvent(language.languageName, 'level', row.events)}</div>
               )),
             customSort: language
               ? languageArraySort(language, 'level')
@@ -179,8 +180,7 @@ export default function DirectoryTable({
                 <Box p={1}>
                   <b>Comments</b>
                   <br />
-                  {comments(rowData.comments, rowData.languages)}
-                  {withEvent('comments', rowData.events)}
+                  {comments(rowData.comments, rowData.languages, rowData)}
                 </Box>
               </Grid>
             </Grid>

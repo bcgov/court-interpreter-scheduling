@@ -21,13 +21,8 @@ export class EventService {
     private readonly bookingEventRepository: Repository<BookingEventEntity>,
   ) {}
 
-  async createInterpreterEvent({ interpreter, field, previous, updated }) {
-    const e = this.interpreterEventRepository.create({
-      field,
-      previous,
-      updated,
-      interpreter,
-    });
+  async createInterpreterEvent(eventObject) {
+    const e = this.interpreterEventRepository.create(eventObject);
     return await this.interpreterEventRepository.save(e);
   }
 
@@ -63,6 +58,7 @@ export class EventService {
       await languages.map((language: InterpreterLanguageEntity) => {
         const updateEntry = updatedLanguages.find(lang => lang.languageName === language.language.name)
         if (!updateEntry) {
+          // infer that the language name was changed
           const previous = languages.find(lang => updatedLanguages.every(l => l.languageName !== lang.language.name))
           const updated = updatedLanguages.find(lang => languages.every(l => l.language.name !== lang.languageName))
           updates.push({
@@ -79,28 +75,31 @@ export class EventService {
                 updates.push({
                   field: 'language',
                   subfield: field,
+                  language: language.language.name,
                   previous: language[field],
                   updated: updateEntry[field],
-                  language: language.language.name,
                 });
               };
             };
           };
           return;
-        }
-
-        for (const field in language) {
-          if (['level', 'commentOnLevel'].includes(field)) {
-            if (language[field] !== updateEntry[field]) {
-              updates.push({
-                // bit of a hack, use the field string to determine both the lang and the field
-                field: `${language.language.name}.${field}`,
-                previous: language[field],
-                updated: updateEntry[field],
-              })
+        } else {
+          for (const field in language) {
+            // create events for updates to level and comment
+            if (['level', 'commentOnLevel'].includes(field)) {
+              if (language[field] !== updateEntry[field]) {
+                updates.push({
+                  field: 'language',
+                  subfield: field,
+                  language: language.language.name,
+                  previous: language[field],
+                  updated: updateEntry[field],
+                })
+              }
             }
           }
         }
+
         return;
       })
     } catch (error) {
