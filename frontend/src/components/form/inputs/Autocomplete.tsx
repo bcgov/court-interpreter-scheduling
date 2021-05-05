@@ -28,9 +28,16 @@ export default function AutocompleteInput({
       getOptionLabel={(option) => option}
       size="small"
       inputValue={field.value}
-      onChange={(event, value) =>
-        transform ? helpers.setValue(transform(value)) : helpers.setValue(value)
-      }
+      onChange={(event, value) => {
+        if (!value) {
+          // fix the null error
+          helpers.setValue('');
+          return;
+        }
+        transform
+          ? helpers.setValue(transform(value))
+          : helpers.setValue(value);
+      }}
       renderInput={(params) => (
         <StyledTextField {...params} variant="outlined" {...field} />
       )}
