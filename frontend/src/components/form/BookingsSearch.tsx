@@ -42,7 +42,6 @@ export default function Search({
       const fetchedLocations: Location[] = await getLocations();
       setLocations(fetchedLocations);
       const fetchedUserLocation: Location = await getUserLocation();
-      console.dir(fetchedUserLocation);
       setUserLocation(fetchedUserLocation);
     }
     fetchLocation();
