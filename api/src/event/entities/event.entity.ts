@@ -24,11 +24,17 @@ export abstract class EventEntity {
   @Column()
   field: string;
 
+  @Column({ nullable: true })
+  subfield: string;
+
   @Column()
   previous: string;
 
   @Column()
   updated: string;
+
+  @Column({ nullable: true })
+  language: string;
 
   @CreateDateColumn({
     name: 'created_at',

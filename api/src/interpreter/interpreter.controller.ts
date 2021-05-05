@@ -141,8 +141,7 @@ export class InterpreterController {
     }
 
     try {
-      // TODO languages has been removed from updateDTO and will need special attention
-      const updatedFields = await this.eventService.parseInterpreterUpdate(interpreter, updateDto);
+      const updatedFields = await this.eventService.parseInterpreterUpdate(interpreter, updateDto, originLangs, languages);
       updatedFields.map((update: UpdateObject) => this.eventService.createInterpreterEvent({ interpreter, ...update }));
     } catch (error) {
       Logger.log(`Failed to create update events: ${error.message}`)
