@@ -25,9 +25,11 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
-import { fixLanguageName } from 'constants/languages';
-import { AutoCompleteField, ACFC } from './AutoCompleteField';
-import { AutoCompleteLanguage } from './AutocompleteLanguage';
+import {
+  AutoCompleteField,
+  ACFC,
+} from 'components/form/inputs/AutoCompleteField';
+import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
 
 const ACField = AutoCompleteField as ACFC<Location>;
 

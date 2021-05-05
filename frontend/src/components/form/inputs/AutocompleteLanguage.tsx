@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getLanguageNames } from 'util/apiHelper';
-import AutocompleteInput from './Autocomplete';
+import AutocompleteInput from 'components/form/inputs/Autocomplete';
 
 export function AutoCompleteLanguage({
   name,
