@@ -151,7 +151,7 @@ export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
   const Row = workSheet.getRow(row);
   Row.getCell(getIndexOfAlphabet(column)).value = value;
   if (alignment) {
-    Row.alignment = { horizontal: alignment };
+    Row.alignment = { horizontal: alignment, wrapText: true };
   }
   Row.commit();
 };

@@ -24,7 +24,7 @@ const Schema = yup.object({
   requestedBy: yup.string(),
   federal: yup.boolean(),
   language: yup.string(),
-  reason: yup.string(),
+  reason: yup.string().max(6, 'max limit 6 characters'),
   prosecutor: yup.string(),
   comment: yup.string(),
   locationName: yup.string(),
