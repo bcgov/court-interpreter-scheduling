@@ -3,9 +3,9 @@ import moment, { Moment } from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import { Event } from 'constants/interfaces';
+import { BookingEvent } from 'constants/interfaces';
 
-type EventWithMoment = Event & {
+type EventWithMoment = BookingEvent & {
   _moment: Moment
 };
 
@@ -14,7 +14,7 @@ type Day = {
   updates: EventWithMoment[];
 }
 
-export default function ChangeLog ({ events }: { events: Event[] }) {
+export default function ChangeLog ({ events }: { events: BookingEvent[] }) {
 
   const sortedEvents = events.map(e => ({
     ...e,
