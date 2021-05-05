@@ -64,10 +64,6 @@ export default function BookingModal({
             initialValues={{
               ...Initial,
               ...state?.booking,
-              language:
-                state?.booking?.language ||
-                search.language ||
-                interpreter?.languages[0]?.languageName,
               locationId: search?.location?.id,
             }}
             validationSchema={Schema}

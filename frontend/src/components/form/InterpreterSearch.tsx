@@ -8,20 +8,19 @@ import {
   StyledFormLabel,
   GridRow,
 } from 'components/form/inputs/DirectoryInputs';
-import AutocompleteInput from 'components/form/inputs/Autocomplete';
 import SearchDates from 'components/form/SearchDates';
 import { Schema, Initial } from 'components/form/schemas/search.schema';
 import Range from 'components/form/Range';
 import Check, { SingleCheck } from 'components/form/inputs/Check';
 import { StyledButton } from 'components/Buttons';
 
-import { languages } from 'constants/languages';
 import SearchContext from 'contexts/SearchContext';
 import { ErrorMessage, Formik, FormikProps, Form } from 'formik';
 import { withFlag } from 'components/reusable/withFlag';
-import { getLocations } from 'util/locationFetch';
+import { getLocations } from 'util/apiHelper';
 import { Location } from 'constants/interfaces';
 import { AutoCompleteField, ACFC } from './inputs/AutoCompleteField';
+import { AutoCompleteLanguage } from './inputs/AutocompleteLanguage';
 
 const WithFlagRange = withFlag(Range);
 
@@ -66,9 +65,8 @@ export default function Search({
               <Grid item xs={4}>
                 <StyledFormControl>
                   <StyledLabel htmlFor="language">Language</StyledLabel>
-                  <AutocompleteInput
-                    fieldName="language"
-                    options={languages}
+                  <AutoCompleteLanguage
+                    name="language"
                     initialValue={search?.language}
                   />
                   <ErrorMessage name="language" />
@@ -95,8 +93,7 @@ export default function Search({
                   onChange={(form) => (event, value) => {
                     form.setFieldValue('courtAddr', value?.addressLine1 || '');
                     form.setFieldValue('location', value);
-                  }
-                }
+                  }}
                 />
                 <SingleCheck
                   label="Limit Search to 32KM"

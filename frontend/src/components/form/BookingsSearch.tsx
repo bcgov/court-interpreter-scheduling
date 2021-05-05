@@ -22,8 +22,7 @@ import {
   getLocations,
   getUserLocation,
   updateUserLocation,
-} from 'util/locationFetch';
-import AutocompleteInput from './inputs/Autocomplete';
+} from 'util/apiHelper';
 import { AutoCompleteField, ACFC } from './inputs/AutoCompleteField';
 import { Location } from 'constants/interfaces';
 
