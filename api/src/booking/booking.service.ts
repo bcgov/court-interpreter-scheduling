@@ -67,9 +67,10 @@ export class BookingService {
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
-      .leftJoinAndSelect('booking.events', 'event', `event.createdAt > :thirtyDaysAgo`, {
-        thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
-      })
+      .leftJoinAndSelect(
+        'booking.events',
+        'event',
+        `event.createdAt > :thirtyDaysAgo`, { thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd') })
       .leftJoinAndSelect('event.user', 'eventUser')
       .leftJoinAndSelect('interpreter.languages', 'languages')
       .leftJoinAndSelect('languages.language', 'lang')
