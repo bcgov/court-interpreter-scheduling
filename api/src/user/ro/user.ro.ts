@@ -9,6 +9,9 @@ export class UserRO {
   kcId: string;
 
   @ApiProperty()
+  guId: string;
+
+  @ApiProperty()
   firstName: string;
 
   @ApiProperty()

@@ -358,6 +358,7 @@
         "role_list",
         "roles",
         "profile",
+        "idir_guid",
         "email"
       ],
       "optionalClientScopes": [
@@ -449,6 +450,7 @@
         "role_list",
         "roles",
         "profile",
+        "idir_guid",
         "email"
       ],
       "optionalClientScopes": [
@@ -520,6 +522,32 @@
     }
   ],
   "clientScopes": [
+    {
+      "id": "e38ba466-dd98-4609-a980-953c41bfae56",
+      "name": "idir_guid",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "id": "23350b8d-1b2b-4a30-8994-8522de18647c",
+          "name": "idir_guid_mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "idir_user_guid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "guid",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
     {
       "id": "fc1e4285-db6c-499e-aba8-93672c546856",
       "name": "microprofile-jwt",

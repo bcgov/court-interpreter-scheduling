@@ -24,6 +24,11 @@ export class UserEntity {
   kcId: string;
 
   @Column({
+    name: 'gu_id',
+  })
+  guId: string;
+
+  @Column({
     name: 'first_name',
     nullable: true,
   })
@@ -56,6 +61,7 @@ export class UserEntity {
     return {
       id: this.id,
       kcId: this.kcId,
+      guId: this.guId,
       firstName: this.firstName,
       lastName: this.lastName,
       location: this.location?.toResponseObject(),

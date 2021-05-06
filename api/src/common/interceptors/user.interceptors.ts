@@ -15,29 +15,35 @@ export class UserInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
-    const user: IUser = request.user;
-    if (user) {
+    const kcUser: IUser = request.user;
+    if (kcUser) {
       // check user if exists
-      let existUser = await this.userRepo.findOne({ kcId: user.sub });
+      let dbUser = await this.userRepo.findOne({ kcId: kcUser.sub });
 
       // if not, insert to user table
-      if (!existUser) {
+      if (!dbUser) {
         const newUser = this.userRepo.create({
-          kcId: user.sub,
-          firstName: user.given_name,
-          lastName: user.family_name,
+          kcId: kcUser.sub,
+          firstName: kcUser.given_name,
+          lastName: kcUser.family_name,
+          guId: kcUser.guid,
         });
-        existUser = await this.userRepo.save(newUser);
+        dbUser = await this.userRepo.save(newUser);
       } else {
         // Existing user update it
-        if (existUser.firstName !== user.given_name || existUser.lastName !== user.family_name) {
-          existUser.firstName = user.given_name;
-          existUser.lastName = user.family_name;
-          existUser = await this.userRepo.save(existUser);
+        if (
+          dbUser.firstName !== kcUser.given_name ||
+          dbUser.lastName !== kcUser.family_name ||
+          dbUser.guId !== kcUser.guid
+        ) {
+          dbUser.firstName = kcUser.given_name;
+          dbUser.lastName = kcUser.family_name;
+          dbUser.guId = kcUser.guid;
+          dbUser = await this.userRepo.save(dbUser);
         }
       }
 
-      request.dbUser = existUser;
+      request.dbUser = dbUser;
     }
 
     return next.handle();

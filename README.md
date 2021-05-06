@@ -80,3 +80,29 @@ Body:
 
 - `file`
 - `isAnonymous`: true, if env = 'test', 'dev'
+
+
+## Add GUID to scope
+
+- Add `Client Scope`
+  ![image](https://user-images.githubusercontent.com/31360789/117179536-125a5700-ad88-11eb-861c-59260a7a9b90.png)
+
+- Create `Mapper`
+  ![image](https://user-images.githubusercontent.com/31360789/117179714-433a8c00-ad88-11eb-8d20-ca11e3cbfbdb.png)
+
+  ![image](https://user-images.githubusercontent.com/31360789/117179843-6b29ef80-ad88-11eb-8509-d1670669787a.png)
+
+- go to `Clients`, add `client scope` to our clients: `court-fe` and `court-client`
+  ![image](https://user-images.githubusercontent.com/31360789/117180137-b6440280-ad88-11eb-935b-1db160c2d419.png)
+
+- Then you can test:
+  ![image](https://user-images.githubusercontent.com/31360789/117181778-741bc080-ad8a-11eb-8a67-c4b1eb2d1166.png)
+
+  ![image](https://user-images.githubusercontent.com/31360789/117182066-be9d3d00-ad8a-11eb-88c4-f96b7acb4321.png)
+
+### Test GUID Scope locally
+
+- Add new `user`
+
+- Add `User Attribute`
+  ![image](https://user-images.githubusercontent.com/31360789/117189662-4d15bc80-ad93-11eb-8592-efb5d8d80d2f.png)
