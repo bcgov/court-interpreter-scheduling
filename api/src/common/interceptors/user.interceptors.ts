@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Observable } from 'rxjs';
 
 import { UserEntity } from 'src/user/entities/user.entity';
-import { User as IUser } from 'src/common/interface/user.interface';
+import { User, KCUser } from 'src/common/interface/user.interface';
 
 @Injectable()
 export class UserInterceptor implements NestInterceptor {
@@ -15,29 +15,36 @@ export class UserInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
-    const user: IUser = request.user;
-    if (user) {
-      // check user if exists
-      let existUser = await this.userRepo.findOne({ kcId: user.sub });
+    const kcUser: KCUser = request.user;
+  
+    if (kcUser && kcUser.sub) {
+      // check db user if exists
+      let dbUser = await this.userRepo.findOne({ kcId: kcUser.sub });
 
       // if not, insert to user table
-      if (!existUser) {
+      if (!dbUser) {
         const newUser = this.userRepo.create({
-          kcId: user.sub,
-          firstName: user.given_name,
-          lastName: user.family_name,
+          kcId: kcUser.sub,
+          guId: kcUser.guid,
         });
-        existUser = await this.userRepo.save(newUser);
+        dbUser = await this.userRepo.save(newUser);
       } else {
         // Existing user update it
-        if (existUser.firstName !== user.given_name || existUser.lastName !== user.family_name) {
-          existUser.firstName = user.given_name;
-          existUser.lastName = user.family_name;
-          existUser = await this.userRepo.save(existUser);
+        if (dbUser.guId !== kcUser.guid) {
+          dbUser = await this.userRepo.save(dbUser);
         }
       }
 
-      request.dbUser = existUser;
+      // passing new user object to request
+      request.user = {
+        id: dbUser.id,
+        kcId: dbUser.kcId,
+        guId: dbUser?.guId,
+        firstName: kcUser?.given_name,
+        lastName: kcUser?.family_name,
+        roles: kcUser?.realm_access?.roles,
+        location: dbUser.location,
+      } as User;
     }
 
     return next.handle();

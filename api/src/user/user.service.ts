@@ -6,6 +6,7 @@ import { SaveLocationDTO } from './dto/save-location.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserRO } from './ro/user.ro';
+import { User as IUser } from 'src/common/interface/user.interface';
 
 @Injectable()
 export class UserService {
@@ -20,13 +21,13 @@ export class UserService {
     return (await this.userRepository.findOneOrFail({ kcId })).toResponseObject();
   }
 
-  async saveLocation(data: SaveLocationDTO, user: UserEntity): Promise<UserRO> {
+  async saveLocation(data: SaveLocationDTO, user: IUser): Promise<UserRO> {
     if (data.locationId && user.id) {
       // Fetch location
       const location = await this.locationRepository.findOneOrFail({ id: data.locationId });
-      user.location = location;
-      await this.userRepository.save(user);
-      return user.toResponseObject();
+      const dbUser = await this.userRepository.findOneOrFail({ id: user.id });
+      dbUser.location = location;
+      return (await this.userRepository.save(dbUser)).toResponseObject();
     } else {
       throw new UnprocessableEntityException(`Unable to process locationId: ${data.locationId} or user: ${user.id}`);
     }
@@ -44,14 +45,6 @@ export class UserService {
     if (locationId) {
       const location = await this.locationRepository.findOneOrFail({ id: locationId });
       user.location = location;
-    }
-
-    if (firstName) {
-      user.firstName = firstName;
-    }
-
-    if (lastName) {
-      user.lastName = lastName;
     }
 
     const saveUser = await this.userRepository.save(user);

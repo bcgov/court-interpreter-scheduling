@@ -24,16 +24,10 @@ export class UserEntity {
   kcId: string;
 
   @Column({
-    name: 'first_name',
+    name: 'gu_id',
     nullable: true,
   })
-  firstName: string;
-
-  @Column({
-    name: 'last_name',
-    nullable: true,
-  })
-  lastName: string;
+  guId: string;
 
   @OneToOne(() => LocationEntity, { eager: true })
   @JoinColumn({
@@ -56,8 +50,7 @@ export class UserEntity {
     return {
       id: this.id,
       kcId: this.kcId,
-      firstName: this.firstName,
-      lastName: this.lastName,
+      guId: this.guId,
       location: this.location?.toResponseObject(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

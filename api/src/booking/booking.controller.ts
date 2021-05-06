@@ -12,7 +12,6 @@ import {
   HttpCode,
   Header,
   Res,
-  UseInterceptors,
   Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,7 +29,7 @@ import { BookingRO } from './ro/booking.ro';
 import { EventService } from 'src/event/event.service'
 
 import { User as IUser } from 'src/common/interface/user.interface';
-import { DBUser } from 'src/common/decorator/user.decorator';
+import { User } from 'src/common/decorator/user.decorator';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -82,7 +81,7 @@ export class BookingController {
   async update(
     @Param('id') id: string,
     @Body() updateBookingDto: UpdateBookingDto,
-    @DBUser() user: IUser,
+    @User() user: IUser,
   ) {
     const { dates, ...updateDto } = updateBookingDto;
     const originBooking = await this.bookingService.findOne(+id);

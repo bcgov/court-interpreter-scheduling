@@ -9,10 +9,7 @@ export class UserRO {
   kcId: string;
 
   @ApiProperty()
-  firstName: string;
-
-  @ApiProperty()
-  lastName: string;
+  guId: string;
 
   @ApiProperty()
   location: LocationRO;

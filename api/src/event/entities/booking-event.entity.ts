@@ -21,7 +21,7 @@ export class BookingEventEntity extends EventEntity {
       field: this.field,
       previous: this.previous,
       updated: this.updated,
-      user: `${this.user?.firstName} ${this.user?.lastName}`,
+      // user: `${this.user?.firstName} ${this.user?.lastName}`,
       createdAt: this.createdAt,
     }
   }
