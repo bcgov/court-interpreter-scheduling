@@ -25,6 +25,7 @@ export class UserEntity {
 
   @Column({
     name: 'gu_id',
+    nullable: true,
   })
   guId: string;
 

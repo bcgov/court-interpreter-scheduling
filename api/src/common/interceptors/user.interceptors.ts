@@ -16,7 +16,7 @@ export class UserInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
     const kcUser: IUser = request.user;
-    if (kcUser) {
+    if (kcUser && kcUser.sub) {
       // check user if exists
       let dbUser = await this.userRepo.findOne({ kcId: kcUser.sub });
 
