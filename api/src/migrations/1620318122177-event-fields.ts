@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class eventFields1620318122177 implements MigrationInterface {
+export class EventFields1620318122177 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `ALTER TABLE interpreter_event ADD COLUMN IF NOT EXISTS field character varying;
