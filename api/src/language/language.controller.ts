@@ -10,14 +10,17 @@ export class LanguageController {
   constructor(private readonly languageService: LanguageService) {}
 
   @Post()
-  async create(
-    @Body() createLanguageDto: CreateLanguageDto,
-  ): Promise<LanguageEntity> {
+  async create(@Body() createLanguageDto: CreateLanguageDto): Promise<LanguageEntity> {
     return await this.languageService.create(createLanguageDto);
   }
 
   @Get()
   async findAll(): Promise<LanguageEntity[]> {
     return await this.languageService.findAll();
+  }
+
+  @Get('/names')
+  async allLanguageNames(): Promise<string[]> {
+    return this.languageService.getLanguageName();
   }
 }

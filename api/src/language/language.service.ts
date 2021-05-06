@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLanguageDto } from './dto/create-language.dto';
 import { LanguageEntity } from './entities/language.entity';
+import { LanguageNameToDisplayName } from 'src/common/constant';
 
 @Injectable()
 export class LanguageService {
@@ -18,5 +19,11 @@ export class LanguageService {
 
   async findAll(): Promise<LanguageEntity[]> {
     return await this.languageRepository.find();
+  }
+
+  async getLanguageName(): Promise<string[]> {
+    return (await this.languageRepository.find())
+      .map(item => LanguageNameToDisplayName.get(item.name) || item.name)
+      .sort();
   }
 }

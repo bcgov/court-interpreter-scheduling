@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Box, FormGroup, Grid, Hidden } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AutocompleteInput from 'components/form/inputs/Autocomplete';
+import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
 
 import {
   StyledFormControl,
@@ -131,9 +132,8 @@ export default function Search({
               <Grid item xs={4}>
                 <StyledFormControl>
                   <StyledLabel htmlFor="language">Language</StyledLabel>
-                  <AutocompleteInput
-                    fieldName="language"
-                    options={languages}
+                  <AutoCompleteLanguage
+                    name="language"
                     initialValue={search?.language}
                   />
                   <ErrorMessage name="language" />

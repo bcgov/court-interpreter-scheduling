@@ -32,3 +32,10 @@ export async function updateUserLocation(locationId: number) {
     locationId,
   });
 }
+
+export async function getLanguageNames() {
+  const axios = axiosGetter().axiosGet;
+  const resp = await axios.get('/language/names');
+  const respData: string[] = resp.data as string[];
+  return respData;
+}

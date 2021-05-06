@@ -11,8 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { getLocations } from 'util/locationFetch';
-import { Location } from 'constants/interfaces';
+import { getLocations } from 'util/apiHelper';
+import { Interpreter, Location } from 'constants/interfaces';
 
 import {
   StyledFormControl,
@@ -25,8 +25,11 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
-import { fixLanguageName } from 'constants/languages';
-import { AutoCompleteField, ACFC } from './AutoCompleteField';
+import {
+  AutoCompleteField,
+  ACFC,
+} from 'components/form/inputs/AutoCompleteField';
+import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
 
 const ACField = AutoCompleteField as ACFC<Location>;
 
@@ -37,7 +40,12 @@ type GridItemInputProps = {
   placeholder?: string;
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInputProps) => (
+const StyledField = ({
+  name,
+  label,
+  rows = { xs: 6 },
+  placeholder,
+}: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -54,7 +62,7 @@ const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInp
         )}
       </Field>
       <ErrorMessage name={name}>
-        { msg => <div style={{ color: '#D0454C' }}>{msg}</div> }
+        {(msg) => <div style={{ color: '#D0454C' }}>{msg}</div>}
       </ErrorMessage>
     </StyledFormControl>
   </Grid>
@@ -170,7 +178,7 @@ export default function BookingInputs({
   booking,
   edit,
 }: {
-  interpreter?: any;
+  interpreter?: Interpreter;
   search?: SearchParams;
   booking?: Booking;
   edit?: boolean;
@@ -241,21 +249,26 @@ export default function BookingInputs({
         label="Requested By"
         rows={{ xs: 6, lg: 3 }}
       />
-
-      {edit ? (
-        <StyledField name="language" label="Language" />
-      ) : (
-        <StyledSelect
-          name="language"
-          options={interpreter?.languages
-            .map(fixLanguageName)
-            .map((l: { languageName: string }) => l.languageName)}
-        />
-      )}
+      {/** Language auto complete */}
+      {
+        <Grid item xs={6}>
+          <StyledFormControl>
+            <StyledLabel htmlFor="language">Language</StyledLabel>
+            <AutoCompleteLanguage
+              name="language"
+              initialValue={
+                booking?.language ||
+                search?.language ||
+                interpreter?.languages[0]?.languageName
+              }
+            />
+          </StyledFormControl>
+        </Grid>
+      }
 
       <StyledRadios />
 
-      <StyledField name="reason" label="Reason Code" placeholder="FA, HR"/>
+      <StyledField name="reason" label="Reason Code" placeholder="FA, HR" />
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
 
       <Grid item xs={6}>
