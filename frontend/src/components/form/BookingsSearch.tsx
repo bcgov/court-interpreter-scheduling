@@ -44,7 +44,7 @@ export default function Search({
     null
   );
   useEffect(() => {
-    async function fetchLocation() {
+    (async function () {
       const fetchedLocations: Location[] = await getLocations();
       setLocations(fetchedLocations);
       const fetchedUserLocation: Location = await getUserLocation();
@@ -60,8 +60,7 @@ export default function Search({
       } else {
         setUserLocation(null);
       }
-    }
-    fetchLocation();
+    })();
   }, [setLocations, setUserLocation]);
 
   const { addAlert } = useAlert();
@@ -110,7 +109,7 @@ export default function Search({
                   onClick={async () => {
                     try {
                       await updateUserLocation(values.locationId);
-                      addAlert('Update User Default Location Successfully');
+                      addAlert('Your preferred location was saved');
                     } catch (err) {
                       addAlert(
                         'Fail to Update User Default Location: ',
