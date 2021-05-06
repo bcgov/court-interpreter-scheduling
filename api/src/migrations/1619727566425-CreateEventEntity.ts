@@ -1,9 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateEventEntity1619727566425 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS interpreter_event (
                 id uuid NOT NULL DEFAULT uuid_generate_v4(),
                 previous character varying COLLATE pg_catalog."default" NOT NULL,
@@ -17,7 +16,7 @@ export class CreateEventEntity1619727566425 implements MigrationInterface {
                     ON DELETE SET NULL
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS booking_event (
                 id uuid NOT NULL DEFAULT uuid_generate_v4(),
                 previous character varying COLLATE pg_catalog."default" NOT NULL,
@@ -32,18 +31,19 @@ export class CreateEventEntity1619727566425 implements MigrationInterface {
             )
         `);
 
-        await queryRunner.query(
-            `ALTER TABLE booking ADD COLUMN IF NOT EXISTS events REFERENCES event(id) ON DELETE SET NULL;`,
-        );
+    await queryRunner.query(
+      `ALTER TABLE booking ADD COLUMN IF NOT EXISTS events uuid  REFERENCES booking_event(id) ON DELETE SET NULL;`,
+    );
 
-        await queryRunner.query(
-            `ALTER TABLE interpreter ADD COLUMN IF NOT EXISTS events REFERENCES event(id) ON DELETE SET NULL;`,
-        );
-    }
+    await queryRunner.query(
+      `ALTER TABLE interpreter ADD COLUMN IF NOT EXISTS events uuid REFERENCES interpreter_event(id) ON DELETE SET NULL;`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP TABLE "interpreter_event"`);
-        await queryRunner.query(`DROP TABLE "booking_event"`);
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`ALTER TABLE interpreter DROP COLUMN IF EXISTS "events";`);
+    await queryRunner.query(`ALTER TABLE booking DROP COLUMN IF EXISTS "events";`);
+    await queryRunner.query(`DROP TABLE "interpreter_event";`);
+    await queryRunner.query(`DROP TABLE "booking_event";`);
+  }
 }

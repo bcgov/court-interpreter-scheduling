@@ -13,8 +13,6 @@ const entities =
     ? join(__dirname, '../**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
 
-const synchronize = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? true : false;
-
 const option: any = {
   type: 'postgres',
   host: process.env.DB_HOST,
@@ -27,8 +25,8 @@ const option: any = {
   cli: {
     migrationsDir: 'src/migrations',
   },
-  synchronize,
-  migrationsRun: !synchronize,
+  synchronize: false,
+  migrationsRun: true,
   dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
