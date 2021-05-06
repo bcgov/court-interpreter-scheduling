@@ -11,6 +11,7 @@ interface IProps<T> {
   name: string;
   label: string;
   defaultValue?: T | null;
+  value?: T | null;
   options: T[];
   getOptionLabel: (option: T) => string;
   onChange: (
@@ -22,6 +23,7 @@ export type ACFC<T = any> = React.FC<IProps<T>>;
 export const AutoCompleteField: ACFC = ({
   name,
   label,
+  value,
   defaultValue,
   options,
   getOptionLabel,
@@ -37,6 +39,7 @@ export const AutoCompleteField: ACFC = ({
           id={name}
           size="small"
           onChange={onChange(form)}
+          value={value}
           defaultValue={defaultValue}
           renderInput={(params) => (
             <StyledTextField

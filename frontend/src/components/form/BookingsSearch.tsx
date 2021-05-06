@@ -23,8 +23,12 @@ import {
   getUserLocation,
   updateUserLocation,
 } from 'util/apiHelper';
-import { AutoCompleteField, ACFC } from './inputs/AutoCompleteField';
+import {
+  AutoCompleteField,
+  ACFC,
+} from 'components/form/inputs/AutoCompleteField';
 import { Location } from 'constants/interfaces';
+import { useAlert } from 'hooks/useAlert';
 
 const dateFormat = 'MMM D, YYYY';
 
@@ -36,20 +40,37 @@ export default function Search({
   getSearchResults: Function;
 }) {
   const [locations, setLocations] = useState<Location[]>([] as Location[]);
-  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [userLocation, setUserLocation] = useState<Location | null | undefined>(
+    null
+  );
   useEffect(() => {
     async function fetchLocation() {
       const fetchedLocations: Location[] = await getLocations();
       setLocations(fetchedLocations);
       const fetchedUserLocation: Location = await getUserLocation();
-      setUserLocation(fetchedUserLocation);
+      if (fetchedUserLocation) {
+        setUserLocation(
+          fetchedLocations.find((l) => l.id === fetchedUserLocation?.id)
+        );
+        getSearchResults({
+          url: '/booking',
+          method: 'GET',
+          params: { locationId: fetchedUserLocation?.id },
+        });
+      } else {
+        setUserLocation(null);
+      }
     }
     fetchLocation();
   }, [setLocations, setUserLocation]);
+
+  const { addAlert } = useAlert();
+
   return (
     <Box>
       <Formik
-        initialValues={Initial}
+        initialValues={{ ...Initial, locationId: userLocation?.id }}
+        enableReinitialize
         validationSchema={Schema}
         onSubmit={async (values) =>
           getSearchResults({
@@ -71,9 +92,11 @@ export default function Search({
                   label="Registry Location"
                   options={locations}
                   getOptionLabel={(option) => option.name}
-                  defaultValue={userLocation}
-                  onChange={(form) => (event, value) =>
-                    form.setFieldValue('locationId', value?.id)}
+                  value={userLocation}
+                  onChange={(form) => (event, value) => {
+                    setUserLocation(value);
+                    form.setFieldValue('locationId', value?.id);
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -84,8 +107,16 @@ export default function Search({
                   color="primary"
                   size="small"
                   startIcon={<SaveIcon />}
-                  onClick={() => {
-                    updateUserLocation(values.locationId);
+                  onClick={async () => {
+                    try {
+                      await updateUserLocation(values.locationId);
+                      addAlert('Update User Default Location Successfully');
+                    } catch (err) {
+                      addAlert(
+                        'Fail to Update User Default Location: ',
+                        err.message
+                      );
+                    }
                   }}
                 >
                   Save
