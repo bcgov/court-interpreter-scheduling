@@ -12,7 +12,7 @@ const StyledBox = withStyles(() => ({
   },
 }))(Box);
 
-function comments (comment?: string, languages?: Language[]) {
+function comments (comment?: string, languages?: Language[], row?: any) {
   return (
     comment || languages?.some((language: Language) => language.commentOnLevel)
   ) ? (
@@ -20,7 +20,12 @@ function comments (comment?: string, languages?: Language[]) {
       {comment ? <span>{comment}</span> : null}
       {languages
         ?.filter((language: Language) => language.commentOnLevel)
-        .map((language: Language) => <span>{language.languageName} ({language.level}): {language.commentOnLevel}</span> )}
+        .map((language: Language) => (
+          <span>
+            {language.languageName} ({language.level}): {language.commentOnLevel}
+            {row ? withLanguageEvent(language.languageName, 'commentOnLevel', row.events) : null}
+          </span>
+        ))}
     </div>
   ) : null
 }
@@ -61,8 +66,20 @@ function withEvent (fields: Array<string> | string, events: Array<Event>) {
   ) : null
 }
 
+function withLanguageEvent (language: string, field: string, events: Array<Event>) {
+  const languageEvents = events.filter(e => e.field === 'language');
+  if (!languageEvents.length) return null;
+  const fieldEvents = languageEvents.filter(e => e.subfield === field);
+  return fieldEvents.length ? (
+    <Tooltip title={<TooltipContent previous={fieldEvents[fieldEvents.length - 1]?.previous} />}>
+      <Alert className="cellAlertIcon" />
+    </Tooltip>
+  ) : null
+}
+
 export {
   comments,
   fullName,
   withEvent,
+  withLanguageEvent,
 }

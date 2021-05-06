@@ -9,7 +9,7 @@ import {
   levelSort,
   languageArraySort,
 } from 'util/sort';
-import { comments, fullName, withEvent } from 'util/tableHelpers';
+import { comments, fullName, withEvent, withLanguageEvent } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 import BaseTable from 'components/table/Base';
@@ -67,7 +67,7 @@ export default function SearchTable({
                 : ''
             }
           >
-            {l.languageName} {l.level}
+            {l.languageName}{withLanguageEvent(l.languageName, 'name', row.events)} {l.level}{withLanguageEvent(l.languageName, 'level', row.events)}
           </div>
         )),
       customSort: language
@@ -158,7 +158,7 @@ export default function SearchTable({
                   <Box p={1}>
                     <b>Comments</b>
                     <br />
-                    {comments(rowData.comments, rowData.languages)}
+                    {comments(rowData.comments, rowData.languages, rowData)}
                   </Box>
                 </Grid>
               </Grid>

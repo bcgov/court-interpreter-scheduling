@@ -19,6 +19,8 @@ export class InterpreterEventEntity extends EventEntity {
     return {
       id: this.id,
       field: this.field,
+      subfield: this.subfield,
+      language: this.language,
       previous: this.previous,
       updated: this.updated,
       createdAt: this.createdAt,

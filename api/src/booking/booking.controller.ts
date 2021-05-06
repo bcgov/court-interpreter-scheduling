@@ -94,17 +94,21 @@ export class BookingController {
       try {
         bookingDates = await this.bookingDateService.create(dates);
         await this.bookingDateService.removeByBookings(originBookingDates);
+        await this.eventService.createBookingEvent({
+          booking: originBooking,
+          user,
+          field: 'dates',
+          previous: this.eventService.datesToString(originBookingDates),
+          updated: this.eventService.datesToString(bookingDates)
+        });
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
 
     try {
-      // TODO booking dates will need special attention, similar to interpreter language
-      // TODO booking languages will need special attention, similar to interpreter language
       const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateDto);
-      const { language, ...b } = originBooking;
-      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ booking: b, user, ...update }));
+      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ booking: originBooking, user, ...update }));
     } catch (error) {
       Logger.log(`Failed to create update events: ${error.message}`)
     } finally {

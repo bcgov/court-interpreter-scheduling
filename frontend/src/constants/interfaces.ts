@@ -131,8 +131,13 @@ export interface UserResponse {
 
 export interface Event {
   field: string;
+  subfield?: string;
+  language?: string;
   previous: string;
   updated: string;
   createdAt: Date;
+}
+
+export interface BookingEvent extends Event {
   user: string;
 }

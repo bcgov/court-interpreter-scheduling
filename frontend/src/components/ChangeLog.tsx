@@ -3,9 +3,9 @@ import moment, { Moment } from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import { Event } from 'constants/interfaces';
+import { BookingEvent } from 'constants/interfaces';
 
-type EventWithMoment = Event & {
+type EventWithMoment = BookingEvent & {
   _moment: Moment
 };
 
@@ -14,7 +14,7 @@ type Day = {
   updates: EventWithMoment[];
 }
 
-export default function ChangeLog ({ events }: { events: Event[] }) {
+export default function ChangeLog ({ events }: { events: BookingEvent[] }) {
 
   const sortedEvents = events.map(e => ({
     ...e,
@@ -36,8 +36,10 @@ export default function ChangeLog ({ events }: { events: Event[] }) {
   let days = []
 
   for (let date in groupedByDay) {
+    const eventsArray = groupedByDay[date]
+    const mostRecentEvent = eventsArray[0]
     days.push({
-      title: moment(date, 'YYYY-MM-DD').fromNow(),
+      title: mostRecentEvent._moment.fromNow(),
       updates: groupedByDay[date]
     })
   }
@@ -58,11 +60,17 @@ export default function ChangeLog ({ events }: { events: Event[] }) {
                   <Grid item xs={1} style={{ display: "flex" }} alignContent="center" alignItems="center" justify="center">
                     {e.user ? <Avatar>{e.user[0]}{e.user[e.user.indexOf(" ") + 1]}</Avatar> : null}
                   </Grid>
-                  <Grid item>
-                    <p className="flat" style={{ marginBottom: "4px", fontSize: "0.8rem" }}><b>{e.user}</b> changed <b>{e.field}</b></p>
-                    <p className="flat" style={{ marginBottom: "4px", display: "flex" }}>
-                      <span style={{ color: "#999999", marginRight: "4px" }}>{e.previous}</span> <ArrowRightAltIcon /> <span style={{ marginLeft: "4px" }}>{e.updated}</span>
-                    </p>
+                  <Grid item xs={11}>
+                    <Grid container>
+                      <Grid item xs={11}>
+                        <p className="flat" style={{ marginBottom: "4px", fontSize: "0.8rem" }}><b>{e.user}</b> changed <b>{e.field}</b></p>
+                      </Grid>
+                      <Grid item xs={11}>
+                        <div style={{ marginBottom: "4px", display: "flex" }}>
+                          <span style={{ color: "#999999", marginRight: "4px" }}>{e.previous}</span> <ArrowRightAltIcon /> <span style={{ marginLeft: "4px" }}>{e.updated}</span>
+                        </div>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>

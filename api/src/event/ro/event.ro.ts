@@ -8,6 +8,12 @@ export class EventRO {
   field: string;
 
   @ApiProperty()
+  subfield?: string;
+
+  @ApiProperty()
+  language?: string;
+
+  @ApiProperty()
   previous: string;
 
   @ApiProperty()
