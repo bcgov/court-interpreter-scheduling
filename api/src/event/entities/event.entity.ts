@@ -1,13 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 
 export abstract class EventEntity {
