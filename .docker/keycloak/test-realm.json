@@ -411,7 +411,8 @@
         "role_list",
         "roles",
         "profile",
-        "email"
+        "email",
+        "idir_guid"
       ],
       "optionalClientScopes": [
         "address",
