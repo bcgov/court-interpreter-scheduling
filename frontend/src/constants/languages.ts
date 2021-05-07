@@ -1,5 +1,3 @@
-import { LanguageBase } from './interfaces';
-
 export const languages = [
   'Afghani-Dari',
   'Albanian',
