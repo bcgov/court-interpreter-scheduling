@@ -46,6 +46,10 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
   }, [booking])
 
   useEffect(() => {
+    toggleView('schedule')
+  }, [open])
+
+  useEffect(() => {
     if (response?.status === 200) {
       toggleOpen(false)
       refetch()

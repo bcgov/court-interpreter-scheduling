@@ -1,4 +1,6 @@
 import React from 'react';
+import { Field, useFormikContext, FieldArray } from 'formik';
+import moment from 'moment';
 
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
@@ -13,14 +15,12 @@ import {
   StyledFormControl,
   StyledTextField,
   StyledLabel,
-} from './DirectoryInputs';
+} from 'components/form/inputs/DirectoryInputs';
 import FieldError from 'components/form/inputs/FieldError';
 import { SingleCheck } from 'components/form/inputs/Check';
+import { StyledFormDatePicker } from 'components/form/inputs/StyledDateAndTimeInput';
 
 import { Interpreter, Language } from 'constants/interfaces';
-import { Field, useFormikContext, FieldArray, useField } from 'formik';
-import moment from 'moment';
-import { StyledFormDatePicker } from './StyledDateAndTimeInput';
 
 type GridItemInputProps = {
   name: string;
