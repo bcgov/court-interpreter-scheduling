@@ -94,13 +94,13 @@ export class BookingController {
       try {
         const { deletedBookingDates, newInsertedBookingDates, commonBookingDates } = await this.bookingDateService.upsert(originBookingDates, dates);
         bookingDates = [...newInsertedBookingDates, ...commonBookingDates];
-        if(deletedBookingDates.length > 0 || newInsertedBookingDates.length > 0) {
+        if (deletedBookingDates.length > 0 || newInsertedBookingDates.length > 0) {
           await this.eventService.createBookingEvent({
             booking: originBooking,
             user,
             field: 'dates',
             previous: this.eventService.datesToString(deletedBookingDates),
-            updated: this.eventService.datesToString(newInsertedBookingDates)
+            updated: newInsertedBookingDates.length ? this.eventService.datesToString(newInsertedBookingDates) : 'Dates removed'
           });
         } 
       } catch (err) {
