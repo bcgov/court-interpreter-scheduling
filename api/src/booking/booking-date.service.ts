@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { isSameBookingDate } from 'src/utils';
+
 import { BookingDateDto } from './dto/booking-date.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 
@@ -27,7 +29,34 @@ export class BookingDateService {
     );
   }
 
-  async removeByBookings(bookingDates: BookingDateEntity[]): Promise<void> {
-    this.bookingDateRepository.remove(bookingDates);
+  async removeByBookings(bookingDates: BookingDateEntity[]): Promise<BookingDateEntity[]> {
+    return this.bookingDateRepository.remove(bookingDates);
+  }
+
+  /**
+   * common booking dates, do nothing:
+   * deleted booking dates, delete from database:
+   * new booking dates, insert to database:
+   * @param oldBookingDates 
+   * @param newBookingDates 
+   */
+  async upsert(oldBookingDates: BookingDateEntity[], newBookingDates: BookingDateDto[]) {
+    let common: BookingDateEntity[] = [];
+    let deleted: BookingDateEntity[] = [];
+    let newInsert: BookingDateDto[] = [...newBookingDates];
+    oldBookingDates.forEach(old => {
+      const commonNewBookingDate = newBookingDates.find(n => isSameBookingDate(old, n));
+      if(commonNewBookingDate) {
+        common = [...common, old];
+        newInsert = newInsert.filter(n => n !== commonNewBookingDate);
+      } else {
+        deleted = [...deleted, old];
+      }
+    })
+    
+    const deletedBookingDates = await this.removeByBookings(deleted);
+    const newInsertedBookingDates = await this.create(newInsert);
+    
+    return { deletedBookingDates, newInsertedBookingDates, commonBookingDates: common };
   }
 }

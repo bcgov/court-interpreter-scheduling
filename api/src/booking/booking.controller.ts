@@ -92,15 +92,17 @@ export class BookingController {
 
     if (dates && dates.length > 0) {
       try {
-        bookingDates = await this.bookingDateService.create(dates);
-        await this.bookingDateService.removeByBookings(originBookingDates);
-        await this.eventService.createBookingEvent({
-          booking: originBooking,
-          user,
-          field: 'dates',
-          previous: this.eventService.datesToString(originBookingDates),
-          updated: this.eventService.datesToString(bookingDates)
-        });
+        const { deletedBookingDates, newInsertedBookingDates, commonBookingDates } = await this.bookingDateService.upsert(originBookingDates, dates);
+        bookingDates = [...newInsertedBookingDates, ...commonBookingDates];
+        if(deletedBookingDates.length > 0 || newInsertedBookingDates.length > 0) {
+          await this.eventService.createBookingEvent({
+            booking: originBooking,
+            user,
+            field: 'dates',
+            previous: this.eventService.datesToString(deletedBookingDates),
+            updated: this.eventService.datesToString(newInsertedBookingDates)
+          });
+        } 
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }

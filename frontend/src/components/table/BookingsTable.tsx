@@ -46,10 +46,10 @@ export default function BookingsTable({
         columns={[
           {
             render: (row: any) => (
-              <DateTimeCell
+              row.dates?.length > 0 ? <DateTimeCell
                 date={row.dates[0].date}
                 arrival={row.dates[0].arrivalTime}
-              />
+              />: null
             ),
             title: 'Date & Time',
           },
