@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { isSameBookingDate } from 'src/utils';
-import {  Repository } from 'typeorm';
 
 import { BookingDateDto } from './dto/booking-date.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
