@@ -122,7 +122,7 @@ export class EventService {
             updated: updateDto[k],
           })
         }
-      } else if (original[k] !== updateDto[k] && updateDto[k]) {
+      } else if (k !== 'dates' && original[k] !== updateDto[k] && updateDto[k]) {
         updates.push({
           field: k,
           previous: original[k],
