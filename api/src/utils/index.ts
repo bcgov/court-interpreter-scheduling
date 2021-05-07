@@ -1,8 +1,11 @@
 import * as _ from 'lodash';
 import * as ExcelJS from 'exceljs';
+import { isSameDay } from 'date-fns';
 
 import { CreateInterpreterDto } from 'src/interpreter/dto/create-interpreter.dto';
 import { GoogleDistance } from 'src/distance/googleMap';
+import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
+import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
 
 export function capFirstAndSmallRest(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -185,3 +188,13 @@ export const parseDistanceFromGoogleApi = (data: GoogleDistance) => {
 
   return null;
 };
+
+/**
+ * check if entity = dto
+ * @param entity
+ * @param dto
+ */
+export const isSameBookingDate = (entity: BookingDateEntity, dto: BookingDateDto) =>   
+  isSameDay(new Date(entity.date), new Date(dto.date)) && entity.period === dto.period && entity.arrivalTime === dto.arrivalTime;
+
+
