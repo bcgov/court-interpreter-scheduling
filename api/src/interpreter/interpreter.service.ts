@@ -191,7 +191,7 @@ export class InterpreterService {
 
     const interpreters: InterpreterEntity[] = await this.interpreterRepository.find();
 
-    let i = 2;
+    let cellRowIndex = 2;
     const updateCell = (
       interpreter: InterpreterEntity,
       languageRel: InterpreterLanguageEntity,
@@ -250,12 +250,12 @@ export class InterpreterService {
     for (const interpreter of interpreters) {
       if (interpreter.languages && interpreter.languages.length > 1) {
         for (const lang of interpreter.languages) {
-          updateCell(interpreter, lang, i);
-          i++;
+          updateCell(interpreter, lang, cellRowIndex);
+          cellRowIndex++;
         }
       } else {
-        updateCell(interpreter, interpreter.languages[0], i);
-        i++;
+        updateCell(interpreter, interpreter.languages[0], cellRowIndex);
+        cellRowIndex++;
       }
     }
 
