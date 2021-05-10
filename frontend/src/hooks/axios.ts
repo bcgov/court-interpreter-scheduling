@@ -63,6 +63,7 @@ export function axiosGetter() {
     axiosGet,
     axiosPost,
     axiosPatch,
+    axiosFileGet,
   };
 }
 
