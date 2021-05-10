@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import { Grid, Box } from '@material-ui/core';
@@ -23,7 +23,7 @@ import {
   withLanguageEvent,
 } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
-import { useAxiosFileGet } from 'hooks/axios';
+import { useAxiosFileGet, axiosGetter } from 'hooks/axios';
 import { useAlert } from 'hooks/useAlert';
 
 export default function DirectoryTable({
@@ -40,10 +40,6 @@ export default function DirectoryTable({
   handleCopyEmails?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const [interpreter, setInterpreter] = useState();
-  const [
-    { data: fileGetData, error, loading },
-    downloadExcel,
-  ] = useAxiosFileGet({ url: '/interpreter/file-export' }, { manual: true });
 
   const { addAlert } = useAlert();
   return (
@@ -186,10 +182,9 @@ export default function DirectoryTable({
                 onClick={async () => {
                   addAlert('Exporting the interpreters to excel file...', null);
                   try {
-                    const file = await downloadExcel({
-                      url: `/interpreter/file-export`,
-                    });
-
+                    const file = await axiosGetter().axiosFileGet.get(
+                      '/interpreter/file-export'
+                    );
                     const url = window.URL.createObjectURL(
                       new Blob([file.data])
                     );
@@ -200,7 +195,7 @@ export default function DirectoryTable({
                     window.URL.revokeObjectURL(link.href);
                     addAlert('Successfully exported to excel file');
                   } catch (err) {
-                    alert(err.message);
+                    addAlert(err.message);
                   }
                 }}
                 color="primary"
