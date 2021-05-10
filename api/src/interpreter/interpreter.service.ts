@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { format, sub } from 'date-fns';
 import { Repository } from 'typeorm';
@@ -12,6 +12,9 @@ import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { InterpreterRO } from './ro/interpreter.ro';
+import * as ExcelJS from 'exceljs';
+import * as path from 'path';
+import { setCellHelper } from 'src/utils';
 
 @Injectable()
 export class InterpreterService {
@@ -38,10 +41,9 @@ export class InterpreterService {
       .leftJoinAndSelect('interpreter.languages', 'intLang')
       .leftJoinAndSelect('intLang.language', 'lang')
       .leftJoinAndSelect('interpreter.bookings', 'booking')
-      .leftJoinAndSelect(
-        'interpreter.events',
-        'event',
-        `event.createdAt > :thirtyDaysAgo`, { thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd') })
+      .leftJoinAndSelect('interpreter.events', 'event', `event.createdAt > :thirtyDaysAgo`, {
+        thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
+      })
       .leftJoinAndSelect('booking.dates', 'dates')
       .orderBy('interpreter.lastName', 'ASC');
 
@@ -173,5 +175,90 @@ export class InterpreterService {
       FROM "interpreter"
       WHERE address IS NOT NULL
     `);
+  }
+
+  async exportToWorkbook(): Promise<ExcelJS.Workbook> {
+    // Create workbook
+    const workbook = new ExcelJS.Workbook();
+    // Read template
+    await workbook.xlsx.readFile(path.join(__dirname, '..', '..', '/assets/Template_AllLanguages.xlsx'));
+
+    const worksheet = workbook.getWorksheet('Export');
+    if (!worksheet) {
+      throw new InternalServerErrorException('Unable to load template file to export data');
+    }
+    const setCell = setCellHelper(worksheet);
+
+    const interpreters: InterpreterEntity[] = await this.interpreterRepository.find();
+
+    let i = 2;
+    const updateCell = (
+      interpreter: InterpreterEntity,
+      languageRel: InterpreterLanguageEntity,
+      cellRowIndex: number,
+    ) => {
+      // Level
+      setCell({ row: cellRowIndex, column: 'A', value: `${languageRel.level}` });
+      // Language
+      setCell({ row: cellRowIndex, column: 'C', value: languageRel.language.name });
+
+      // Last name
+      setCell({ row: cellRowIndex, column: 'D', value: interpreter.lastName });
+
+      // First name
+      setCell({ row: cellRowIndex, column: 'E', value: interpreter.firstName });
+
+      // Address
+      setCell({ row: cellRowIndex, column: 'F', value: interpreter.address });
+
+      // City
+      setCell({ row: cellRowIndex, column: 'G', value: interpreter.city });
+
+      // Province
+      setCell({ row: cellRowIndex, column: 'H', value: interpreter.province });
+
+      // Postal Code
+      setCell({ row: cellRowIndex, column: 'I', value: interpreter.postal });
+
+      // Home Phone
+      setCell({ row: cellRowIndex, column: 'J', value: interpreter.homePhone });
+
+      // Business Phone
+      setCell({ row: cellRowIndex, column: 'K', value: interpreter.businessPhone });
+
+      // Cell phone
+      setCell({ row: cellRowIndex, column: 'L', value: interpreter.phone });
+
+      // Email address
+      setCell({ row: cellRowIndex, column: 'M', value: interpreter.email });
+
+      // Supplier
+      setCell({ row: cellRowIndex, column: 'N', value: interpreter.supplier });
+
+      // GST
+      setCell({ row: cellRowIndex, column: 'O', value: interpreter.gst });
+
+      // Comment
+      setCell({ row: cellRowIndex, column: 'Q', value: interpreter.comments });
+
+      // Admin Comments
+      setCell({ row: cellRowIndex, column: 'R', value: interpreter.adminComments });
+
+      // Active
+      setCell({ row: cellRowIndex, column: 'S', value: `${interpreter.contractExtension}` });
+    };
+    for (const interpreter of interpreters) {
+      if (interpreter.languages && interpreter.languages.length > 1) {
+        for (const lang of interpreter.languages) {
+          updateCell(interpreter, lang, i);
+          i++;
+        }
+      } else {
+        updateCell(interpreter, interpreter.languages[0], i);
+        i++;
+      }
+    }
+
+    return workbook;
   }
 }

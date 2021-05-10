@@ -13,7 +13,10 @@ import {
   UseInterceptors,
   UploadedFile,
   Logger,
+  Header,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
@@ -33,7 +36,7 @@ import * as csvtojson from 'csvtojson';
 import { mappingDirectories } from 'src/utils';
 import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
 import { DistanceService } from 'src/distance/distance.service';
-import { EventService } from 'src/event/event.service'
+import { EventService } from 'src/event/event.service';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -97,6 +100,15 @@ export class InterpreterController {
     return await this.interpreterService.findAll(paginateInterpreterQueryDto);
   }
 
+  @Get('/file-export')
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename=interpreter.xlsx')
+  async export(@Res() resp: Response) {
+    const workbook = await this.interpreterService.exportToWorkbook();
+
+    return await workbook.xlsx.write(resp);
+  }
+
   @Post('search')
   @HttpCode(200)
   async search(
@@ -141,14 +153,18 @@ export class InterpreterController {
     }
 
     try {
-      const updatedFields = await this.eventService.parseInterpreterUpdate(interpreter, updateDto, originLangs, languages);
+      const updatedFields = await this.eventService.parseInterpreterUpdate(
+        interpreter,
+        updateDto,
+        originLangs,
+        languages,
+      );
       updatedFields.map((update: UpdateObject) => this.eventService.createInterpreterEvent({ interpreter, ...update }));
     } catch (error) {
-      Logger.log(`Failed to create update events: ${error.message}`)
+      Logger.log(`Failed to create update events: ${error.message}`);
     } finally {
       await this.interpreterService.update(+id, updateDto, langs);
     }
-
   }
 
   @Delete(':id')
