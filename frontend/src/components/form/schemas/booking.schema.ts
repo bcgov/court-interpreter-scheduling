@@ -1,12 +1,14 @@
 import * as yup from 'yup';
 
+import { RequestedByOptions, InterpretForOptions } from 'constants/booking';
+
 const Initial = {
   room: '',
   registry: '',
   file: '',
-  interpretFor: '',
+  interpretFor: InterpretForOptions[0],
   caseName: '',
-  requestedBy: '',
+  requestedBy: RequestedByOptions[0],
   federal: undefined,
   language: '',
   reason: '',
