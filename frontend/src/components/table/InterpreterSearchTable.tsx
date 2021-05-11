@@ -19,15 +19,20 @@ import BookingModal from 'components/form/BookingModal';
 import BookingButton from 'components/table/BookingButton';
 import Tag from 'components/reusable/Tag';
 import { Column } from 'material-table';
+import { StyledTooltip } from 'components/reusable/StyledTooltip';
+import { StyledIconButton } from 'components/Buttons';
+import CopyIcon from 'assets/images/copy.png';
 
 export default function SearchTable({
   data,
   disabled,
   language,
+  handleCopyEmails,
 }: {
   data: Interpreter[];
   disabled: boolean;
   language?: string;
+  handleCopyEmails?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const [interpreter, setInterpreter] = useState();
   const [view, setView] = useState('list');
@@ -114,12 +119,35 @@ export default function SearchTable({
         </div>
       ),
     },
-    { title: 'Email', field: 'email', render: (row: any) => <span>{row.email}{withEvent('email', row.events)}</span> },
+    {
+      title: (
+        <>
+          <span>Email </span>
+          <StyledTooltip title="Copy emails to clipboard">
+            <StyledIconButton
+              className="pointer"
+              onClick={handleCopyEmails}
+              color="primary"
+              style={{ marginLeft: '1rem' }}
+            >
+              <img src={CopyIcon} />
+            </StyledIconButton>
+          </StyledTooltip>
+        </>
+      ),
+      field: 'email',
+      render: (row: any) => (
+        <span>
+          {row.email}
+          {withEvent('email', row.events)}
+        </span>
+      ),
+    },
     ...distanceColumn,
     {
       render: (row: any) => (
         <>
-          {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
+                    {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
           <BookingButton
             disabled={disabled}
             onClick={() => setInterpreter(row)}

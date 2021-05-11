@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAxiosGet } from 'hooks/axios';
 import useError from 'hooks/useError';
+import { useAlert } from 'hooks/useAlert';
 
 import { Box, CircularProgress } from '@material-ui/core';
 
@@ -26,9 +27,8 @@ const CreateBooking = () => {
     dates: [],
   });
 
-  const [{ data: interpreters, loading, error }, getInterpreters] = useAxiosGet(
-    '/interpreter'
-  );
+  const [{ data: interpreters, loading, error }, getInterpreters] =
+    useAxiosGet('/interpreter');
   useError({ error, prefix: 'Failed to load search results.' });
 
   const getSearchResults = async (params: SearchParams) => {
@@ -38,6 +38,19 @@ const CreateBooking = () => {
       method: 'POST',
       data: params,
     });
+  };
+
+  /**
+   * copy email
+   */
+  const { addAlert } = useAlert();
+  const copyEmails = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    navigator.clipboard.writeText(
+      interpreters?.data.map((intp: any) => intp.email).join('; ')
+    );
+    addAlert('Copied to clipboard');
   };
 
   useEffect(() => {
@@ -71,6 +84,7 @@ const CreateBooking = () => {
             language={search.language}
             data={interpreters.data}
             disabled={!search.dates.length}
+            handleCopyEmails={copyEmails}
           />
         ) : null}
       </SearchContext.Provider>
