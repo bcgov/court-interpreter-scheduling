@@ -147,7 +147,7 @@ export default function SearchTable({
     {
       render: (row: any) => (
         <>
-                    {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
+          {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2' /> : null}
           <BookingButton
             disabled={disabled}
             onClick={() => setInterpreter(row)}
