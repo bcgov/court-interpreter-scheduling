@@ -13,6 +13,12 @@ import { fixLanguageName } from 'constants/languages';
 import { Booking } from 'constants/interfaces';
 import { useAxiosFileGet } from 'hooks/axios';
 import { useAlert } from 'hooks/useAlert';
+import {
+  fieldSort,
+  arrayFieldSort,
+  objectFieldSort,
+  languageArraySort,
+} from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
 
 const StyledIconButton = withStyles({
@@ -53,25 +59,27 @@ export default function BookingsTable({
             ),
             title: 'Date & Time',
           },
-          { field: 'file', title: 'Court File Number' },
-          { field: 'caseName', title: 'Case Name' },
+          { field: 'file', title: 'Court File Number', customSort: fieldSort('file'), },
+          { field: 'caseName', title: 'Case Name', customSort: fieldSort('caseName'), },
           {
             title: 'Language',
             render: (row: any) => (
               <div>{fixLanguageName(row).languageName}</div>
             ),
+            customSort: objectFieldSort('language', 'languageName'),
           },
           {
             render: (row: any) => (
               <InterpreterName interpreter={row.interpreter} />
             ),
             title: 'Interpreter',
+            customSort: objectFieldSort('interpreter', 'lastName')
           },
           {
             render: (row: any) => <StatusButton status={row.status} />,
             title: 'Status',
           },
-          { field: 'comment', title: 'Comment' },
+          { field: 'comment', title: 'Comment', customSort: fieldSort('comment') },
           {
             render: (row: any) => (
               <>
