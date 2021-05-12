@@ -168,6 +168,15 @@ span.tag.green {
   border-color: #2E8540;
 }
 
+.intSearchButton {
+  display: flex;
+  align-items: center;
+}
+
+span.tag.intSearchTag {
+  max-height: 16px;
+}
+
 /* TABLE */
 
 td.MuiTableCell-root {
