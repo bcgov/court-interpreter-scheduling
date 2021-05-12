@@ -15,9 +15,7 @@ import { useAxiosFileGet } from 'hooks/axios';
 import { useAlert } from 'hooks/useAlert';
 import {
   fieldSort,
-  arrayFieldSort,
   objectFieldSort,
-  languageArraySort,
 } from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
 
@@ -66,7 +64,7 @@ export default function BookingsTable({
             render: (row: any) => (
               <div>{fixLanguageName(row).languageName}</div>
             ),
-            customSort: objectFieldSort('language', 'languageName'),
+            customSort: fieldSort('language'),
           },
           {
             render: (row: any) => (
@@ -78,6 +76,7 @@ export default function BookingsTable({
           {
             render: (row: any) => <StatusButton status={row.status} />,
             title: 'Status',
+            customSort: fieldSort('status'),
           },
           { field: 'comment', title: 'Comment', customSort: fieldSort('comment') },
           {
