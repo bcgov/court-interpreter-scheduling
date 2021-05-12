@@ -56,6 +56,7 @@ export default function BookingsTable({
               />: null
             ),
             title: 'Date & Time',
+            sorting: false,
           },
           { field: 'file', title: 'Court File Number', customSort: fieldSort('file'), },
           { field: 'caseName', title: 'Case Name', customSort: fieldSort('caseName'), },
