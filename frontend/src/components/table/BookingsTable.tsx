@@ -4,7 +4,7 @@ import { Box, IconButton, withStyles } from '@material-ui/core';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 
 import BaseTable from 'components/table/Base';
-import DateTimeCell from 'components/table/DateTimeCell';
+import { DatesCell } from 'components/table/DateTimeCell';
 import StatusButton from 'components/table/Status';
 import InterpreterName from 'components/table/InterpreterName';
 import EditBookingModal from 'components/form/EditBookingModal';
@@ -49,12 +49,7 @@ export default function BookingsTable({
         data={data}
         columns={[
           {
-            render: (row: any) => (
-              row.dates?.length > 0 ? <DateTimeCell
-                date={row.dates[0].date}
-                arrival={row.dates[0].arrivalTime}
-              />: null
-            ),
+            render: (row: any) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
             title: 'Date & Time',
             sorting: false,
           },
