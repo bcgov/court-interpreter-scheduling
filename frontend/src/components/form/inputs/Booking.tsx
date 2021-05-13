@@ -30,6 +30,7 @@ import {
   ACFC,
 } from 'components/form/inputs/AutoCompleteField';
 import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
+import { InterpretForOptions, RequestedByOptions } from 'constants/booking';
 
 const ACField = AutoCompleteField as ACFC<Location>;
 
@@ -237,18 +238,23 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledField
+
+      <StyledSelect
+        rows={{ xs: 6, lg: 3 }}
         name="interpretFor"
         label="Interpret For"
-        rows={{ xs: 6, lg: 3 }}
+        options={InterpretForOptions}
       />
 
       <StyledField name="caseName" label="Case Name" />
-      <StyledField
+
+      <StyledSelect
+        rows={{ xs: 6, lg: 3 }}
         name="requestedBy"
         label="Requested By"
-        rows={{ xs: 6, lg: 3 }}
+        options={RequestedByOptions}
       />
+
       {/** Language auto complete */}
       {
         <Grid item xs={6}>
