@@ -25,4 +25,12 @@ export class FileUploadInterpreterDto {
   @IsOptional()
   @IsBoolean()
   isAnonymous?: boolean;
+
+  @ApiProperty({
+    description: 'if want to update table instead of empty table',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isUpdate?: boolean;
 }

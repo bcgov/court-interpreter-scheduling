@@ -68,6 +68,9 @@ export class InterpreterRO {
   contractExtension: boolean;
 
   @ApiProperty()
+  siteCode: string;
+
+  @ApiProperty()
   intpAddr: string;
 
   @ApiProperty()

@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { format, sub } from 'date-fns';
 import { Repository } from 'typeorm';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
@@ -21,6 +22,7 @@ export class InterpreterService {
   constructor(
     @InjectRepository(InterpreterEntity)
     private readonly interpreterRepository: Repository<InterpreterEntity>,
+    @InjectPinoLogger(InterpreterService.name) private readonly logger: PinoLogger,
   ) {}
 
   async create(
@@ -135,11 +137,21 @@ export class InterpreterService {
     });
   }
 
+  /**
+   * find interpreter with any key value
+   * @param key
+   * @param value
+   * @returns
+   */
+  async findOneByKey(key: keyof InterpreterEntity, value: string): Promise<InterpreterEntity> {
+    return await this.interpreterRepository.findOne({ where: { [key]: value } });
+  }
+
   async update(
     id: number,
     updateInterpreterDto: Omit<UpdateInterpreterDto, 'languages'>,
     langs?: InterpreterLanguageEntity[],
-  ): Promise<void> {
+  ): Promise<InterpreterEntity> {
     const interpreter = this.interpreterRepository.create({
       id,
       ...updateInterpreterDto,
@@ -149,7 +161,7 @@ export class InterpreterService {
       interpreter.languages = langs;
     }
 
-    await this.interpreterRepository.save(interpreter);
+    return await this.interpreterRepository.save(interpreter);
   }
 
   async remove(id: number): Promise<void> {
@@ -246,6 +258,9 @@ export class InterpreterService {
 
       // Active
       setCell({ row: cellRowIndex, column: 'S', value: `${interpreter.contractExtension}` });
+
+      // SiteCode
+      setCell({ row: cellRowIndex, column: 'T', value: interpreter.siteCode });
     };
     for (const interpreter of interpreters) {
       if (interpreter.languages && interpreter.languages.length > 1) {

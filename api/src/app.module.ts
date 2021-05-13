@@ -22,7 +22,7 @@ import { UserEntity } from './user/entities/user.entity';
   imports: [
     ConfigModule.forRoot(),
     LoggerModule.forRoot({
-      pinoHttp: { prettyPrint: { colorize: true, singleLine: process.env.NODE_ENV === 'production' } },
+      pinoHttp: { prettyPrint: { colorize: true, singleLine: true } },
     }),
     DatabaseModule,
     InterpreterModule,
