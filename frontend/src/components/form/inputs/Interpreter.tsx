@@ -213,7 +213,7 @@ export default function InterpreterInputs() {
         label="Criminal Record Check Date"
         initialValue={values.criminalRecordCheckDate}
       />
-      {showNotDateData(values.criminalRecordCheck) ? (
+      {showNotDateData(values.criminalRecordCheck) || !values.criminalRecordCheckDate ? (
         <StyledField
           name="criminalRecordCheck"
           label="Comment On Criminal Record Check"

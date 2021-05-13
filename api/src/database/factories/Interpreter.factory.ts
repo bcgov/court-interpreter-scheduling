@@ -17,11 +17,7 @@ define(InterpreterEntity, (faker: typeof Faker, settings) => {
   interpreter.email = email;
   interpreter.phone = phone;
   interpreter.address = faker.address.streetAddress();
-  interpreter.city = faker.random.arrayElement([
-    'Victoria',
-    'Vancouver',
-    'Nanaimo',
-  ]);
+  interpreter.city = faker.random.arrayElement(['Victoria', 'Vancouver', 'Nanaimo']);
   interpreter.province = 'BC';
   interpreter.postal = faker.address.zipCode();
   interpreter.homePhone = faker.phone.phoneNumber();
@@ -37,7 +33,12 @@ define(InterpreterEntity, (faker: typeof Faker, settings) => {
     interpreter.criminalRecordCheck = format(date, 'dd-MMM-yyyy');
     interpreter.criminalRecordCheckDate = date;
   } else {
-    interpreter.criminalRecordCheck = 'MNS';
+    if (faker.random.boolean()) {
+      interpreter.criminalRecordCheck = 'MNS';
+    } else {
+      const date = faker.date.past();
+      interpreter.criminalRecordCheck = format(date, 'dd-MMM-yy');
+    }
   }
 
   return interpreter;
