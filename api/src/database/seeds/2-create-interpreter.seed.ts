@@ -35,12 +35,7 @@ export default class CreateInterpreter implements Seeder {
 
     const gIntLang = async () => {
       return await factory(InterpreterLanguageEntity)().createMany(1, {
-        language:
-          Math.random() > 0.66
-            ? LangEntity
-            : Math.random() > 0.33
-            ? LangEntity2
-            : LangEntity3,
+        language: Math.random() > 0.66 ? LangEntity : Math.random() > 0.33 ? LangEntity2 : LangEntity3,
       });
     };
 
@@ -63,6 +58,6 @@ export default class CreateInterpreter implements Seeder {
         interpreter.languages = await gIntLang();
         return interpreter;
       })
-      .createMany(16);
+      .createMany(30);
   }
 }

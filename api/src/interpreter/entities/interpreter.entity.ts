@@ -1,6 +1,15 @@
 import { BookingEntity } from 'src/booking/entities/booking.entity';
 import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  AfterLoad,
+} from 'typeorm';
+import { parse } from 'date-fns';
 
 import { InterpreterRO } from '../ro/interpreter.ro';
 
@@ -123,6 +132,21 @@ export class InterpreterEntity {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  requireForceUpdate = false;
+
+  @AfterLoad()
+  checkCRCDate() {
+    if (this.criminalRecordCheck && !this.criminalRecordCheckDate) {
+      try {
+        const dateObject = parse(this.criminalRecordCheck, 'dd-MMM-yy', new Date());
+        if (dateObject.toString() !== 'Invalid Date') {
+          this.criminalRecordCheckDate = dateObject;
+          this.requireForceUpdate = true;
+        }
+      } catch (exc) {}
+    }
+  }
 
   toResponseObject(): InterpreterRO {
     return {

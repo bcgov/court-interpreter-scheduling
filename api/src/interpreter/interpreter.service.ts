@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { format, sub } from 'date-fns';
+import { format, sub, parse } from 'date-fns';
 import { Repository } from 'typeorm';
 
 import { BookingDateEntity } from 'src/booking/entities/booking-date.entity';
@@ -27,9 +27,21 @@ export class InterpreterService {
     createInterpreterDto: Partial<CreateInterpreterDto>,
     interpreterLangs: InterpreterLanguageEntity[],
   ): Promise<InterpreterEntity> {
+    if (createInterpreterDto.criminalRecordCheck && !createInterpreterDto.criminalRecordCheckDate) {
+      try {
+        const dateObj = parse(createInterpreterDto.criminalRecordCheck, 'dd-MMM-yy', new Date());
+        if (dateObj.toString() !== 'Invalid Date') {
+          createInterpreterDto.criminalRecordCheckDate = format(dateObj, 'yyyy-MM-dd');
+        }
+      } catch (ex) {
+        Logger.debug(`No date entry in [criminalRecordCheck]`);
+      }
+    }
     const { languages, ...insertInterpreter } = createInterpreterDto;
+
     const interpreter = this.interpreterRepository.create(insertInterpreter);
     interpreter.languages = interpreterLangs;
+
     return await this.interpreterRepository.save(interpreter);
   }
 
