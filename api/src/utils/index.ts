@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as ExcelJS from 'exceljs';
-import { isSameDay } from 'date-fns';
+import { isSameDay, getUnixTime } from 'date-fns';
 
 import { CreateInterpreterDto } from 'src/interpreter/dto/create-interpreter.dto';
 import { GoogleDistance } from 'src/distance/googleMap';
@@ -197,4 +197,14 @@ export const parseDistanceFromGoogleApi = (data: GoogleDistance) => {
 export const isSameBookingDate = (entity: BookingDateEntity, dto: BookingDateDto) =>   
   isSameDay(new Date(entity.date), new Date(dto.date)) && entity.period === dto.period && entity.arrivalTime === dto.arrivalTime;
 
+  /**
+ * sort array of booking dates by date
+ * @param BookingDate[]
+ * @param BookingDate[]
+ */
+export const sortBookingDates = (a: BookingDateEntity, b: BookingDateEntity) => {
+  console.dir(getUnixTime(a.date));
+  console.dir(getUnixTime(b.date));
+  return getUnixTime(a.date) === getUnixTime(b.date) ? 0 : getUnixTime(a.date) > getUnixTime(b.date) ? 1 : -1
+}
 

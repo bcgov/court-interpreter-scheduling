@@ -17,6 +17,8 @@ import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingRO } from '../ro/booking.ro';
 import { BookingDateEntity } from './booking-date.entity';
 
+import { sortBookingDates } from 'src/utils'
+
 @Entity('booking')
 export class BookingEntity {
   @PrimaryGeneratedColumn()
@@ -111,7 +113,7 @@ export class BookingEntity {
       caseName: this.caseName,
       room: this.room,
       status: this.status,
-      dates: this.dates.map(d => d.toResponseObject()),
+      dates: this.dates.map(d => d.toResponseObject()).sort(sortBookingDates),
       registry: this.registry,
       file: this.file,
       interpretFor: this.interpretFor,

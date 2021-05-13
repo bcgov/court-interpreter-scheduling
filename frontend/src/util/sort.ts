@@ -6,6 +6,12 @@ const fieldSort = (field: string) =>
       ? 0
       : a[field] > b[field] ? 1 : -1
 
+const objectFieldSort = (field: string, key: string) => 
+  (a: any, b: any): number =>
+    a[field][key] === b[field][key]
+      ? 0
+      : a[field][key] > b[field][key] ? 1 : -1
+
 const arrayFieldSort = (field: string, index: number, subField: string) =>
   (a: any, b: any): number =>
     a[field][index][subField] === b[field][index][subField]
@@ -46,6 +52,7 @@ const levelSort = (interpreters: Interpreter[], language: string) => {
 export {
   fieldSort,
   arrayFieldSort,
+  objectFieldSort,
   languageArraySort,
   levelSort,
 }
