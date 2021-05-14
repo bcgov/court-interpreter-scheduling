@@ -250,7 +250,6 @@ export class InterpreterController {
         noheader: false,
         headers,
         colParser: { siteCode: 'string' },
-        checkType: true, //otherwise, siteCode "1" becomes "01" (leading zero)
       }).fromString(file.buffer.toString());
       this.logger.info(json, 'json');
 
@@ -341,7 +340,18 @@ export class InterpreterController {
         }
 
         let interpreter: InterpreterEntity = null;
-        const existInterpreter = await this.interpreterService.findOneByKey('supplier', createInterpreterDto.supplier);
+        let existInterpreter: InterpreterEntity = null;
+
+        if (createInterpreterDto.supplier) {
+          existInterpreter = await this.interpreterService.findOneByKey('supplier', createInterpreterDto.supplier);
+        } else if (createInterpreterDto.email) {
+          this.logger.info(createInterpreterDto, 'find user by email');
+          existInterpreter = await this.interpreterService.findOneByKey('email', createInterpreterDto.email);
+        } else {
+          this.logger.info(createInterpreterDto, 'has no identity to find the interpreter, return null');
+          return null;
+        }
+
         if (existInterpreter) {
           // update exists interpreter
           interpreter = await this.interpreterService.update(
