@@ -37,13 +37,13 @@ const StyledBox = withStyles({
   }
 })(Box)
 
-interface IProps<T> {
+interface IProps<T extends object> {
   data: Array<T>,
-  columns: Array<Column<{}>>,
-  overrides?: Partial<MaterialTableProps<{}>>
+  columns: Array<Column<T>>,
+  overrides?: Partial<MaterialTableProps<T>>
 }
 
-export type TableFC<T = any> = React.FC<IProps<T>>;
+export type TableFC<T extends object = any> = React.FC<IProps<T>>;
 
 const BaseTable:TableFC = ({
   data,

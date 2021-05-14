@@ -30,7 +30,7 @@ const StyledIconButton = withStyles({
 
 
 import { TableFC } from 'components/table/Base';
-const GenericBaseTable = BaseTable as TableFC<Booking>;
+const GenericBaseTable: TableFC<Booking> = BaseTable;
 
 export default function BookingsTable({
   data,
@@ -49,11 +49,11 @@ export default function BookingsTable({
 
   return (
     <Box mt={4}>
-      <BaseTable
+      <GenericBaseTable
         data={data}
         columns={[
           {
-            render: (row: any) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
+            render: (row) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
             title: 'Date & Time',
             sorting: false,
           },
