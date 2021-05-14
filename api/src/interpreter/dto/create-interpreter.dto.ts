@@ -9,6 +9,7 @@ import {
   IsPostalCode,
   IsBoolean,
   ValidateIf,
+  Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { parse } from 'date-fns';
@@ -153,9 +154,11 @@ export class CreateInterpreterDto {
   supplier?: string;
 
   @ApiProperty({
-    description: 'Site Code, must 3 digit with leading zeros',
+    description: 'Site Code, must 3 digits with leading zeros',
     example: '001',
   })
+  @ValidateIf(e => e.siteCode !== '')
+  @Matches(/^\d{3}$/)
   @IsOptional()
   siteCode?: string;
 
