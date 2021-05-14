@@ -153,6 +153,13 @@ export class CreateInterpreterDto {
   supplier?: string;
 
   @ApiProperty({
+    description: 'Site Code, must 3 digit with leading zeros',
+    example: '001',
+  })
+  @IsOptional()
+  siteCode?: string;
+
+  @ApiProperty({
     description: 'GST',
     example: '123456789-RT0001',
   })
