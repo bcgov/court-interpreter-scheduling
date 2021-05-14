@@ -19,10 +19,10 @@ export function DatesCell ({ dates } : { dates: BookingDate[] }) {
     <div style={{ fontSize: '0.85rem', minWidth: 'max-content' }}>
       <div style={{ marginBottom: '4px' }}>
         <b>
-          {moment(first.date).format('ddd, MMM DD')} -
+          {moment(first.date).format('ddd, MMM DD')}
         </b>
         <span>
-          {' '}{moment(first.arrivalTime, ['hh:mm:ss', moment.ISO_8601]).format('h:mm A')}
+          {' '}{moment(first.arrivalTime, ['hh:mm:ss', moment.ISO_8601]).format('h:mm A')}{dates.length > 1 ? ' -' : null}
         </span>
       </div>
       {
@@ -37,9 +37,12 @@ export function DatesCell ({ dates } : { dates: BookingDate[] }) {
           </div>
         : null
       }
-      <div>
-        <span>({dates.length} appearances)</span>
-      </div>
+      {
+      dates.length > 1 ? (
+        <div>
+          <span>({dates.length} appearances)</span>
+        </div>
+      ) : null}
     </div>
   )
 }

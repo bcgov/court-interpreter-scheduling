@@ -16,6 +16,7 @@ import { useAlert } from 'hooks/useAlert';
 import {
   fieldSort,
   objectFieldSort,
+  bookingDateSort,
 } from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
 
@@ -46,12 +47,12 @@ export default function BookingsTable({
   return (
     <Box mt={4}>
       <BaseTable
-        data={data}
+        data={data as Booking[]}
         columns={[
           {
             render: (row: any) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
             title: 'Date Range',
-            sorting: false,
+            customSort: bookingDateSort,
           },
           { field: 'file', title: 'Court File Number', customSort: fieldSort('file'), },
           { field: 'caseName', title: 'Case Name', customSort: fieldSort('caseName'), },
