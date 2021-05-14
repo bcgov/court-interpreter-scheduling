@@ -177,6 +177,13 @@ export default function SearchTable({
                 </Grid>
                 <Grid item>
                   <Box p={1}>
+                    <b>Site Code</b>
+                    <br />
+                    {rowData.siteCode}
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Box p={1}>
                     <b>GST #</b>
                     <br />
                     {rowData.gst}
