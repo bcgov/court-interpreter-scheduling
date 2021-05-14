@@ -50,7 +50,7 @@ export default function BookingsTable({
         columns={[
           {
             render: (row: any) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
-            title: 'Date & Time',
+            title: 'Date Range',
             sorting: false,
           },
           { field: 'file', title: 'Court File Number', customSort: fieldSort('file'), },
