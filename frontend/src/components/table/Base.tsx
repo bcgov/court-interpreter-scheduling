@@ -37,15 +37,19 @@ const StyledBox = withStyles({
   }
 })(Box)
 
-export default function BaseTable({
+interface IProps<T> {
+  data: Array<T>,
+  columns: Array<Column<{}>>,
+  overrides?: Partial<MaterialTableProps<{}>>
+}
+
+export type TableFC<T = any> = React.FC<IProps<T>>;
+
+const BaseTable:TableFC = ({
   data,
   columns,
   overrides = {}
-}: {
-  data: Array<any>,
-  columns: Array<Column<{}>>,
-  overrides?: Partial<MaterialTableProps<{}>>
-}) {
+}) => {
   const baseOptions = {
     pageSize: 10,
     sorting: true,
@@ -79,3 +83,5 @@ export default function BaseTable({
     />
   )
 }
+
+export default BaseTable;

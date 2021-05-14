@@ -28,6 +28,10 @@ const StyledIconButton = withStyles({
   },
 })(IconButton);
 
+
+import { TableFC } from 'components/table/Base';
+const GenericBaseTable = BaseTable as TableFC<Booking>;
+
 export default function BookingsTable({
   data,
   refetch,
