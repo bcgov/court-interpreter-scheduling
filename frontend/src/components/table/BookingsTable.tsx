@@ -18,6 +18,7 @@ import {
   objectFieldSort,
 } from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
+import { TableFC } from 'components/table/Base';
 
 const StyledIconButton = withStyles({
   root: {
@@ -29,7 +30,6 @@ const StyledIconButton = withStyles({
 })(IconButton);
 
 
-import { TableFC } from 'components/table/Base';
 const GenericBaseTable: TableFC<Booking> = BaseTable;
 
 export default function BookingsTable({
