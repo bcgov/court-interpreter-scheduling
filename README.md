@@ -69,18 +69,20 @@ Body:
 - `isEmptyTable` (boolean): Empty the `interpreter` table
 - `isAnonymous` (boolean): Anonymize the interpreter
 - `isVisual` (boolean): When uploading the `visual` interpreters, please use value: `true`
+- `isUpdate` (boolean): if want to update the exist interpreters, would take more time.
 
 3. For Regular Interpreters:
 
 - `file`
-- `isEmptyTable`: true
+- `isEmptyTable`: depends
 - `isAnonymous`: true, if env = 'test', 'dev'
+- `isUpdate`: true
 
 4. For Visual Interpreters:
 
 - `file`
 - `isAnonymous`: true, if env = 'test', 'dev'
-
+- `isUpdate`: true
 
 ## Add GUID to scope
 

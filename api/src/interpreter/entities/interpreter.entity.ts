@@ -117,6 +117,13 @@ export class InterpreterEntity {
   @Column({ nullable: true, name: 'page12_contract' })
   page12ContractReceived: string;
 
+  @Column({
+    nullable: true,
+    name: 'site_code',
+  })
+  siteCode: string;
+
+  // relation pseudo columns
   @Column({ nullable: true, select: false, insert: false, readonly: true })
   intpAddr?: string;
 
@@ -173,6 +180,7 @@ export class InterpreterEntity {
       comments: this.comments,
       adminComments: this.adminComments,
       contractExtension: this.contractExtension,
+      siteCode: this.siteCode,
       intpAddr: this.intpAddr,
       distance: this.distance,
       createdAt: this.createdAt,
