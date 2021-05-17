@@ -30,9 +30,11 @@ default:
 oc-build: app-check print-status build
 oc-build-api: app-check print-status build-api
 oc-build-app: app-check print-status build-app
+oc-build-proxied-app: app-check print-status build-proxied-app
 oc-deploy-db: app-check print-status deploy-db
 oc-deploy-api: app-check print-status deploy-api
 oc-deploy-app: app-check print-status deploy-app
+oc-deploy-proxied-app: app-check print-status deploy-proxied-app
 oc-delete: app-check print-status delete
 DIR := ${CURDIR}
 
@@ -173,7 +175,7 @@ build-app:
 		-p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
 
-build-app-proxied:
+build-proxied-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
@@ -239,13 +241,25 @@ deploy-app:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
+	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
+	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
+		-p NAME=$(APP) \
+		-p HOST_NAME=$(APP_HOST) \
+		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+		-p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
+	$(call rollout_and_wait,dc/$(APP))
+
+deploy-proxied-app:
+	test -n "$(NAMESPACE)"
+	test -n "$(BUILD_NAMESPACE)"
+	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying proxied APP with tag: $(BUILD_TAG)\n+"
 	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
 		-p NAME=$(APP_PROXIED) \
 		-p HOST_NAME=proxied-$(APP_HOST) \
 		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
 		-p IMAGE_STREAM_TAG="$(APP_PROXIED):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
-	$(call rollout_and_wait,dc/$(APP))
+	$(call rollout_and_wait,dc/$(APP_PROXIED))
 
 deploy-keycloak:
 	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
