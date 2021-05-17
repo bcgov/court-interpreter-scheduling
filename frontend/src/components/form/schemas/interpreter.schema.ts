@@ -21,6 +21,7 @@ const Initial = {
   comments: '',
   contractExtension: false,
   contractTermination: false,
+  siteCode: '',
 }
 
 const Schema = yup.object({
@@ -44,6 +45,7 @@ const Schema = yup.object({
   comments: yup.string(),
   contractExtension: yup.boolean(),
   contractTermination: yup.boolean(),
+  siteCode: yup.string().matches(/^\d{3}$/, 'Site Code must be 3 digits with leading zeros'),
 })
 
 export { Schema, Initial }
