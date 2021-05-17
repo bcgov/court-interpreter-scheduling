@@ -54,6 +54,9 @@ export class BookingRO {
   comment: string;
 
   @ApiProperty()
+  methodOfAppearance: string;
+
+  @ApiProperty()
   location: LocationEntity;
 
   @ApiProperty()
