@@ -16,6 +16,7 @@ import { useAlert } from 'hooks/useAlert';
 import {
   fieldSort,
   objectFieldSort,
+  bookingDateSort,
 } from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
 import { TableFC } from 'components/table/Base';
