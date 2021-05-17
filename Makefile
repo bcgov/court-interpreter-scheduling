@@ -100,6 +100,7 @@ e2e-test:
 
 run-dev:
 	@echo "+\n++ Make: Running dev ...\n+"
+	@docker-compose -f docker-compose.dev.yml build
 	@docker-compose -f docker-compose.dev.yml up
 
 dev-api-workspace:

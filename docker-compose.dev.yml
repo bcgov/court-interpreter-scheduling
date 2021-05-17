@@ -62,7 +62,7 @@ services:
       DB_DATABASE: keycloak
       DB_USER: court_nestapi
       DB_PASSWORD: court_nest123
-      KEYCLOAK_LOGLEVEL: DEBUG
+      # KEYCLOAK_LOGLEVEL: DEBUG
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
@@ -88,8 +88,9 @@ services:
       context: ./frontend/
       dockerfile: Dockerfile.dev
     environment:
+      PUBLIC_URL: http://localhost:5000/interpreter-scheduling
       REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-      REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
+      REACT_APP_API_HOST: http://localhost:5000/interpreter-scheduling/api/v1
       KC_REALM: court
     volumes:
       - ./frontend:/app
@@ -106,18 +107,27 @@ services:
       - api
 
   ### Cypress ###############################
-  cypress:
-    image: "cypress/included:4.0.2"
-    depends_on:
-      - client
-    environment:
-      - CYPRESS_baseUrl=http://client:3000
-    working_dir: /e2e
-    volumes:
-      - ./:/e2e
-    networks:
-      - backend
+  # cypress:
+  #   image: "cypress/included:4.0.2"
+  #   depends_on:
+  #     - client
+  #   environment:
+  #     - CYPRESS_baseUrl=http://client:3000
+  #   working_dir: /e2e
+  #   volumes:
+  #     - ./:/e2e
+  #   networks:
+  #     - backend
 
+  justice-proxy:
+    image: httpd:2.4
+    ports:
+      - "5000:80"
+    volumes:
+      - "./.docker/mock-justice-proxy/httpd.conf:/usr/local/apache2/conf/httpd.conf"
+    depends_on: 
+      - client
+  
 networks:
   backend:
     driver: "bridge"

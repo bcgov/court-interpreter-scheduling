@@ -10,9 +10,9 @@ COPY ./package.json .
 
 RUN apt-get update && apt-get -y install procps
 
-RUN npm install
-
 COPY ./ .
+
+RUN npm install
 
 EXPOSE 4000
 
