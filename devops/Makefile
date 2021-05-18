@@ -30,9 +30,11 @@ default:
 oc-build: app-check print-status build
 oc-build-api: app-check print-status build-api
 oc-build-app: app-check print-status build-app
+oc-build-proxied-app: app-check print-status build-proxied-app
 oc-deploy-db: app-check print-status deploy-db
 oc-deploy-api: app-check print-status deploy-api
 oc-deploy-app: app-check print-status deploy-app
+oc-deploy-proxied-app: app-check print-status deploy-proxied-app
 oc-delete: app-check print-status delete
 DIR := ${CURDIR}
 
@@ -63,6 +65,11 @@ endef
 
 define APP
 "app-$(APP_NAME)"
+endef
+
+# The front-end when routed through the justice proxy
+define APP_PROXIED 
+"proxied-app-$(APP_NAME)"
 endef
 
 define APP_INSTANCE
@@ -158,8 +165,31 @@ build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) -p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
+		@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
+		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
+		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
+		-p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) \
+		-p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" \
+		-p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" \
+		-p SOURCE_CONTEXT_DIR=frontend \
+		-p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
+
+build-proxied-app:
+	test -n "$(BRANCH)"
+	test -n "$(BUILD_NAMESPACE)"
+	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
+	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
+		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
+		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
+		-p ARG_KEY_3=PUBLIC_URL -p ARG_VAL_3=https://$(DEPLOYMENT_ENV).justice.gov.bc.ca/interpreter-scheduling \
+		-p ARG_KEY_4=REACT_APP_API_HOST -p ARG_VAL_4=https://$(DEPLOYMENT_ENV).justice.gov.bc.ca/interpreter-scheduling/api/v1 \
+		-p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) \
+		-p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" \
+		-p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" \
+		-p SOURCE_CONTEXT_DIR=frontend \
+		-p NAME=$(APP_PROXIED) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP_PROXIED) --wait
 
 build-patroni:
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=patroni -p TAG="12-latest" -p BASE_IMAGE_NAME=postgres -p BASE_IMAGE_TAG="12" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/platform-services.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="apps/pgsql/patroni/docker" | oc -n $(BUILD_NAMESPACE) apply -f -
@@ -212,8 +242,24 @@ deploy-app:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
+		-p NAME=$(APP) \
+		-p HOST_NAME=$(APP_HOST) \
+		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+		-p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(APP))
+
+deploy-proxied-app:
+	test -n "$(NAMESPACE)"
+	test -n "$(BUILD_NAMESPACE)"
+	test -n "$(BRANCH)"
+	@echo "+\n++ Deploying proxied APP with tag: $(BUILD_TAG)\n+"
+	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
+		-p NAME=$(APP_PROXIED) \
+		-p HOST_NAME=proxied-$(APP_HOST) \
+		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+		-p IMAGE_STREAM_TAG="$(APP_PROXIED):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
+	$(call rollout_and_wait,dc/$(APP_PROXIED))
 
 deploy-keycloak:
 	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
