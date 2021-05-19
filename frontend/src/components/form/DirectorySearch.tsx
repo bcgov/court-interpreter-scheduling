@@ -24,7 +24,6 @@ import Check from 'components/form/inputs/Check';
 import { StyledButton } from 'components/Buttons';
 
 import InterpreterSearchContext from 'contexts/InterpreterSearchContext';
-import { languages } from 'constants/languages';
 import { courtLocations } from 'constants/courtLocations';
 import { InterpreterSearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik';

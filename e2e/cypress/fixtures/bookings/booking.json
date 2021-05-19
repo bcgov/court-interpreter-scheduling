@@ -16,9 +16,10 @@
   "file": "1230123",
   "interpretFor": "defendant",
   "requestedBy": "defendant",
-  "federal": "no",
+  "federal": false,
   "language": "French",
-  "reason": "Everyone likes french",
+  "reason": "FA",
   "prosecutor": "George",
-  "comment": "Standard issue"
+  "comment": "Standard issue",
+  "locationId": 2
 }
