@@ -15,9 +15,9 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
-import { Level } from 'src/interpreter/enums/level.enum';
-import { mapAndJoin, formatYesNo, setCellHelper } from 'src/utils';
+import { mapAndJoin, formatYesNo, setCellHelper, levelToMoney } from 'src/utils';
 import { LocationEntity } from 'src/location/entities/location.entity';
+import { DistanceEntity } from 'src/distance/entities/distance.entity';
 
 const TIME_ZONE = 'America/Los_Angeles';
 @Injectable()
@@ -169,7 +169,7 @@ export class BookingService {
     await this.bookingRepository.remove(booking);
   }
 
-  async writeToWorkbook(booking: BookingEntity): Promise<ExcelJS.Workbook> {
+  async writeToWorkbook(booking: BookingEntity, distance: DistanceEntity): Promise<ExcelJS.Workbook> {
     const workbook = new ExcelJS.Workbook();
     const { interpreter, location } = booking;
     const exportDate = new Date();
@@ -208,13 +208,18 @@ export class BookingService {
     setCell({
       row: 9,
       column: 'B',
-      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ', ', (str: string) => str.toUpperCase()),
+      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase()),
     });
 
     // R9 Language Level
     const bookLang = booking.language;
     const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
     setCell({ row: 9, column: 'R', value: String(intpLang.level) });
+
+    // G74 finance
+    if(intpLang) {
+      setCell({ row: 74, column: 'G', value:  String(levelToMoney[intpLang.level]) });
+    }
 
     // B11 address + city + province + postcode
     setCell({ row: 11, column: 'B', value: mapAndJoin([interpreter.address, interpreter.city, interpreter.province]) });
@@ -245,6 +250,16 @@ export class BookingService {
 
     // L19 Method Of Appearance
     setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
+
+    // L15 interpreterFor, L17 requestedBy
+    setCell({ row: 15, column: 'L', value: booking.interpretFor });
+    setCell({ row: 17, column: 'L', value: booking.requestedBy });
+
+    // G83 distance km
+    console.log(distance)
+    if (distance) {
+      setCell({ row: 83, column: 'G', value: distance.distance });
+    }
 
     // booking dates
     booking.dates.forEach((date, idx) => {

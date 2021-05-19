@@ -31,6 +31,7 @@ import { EventService } from 'src/event/event.service'
 
 import { User as IUser } from 'src/common/interface/user.interface';
 import { DBUser } from 'src/common/decorator/user.decorator';
+import { DistanceService } from 'src/distance/distance.service';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -39,6 +40,7 @@ export class BookingController {
     private readonly bookingService: BookingService,
     private readonly bookingDateService: BookingDateService,
     private readonly eventService: EventService,
+    private readonly distanceService: DistanceService,
   ) {}
 
   @Post()
@@ -131,8 +133,11 @@ export class BookingController {
     // query booking
     const booking = await this.bookingService.findOne(+id);
 
+    // get distance
+    const distance = await this.distanceService.findDistanceByBooking(booking);
+
     // get the workbook
-    const workbook = await this.bookingService.writeToWorkbook(booking);
+    const workbook = await this.bookingService.writeToWorkbook(booking, distance);
 
     return await workbook.xlsx.write(res);
   }
