@@ -9,6 +9,7 @@ export type BookingBase = {
   reason: string;
   prosecutor: string;
   comment: string;
+  methodOfAppearance?: string;
   location: Location;
 };
 

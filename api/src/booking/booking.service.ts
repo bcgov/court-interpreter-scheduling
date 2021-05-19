@@ -236,6 +236,9 @@ export class BookingService {
     // K79 GST
     setCell({ row: 79, column: 'K', value: interpreter.gst });
 
+    // L19 Method Of Appearance
+    setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
+
     // booking dates
     booking.dates.forEach((date, idx) => {
       // as there are only max 9 rows in adm322
