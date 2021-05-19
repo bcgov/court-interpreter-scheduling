@@ -75,6 +75,13 @@ export type InterpreterSearchParams = {
   criminalRecordCheck?: Date;
 };
 
+export type BookingSearchParams = {
+  dates?: Array<BookingDate>;
+  interpreter?: string;
+  file?: string;
+  locationId?: number;
+}
+
 export enum Level {
   one = 1,
   two,
