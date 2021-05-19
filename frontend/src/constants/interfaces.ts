@@ -37,6 +37,13 @@ export enum BookingStatus {
   CANCELLED = 'Cancelled',
 }
 
+export const BookingStatusColor = {
+  [BookingStatus.PENDING]:  '#FCBA19',
+  [BookingStatus.CANCELLED]: '#FF8686',
+  [BookingStatus.BOOKED]: '#58CB7D',
+}
+
+
 export type BookingDate = {
   date: Date;
   period?: BookingPeriod;
@@ -68,6 +75,13 @@ export type InterpreterSearchParams = {
   active?: boolean;
   criminalRecordCheck?: Date;
 };
+
+export type BookingSearchParams = {
+  dates?: Array<BookingDate>;
+  interpreter?: string;
+  file?: string;
+  locationId?: number;
+}
 
 export enum Level {
   one = 1,
