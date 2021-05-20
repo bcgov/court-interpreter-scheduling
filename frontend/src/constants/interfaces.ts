@@ -137,6 +137,7 @@ export interface Interpreter extends InterpreterBase {
   languages: Language[];
   bookings: Booking[];
   distance?: number;
+  conflicts?: Conflict[];
 }
 
 export interface UserResponse {
@@ -155,4 +156,9 @@ export interface Event {
 
 export interface BookingEvent extends Event {
   user: string;
+}
+
+export interface Conflict {
+  file: string;
+  location: string;
 }
