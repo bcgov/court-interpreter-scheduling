@@ -59,6 +59,7 @@ export class InterpreterService {
         thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd'),
       })
       .leftJoinAndSelect('booking.dates', 'dates')
+      .leftJoinAndSelect('booking.location', 'location')
       .orderBy('interpreter.lastName', 'ASC');
 
     query = paginateInterpreterQueryDto.filter(query);

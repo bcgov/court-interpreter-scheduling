@@ -3,7 +3,8 @@ import { withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import Alert from '@material-ui/icons/ErrorOutline';
-import { Language, Event } from 'constants/interfaces';
+import { Language, Event, Booking, BookingDate, BookingPeriod, SearchParams, Conflict } from 'constants/interfaces';
+import moment from 'moment';
 
 const StyledBox = withStyles(() => ({
   root: {
@@ -77,9 +78,37 @@ function withLanguageEvent (language: string, field: string, events: Array<Event
   ) : null
 }
 
+function checkInterpreterAvailability (bookings: Booking[], dates: SearchParams['dates']): Array<Conflict> {
+  const conflicts = bookings.reduce((list: Conflict[], booking: Booking) => {
+    const sameDateAsSearch = booking.dates
+      .filter(
+        (bookingDate: BookingDate) => dates.some(
+          (d: BookingDate) => {
+            const bookingMoment = moment(bookingDate.date)
+            const searchMoment = moment(d.date)
+            const isSameDay = bookingMoment.isSame(searchMoment, 'day')
+            return isSameDay ? (
+              d.period === BookingPeriod.WHOLE_DAY ||
+              bookingDate.period === BookingPeriod.WHOLE_DAY ||
+              d.period === bookingDate.period
+            ) : false
+          }
+        )
+      )
+    if (sameDateAsSearch.length) {
+      return [
+        ...list,
+        ...sameDateAsSearch.map((date: BookingDate) => ({ file: booking.file, location: booking.location?.name }))
+      ]
+    } else return list
+  }, [])
+  return conflicts
+}
+
 export {
   comments,
   fullName,
   withEvent,
   withLanguageEvent,
+  checkInterpreterAvailability,
 }

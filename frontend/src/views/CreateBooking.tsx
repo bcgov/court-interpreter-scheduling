@@ -81,7 +81,6 @@ const CreateBooking = () => {
           </Box>
         ) : interpreters ? (
           <InterpreterSearchTable
-            language={search.language}
             data={interpreters.data}
             disabled={!search.dates.length}
             handleCopyEmails={copyEmails}
