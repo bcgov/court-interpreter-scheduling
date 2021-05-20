@@ -15,7 +15,7 @@ export const StyledButton = withStyles({
   },
 })(Button);
 
-export default function BookingButton(props: ButtonProps) {
+export default function BookingButton(props: ButtonProps & { available?: boolean }) {
   return props.disabled ? (
     <StyledTooltip title="Please select dates to create a new booking">
       <span>

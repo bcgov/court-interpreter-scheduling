@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import moment from 'moment';
 
@@ -9,7 +9,7 @@ import {
   levelSort,
   languageArraySort,
 } from 'util/sort';
-import { comments, fullName, withEvent, withLanguageEvent } from 'util/tableHelpers';
+import { comments, fullName, withEvent, withLanguageEvent, checkInterpreterAvailability } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
 
 import BaseTable from 'components/table/Base';
@@ -22,6 +22,7 @@ import { Column } from 'material-table';
 import { StyledTooltip } from 'components/reusable/StyledTooltip';
 import { StyledIconButton } from 'components/Buttons';
 import CopyIcon from 'assets/images/copy.png';
+import SearchContext from 'contexts/SearchContext';
 
 export default function SearchTable({
   data,
@@ -34,6 +35,7 @@ export default function SearchTable({
   language?: string;
   handleCopyEmails?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
+  const { search } = useContext(SearchContext);
   const [interpreter, setInterpreter] = useState();
   const [view, setView] = useState('list');
 
@@ -145,11 +147,13 @@ export default function SearchTable({
     },
     ...distanceColumn,
     {
+      // TODO update UI if interpreter is busy
       render: (row: any) => (
         <div className='intSearchButton'>
           {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2 intSearchTag' /> : null}
           <BookingButton
             disabled={disabled}
+            available={checkInterpreterAvailability(row.bookings, search.dates)}
             onClick={() => setInterpreter(row)}
           />
         </div>
