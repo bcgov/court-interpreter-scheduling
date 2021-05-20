@@ -9,6 +9,7 @@ export type BookingBase = {
   reason: string;
   prosecutor: string;
   comment: string;
+  methodOfAppearance?: string;
   location: Location;
 };
 
@@ -35,6 +36,13 @@ export enum BookingStatus {
   BOOKED = 'Booked',
   CANCELLED = 'Cancelled',
 }
+
+export const BookingStatusColor = {
+  [BookingStatus.PENDING]:  '#FCBA19',
+  [BookingStatus.CANCELLED]: '#FF8686',
+  [BookingStatus.BOOKED]: '#58CB7D',
+}
+
 
 export type BookingDate = {
   date: Date;
@@ -67,6 +75,13 @@ export type InterpreterSearchParams = {
   active?: boolean;
   criminalRecordCheck?: Date;
 };
+
+export type BookingSearchParams = {
+  dates?: Array<BookingDate>;
+  interpreter?: string;
+  file?: string;
+  locationId?: number;
+}
 
 export enum Level {
   one = 1,
@@ -122,6 +137,7 @@ export interface Interpreter extends InterpreterBase {
   languages: Language[];
   bookings: Booking[];
   distance?: number;
+  conflicts?: Conflict[];
 }
 
 export interface UserResponse {
@@ -140,4 +156,9 @@ export interface Event {
 
 export interface BookingEvent extends Event {
   user: string;
+}
+
+export interface Conflict {
+  file: string;
+  location: string;
 }

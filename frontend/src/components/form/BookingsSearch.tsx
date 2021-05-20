@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import moment from 'moment';
 
@@ -29,6 +29,7 @@ import {
 } from 'components/form/inputs/AutoCompleteField';
 import { Location } from 'constants/interfaces';
 import { useAlert } from 'hooks/useAlert';
+import BookingSearchContext from 'contexts/BookingSearchContext';
 
 const dateFormat = 'MMM D, YYYY';
 
@@ -39,6 +40,8 @@ export default function Search({
 }: {
   getSearchResults: Function;
 }) {
+  const { updateSearchContext: setSearchContext } = useContext(BookingSearchContext);
+
   const [locations, setLocations] = useState<Location[]>([] as Location[]);
   const [userLocation, setUserLocation] = useState<Location | null | undefined>(
     null
@@ -52,6 +55,7 @@ export default function Search({
         setUserLocation(
           fetchedLocations.find((l) => l.id === fetchedUserLocation?.id)
         );
+        setSearchContext({ locationId: fetchedUserLocation?.id })
         getSearchResults({
           url: '/booking',
           method: 'GET',
@@ -71,15 +75,18 @@ export default function Search({
         initialValues={{ ...Initial, locationId: userLocation?.id }}
         enableReinitialize
         validationSchema={Schema}
-        onSubmit={async (values) =>
-          getSearchResults({
-            url: '/booking/search',
-            method: 'POST',
-            data: {
+        onSubmit={async (values) => {
+            const data = {
               ...values,
               dates: values?.dates?.startDate ? [values.dates] : [],
-            },
-          })
+            };
+            setSearchContext(data);
+            getSearchResults({
+              url: '/booking/search',
+              method: 'POST',
+              data,
+            })
+          }
         }
       >
         {({ handleSubmit, isSubmitting, values }: FormikProps<any>) => (

@@ -17,7 +17,7 @@ import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingRO } from '../ro/booking.ro';
 import { BookingDateEntity } from './booking-date.entity';
 
-import { sortBookingDates } from 'src/utils'
+import { sortBookingDates } from 'src/utils';
 
 @Entity('booking')
 export class BookingEntity {
@@ -89,6 +89,9 @@ export class BookingEntity {
   @Column({ nullable: true })
   comment: string;
 
+  @Column({ nullable: true, name: 'method_of_appearance' })
+  methodOfAppearance: string;
+
   @OneToMany(
     type => BookingEventEntity,
     (event: BookingEventEntity) => event.booking,
@@ -123,6 +126,7 @@ export class BookingEntity {
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,
+      methodOfAppearance: this.methodOfAppearance,
       events: this.events?.map(e => e.toResponseObject()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

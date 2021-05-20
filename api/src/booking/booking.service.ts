@@ -4,7 +4,8 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
-import { addMonths, format, sub } from 'date-fns';
+import { addMonths, sub } from 'date-fns';
+import { format, utcToZonedTime } from 'date-fns-tz';
 import * as ExcelJS from 'exceljs';
 import * as path from 'path';
 
@@ -14,10 +15,11 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingEntity } from './entities/booking.entity';
 import { BookingRO } from './ro/booking.ro';
-import { Level } from 'src/interpreter/enums/level.enum';
-import { mapAndJoin, formatYesNo, setCellHelper } from 'src/utils';
+import { mapAndJoin, formatYesNo, setCellHelper, levelToMoney } from 'src/utils';
 import { LocationEntity } from 'src/location/entities/location.entity';
+import { DistanceEntity } from 'src/distance/entities/distance.entity';
 
+const TIME_ZONE = 'America/Los_Angeles';
 @Injectable()
 export class BookingService {
   constructor(
@@ -67,10 +69,9 @@ export class BookingService {
       .leftJoinAndSelect('booking.interpreter', 'interpreter')
       .leftJoinAndSelect('booking.language', 'language')
       .leftJoinAndSelect('booking.dates', 'dates')
-      .leftJoinAndSelect(
-        'booking.events',
-        'event',
-        `event.createdAt > :thirtyDaysAgo`, { thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd') })
+      .leftJoinAndSelect('booking.events', 'event', `event.createdAt > :thirtyDaysAgo`, {
+        thirtyDaysAgo: format(sub(new Date(), { days: 30 }), 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
+      })
       .leftJoinAndSelect('event.user', 'eventUser')
       .leftJoinAndSelect('interpreter.languages', 'languages')
       .leftJoinAndSelect('languages.language', 'lang')
@@ -80,11 +81,12 @@ export class BookingService {
 
     if (isStartFromToday) {
       // default query is for bookings within next 30 days
+      const today = utcToZonedTime(new Date(), TIME_ZONE);
       query.andWhere('dates.date >= :today', {
-        today: `${format(new Date(), 'yyyy-MM-dd')}T00:00:00`,
+        today: `${format(today, 'yyyy-MM-dd', { timeZone: TIME_ZONE })}T00:00:00`,
       });
       query.andWhere('dates.date <= :monthAway', {
-        monthAway: `${format(addMonths(new Date(), 1), 'yyyy-MM-dd')}T00:00:00`,
+        monthAway: `${format(addMonths(today, 1), 'yyyy-MM-dd', { timeZone: TIME_ZONE })}T00:00:00`,
       });
     }
 
@@ -167,7 +169,7 @@ export class BookingService {
     await this.bookingRepository.remove(booking);
   }
 
-  async writeToWorkbook(booking: BookingEntity): Promise<ExcelJS.Workbook> {
+  async writeToWorkbook(booking: BookingEntity, distance: DistanceEntity): Promise<ExcelJS.Workbook> {
     const workbook = new ExcelJS.Workbook();
     const { interpreter, location } = booking;
     const exportDate = new Date();
@@ -184,7 +186,7 @@ export class BookingService {
     const invoice = (
       interpreter.lastName.substring(0, 3) +
       interpreter.firstName.substring(0, 1) +
-      format(firstBookingDate.date, 'ddMMMyy')
+      format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
     setCell({ row: 5, column: 'W', value: invoice });
     setCell({ row: 68, column: 'W', value: invoice });
@@ -206,13 +208,18 @@ export class BookingService {
     setCell({
       row: 9,
       column: 'B',
-      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ', ', (str: string) => str.toUpperCase()),
+      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase()),
     });
 
     // R9 Language Level
     const bookLang = booking.language;
     const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
     setCell({ row: 9, column: 'R', value: String(intpLang.level) });
+
+    // G74 finance
+    if(intpLang) {
+      setCell({ row: 74, column: 'G', value:  String(levelToMoney[intpLang.level]) });
+    }
 
     // B11 address + city + province + postcode
     setCell({ row: 11, column: 'B', value: mapAndJoin([interpreter.address, interpreter.city, interpreter.province]) });
@@ -224,8 +231,13 @@ export class BookingService {
     setCell({ row: 11, column: 'U', value: interpreter.email });
 
     // A15, B21 Date of Export
-    setCell({ row: 5, column: 'AI', value: format(exportDate, 'yyyy-MM-dd'), alignment: 'center' });
-    setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd') });
+    setCell({
+      row: 5,
+      column: 'AI',
+      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
+      alignment: 'center',
+    });
+    setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
 
     // L21 Federal
     setCell({ row: 21, column: 'L', value: formatYesNo(booking.federal) });
@@ -236,13 +248,26 @@ export class BookingService {
     // K79 GST
     setCell({ row: 79, column: 'K', value: interpreter.gst });
 
+    // L19 Method Of Appearance
+    setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
+
+    // L15 interpreterFor, L17 requestedBy
+    setCell({ row: 15, column: 'L', value: booking.interpretFor });
+    setCell({ row: 17, column: 'L', value: booking.requestedBy });
+
+    // G83 distance km
+    console.log(distance)
+    if (distance) {
+      setCell({ row: 83, column: 'G', value: distance.distance });
+    }
+
     // booking dates
     booking.dates.forEach((date, idx) => {
       // as there are only max 9 rows in adm322
       if (idx < 9) {
         const row = idx * 3 + 28;
         // B28 date
-        setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd') });
+        setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
 
         // D28 Court File Number
         setCell({ row, column: 'D', value: booking.file });

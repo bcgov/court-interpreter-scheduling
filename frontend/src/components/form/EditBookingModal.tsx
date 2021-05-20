@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useAxiosPatch } from 'hooks/axios'
 import useError from 'hooks/useError'
@@ -24,6 +24,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import CloseIcon from '@material-ui/icons/Close'
 
 import { Formik, FormikProps } from 'formik'
+import BookingSearchContext from 'contexts/BookingSearchContext'
 
 type BookingModalProps = {
   booking: any;
@@ -39,6 +40,8 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
   const [view, toggleView] = useState('schedule')
   const [{ response, loading, error }, editBooking] = useAxiosPatch({ url: '/booking' }, { manual: true })
 
+  const { search: bookingSearch } = useContext(BookingSearchContext);
+
   useError({ error, prefix: 'Failed to update booking.' })
 
   useEffect(() => {
@@ -52,7 +55,11 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
   useEffect(() => {
     if (response?.status === 200) {
       toggleOpen(false)
-      refetch()
+      refetch({
+        url: '/booking',
+        method: 'GET',
+        params: bookingSearch,
+      })
     }
   }, [response, refetch])
 

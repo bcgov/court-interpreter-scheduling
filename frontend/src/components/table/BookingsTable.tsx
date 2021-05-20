@@ -16,8 +16,10 @@ import { useAlert } from 'hooks/useAlert';
 import {
   fieldSort,
   objectFieldSort,
+  bookingDateSort,
 } from 'util/sort';
 import DownloadIcon from '../../assets/images/download-invoice.png';
+import { TableFC } from 'components/table/Base';
 
 const StyledIconButton = withStyles({
   root: {
@@ -27,6 +29,9 @@ const StyledIconButton = withStyles({
     width: '40px',
   },
 })(IconButton);
+
+
+const GenericBaseTable: TableFC<Booking> = BaseTable;
 
 export default function BookingsTable({
   data,
@@ -45,13 +50,13 @@ export default function BookingsTable({
 
   return (
     <Box mt={4}>
-      <BaseTable
+      <GenericBaseTable
         data={data}
         columns={[
           {
-            render: (row: any) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
-            title: 'Date & Time',
-            sorting: false,
+            render: (row) => (row.dates?.length > 0 ? <DatesCell dates={row.dates} />: null),
+            title: 'Date Range',
+            customSort: bookingDateSort,
           },
           { field: 'file', title: 'Court File Number', customSort: fieldSort('file'), },
           { field: 'caseName', title: 'Case Name', customSort: fieldSort('caseName'), },

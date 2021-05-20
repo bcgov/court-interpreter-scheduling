@@ -228,6 +228,14 @@ export default function DirectoryTable({
               </Grid>
               <Grid item>
                 <Box p={1}>
+                  <b>Site Code</b>
+                  <br />
+                  {rowData.siteCode}
+                  {withEvent('siteCode', rowData.events)}
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box p={1}>
                   <b>GST #</b>
                   <br />
                   {rowData.gst}

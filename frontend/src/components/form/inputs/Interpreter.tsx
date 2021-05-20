@@ -28,6 +28,7 @@ type GridItemInputProps = {
   rows?: any;
   initialValue?: any;
   disabled?: boolean;
+  placeholder?: string;
 };
 
 // TODO: Create more effective check
@@ -36,7 +37,7 @@ const showNotDateData = (data?: string): boolean => {
   return !regx.test(data || '');
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
+const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -46,6 +47,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
             id={name}
             variant="outlined"
             size="small"
+            placeholder={placeholder}
             {...field}
             {...props}
           />
@@ -206,8 +208,10 @@ export default function InterpreterInputs() {
         </Typography>
       </Grid>
 
-      <StyledField name="supplier" label="Supplier #" />
-      <StyledField name="gst" label="GST" />
+      <StyledField name="supplier" label="Supplier #" rows={{ xs: 12, lg: 4 }} />
+      <StyledField name="siteCode" label="Site Code" rows={{ xs: 12, lg: 4 }} placeholder="001" />
+      <StyledField name="gst" label="GST" rows={{ xs: 12, lg: 4 }}  />
+
       <StyledDateField
         name="criminalRecordCheckDate"
         label="Criminal Record Check Date"

@@ -30,9 +30,10 @@ import {
   ACFC,
 } from 'components/form/inputs/AutoCompleteField';
 import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
-import { InterpretForOptions, RequestedByOptions } from 'constants/booking';
+import { InterpretForOptions, MethodOfAppearanceOptions, RequestedByOptions } from 'constants/booking';
 
 const ACField = AutoCompleteField as ACFC<Location>;
+const ACStringField = AutoCompleteField as ACFC<string>;
 
 type GridItemInputProps = {
   name: string;
@@ -276,6 +277,19 @@ export default function BookingInputs({
 
       <StyledField name="reason" label="Reason Code" placeholder="FA, HR" />
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
+
+       {/* Method of Appearance */}
+       <Grid item xs={6}>
+        <ACStringField
+          name="methodOfAppearance"
+          label="Method of Appearance"
+          options={MethodOfAppearanceOptions}
+          getOptionLabel={(option) => option}
+          defaultValue={booking?.methodOfAppearance || MethodOfAppearanceOptions[0]}
+          onChange={(form) => (event, value) =>
+            form.setFieldValue('methodOfAppearance', value)}
+        />
+      </Grid>
 
       <Grid item xs={6}>
         <StyledFormControl>

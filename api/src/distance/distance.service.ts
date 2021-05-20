@@ -7,6 +7,8 @@ import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 import { DistanceEntity } from './entities/distance.entity';
 import { fetchGoogleMapDistance } from './googleMap';
 import { googleMapMock } from './mock/googleMapApi.mock';
+import { BookingEntity } from 'src/booking/entities/booking.entity';
+import { mapAndJoin } from 'src/utils';
 
 @Injectable()
 export class DistanceService {
@@ -116,5 +118,15 @@ export class DistanceService {
   async emptyTable(): Promise<void> {
     await this.distanceRepository.query(`DELETE FROM distance;`);
     this.logger.info('Empty Table "distance"');
+  }
+
+  async findDistanceByBooking(
+    booking: BookingEntity,
+  ): Promise<DistanceEntity> {
+    const { interpreter, location } = booking;
+    const courtAddr = location.addressLine1;
+    const { address, city, province, postal } = interpreter;
+    const intpAddr = `${mapAndJoin([address, city, province], ', ')} ${postal}`;
+    return this.distanceRepository.findOne({ intpAddr, courtAddr });
   }
 }

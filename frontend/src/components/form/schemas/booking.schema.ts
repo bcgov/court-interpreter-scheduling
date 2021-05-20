@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { RequestedByOptions, InterpretForOptions } from 'constants/booking';
+import { RequestedByOptions, InterpretForOptions, MethodOfAppearanceOptions } from 'constants/booking';
 
 const Initial = {
   room: '',
@@ -15,6 +15,7 @@ const Initial = {
   prosecutor: '',
   comment: '',
   locationName: '',
+  methodOfAppearance: MethodOfAppearanceOptions[0],
 };
 
 const Schema = yup.object({
