@@ -71,7 +71,7 @@ export default function Calendar ({ interpreters, setInterpreter }: CalendarProp
                       <Grid item xs={6}>20mins</Grid>
                     </Grid>
                     <FlexBox mt={1}>
-                      <BookingButton onClick={() => setInterpreter(i)}>Book</BookingButton>
+                      <BookingButton conflicts={i.conflicts} onClick={() => setInterpreter(i)}>Book</BookingButton>
                       <Box px={1}><MoreDetails search={search} interpreter={i} setInterpreter={setInterpreter} /></Box>
                     </FlexBox>
                   </OutlinedGridItem>

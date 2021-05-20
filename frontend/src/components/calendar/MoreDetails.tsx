@@ -104,7 +104,12 @@ export default function MoreDetails({ interpreter, setInterpreter, search }: { i
               5
             </Grid>
             <Grid>
-              <BookingButton onClick={() => setInterpreter(interpreter)}>Book</BookingButton>
+              <BookingButton
+                conflicts={interpreter.conflicts}
+                onClick={() => setInterpreter(interpreter)}
+              >
+                Book
+              </BookingButton>
             </Grid>
           </Grid>
         </Box>
