@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import Alert from '@material-ui/icons/ErrorOutline';
-import { Language, Event } from 'constants/interfaces';
+import { Language, Event, Booking, SearchParams } from 'constants/interfaces';
 
 const StyledBox = withStyles(() => ({
   root: {
@@ -77,9 +77,16 @@ function withLanguageEvent (language: string, field: string, events: Array<Event
   ) : null
 }
 
+function checkInterpreterAvailability (bookings: Booking[], dates: SearchParams['dates']) {
+  console.dir(bookings)
+  console.dir(dates)
+  return true
+}
+
 export {
   comments,
   fullName,
   withEvent,
   withLanguageEvent,
+  checkInterpreterAvailability,
 }
