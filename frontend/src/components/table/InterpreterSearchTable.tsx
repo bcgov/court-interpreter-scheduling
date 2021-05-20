@@ -27,12 +27,10 @@ import SearchContext from 'contexts/SearchContext';
 export default function SearchTable({
   data,
   disabled,
-  language,
   handleCopyEmails,
 }: {
   data: Interpreter[];
   disabled: boolean;
-  language?: string;
   handleCopyEmails?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const { search } = useContext(SearchContext);
@@ -41,6 +39,28 @@ export default function SearchTable({
 
   // Remove "non-active" interpreters
   data = data.filter((lang) => lang.contractExtension || false);
+
+  if (search.language) {
+    data = levelSort(data, search.language)
+  }
+  
+  if (search.dates.length) {
+    data = data.map((interpreter) => {
+      const conflicts = checkInterpreterAvailability(interpreter.bookings, search.dates)
+      return ({
+        ...interpreter,
+        conflicts,
+      })
+    })
+    .sort(
+      (a, b) => {
+        if (a.conflicts.length > 0 && b.conflicts.length > 0) return 0
+        if (a.conflicts.length > 0) return 1
+        if (b.conflicts.length > 0) return -1
+        return 0
+      }
+    )
+  }
 
   // check if distance exists
   const distanceColumn = !!data.find(
@@ -68,8 +88,8 @@ export default function SearchTable({
         row.languages.map(fixLanguageName).map((l: Language) => (
           <div
             className={
-              language &&
-              l.languageName.toUpperCase().includes(language?.toUpperCase())
+              search.language &&
+              l.languageName.toUpperCase().includes(search.language?.toUpperCase())
                 ? 'bold'
                 : ''
             }
@@ -77,8 +97,8 @@ export default function SearchTable({
             {l.languageName}{withLanguageEvent(l.languageName, 'name', row.events)} {l.level}{withLanguageEvent(l.languageName, 'level', row.events)}
           </div>
         )),
-      customSort: language
-        ? languageArraySort(language, 'level')
+      customSort: search.language
+        ? languageArraySort(search.language, 'level')
         : arrayFieldSort('languages', 0, 'languageName'),
     },
     {
@@ -147,13 +167,12 @@ export default function SearchTable({
     },
     ...distanceColumn,
     {
-      // TODO update UI if interpreter is busy
       render: (row: any) => (
         <div className='intSearchButton'>
           {moment(row.createdAt).isAfter(moment().subtract(30, 'days')) ? <Tag data={{ createdAt: row.createdAt }} className='mr-2 intSearchTag' /> : null}
           <BookingButton
             disabled={disabled}
-            available={checkInterpreterAvailability(row.bookings, search.dates)}
+            conflicts={row.conflicts}
             onClick={() => setInterpreter(row)}
           />
         </div>
@@ -167,7 +186,7 @@ export default function SearchTable({
       {!disabled && <ViewToggle view={view} setView={setView} />}
       {view === 'list' ? (
         <BaseTable
-          data={language ? levelSort(data, language) : data}
+          data={data}
           columns={columns}
           overrides={{
             detailPanel: (rowData: any) => (
