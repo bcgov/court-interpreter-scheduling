@@ -217,8 +217,8 @@ export class BookingService {
     setCell({ row: 9, column: 'R', value: String(intpLang.level) });
 
     // G74 finance
-    if(intpLang) {
-      setCell({ row: 74, column: 'G', value:  String(levelToMoney[intpLang.level]) });
+    if (intpLang) {
+      setCell({ row: 74, column: 'G', value: String(levelToMoney[intpLang.level]) });
     }
 
     // B11 address + city + province + postcode
@@ -255,11 +255,12 @@ export class BookingService {
     setCell({ row: 15, column: 'L', value: booking.interpretFor });
     setCell({ row: 17, column: 'L', value: booking.requestedBy });
 
-    // G83 distance km
-    console.log(distance)
+    // J83 distance km, G83 rate
+    console.info('distance: ', distance);
     if (distance) {
-      setCell({ row: 83, column: 'G', value: distance.distance });
+      setCell({ row: 83, column: 'J', value: distance.distance });
     }
+    setCell({ row: 83, column: 'G', value: 0.55 });
 
     // booking dates
     booking.dates.forEach((date, idx) => {
