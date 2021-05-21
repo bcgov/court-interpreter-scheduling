@@ -213,7 +213,7 @@ export const sortBookingDates = (a: BookingDateEntity, b: BookingDateEntity) => 
 
 export const levelToMoney = {
   [Level.one]: 63.16,
-  [Level.two]: 55.8,
+  [Level.two]: 55.80,
   [Level.three]: 37.94,
   [Level.four]: 37.94,
 };
