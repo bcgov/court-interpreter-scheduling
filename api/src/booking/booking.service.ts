@@ -256,7 +256,7 @@ export class BookingService {
     setCell({ row: 17, column: 'L', value: booking.requestedBy });
 
     // J83 distance km, G83 rate
-    console.log(distance);
+    console.info('distance: ', distance);
     if (distance) {
       setCell({ row: 83, column: 'J', value: distance.distance });
     }
