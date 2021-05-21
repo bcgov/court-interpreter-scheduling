@@ -11,6 +11,8 @@ export default function useError({
 }) {
   const { updateErrorContext } = useContext(ErrorContext);
   useEffect(() => {
+    if(!error) return;
+    
     let message = error?.message || 'An unknown error occurred.';
     // Decode error response
     if (error?.response && error?.response.data) {
