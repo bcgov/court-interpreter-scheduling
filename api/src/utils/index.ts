@@ -149,7 +149,7 @@ export const setCellHelper = (workSheet: ExcelJS.Worksheet) => ({
 }: {
   row: number;
   column: string;
-  value: string;
+  value: string | number;
   alignment?: ExcelJS.Alignment['horizontal'];
 }) => {
   const Row = workSheet.getRow(row);
@@ -195,10 +195,12 @@ export const parseDistanceFromGoogleApi = (data: GoogleDistance) => {
  * @param entity
  * @param dto
  */
-export const isSameBookingDate = (entity: BookingDateEntity, dto: BookingDateDto) =>   
-  isSameDay(new Date(entity.date), new Date(dto.date)) && entity.period === dto.period && entity.arrivalTime === dto.arrivalTime;
+export const isSameBookingDate = (entity: BookingDateEntity, dto: BookingDateDto) =>
+  isSameDay(new Date(entity.date), new Date(dto.date)) &&
+  entity.period === dto.period &&
+  entity.arrivalTime === dto.arrivalTime;
 
-  /**
+/**
  * sort array of booking dates by date
  * @param BookingDate[]
  * @param BookingDate[]
@@ -206,13 +208,12 @@ export const isSameBookingDate = (entity: BookingDateEntity, dto: BookingDateDto
 export const sortBookingDates = (a: BookingDateEntity, b: BookingDateEntity) => {
   console.dir(getUnixTime(a.date));
   console.dir(getUnixTime(b.date));
-  return getUnixTime(a.date) === getUnixTime(b.date) ? 0 : getUnixTime(a.date) > getUnixTime(b.date) ? 1 : -1
-}
+  return getUnixTime(a.date) === getUnixTime(b.date) ? 0 : getUnixTime(a.date) > getUnixTime(b.date) ? 1 : -1;
+};
 
 export const levelToMoney = {
   [Level.one]: 63.16,
-  [Level.two]: 55.80,
+  [Level.two]: 55.8,
   [Level.three]: 37.94,
   [Level.four]: 37.94,
-}
-
+};
