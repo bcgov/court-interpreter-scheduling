@@ -62,7 +62,7 @@ jobs:
         run: |
           if [ "$BRANCH" != "prod" ]
           then
-            HOST_PREFIX=$BRANCH-
+            export HOST_PREFIX=$BRANCH-
           fi
           echo "HOST_PREFIX=$HOST_PREFIX"
           make oc-build-proxied-app
