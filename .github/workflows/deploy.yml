@@ -60,6 +60,11 @@ jobs:
       - name: Build proxied APP/Front-end Images
         working-directory: "./devops"
         run: |
+          if [$BRANCH != 'prod']
+          then
+              export HOST_PREFIX=$BRANCH-
+          fi
+          echo "HOST_PREFIX is $HOST_PREFIX"
           make oc-build-proxied-app
 
   # Deploy API/App images in Dev
