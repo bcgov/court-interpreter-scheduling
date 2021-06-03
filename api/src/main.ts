@@ -24,7 +24,6 @@ async function bootstrap() {
       origin: "https://dev.justice.gov.bc.ca https://test.justice.gov.bc.ca https://justice.gov.bc.ca http://localhost:3000"
     });
   }
-  
   app.use(bodyParser.json({ limit: '50mb' }));
 
   documentation(app);
