@@ -272,8 +272,8 @@ export class BookingService {
     console.info('distance: ', distance);
     if (distance && Number(distance?.distance) > 32) {
       setCell({ row: 83, column: 'J', value: distance.distance });
+      setCell({ row: 83, column: 'G', value: 0.55 });
     }
-    setCell({ row: 83, column: 'G', value: 0.55 });
 
     // booking dates
     booking.dates
