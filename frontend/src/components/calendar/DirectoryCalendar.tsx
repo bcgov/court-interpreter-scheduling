@@ -36,10 +36,90 @@ const FlexBox = withStyles({
   },
 })(Box);
 
-export default function Calendar({
-  interpreters,
-  setInterpreter,
-}: CalendarProps) {
+SearchContext.displayName = 'SearchContext';
+
+const CalendarList = ({ search, interpreters, setInterpreter }: any) => {
+  return (
+    <>
+      {interpreters.map((i: any) => {
+        const langs = search.language
+          ? i?.languages.filter(
+              (l: Language) => l.languageName === search.language
+            )
+          : i?.languages;
+        return (
+          <Box mb={1} mt={1} key={i?.id}>
+            <Grid container>
+              <OutlinedGridItem item xs={3}>
+                <Box mb={1}>
+                  <Typography variant="subtitle1">
+                    {i.firstName} {i.lastName}
+                  </Typography>
+                </Box>
+                <Grid container>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">Level:</Typography>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Grid container justify="flex-start" direction="column">
+                      {langs.map((l: Language) => (
+                        <Grid
+                          item
+                          xs={12}
+                          key={l.languageName}
+                        >{`Lv ${l?.level} - ${l?.languageName}`}</Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+
+                  {(i?.distance || i?.distance === 0) && (
+                    <>
+                      <Grid item xs={6}>
+                        <Typography variant="subtitle1">Distance:</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        {`${i.distance} km`}
+                      </Grid>
+                    </>
+                  )}
+                </Grid>
+                <FlexBox mt={1}>
+                  <BookingButton
+                    conflicts={i.conflicts}
+                    onClick={() => setInterpreter(i)}
+                  >
+                    Book
+                  </BookingButton>
+                  <Box px={1}>
+                    <MoreDetails
+                      search={search}
+                      interpreter={i}
+                      setInterpreter={setInterpreter}
+                    />
+                  </Box>
+                </FlexBox>
+              </OutlinedGridItem>
+              <OutlinedGridItem item xs={3}>
+                <Month start={0} bookings={i?.bookings} />
+              </OutlinedGridItem>
+              <OutlinedGridItem item xs={3}>
+                <Month start={1} bookings={i?.bookings} />
+              </OutlinedGridItem>
+              <OutlinedGridItem item xs={3}>
+                <Month start={2} bookings={i?.bookings} />
+              </OutlinedGridItem>
+            </Grid>
+          </Box>
+        );
+      })}
+    </>
+  );
+};
+
+const MemoCalendarList = React.memo(CalendarList);
+
+function Calendar({ interpreters, setInterpreter }: CalendarProps) {
   return (
     <SearchContext.Consumer>
       {({ search }) => (
@@ -66,81 +146,15 @@ export default function Calendar({
               </Typography>
             </Grid>
           </Grid>
-          {interpreters.map((i) => {
-            const langs = search.language
-              ? i?.languages.filter(
-                  (l: Language) => l.languageName === search.language
-                )
-              : i?.languages;
-            return (
-              <Box mb={1} mt={1}>
-                <Grid container>
-                  <OutlinedGridItem item xs={3}>
-                    <Box mb={1}>
-                      <Typography variant="subtitle1">
-                        {i.firstName} {i.lastName}
-                      </Typography>
-                    </Box>
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1">Level:</Typography>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Grid container justify="flex-start" direction="column">
-                          {langs.map((l: Language) => (
-                            <Grid
-                              item
-                              xs={12}
-                            >{`Lv ${l?.level} - ${l?.languageName}`}</Grid>
-                          ))}
-                        </Grid>
-                      </Grid>
-
-                      {(i?.distance || i?.distance === 0) && (
-                        <>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle1">
-                              Distance:
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            {`${i.distance} km`}
-                          </Grid>
-                        </>
-                      )}
-                    </Grid>
-                    <FlexBox mt={1}>
-                      <BookingButton
-                        conflicts={i.conflicts}
-                        onClick={() => setInterpreter(i)}
-                      >
-                        Book
-                      </BookingButton>
-                      <Box px={1}>
-                        <MoreDetails
-                          search={search}
-                          interpreter={i}
-                          setInterpreter={setInterpreter}
-                        />
-                      </Box>
-                    </FlexBox>
-                  </OutlinedGridItem>
-                  <OutlinedGridItem item xs={3}>
-                    <Month start={0} bookings={i?.bookings} />
-                  </OutlinedGridItem>
-                  <OutlinedGridItem item xs={3}>
-                    <Month start={1} bookings={i?.bookings} />
-                  </OutlinedGridItem>
-                  <OutlinedGridItem item xs={3}>
-                    <Month start={2} bookings={i?.bookings} />
-                  </OutlinedGridItem>
-                </Grid>
-              </Box>
-            );
-          })}
+          <MemoCalendarList
+            search={search}
+            interpreters={interpreters}
+            setInterpreter={setInterpreter}
+          />
         </Box>
       )}
     </SearchContext.Consumer>
   );
 }
+
+export default React.memo(Calendar);

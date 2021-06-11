@@ -230,10 +230,16 @@ export class BookingService {
     // U11 Email
     setCell({ row: 11, column: 'U', value: interpreter.email });
 
-    // A15, B21 Date of Export
+    // AI5,F112, B21 Date of Export
     setCell({
       row: 5,
       column: 'AI',
+      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
+      alignment: 'center',
+    });
+    setCell({
+      row: 112,
+      column: 'F',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
       alignment: 'center',
     });
@@ -247,6 +253,11 @@ export class BookingService {
 
     // K79 GST
     setCell({ row: 79, column: 'K', value: interpreter.gst });
+
+    // S79 if has GST, add rate 0.05
+    if (interpreter.gst) {
+      setCell({ row: 79, column: 'S', value: 0.05 });
+    }
 
     // L19 Method Of Appearance
     setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
