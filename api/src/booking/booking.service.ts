@@ -230,10 +230,16 @@ export class BookingService {
     // U11 Email
     setCell({ row: 11, column: 'U', value: interpreter.email });
 
-    // A15, B21 Date of Export
+    // AI5,F112, B21 Date of Export
     setCell({
       row: 5,
       column: 'AI',
+      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
+      alignment: 'center',
+    });
+    setCell({
+      row: 112,
+      column: 'F',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
       alignment: 'center',
     });
@@ -248,6 +254,13 @@ export class BookingService {
     // K79 GST
     setCell({ row: 79, column: 'K', value: interpreter.gst });
 
+    // S79 if has GST, add rate 0.05
+    if (interpreter.gst) {
+      setCell({ row: 79, column: 'S', value: 0.05 });
+    } else {
+      setCell({ row: 79, column: 'S', value: 0 });
+    }
+
     // L19 Method Of Appearance
     setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
 
@@ -257,38 +270,40 @@ export class BookingService {
 
     // J83 distance km, G83 rate
     console.info('distance: ', distance);
-    if (distance) {
+    if (distance && Number(distance?.distance) > 32) {
       setCell({ row: 83, column: 'J', value: distance.distance });
+      setCell({ row: 83, column: 'G', value: 0.55 });
     }
-    setCell({ row: 83, column: 'G', value: 0.55 });
 
     // booking dates
-    booking.dates.forEach((date, idx) => {
-      // as there are only max 9 rows in adm322
-      if (idx < 9) {
-        const row = idx * 3 + 28;
-        // B28 date
-        setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
+    booking.dates
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .forEach((date, idx) => {
+        // as there are only max 9 rows in adm322
+        if (idx < 9) {
+          const row = idx * 3 + 28;
+          // B28 date
+          setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
 
-        // D28 Court File Number
-        setCell({ row, column: 'D', value: booking.file });
+          // D28 Court File Number
+          setCell({ row, column: 'D', value: booking.file });
 
-        // H28 Case Number
-        setCell({ row, column: 'H', value: booking.caseName, alignment: 'center' });
+          // H28 Case Number
+          setCell({ row, column: 'H', value: booking.caseName, alignment: 'center' });
 
-        // M28 Language
-        setCell({ row, column: 'M', value: booking.language.name });
+          // M28 Language
+          setCell({ row, column: 'M', value: booking.language.name });
 
-        // Q28 Reason
-        setCell({ row, column: 'Q', value: booking.reason });
+          // Q28 Reason
+          setCell({ row, column: 'Q', value: booking.reason });
 
-        // W28 Cour Room
-        setCell({ row, column: 'W', value: booking.room });
+          // W28 Cour Room
+          setCell({ row, column: 'W', value: booking.room });
 
-        // H29 Federal prosecuters name
-        setCell({ row: 3 * idx + 29, column: 'H', value: booking.prosecutor });
-      }
-    });
+          // H29 Federal prosecuters name
+          setCell({ row: 3 * idx + 29, column: 'H', value: booking.prosecutor });
+        }
+      });
 
     return workbook;
   }
