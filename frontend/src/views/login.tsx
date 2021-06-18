@@ -17,7 +17,7 @@ const Login = () => {
         <Grid container>
           <Grid item xs={6}>
             <div className='login-form'>
-              <ButtonPrimary onClick={() => keycloak?.login({ redirectUri: window.location.origin })}>
+              <ButtonPrimary onClick={() => keycloak?.login({ redirectUri: `${window.location.origin}${process.env.PUBLIC_URL}`})}>
                 Log In
               </ButtonPrimary>
             </div>

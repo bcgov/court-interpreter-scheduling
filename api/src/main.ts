@@ -14,7 +14,20 @@ import { LocationFetchScheduleService } from './location/location-fetch-schedule
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1');
-  app.enableCors();
+
+  if (isProduction) {
+    app.enableCors({
+      origin: ["https://justice.gov.bc.ca"]
+    });
+  } else {
+    app.enableCors({
+      origin: [
+        "https://dev.justice.gov.bc.ca", 
+        "https://test.justice.gov.bc.ca",
+        "https://justice.gov.bc.ca",
+        "http://localhost:3000"]
+    });
+  }
   app.use(bodyParser.json({ limit: '50mb' }));
 
   documentation(app);

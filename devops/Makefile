@@ -164,7 +164,7 @@ build-api:
 build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
+	@echo "+\n++ BUILIDING $(APP) with tag: $(BUILD_TAG)\n+"
 		@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
 		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
 		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
@@ -178,12 +178,12 @@ build-app:
 build-proxied-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
+	@echo "+\n++ BUILIDING $(APP_PROXIED) with tag: $(BUILD_TAG)\n+"
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
 		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
 		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
-		-p ARG_KEY_3=PUBLIC_URL -p ARG_VAL_3=https://$(DEPLOYMENT_ENV).justice.gov.bc.ca/interpreter-scheduling \
-		-p ARG_KEY_4=REACT_APP_API_HOST -p ARG_VAL_4=https://$(DEPLOYMENT_ENV).justice.gov.bc.ca/interpreter-scheduling/api/v1 \
+		-p ARG_KEY_3=PUBLIC_URL -p ARG_VAL_3=/interpreter-scheduling \
+		-p ARG_KEY_4=REACT_APP_API_HOST -p ARG_VAL_4=https://$(APP_HOST)/api/v1 \
 		-p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) \
 		-p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" \
 		-p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" \
@@ -253,7 +253,7 @@ deploy-proxied-app:
 	test -n "$(NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
-	@echo "+\n++ Deploying proxied APP with tag: $(BUILD_TAG)\n+"
+	@echo "+\n++ Deploying proxied APP with tag: $(BUILD_TAG) to proxied-$(APP_HOST) \n+"
 	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
 		-p NAME=$(APP_PROXIED) \
 		-p HOST_NAME=proxied-$(APP_HOST) \

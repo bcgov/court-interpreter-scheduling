@@ -53,7 +53,7 @@ const Routes = () => {
       }
       initOptions={{ checkLoginIframe: false }}
     >
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Suspense
           fallback={
             <Box p={2}>
