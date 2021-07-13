@@ -79,7 +79,9 @@ export default function BookingsTable({
             title: 'Status',
             customSort: fieldSort('status'),
           },
-          { field: 'comment', title: 'Comment', customSort: fieldSort('comment') },
+          { field: 'comment', title: 'Comment', customSort: fieldSort('comment'), 
+            cellStyle: { textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '300px' },
+          },
           {
             render: (row: any) => (
               <>
