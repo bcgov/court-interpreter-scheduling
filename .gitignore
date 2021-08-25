@@ -7,3 +7,4 @@ dist/
 */cypress/screenshots
 .DS_Store
 **/.DS_Store
+/*.env.*
