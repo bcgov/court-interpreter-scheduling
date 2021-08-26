@@ -61,6 +61,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
         params: bookingSearch,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response, refetch])
 
   const editInterpreter = () => {

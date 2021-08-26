@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 
 import { Grid, Box } from '@material-ui/core';
@@ -23,7 +23,7 @@ import {
   withLanguageEvent,
 } from 'util/tableHelpers';
 import { fixLanguageName } from 'constants/languages';
-import { useAxiosFileGet, axiosGetter } from 'hooks/axios';
+import { axiosGetter } from 'hooks/axios';
 import { useAlert } from 'hooks/useAlert';
 
 export default function DirectoryTable({
@@ -73,7 +73,7 @@ export default function DirectoryTable({
                     color="primary"
                     style={{ marginLeft: '1rem' }}
                   >
-                    <img src={CopyIcon} />
+                    <img src={CopyIcon} alt="" />
                   </StyledIconButton>
                 </StyledTooltip>
               </>

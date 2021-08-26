@@ -1,7 +1,9 @@
 node_modules/
 .env
+.env.*
 dist/
 .vscode/
+.idea/
 */cypress/integration/examples
 */cypress/videos
 */cypress/screenshots
