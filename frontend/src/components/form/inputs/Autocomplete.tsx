@@ -21,6 +21,7 @@ export default function AutocompleteInput({
         ? helpers.setValue(transform(initialValue))
         : helpers.setValue(initialValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValue]);
   return (
     <Autocomplete

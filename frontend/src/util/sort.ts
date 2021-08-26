@@ -1,5 +1,5 @@
-import { Interpreter, Language, Booking, BookingDate } from 'constants/interfaces'
-import { format, getUnixTime } from 'date-fns';
+import { Interpreter, Language } from 'constants/interfaces'
+import { getUnixTime } from 'date-fns';
 
 const fieldSort = (field: string) =>
   (a: any, b: any): number =>
@@ -7,7 +7,7 @@ const fieldSort = (field: string) =>
       ? 0
       : a[field] > b[field] ? 1 : -1
 
-const objectFieldSort = (field: string, key: string) => 
+const objectFieldSort = (field: string, key: string) =>
   (a: any, b: any): number =>
     a[field][key] === b[field][key]
       ? 0
