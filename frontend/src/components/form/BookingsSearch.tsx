@@ -78,9 +78,11 @@ export default function Search({
         onSubmit={async (values) => {
             const data = {
               ...values,
-              dates: values?.dates?.startDate ? [values.dates] : [],
+              dates: values?.dates?.startDate ? [values.dates] : []
             };
+            data.isStartFromToday = data.dates.length == 0 ? true : data.isStartFromToday;
             setSearchContext(data);
+            console.log(`calling /booking/search with payload ${JSON.stringify(data)}`)
             getSearchResults({
               url: '/booking/search',
               method: 'POST',

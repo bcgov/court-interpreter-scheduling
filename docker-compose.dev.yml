@@ -10,25 +10,25 @@ services:
       - .env.dev
     ports:
       - "4000:4000"
-    environment:
-      - JWT_SECRET=123_JWT_SECRET!
-      - NODE_ENV=development
-      - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - POSTGRESQL_DATABASE=nest_api_dev
-      - POSTGRESQL_USER=court_nestapi
-      - POSTGRESQL_PASSWORD=court_nest123
-      - DB_TEST_DATABASE=nest_api_test
-      - DEPLOY_ENV=node-api-dev
-      - MERGE_BRANCH=dev
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - KEYCLOAK_CLIENT=${KEYCLOAK_CLIENT}
-      - KEYCLOAK_FE_CLIENT=${KEYCLOAK_FE_CLIENT}
-      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
-      - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    # environment:
+    #   - JWT_SECRET=123_JWT_SECRET!
+    #   - NODE_ENV=development
+    #   - DB_CONNECTION=pgsql
+      # - DB_HOST=postgres
+      # - DB_PORT=5432
+    #   - POSTGRESQL_DATABASE=nest_api_dev
+    #   - POSTGRESQL_USER=court_nestapi
+    #   - POSTGRESQL_PASSWORD=court_nest123
+    #   - DB_TEST_DATABASE=nest_api_test
+    #   - DEPLOY_ENV=node-api-dev
+    #   - MERGE_BRANCH=dev
+    #   - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+    #   - KEYCLOAK_CLIENT=${KEYCLOAK_CLIENT}
+    #   - KEYCLOAK_FE_CLIENT=${KEYCLOAK_FE_CLIENT}
+    #   - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
+    #   - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
+    #   - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
+    #   - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     expose:
       - "4000"
     volumes:
@@ -47,7 +47,7 @@ services:
     build:
       context: ./.docker/postgres
     env_file: 
-      - .dev.env
+      - .env.dev
     ports:
       - "5435:5432"
     environment:
@@ -62,11 +62,13 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile.dev
-    environment:
-      PUBLIC_URL: /interpreter-scheduling
-      REACT_APP_API_HOST: http://localhost:4000/api/v1
-      REACT_APP_REALM_AUTH_URL: ${KEYCLOAK_AUTH_URL}
-      KC_REALM: ${KEYCLOAK_REALM}
+    env_file: 
+      - .env.dev
+    # environment:
+    #   PUBLIC_URL: /interpreter-scheduling
+    #   REACT_APP_API_HOST: http://localhost:4000/api/v1
+    #   REACT_APP_REALM_AUTH_URL: ${KEYCLOAK_AUTH_URL}
+    #   KC_REALM: ${KEYCLOAK_REALM}
     volumes:
       - ./frontend:/app
       - /app/node_modules
