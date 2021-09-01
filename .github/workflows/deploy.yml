@@ -1,6 +1,6 @@
 # Static Deploy On OpensShift
 # Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev environment.
-name: Static Deploy on OpensShift
+name: Static Deploy on OpenShift
 
 on:
   pull_request:
@@ -184,7 +184,7 @@ jobs:
       BUILD_NAMESPACE: 1a7b16-tools
       BRANCH: ${{ github.base_ref }}
       HOST_PREFIX: test-
-      KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
+      KC_AUTH_URL: https://test.oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: test
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
       MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}

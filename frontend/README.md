@@ -26,6 +26,7 @@ Run the application stack via `docker-compose.dev.yml` but shut down the client 
 
 Run the front end locally outside of Docker by creating a .env file in the frontend folder with the following content:
 
+THIS IS INCORRECT:
 ```
 REACT_APP_REALM_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
 REACT_APP_API_HOST=http://keycloak.local.freshworks.club:4000/api/v1

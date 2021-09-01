@@ -15,7 +15,7 @@ export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), $$BUILD_NS)
 export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
 export DB_NAME := $(or $(DB_NAME), court-interpreter-scheduling)
 export KC_AUTH_URL := $(or $(KC_AUTH_URL), https://oidc.gov.bc.ca/auth/)
-export KC_REALM := $(or $(KC_REALM), joxo7v8f)
+export KC_REALM := $(or $(KC_REALM), tz0e228w)
 
 export DEPLOYMENT_ENV := $(or $(DEPLOYMENT_ENV), dev)
 export DEPLOYMENT_ENV_HIDDEN_FLAG := $(or $(DEPLOYMENT_ENV_HIDDEN_FLAG), prod)
