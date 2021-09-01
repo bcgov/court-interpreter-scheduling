@@ -4,7 +4,7 @@ let kc: Keycloak.KeycloakInstance = Keycloak({
   realm:
     localStorage.getItem('keycloakRealm') ||
     process.env.REACT_APP_KC_REALM ||
-    'joxo7v8f',
+    'tz0e228w',
   url:
     localStorage.getItem('keycloakAuthUrl') ||
     process.env.REACT_APP_REALM_AUTH_URL,
@@ -18,7 +18,7 @@ const keycloak = (authUrl?: string | null) => {
       realm:
         localStorage.getItem('keycloakRealm') ||
         process.env.REACT_APP_KC_REALM ||
-        'joxo7v8f',
+        'tz0e228w',
       url:
         localStorage.getItem('keycloakAuthUrl') ||
         process.env.REACT_APP_REALM_AUTH_URL,
