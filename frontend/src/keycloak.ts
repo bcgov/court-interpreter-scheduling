@@ -8,7 +8,8 @@ let kc: Keycloak.KeycloakInstance = Keycloak({
   url:
     localStorage.getItem('keycloakAuthUrl') ||
     process.env.REACT_APP_REALM_AUTH_URL,
-  clientId: process.env.REACT_APP_KC_CLIENT || 'court-fe',
+  clientId: process.env.KEYCLOAK_FE_CLIENT ||
+    'cis-web',
 });
 
 const keycloak = (authUrl?: string | null) => {
@@ -21,7 +22,8 @@ const keycloak = (authUrl?: string | null) => {
       url:
         localStorage.getItem('keycloakAuthUrl') ||
         process.env.REACT_APP_REALM_AUTH_URL,
-      clientId: process.env.REACT_APP_KC_CLIENT || 'court-fe',
+      clientId: process.env.KEYCLOAK_FE_CLIENT ||
+        'cis-web',
     });
   }
 

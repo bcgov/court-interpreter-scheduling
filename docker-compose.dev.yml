@@ -14,14 +14,19 @@ services:
     #   - JWT_SECRET=123_JWT_SECRET!
     #   - NODE_ENV=development
     #   - DB_CONNECTION=pgsql
-      # - DB_HOST=postgres
-      # - DB_PORT=5432
+    #   - DB_HOST=postgres
+    #   - DB_PORT=5432
     #   - POSTGRESQL_DATABASE=nest_api_dev
     #   - POSTGRESQL_USER=court_nestapi
     #   - POSTGRESQL_PASSWORD=court_nest123
     #   - DB_TEST_DATABASE=nest_api_test
     #   - DEPLOY_ENV=node-api-dev
     #   - MERGE_BRANCH=dev
+    #   - KEYCLOAK_REALM=court
+    #   - KEYCLOAK_CLIENT=court-client
+    #   - KEYCLOAK_FE_CLIENT=court-fe
+    #   - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
+    #   - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
     #   - KEYCLOAK_REALM=${KEYCLOAK_REALM}
     #   - KEYCLOAK_CLIENT=${KEYCLOAK_CLIENT}
     #   - KEYCLOAK_FE_CLIENT=${KEYCLOAK_FE_CLIENT}
@@ -50,12 +55,40 @@ services:
       - .env.dev
     ports:
       - "5435:5432"
+    env_file:
+      - .env.dev
     environment:
       - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
     networks:
       - backend
+
+  # ### KeyCloak ##############################
+  # keycloak:
+  #   image: jboss/keycloak:11.0.2
+  #   environment:
+  #     DB_VENDOR: POSTGRES
+  #     DB_ADDR: postgres
+  #     DB_DATABASE: keycloak
+  #     DB_USER: court_nestapi
+  #     DB_PASSWORD: court_nest123
+  #     KEYCLOAK_USER: admin
+  #     KEYCLOAK_PASSWORD: password
+  #     KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+  #   ports:
+  #     - 8080:8080
+  #   expose:
+  #     - "8080"
+  #   volumes:
+  #     - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
+  #     - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     backend:
+  #       aliases:
+  #         - keycloak.local.freshworks.club
 
   ### Frontend ###############################
   client:
@@ -67,6 +100,8 @@ services:
     # environment:
     #   PUBLIC_URL: /interpreter-scheduling
     #   REACT_APP_API_HOST: http://localhost:4000/api/v1
+    #   REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
+    #   KC_REALM: court
     #   REACT_APP_REALM_AUTH_URL: ${KEYCLOAK_AUTH_URL}
     #   KC_REALM: ${KEYCLOAK_REALM}
     volumes:
@@ -80,6 +115,30 @@ services:
       - backend
     depends_on:
       - api
+
+  ### Cypress ###############################
+  # cypress:
+  #   image: "cypress/included:4.0.2"
+  #   depends_on:
+  #     - client
+  #   environment:
+  #     - CYPRESS_baseUrl=http://client:3000
+  #   working_dir: /e2e
+  #   volumes:
+  #     - ./:/e2e
+  #   networks:
+  #     - backend
+
+  # justice-proxy:
+  #   image: httpd:2.4
+  #   ports:
+  #     - "5000:80"
+  #   volumes:
+  #     - "./.docker/mock-justice-proxy/httpd.conf:/usr/local/apache2/conf/httpd.conf"
+  #   depends_on: 
+  #     - client
+  #   networks:
+  #     - backend
 
 networks:
   backend:
