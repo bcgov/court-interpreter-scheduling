@@ -169,7 +169,7 @@ export default function Search({
 
               <Grid item xs={6} md={3}>
                 <StyledFormControl>
-                  <StyledLabel htmlFor="file">Case Number</StyledLabel>
+                  <StyledLabel htmlFor="file">Court File Number</StyledLabel>
                   <Field name="file">
                     {({ field, form, ...props }: any) => (
                       <StyledTextField
