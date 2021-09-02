@@ -99,7 +99,7 @@ export default function Range() {
   const inputText = search?.dates.length ?
     `${moment(search.dates[0]?.date).format(dateFormat)} to ${moment(search.dates[search.dates.length - 1]?.date).format(dateFormat)}` :
       meta?.value ?
-    `${moment(meta.value[0]?.date).format(dateFormat)} to ${moment(meta.value[meta.value.length - 1]?.date).format(dateFormat)}` :
+    `${moment(meta.value[0]?.date).format(dateFormat)}` :
     `${moment().format(dateFormat)} to ${moment().add(1, 'days').format(dateFormat)}`
 
     return (
