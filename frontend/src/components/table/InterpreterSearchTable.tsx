@@ -43,7 +43,7 @@ export default function SearchTable({
   if (search.language) {
     data = levelSort(data, search.language)
   }
-  
+
   if (search.dates.length) {
     data = data.map((interpreter) => {
       const conflicts = checkInterpreterAvailability(interpreter.bookings, search.dates)
@@ -152,7 +152,7 @@ export default function SearchTable({
               color="primary"
               style={{ marginLeft: '1rem' }}
             >
-              <img src={CopyIcon} />
+              <img src={CopyIcon} alt="" />
             </StyledIconButton>
           </StyledTooltip>
         </>

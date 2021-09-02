@@ -32,12 +32,14 @@ function Picker({ existingDates }: { existingDates: BookingDate[] }) {
 
   useEffect(() => {
     helpers.setValue(selectedDates)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDates])
 
   useEffect(() => {
     if (existingDates) {
       setSelectedDates(existingDates.map(d => new Date(d.date)))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const modifiers = {
@@ -87,7 +89,7 @@ export default function Range() {
   const { values: searchValues, setFieldValue } = useFormikContext()
   const [, meta] = useField('dates')
   const { search, updateSearchContext } = useContext(SearchContext)
-  
+
   useEffect(() => {
     if (search?.dates && search?.dates.length) {
       setFieldValue('dates', search.dates)

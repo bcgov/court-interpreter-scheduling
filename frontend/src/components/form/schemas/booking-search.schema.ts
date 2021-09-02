@@ -8,6 +8,7 @@ const Initial = {
   interpreter: '',
   location: '',
   file: '',
+  isStartFromToday: false,
 }
 
 const Schema = yup.object({
@@ -18,6 +19,7 @@ const Schema = yup.object({
   interpreter: yup.string(),
   location: yup.string(),
   file: yup.string(),
+  isStartFromToday: yup.boolean(),
 })
 
 export { Schema, Initial }

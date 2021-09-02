@@ -42,6 +42,7 @@ export default function BookingsTable({
 }) {
   const [booking, setBooking] = useState();
   const [
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     { data: fileGetData, error, loading },
     downloadExcel,
   ] = useAxiosFileGet({ url: '/booking/export' }, { manual: true });
@@ -79,7 +80,7 @@ export default function BookingsTable({
             title: 'Status',
             customSort: fieldSort('status'),
           },
-          { field: 'comment', title: 'Comment', customSort: fieldSort('comment'), 
+          { field: 'comment', title: 'Comment', customSort: fieldSort('comment'),
             cellStyle: { textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '300px' },
           },
           {
@@ -115,7 +116,7 @@ export default function BookingsTable({
                     }}
                     color="primary"
                   >
-                    <img src={DownloadIcon} />
+                    <img src={DownloadIcon} alt="" />
                   </StyledIconButton>
                 </StyledTooltip>
                 <span> </span>

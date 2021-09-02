@@ -21,7 +21,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { Formik, FormikProps } from 'formik';
-import { StaticCourtLocation } from 'constants/courtLocations';
 
 type BookingModalProps = {
   interpreter?: Interpreter;

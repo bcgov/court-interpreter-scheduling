@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import moment from 'moment';
 
-import { Box, Grid, Button, Icon } from '@material-ui/core';
+import { Box, Grid, Button } from '@material-ui/core';
 
 import {
   StyledFormControl,
@@ -65,6 +65,7 @@ export default function Search({
         setUserLocation(null);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setLocations, setUserLocation]);
 
   const { addAlert } = useAlert();
@@ -78,8 +79,9 @@ export default function Search({
         onSubmit={async (values) => {
             const data = {
               ...values,
-              dates: values?.dates?.startDate ? [values.dates] : [],
+              dates: values?.dates?.startDate ? [values.dates] : []
             };
+            data.isStartFromToday = data.dates.length === 0 ? true : data.isStartFromToday;
             setSearchContext(data);
             getSearchResults({
               url: '/booking/search',

@@ -166,9 +166,9 @@ parameters:
     from: "[a-zA-Z0-9]{36}"
     generate: expression
   - name: KEYCLOAK_REALM
-    value: joxo7v8f
+    value: tz0e228w
   - name: KEYCLOAK_CLIENT
-    value: court-client
+    value: cis-api
   - name: KEYCLOAK_URL
     required: true
   - name: DB_NAME
@@ -183,4 +183,3 @@ parameters:
     required: true
   - name: GOOGLE_API_KEY
     required: true
-
