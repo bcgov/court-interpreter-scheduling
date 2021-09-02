@@ -4,7 +4,7 @@ import { SuccessResponse } from 'src/common/interface/response/success.interface
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
-import { addMonths, sub } from 'date-fns';
+import { addMonths, sub, parse } from 'date-fns';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import * as ExcelJS from 'exceljs';
 import * as path from 'path';
@@ -188,10 +188,11 @@ export class BookingService {
       interpreter.firstName.substring(0, 1) +
       format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
+    const invoiceDate = format(firstBookingDate.date, 'yyyy-MM-dd', { timeZone: TIME_ZONE });
     setCell({ row: 5, column: 'W', value: invoice });
     setCell({ row: 68, column: 'W', value: invoice });
     setCell({ row: 113, column: 'F', value: invoice });
-
+    setCell({ row: 69, column: 'AI', value: invoiceDate });
     // R4, R68 registry, AF111 Site#, B15 Scheduling Info, Registry Location
     if (location) {
       const { shortDescription } = location;
@@ -235,13 +236,13 @@ export class BookingService {
       row: 5,
       column: 'AI',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      alignment: 'center',
+      // alignment: 'center',
     });
     setCell({
       row: 112,
       column: 'F',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      alignment: 'center',
+      // alignment: 'center',
     });
     setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
 
@@ -269,7 +270,6 @@ export class BookingService {
     setCell({ row: 17, column: 'L', value: booking.requestedBy });
 
     // J83 distance km, G83 rate
-    console.info('distance: ', distance);
     if (distance && Number(distance?.distance) > 32) {
       setCell({ row: 83, column: 'J', value: distance.distance });
       setCell({ row: 83, column: 'G', value: 0.55 });
@@ -297,10 +297,13 @@ export class BookingService {
           // Q28 Reason
           setCell({ row, column: 'Q', value: booking.reason });
 
-          // W28 Cour Room
+          // W28 Court Room
           setCell({ row, column: 'W', value: booking.room });
 
-          // H29 Federal prosecuters name
+          // AC28 Start Time
+          setCell({ row, column: 'AC', value: format(parse(date.arrivalTime, 'HH:mm:ss', new Date()), 'H:mm') });
+
+          // H29 Federal prosecutors name
           setCell({ row: 3 * idx + 29, column: 'H', value: booking.prosecutor });
         }
       });
