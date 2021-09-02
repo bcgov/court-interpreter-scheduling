@@ -236,13 +236,13 @@ export class BookingService {
       row: 5,
       column: 'AI',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      alignment: 'center',
+      // alignment: 'center',
     });
     setCell({
       row: 112,
       column: 'F',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      alignment: 'center',
+      // alignment: 'center',
     });
     setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
 
