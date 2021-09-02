@@ -188,10 +188,11 @@ export class BookingService {
       interpreter.firstName.substring(0, 1) +
       format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
+    const invoiceDate = format(firstBookingDate.date, 'yyyy-MM-dd', { timeZone: TIME_ZONE });
     setCell({ row: 5, column: 'W', value: invoice });
     setCell({ row: 68, column: 'W', value: invoice });
     setCell({ row: 113, column: 'F', value: invoice });
-
+    setCell({ row: 69, column: 'AI', value: invoiceDate });
     // R4, R68 registry, AF111 Site#, B15 Scheduling Info, Registry Location
     if (location) {
       const { shortDescription } = location;
