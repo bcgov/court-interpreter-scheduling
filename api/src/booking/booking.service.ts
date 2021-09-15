@@ -212,8 +212,7 @@ export class BookingService {
     setCell({
       row: 5,
       column: 'AI',
-      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      // alignment: 'center',
+      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE })
     });
 
   /*
