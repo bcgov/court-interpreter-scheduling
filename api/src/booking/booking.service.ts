@@ -170,18 +170,26 @@ export class BookingService {
   }
 
   async writeToWorkbook(booking: BookingEntity, distance: DistanceEntity): Promise<ExcelJS.Workbook> {
+    const section3StartRowNumber = 28;
+    const section3BlankRowSetsInTemplate = 100;
+    const bookingDateRowSets = booking.dates.length;
+    const totalSection3RowsToHide = section3BlankRowSetsInTemplate - bookingDateRowSets;
+    const section3StartRowNumberToHide = section3StartRowNumber + (bookingDateRowSets * 3);
+    const section3EndRowNumberToHide = section3StartRowNumberToHide + (totalSection3RowsToHide * 3);
+
     const workbook = new ExcelJS.Workbook();
     const { interpreter, location } = booking;
     const exportDate = new Date();
 
-    // read adm322 template
+    // read adm322 template, section 3 has ${section3BlankRowSetsInTemplate} templated rows that are hidden
+    //  if unused
     await workbook.xlsx.readFile(path.join(__dirname, '..', '..', '/assets/adm322.xlsx'));
 
     // get the worksheet
     const worksheet = workbook.getWorksheet(1);
     const setCell = setCellHelper(worksheet); // taking advantage of "closure"
 
-    // W5, W68, F113 invoice, [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
+    // Invoice number format: [first three letters of last name] + [first letter of first name] + DD + MMM (ie “APR” “MAR” “MAY”) + YY
     const firstBookingDate = booking.dates[0];
     const invoice = (
       interpreter.lastName.substring(0, 3) +
@@ -189,124 +197,192 @@ export class BookingService {
       format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
     const invoiceDate = format(firstBookingDate.date, 'yyyy-MM-dd', { timeZone: TIME_ZONE });
-    setCell({ row: 5, column: 'W', value: invoice });
-    setCell({ row: 68, column: 'W', value: invoice });
-    setCell({ row: 113, column: 'F', value: invoice });
-    setCell({ row: 69, column: 'AI', value: invoiceDate });
-    // R4, R68 registry, AF111 Site#, B15 Scheduling Info, Registry Location
+
+  /*
+  Section 1 - Header Section, Control/Invoice No
+    Rows 2 - 5, Columns R-AQ
+   */
+    // if the location is known then set the Registry #
     if (location) {
-      const { shortDescription } = location;
-      setCell({ row: 4, column: 'R', value: shortDescription });
-      setCell({ row: 68, column: 'R', value: shortDescription });
-      setCell({ row: 111, column: 'AF', value: shortDescription });
-      setCell({ row: 15, column: 'B', value: `${location?.name?.toUpperCase()} ${location.shortDescription}` });
+      setCell({ row: 4, column: 'R', value: location.shortDescription });
     }
-
-    // V111 supplier#
-    setCell({ row: 111, column: 'V', value: interpreter.supplier });
-
-    // B9 Last name + First Name
-    setCell({
-      row: 9,
-      column: 'B',
-      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase()),
-    });
-
-    // R9 Language Level
-    const bookLang = booking.language;
-    const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
-    setCell({ row: 9, column: 'R', value: String(intpLang.level) });
-
-    // G74 finance
-    if (intpLang) {
-      setCell({ row: 74, column: 'G', value: String(levelToMoney[intpLang.level]) });
-    }
-
-    // B11 address + city + province + postcode
-    setCell({ row: 11, column: 'B', value: mapAndJoin([interpreter.address, interpreter.city, interpreter.province]) });
-
-    // U9 Phone
-    setCell({ row: 9, column: 'U', value: interpreter.phone });
-
-    // U11 Email
-    setCell({ row: 11, column: 'U', value: interpreter.email });
-
-    // AI5,F112, B21 Date of Export
+    // Invoice #
+    setCell({ row: 5, column: 'W', value: invoice });
+    // Invoice Date
     setCell({
       row: 5,
       column: 'AI',
       value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
       // alignment: 'center',
     });
+
+  /*
+  Section 1 - Interpreter Information
+    Rows 7 - 11, Columns B-U
+  */
+    // Last name + First Name
     setCell({
-      row: 112,
-      column: 'F',
-      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }),
-      // alignment: 'center',
+      row: 9,
+      column: 'B',
+      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase()),
     });
+
+    const bookLang = booking.language;
+    const intpLang = interpreter.languages.find(lan => lan.language.name === bookLang.name);
+    // Level
+    setCell({ row: 9, column: 'R', value: String(intpLang.level) });
+    // Phone
+    setCell({ row: 9, column: 'U', value: interpreter.phone });
+    // address + city + province + postcode
+    setCell({ row: 11, column: 'B', value: mapAndJoin([interpreter.address, interpreter.city, interpreter.province]) });
+    // Email
+    setCell({ row: 11, column: 'U', value: interpreter.email });
+
+  /*
+  Section 2 - Scheduling Information
+    Rows 13 - 23, Columns B-U
+  */
+    // Registry Location
+    if (location) {
+      setCell({ row: 15, column: 'B', value: `${location?.name?.toUpperCase()} ${location.shortDescription}` });
+    }
+    // Interpreter For
+    setCell({ row: 15, column: 'L', value: booking.interpretFor });
+    // Requested By
+    setCell({ row: 17, column: 'L', value: booking.requestedBy });
+    // Method Of Appearance
+    setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
+    // Date of Booking
     setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
-
-    // L21 Federal
+    // Federal Matter
     setCell({ row: 21, column: 'L', value: formatYesNo(booking.federal) });
-
-    // B23 Comments
+    // Additional Comments
     setCell({ row: 23, column: 'B', value: booking.comment });
 
-    // K79 GST
-    setCell({ row: 79, column: 'K', value: interpreter.gst });
-
-    // S79 if has GST, add rate 0.05
-    if (interpreter.gst) {
-      setCell({ row: 79, column: 'S', value: 0.05 });
-    } else {
-      setCell({ row: 79, column: 'S', value: 0 });
-    }
-
-    // L19 Method Of Appearance
-    setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
-
-    // L15 interpreterFor, L17 requestedBy
-    setCell({ row: 15, column: 'L', value: booking.interpretFor });
-    setCell({ row: 17, column: 'L', value: booking.requestedBy });
-
-    // J83 distance km, G83 rate
-    if (distance && Number(distance?.distance) > 32) {
-      setCell({ row: 83, column: 'J', value: distance.distance });
-      setCell({ row: 83, column: 'G', value: 0.55 });
-    }
-
-    // booking dates
+  /*
+  Section 3 - Record
+    Rows ${section3StartRowNumber} - ${bookingDateRowSets * 3 (3 rows per booking record)}, Columns B-AQ
+   */
     booking.dates
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .forEach((date, idx) => {
-        // as there are only max 9 rows in adm322
-        if (idx < 9) {
-          const row = idx * 3 + 28;
-          // B28 date
-          setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
+        const row = idx * 3 + section3StartRowNumber;
+        // Date Required
+        setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
+        // Court File Number
+        setCell({ row, column: 'D', value: booking.file });
+        // Case Name
+        setCell({ row, column: 'H', value: booking.caseName, alignment: 'center' });
+        // Language
+        setCell({ row, column: 'M', value: booking.language.name });
+        // Reason
+        setCell({ row, column: 'Q', value: booking.reason });
+        // Court Room
+        setCell({ row, column: 'W', value: booking.room });
+        // Start Time
+        setCell({ row, column: 'AC', value: format(parse(date.arrivalTime, 'HH:mm:ss', new Date()), 'H:mm') });
+        // Federal Prosecutors Name
+        setCell({ row: 3 * idx + section3StartRowNumber + 1, column: 'H', value: booking.prosecutor });
+    });
 
-          // D28 Court File Number
-          setCell({ row, column: 'D', value: booking.file });
+    // we hide the rows in the section 3 template as the only way to keep this report functional and dynamically
+    //  support booking.dates > 9 we just throw lots of rows into the spreadsheet template and hide the unused ones
+    // console.log(`we need to hide ${totalSection3RowsToHide} rows, starting at ${section3StartRowNumberToHide} to ${section3EndRowNumberToHide}`);
+    for (let i = section3StartRowNumberToHide; i < section3EndRowNumberToHide; i++) {
+      const row = worksheet.getRow(i);
+      row.hidden = true;
+    }
 
-          // H28 Case Number
-          setCell({ row, column: 'H', value: booking.caseName, alignment: 'center' });
+  /*
+  Section 4 - Cancellation Information
+    Rows ${section3EndRowNumberToHide + 1} to ${section3EndRowNumberToHide + 1} + 3, Columns B-AQ
+   */
+    // Not pre-populated
 
-          // M28 Language
-          setCell({ row, column: 'M', value: booking.language.name });
+  /*
+  Section 4 - Notes
+    Rows ${section3EndRowNumberToHide + 1 + 3} to ${section3EndRowNumberToHide + 1 + 3} + 4, Columns B-AQ
+   */
+    // Not pre-populated
 
-          // Q28 Reason
-          setCell({ row, column: 'Q', value: booking.reason });
+  /*
+  Section 5 - Control/Invoice No. Header Section
+    Rows ${section3EndRowNumberToHide + 1 + 3} to ${section3EndRowNumberToHide + 1 + 3} + 13, Columns B-AQ
+   */
+    if (location) {
+      // Registry #
+      setCell({ row: section3EndRowNumberToHide + 13, column: 'R', value: location.shortDescription });
+    }
+    // Invoice #
+    setCell({ row: section3EndRowNumberToHide + 13, column: 'W', value: invoice });
+    // Invoice Date
+    setCell({ row: section3EndRowNumberToHide + 14, column: 'AI', value: invoiceDate });
 
-          // W28 Court Room
-          setCell({ row, column: 'W', value: booking.room });
-
-          // AC28 Start Time
-          setCell({ row, column: 'AC', value: format(parse(date.arrivalTime, 'HH:mm:ss', new Date()), 'H:mm') });
-
-          // H29 Federal prosecutors name
-          setCell({ row: 3 * idx + 29, column: 'H', value: booking.prosecutor });
-        }
+  /*
+  Section 5 - Payment Details
+   */
+    // Fees, Court Hours, Rate
+    if (intpLang) {
+      setCell({
+        row: section3EndRowNumberToHide + 19,
+        column: 'G',
+        value: String(levelToMoney[intpLang.level])
       });
+    }
+
+    // GST Number
+    setCell({ row: section3EndRowNumberToHide + 24, column: 'K', value: interpreter.gst });
+
+    // add GST rate 0.05 if GST Number is present, otherwise default GST rate to 0
+    if (interpreter.gst) {
+      setCell({ row: section3EndRowNumberToHide + 24, column: 'S', value: 0.05 });
+    } else {
+      setCell({ row: section3EndRowNumberToHide + 24, column: 'S', value: 0 });
+    }
+
+    // Set the Expenses Travel Kilometres Rate to 0.55 if distance > 32 and set the total distance if available
+    if (distance && Number(distance?.distance) > 32) {
+      // Expenses Travel Kilometres Rate
+      setCell({ row: section3EndRowNumberToHide + 28, column: 'G', value: 0.55 });
+      setCell({
+        row: section3EndRowNumberToHide + 28,
+        column: 'J',
+        value: distance.distance
+      });
+    }
+
+  /*
+  Section 6 - Authorizations
+   */
+    // Not pre-populated
+
+  /*
+  Office Use Only - End of Document
+   */
+    // Supplier Name - Formula
+
+    // Supplier #
+    setCell({
+      row: section3EndRowNumberToHide + 56,
+      column: 'V',
+      value: interpreter.supplier
+    });
+    // Site #
+    if (location) {
+      setCell({
+        row: section3EndRowNumberToHide + 56,
+        column: 'AF',
+        value: location.shortDescription
+      });
+    }
+    // Invoice Date
+    setCell({
+      row: section3EndRowNumberToHide + 57,
+      column: 'F',
+      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE })
+    });
+    // Invoice Number
+    setCell({ row: section3EndRowNumberToHide + 58, column: 'F', value: invoice });
 
     return workbook;
   }
