@@ -25,7 +25,8 @@ jobs:
 
   # Build the API
   build:
-    name: Build API and APP and proxied APP
+    name: Build API and APP 
+    # and proxied APP
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true}}
     env:
@@ -57,15 +58,15 @@ jobs:
         working-directory: "./devops"
         run: |
           make oc-build-app
-      - name: Build proxied APP/Front-end Images
-        working-directory: "./devops"
-        run: |
-          if [ "$BRANCH" != "prod" ]
-          then
-            export HOST_PREFIX=$BRANCH-
-          fi
-          echo "HOST_PREFIX=$HOST_PREFIX"
-          make oc-build-proxied-app
+      # - name: Build proxied APP/Front-end Images
+      #   working-directory: "./devops"
+      #   run: |
+      #     if [ "$BRANCH" != "prod" ]
+      #     then
+      #       export HOST_PREFIX=$BRANCH-
+      #     fi
+      #     echo "HOST_PREFIX=$HOST_PREFIX"
+      #     make oc-build-proxied-app
 
   # Deploy API/App images in Dev
   deployDev:
@@ -117,10 +118,10 @@ jobs:
         working-directory: "./devops/"
         run: |
           make oc-deploy-app
-      - name: Deploy proxied APP
-        working-directory: "./devops/"
-        run: |
-          make oc-deploy-proxied-app
+      # - name: Deploy proxied APP
+      #   working-directory: "./devops/"
+      #   run: |
+      #     make oc-deploy-proxied-app
 
   # Deploy API/App images in prod
   deployProd:
