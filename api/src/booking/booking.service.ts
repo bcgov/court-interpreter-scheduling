@@ -218,11 +218,12 @@ export class BookingService {
   Section 1 - Interpreter Information
     Rows 7 - 11, Columns B-U
   */
+    const lastNameFirstName = mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase())
     // Last name + First Name
     setCell({
       row: 9,
       column: 'B',
-      value: mapAndJoin([interpreter.firstName, interpreter.lastName], ' ', (str: string) => str.toUpperCase()),
+      value: lastNameFirstName
     });
 
     const bookLang = booking.language;
@@ -362,8 +363,12 @@ export class BookingService {
   /*
   Office Use Only - End of Document
    */
-    // Supplier Name - Formula
-
+    // Supplier Name
+    setCell({
+      row: section3EndRowNumberToHide + 56,
+      column: 'F',
+      value: lastNameFirstName
+    });
     // Supplier #
     setCell({
       row: section3EndRowNumberToHide + 56,

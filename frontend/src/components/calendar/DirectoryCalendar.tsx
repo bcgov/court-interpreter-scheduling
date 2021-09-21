@@ -232,17 +232,17 @@ function Calendar({ interpreters, setInterpreter }: CalendarProps) {
             </Grid>
             <Grid item xs={3}>
               <Typography variant="subtitle1">
-                {moment().subtract(1, 'month').format('MMMM YYYY')}
-              </Typography>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography variant="subtitle1">
                 {moment().format('MMMM YYYY')}
               </Typography>
             </Grid>
             <Grid item xs={3}>
               <Typography variant="subtitle1">
                 {moment().add(1, 'month').format('MMMM YYYY')}
+              </Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography variant="subtitle1">
+                {moment().add(2, 'month').format('MMMM YYYY')}
               </Typography>
             </Grid>
           </Grid>
