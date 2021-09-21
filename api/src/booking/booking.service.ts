@@ -5,7 +5,7 @@ import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
 import { Brackets, Repository, WhereExpression } from 'typeorm';
 import { addMonths, sub, parse } from 'date-fns';
-import { format, utcToZonedTime } from 'date-fns-tz';
+import { format, utcToZonedTime, toDate } from 'date-fns-tz';
 import * as ExcelJS from 'exceljs';
 import * as path from 'path';
 
@@ -179,7 +179,7 @@ export class BookingService {
 
     const workbook = new ExcelJS.Workbook();
     const { interpreter, location } = booking;
-    const exportDate = new Date();
+    const invoiceAndExportDate = format(new Date(), 'yyyy-MM-dd', { timeZone: TIME_ZONE });
 
     // read adm322 template, section 3 has ${section3BlankRowSetsInTemplate} templated rows that are hidden
     //  if unused
@@ -196,7 +196,6 @@ export class BookingService {
       interpreter.firstName.substring(0, 1) +
       format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
-    const invoiceDate = format(firstBookingDate.date, 'yyyy-MM-dd', { timeZone: TIME_ZONE });
 
   /*
   Section 1 - Header Section, Control/Invoice No
@@ -212,7 +211,7 @@ export class BookingService {
     setCell({
       row: 5,
       column: 'AI',
-      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE })
+      value: invoiceAndExportDate
     });
 
   /*
@@ -252,7 +251,7 @@ export class BookingService {
     // Method Of Appearance
     setCell({ row: 19, column: 'L', value: booking.methodOfAppearance });
     // Date of Booking
-    setCell({ row: 21, column: 'B', value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
+    setCell({ row: 21, column: 'B', value: invoiceAndExportDate });
     // Federal Matter
     setCell({ row: 21, column: 'L', value: formatYesNo(booking.federal) });
     // Additional Comments
@@ -266,6 +265,11 @@ export class BookingService {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .forEach((date, idx) => {
         const row = idx * 3 + section3StartRowNumber;
+        const bookingDate = toDate(new Date(date.date), {timeZone: TIME_ZONE});
+        const bookingDateStr = parse(`${bookingDate.getFullYear()}-${('0' + (bookingDate.getMonth() + 1)).slice(-2)}-${('0' + bookingDate.getDate()).slice(-2)} ${date.arrivalTime}`,
+          'yyyy-MM-dd HH:mm:ss',
+          new Date(date.date));
+        const bookingTime = format(bookingDateStr, 'h:mm a');
         // Date Required
         setCell({ row, column: 'B', value: format(new Date(date.date), 'yyyy-MM-dd', { timeZone: TIME_ZONE }) });
         // Court File Number
@@ -279,7 +283,7 @@ export class BookingService {
         // Court Room
         setCell({ row, column: 'W', value: booking.room });
         // Start Time
-        setCell({ row, column: 'AC', value: format(parse(date.arrivalTime, 'HH:mm:ss', new Date()), 'H:mm') });
+        setCell({ row, column: 'AC', value: bookingTime });
         // Federal Prosecutors Name
         setCell({ row: 3 * idx + section3StartRowNumber + 1, column: 'H', value: booking.prosecutor });
     });
@@ -315,7 +319,7 @@ export class BookingService {
     // Invoice #
     setCell({ row: section3EndRowNumberToHide + 13, column: 'W', value: invoice });
     // Invoice Date
-    setCell({ row: section3EndRowNumberToHide + 14, column: 'AI', value: invoiceDate });
+    setCell({ row: section3EndRowNumberToHide + 14, column: 'AI', value: invoiceAndExportDate });
 
   /*
   Section 5 - Payment Details
@@ -378,7 +382,7 @@ export class BookingService {
     setCell({
       row: section3EndRowNumberToHide + 57,
       column: 'F',
-      value: format(exportDate, 'yyyy-MM-dd', { timeZone: TIME_ZONE })
+      value: invoiceAndExportDate
     });
     // Invoice Number
     setCell({ row: section3EndRowNumberToHide + 58, column: 'F', value: invoice });
