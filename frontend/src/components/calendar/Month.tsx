@@ -38,7 +38,6 @@ export default function Month ({ start, bookings }: MonthProps) {
   const firstDay = days[0].day()
   let date = 1
   let weeksArray = []
-
   for (let i = 0; i < 6; i++) {
     let week = []
     for (let j = 0; j < 7; j++) {
@@ -54,12 +53,12 @@ export default function Month ({ start, bookings }: MonthProps) {
   return (
     <>
       <WeekHeader container justify='space-between'>
+        <Grid item>S</Grid>
         <Grid item>M</Grid>
         <Grid item>T</Grid>
         <Grid item>W</Grid>
         <Grid item>T</Grid>
         <Grid item>F</Grid>
-        <Grid item>S</Grid>
         <Grid item>S</Grid>
       </WeekHeader>
       {weeksArray.map((w: Array<Moment.Moment | null>) => (
