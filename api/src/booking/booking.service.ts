@@ -213,7 +213,7 @@ export class BookingService {
       column: 'AI',
       value: invoiceAndExportDate
     });
-
+ 
   /*
   Section 1 - Interpreter Information
     Rows 7 - 11, Columns B-U
