@@ -8,11 +8,13 @@ export default function AutocompleteInput({
   options,
   initialValue,
   transform,
+  disableHackFix,
 }: {
   fieldName: string;
   options: string[];
   initialValue?: string;
   transform?: (value: string | null) => any;
+  disableHackFix?: boolean;
 }) {
   const [field, , helpers] = useField(fieldName);
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function AutocompleteInput({
       size="small"
       inputValue={field.value}
       onChange={(event, value) => {
-        if (!value) {
+        if (!value && !disableHackFix) {
           // fix the null error
           helpers.setValue('');
           return;

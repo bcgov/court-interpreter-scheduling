@@ -154,6 +154,7 @@ export default function Search({
                 <StyledFormControl>
                   <StyledLabel htmlFor="active">Active/Inactive</StyledLabel>
                   <AutocompleteInput
+                    disableHackFix={true}
                     fieldName="active"
                     options={['Active', 'Inactive']}
                     initialValue={activeStatusString()}
