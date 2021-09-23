@@ -79,7 +79,7 @@ export default function Header() {
         <WithFlagTab label="Bookings" value="/bookings" />
         <BCTab label="Search Interpreters" value="/create" />
         {keycloak?.hasRealmRole('court-admin') && (
-          <BCTab label="Interpreters" value="/directory" />
+          <BCTab label="Interpreter Directory" value="/directory" />
         )}
       </BCTabs>
     </ContentBox>
