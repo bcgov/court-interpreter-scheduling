@@ -171,7 +171,7 @@ export class BookingService {
 
   async writeToWorkbook(booking: BookingEntity, distance: DistanceEntity): Promise<ExcelJS.Workbook> {
     const section3StartRowNumber = 28;
-    const section3BlankRowSetsInTemplate = 100;
+    const section3BlankRowSetsInTemplate = 200;
     const bookingDateRowSets = booking.dates.length;
     const totalSection3RowsToHide = section3BlankRowSetsInTemplate - bookingDateRowSets;
     const section3StartRowNumberToHide = section3StartRowNumber + (bookingDateRowSets * 3);
@@ -197,6 +197,9 @@ export class BookingService {
       format(firstBookingDate.date, 'ddMMMyy', { timeZone: TIME_ZONE })
     ).toUpperCase();
 
+  /**
+   * This starts on the Booking Details worksheet (worksheet 1)
+   */
   /*
   Section 1 - Header Section, Control/Invoice No
     Rows 2 - 5, Columns R-AQ
@@ -309,52 +312,60 @@ export class BookingService {
    */
     // Not pre-populated
 
+  /**
+   * This starts on the Payment Details worksheet (worksheet 2)
+   */
+    const worksheet2 = workbook.getWorksheet(2);
+    const setCell2 = setCellHelper(worksheet2); // taking advantage of "closure"
   /*
   Section 5 - Control/Invoice No. Header Section
-    Rows ${section3EndRowNumberToHide + 1 + 3} to ${section3EndRowNumberToHide + 1 + 3} + 13, Columns B-AQ
+    Rows 4, 5, Columns B-AQ
    */
     if (location) {
       // Registry #
-      setCell({ row: section3EndRowNumberToHide + 13, column: 'R', value: location.shortDescription });
+      // setCell({ row: section3EndRowNumberToHide + 13, column: 'R', value: location.shortDescription });
+      setCell2({ row: 4, column: 'R', value: location.shortDescription });
     }
     // Invoice #
-    setCell({ row: section3EndRowNumberToHide + 13, column: 'W', value: invoice });
+    setCell2({ row: 4, column: 'W', value: invoice });
     // Invoice Date
-    setCell({ row: section3EndRowNumberToHide + 14, column: 'AI', value: invoiceAndExportDate });
+    setCell2({ row: 5, column: 'AI', value: invoiceAndExportDate });
 
   /*
   Section 5 - Payment Details
+    Rows 10, 15, 19, Columns B-AQ
    */
     // Fees, Court Hours, Rate
     if (intpLang) {
-      setCell({
-        row: section3EndRowNumberToHide + 19,
+      setCell2({
+        row: 10,
         column: 'G',
         value: String(levelToMoney[intpLang.level])
       });
     }
 
     // GST Number
-    setCell({ row: section3EndRowNumberToHide + 24, column: 'K', value: interpreter.gst });
+    setCell2({ row: 15, column: 'K', value: interpreter.gst });
 
     // add GST rate 0.05 if GST Number is present, otherwise default GST rate to 0
     if (interpreter.gst) {
-      setCell({ row: section3EndRowNumberToHide + 24, column: 'S', value: 0.05 });
+      setCell2({ row: 15, column: 'S', value: 0.05 });
     } else {
-      setCell({ row: section3EndRowNumberToHide + 24, column: 'S', value: 0 });
+      setCell2({ row: 15, column: 'S', value: 0 });
     }
 
     // Set the Expenses Travel Kilometres Rate to 0.55 if distance > 32 and set the total distance if available
     if (distance && Number(distance?.distance) > 32) {
-      // Expenses Travel Kilometres Rate
-      setCell({ row: section3EndRowNumberToHide + 28, column: 'G', value: 0.55 });
-      setCell({
-        row: section3EndRowNumberToHide + 28,
+      // Expenses, Travel Kilometres, Rate
+      setCell2({ row: 19, column: 'G', value: 0.55 });
+      // Expenses, Travel Kilometres, Total Kilometres
+      setCell2({
+        row: 19,
         column: 'J',
         value: distance.distance
       });
     }
-
+ 
   /*
   Section 6 - Authorizations
    */
@@ -362,35 +373,36 @@ export class BookingService {
 
   /*
   Office Use Only - End of Document
+    Rows 47, 48, 49, Columns B-AQ
    */
     // Supplier Name
-    setCell({
-      row: section3EndRowNumberToHide + 56,
+    setCell2({
+      row: 47,
       column: 'F',
       value: lastNameFirstName
     });
     // Supplier #
-    setCell({
-      row: section3EndRowNumberToHide + 56,
+    setCell2({
+      row: 47,
       column: 'V',
       value: interpreter.supplier
     });
     // Site #
     if (location) {
-      setCell({
-        row: section3EndRowNumberToHide + 56,
+      setCell2({
+        row: 47,
         column: 'AF',
         value: location.shortDescription
       });
     }
     // Invoice Date
-    setCell({
-      row: section3EndRowNumberToHide + 57,
+    setCell2({
+      row: 48,
       column: 'F',
       value: invoiceAndExportDate
     });
     // Invoice Number
-    setCell({ row: section3EndRowNumberToHide + 58, column: 'F', value: invoice });
+    setCell2({ row: 49, column: 'F', value: invoice });
 
     return workbook;
   }
