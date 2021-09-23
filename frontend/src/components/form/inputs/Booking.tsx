@@ -222,7 +222,7 @@ export default function BookingInputs({
       <Grid item xs={6}>
         <ACField
           name="locationId"
-          label="Registry Location"
+          label="Court Location"
           options={locations}
           getOptionLabel={(option) => option.name}
           defaultValue={booking?.location || search?.location}

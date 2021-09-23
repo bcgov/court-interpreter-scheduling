@@ -97,7 +97,7 @@ export default function Search({
               <Grid item xs={6} md={3}>
                 <ACField
                   name="locationId"
-                  label="Registry Location"
+                  label="Court Location"
                   options={locations}
                   getOptionLabel={(option) => option.name}
                   value={userLocation}
