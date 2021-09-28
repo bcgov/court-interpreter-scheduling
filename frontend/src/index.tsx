@@ -41,7 +41,11 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
 const Routes = () => {
   return (
     <KeycloakProvider
-      authClient={keycloakClient}
+      authClient={keycloakClient(
+        process.env.NODE_ENV === 'production'
+          ? localStorage.getItem('keycloakAuthUrl')
+          : ''
+      )}
       LoadingComponent={
         <Box p={2}>
           <CircularProgress />
@@ -49,7 +53,7 @@ const Routes = () => {
       }
       initOptions={{ checkLoginIframe: false }}
     >
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Suspense
           fallback={
             <Box p={2}>

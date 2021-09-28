@@ -12,12 +12,14 @@ import {
   HttpCode,
   Header,
   Res,
+  UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
 
 import { SuccessResponse } from 'src/common/interface/response/success.interface';
+import { UpdateObject } from 'src/common/interface/UpdateObject.interface';
 import { BookingDateService } from './booking-date.service';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -25,6 +27,11 @@ import { PaginateBookingQueryDto } from './dto/paginate-booking-query.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDateEntity } from './entities/booking-date.entity';
 import { BookingRO } from './ro/booking.ro';
+import { EventService } from 'src/event/event.service'
+
+import { User as IUser } from 'src/common/interface/user.interface';
+import { DBUser } from 'src/common/decorator/user.decorator';
+import { DistanceService } from 'src/distance/distance.service';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -32,6 +39,8 @@ export class BookingController {
   constructor(
     private readonly bookingService: BookingService,
     private readonly bookingDateService: BookingDateService,
+    private readonly eventService: EventService,
+    private readonly distanceService: DistanceService,
   ) {}
 
   @Post()
@@ -72,7 +81,11 @@ export class BookingController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateBookingDto: UpdateBookingDto,
+    @DBUser() user: IUser,
+  ) {
     const { dates, ...updateDto } = updateBookingDto;
     const originBooking = await this.bookingService.findOne(+id);
     const originBookingDates = originBooking.dates;
@@ -81,14 +94,31 @@ export class BookingController {
 
     if (dates && dates.length > 0) {
       try {
-        bookingDates = await this.bookingDateService.create(dates);
-        await this.bookingDateService.removeByBookings(originBookingDates);
+        const { deletedBookingDates, newInsertedBookingDates, commonBookingDates } = await this.bookingDateService.upsert(originBookingDates, dates);
+        bookingDates = [...newInsertedBookingDates, ...commonBookingDates];
+        if (deletedBookingDates.length > 0 || newInsertedBookingDates.length > 0) {
+          await this.eventService.createBookingEvent({
+            booking: originBooking,
+            user,
+            field: 'dates',
+            previous: this.eventService.datesToString(deletedBookingDates),
+            updated: newInsertedBookingDates.length ? this.eventService.datesToString(newInsertedBookingDates) : 'Dates removed'
+          });
+        } 
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
 
-    return this.bookingService.update(+id, updateDto, bookingDates);
+    try {
+      const updatedFields = await this.eventService.parseBookingUpdate(originBooking, updateDto);
+      updatedFields.map((update: UpdateObject) => this.eventService.createBookingEvent({ booking: originBooking, user, ...update }));
+    } catch (error) {
+      Logger.log(`Failed to create update events: ${error.message}`)
+    } finally {
+      return this.bookingService.update(+id, updateDto, bookingDates);
+    }
+
   }
 
   @Delete(':id')
@@ -103,8 +133,11 @@ export class BookingController {
     // query booking
     const booking = await this.bookingService.findOne(+id);
 
+    // get distance
+    const distance = await this.distanceService.findDistanceByBooking(booking);
+
     // get the workbook
-    const workbook = await this.bookingService.writeToWorkbook(booking);
+    const workbook = await this.bookingService.writeToWorkbook(booking, distance);
 
     return await workbook.xlsx.write(res);
   }

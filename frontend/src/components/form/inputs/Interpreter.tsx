@@ -1,4 +1,6 @@
 import React from 'react';
+import { Field, useFormikContext, FieldArray } from 'formik';
+import moment from 'moment';
 
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
@@ -13,14 +15,12 @@ import {
   StyledFormControl,
   StyledTextField,
   StyledLabel,
-} from './DirectoryInputs';
+} from 'components/form/inputs/DirectoryInputs';
 import FieldError from 'components/form/inputs/FieldError';
 import { SingleCheck } from 'components/form/inputs/Check';
+import { StyledFormDatePicker } from 'components/form/inputs/StyledDateAndTimeInput';
 
 import { Interpreter, Language } from 'constants/interfaces';
-import { Field, useFormikContext, FieldArray, useField } from 'formik';
-import moment from 'moment';
-import { StyledFormDatePicker } from './StyledDateAndTimeInput';
 
 type GridItemInputProps = {
   name: string;
@@ -28,6 +28,7 @@ type GridItemInputProps = {
   rows?: any;
   initialValue?: any;
   disabled?: boolean;
+  placeholder?: string;
 };
 
 // TODO: Create more effective check
@@ -36,7 +37,7 @@ const showNotDateData = (data?: string): boolean => {
   return !regx.test(data || '');
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
+const StyledField = ({ name, label, rows = { xs: 6 }, placeholder }: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -46,6 +47,7 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
             id={name}
             variant="outlined"
             size="small"
+            placeholder={placeholder}
             {...field}
             {...props}
           />
@@ -206,14 +208,16 @@ export default function InterpreterInputs() {
         </Typography>
       </Grid>
 
-      <StyledField name="supplier" label="Supplier #" />
-      <StyledField name="gst" label="GST" />
+      <StyledField name="supplier" label="Supplier #" rows={{ xs: 12, lg: 4 }} />
+      <StyledField name="siteCode" label="Site Code" rows={{ xs: 12, lg: 4 }} placeholder="001" />
+      <StyledField name="gst" label="GST" rows={{ xs: 12, lg: 4 }}  />
+
       <StyledDateField
         name="criminalRecordCheckDate"
         label="Criminal Record Check Date"
         initialValue={values.criminalRecordCheckDate}
       />
-      {showNotDateData(values.criminalRecordCheck) ? (
+      {showNotDateData(values.criminalRecordCheck) || !values.criminalRecordCheckDate ? (
         <StyledField
           name="criminalRecordCheck"
           label="Comment On Criminal Record Check"

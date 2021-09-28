@@ -66,5 +66,6 @@ export const StyledIconButton = withStyles({
     borderRadius: '4px',
     height: '40px',
     width: '40px',
+    padding: 0,
   }
 })(IconButton)

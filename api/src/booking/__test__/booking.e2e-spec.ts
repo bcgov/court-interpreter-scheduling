@@ -4,13 +4,8 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as dotenv from 'dotenv';
-import {
-  factory,
-  runSeeder,
-  tearDownDatabase,
-  useRefreshDatabase,
-  useSeeding,
-} from 'typeorm-seeding';
+import { factory, runSeeder, tearDownDatabase, useRefreshDatabase, useSeeding } from 'typeorm-seeding';
+import { LoggerModule } from 'nestjs-pino';
 
 import CreateLanguage from 'src/database/seeds/1-create-language.seed';
 import CreateInterpreter from 'src/database/seeds/2-create-interpreter.seed';
@@ -33,6 +28,7 @@ describe('booking', () => {
     const module = await Test.createTestingModule({
       imports: [
         BookingModule,
+        LoggerModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.DB_HOST,

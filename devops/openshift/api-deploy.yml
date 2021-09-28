@@ -59,6 +59,14 @@ objects:
                   value: ${DEPLOYMENT_ENV}
                 - name: DEPLOYMENT_ENV_HIDDEN_FLAG
                   value: ${DEPLOYMENT_ENV_HIDDEN_FLAG}
+                - name: SS_API_PASSWORD
+                  value: ${SS_API_PASSWORD}
+                - name: SS_API_USERNAME
+                  value: ${SS_API_USERNAME}
+                - name: MAP_BOX_TOKEN
+                  value: ${MAP_BOX_TOKEN}
+                - name: GOOGLE_API_KEY
+                  value: ${GOOGLE_API_KEY}
               image: ${IMAGE_REGISTRY}/${BUILD_NAMESPACE}/${IMAGE_STREAM_TAG}
               imagePullPolicy: Always
               name: ${NAME}
@@ -158,9 +166,9 @@ parameters:
     from: "[a-zA-Z0-9]{36}"
     generate: expression
   - name: KEYCLOAK_REALM
-    value: joxo7v8f
+    value: tz0e228w
   - name: KEYCLOAK_CLIENT
-    value: court-client
+    value: cis-api
   - name: KEYCLOAK_URL
     required: true
   - name: DB_NAME
@@ -168,4 +176,10 @@ parameters:
   - name: DEPLOYMENT_ENV
     required: true
   - name: DEPLOYMENT_ENV_HIDDEN_FLAG
+    required: true
+  - name: SS_API_PASSWORD
+  - name: SS_API_USERNAME
+  - name: MAP_BOX_TOKEN
+    required: true
+  - name: GOOGLE_API_KEY
     required: true

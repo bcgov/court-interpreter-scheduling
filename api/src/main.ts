@@ -1,29 +1,46 @@
 import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Logger } from 'nestjs-pino';
 
-import { logger } from './common/middleware/logger.middleware';
 import { CONFIG } from './common/common.config';
 import { documentation } from './common/common.documentation';
 import { ErrorExceptionFilter } from './common/filters/error-exception.filter';
+import { isProduction } from './utils';
+import { LocationFetchScheduleService } from './location/location-fetch-schedule.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setGlobalPrefix('api/v1')
-  app.enableCors();
-  app.use(bodyParser.json({limit: '50mb'}));
-  
+  app.setGlobalPrefix('api/v1');
+
+  if (isProduction) {
+    app.enableCors({
+      origin: ["https://justice.gov.bc.ca"]
+    });
+  } else {
+    app.enableCors({
+      origin: [
+        "https://dev.justice.gov.bc.ca", 
+        "https://test.justice.gov.bc.ca",
+        "https://justice.gov.bc.ca",
+        "http://localhost:3000"]
+    });
+  }
+  app.use(bodyParser.json({ limit: '50mb' }));
+
   documentation(app);
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProduction) {
     global['nestAppServer'] = app.getHttpServer();
   }
 
   // logger
-  app.use(logger);
-  Logger.log(`Running Court API in ${process.env.NODE_ENV} mode`);
-  Logger.log(`attempting connection to db host: ${process.env.DB_HOST}`);
+  const logger = app.get(Logger);
+  app.useLogger(logger);
+  logger.log(`Running Court API in ${process.env.NODE_ENV} mode`);
+  logger.log(`Running Court Api in ${process.env.DEPLOYMENT_ENV} env`);
+  logger.log(`attempting connection to db host: ${process.env.DB_HOST}`);
 
   // pipes
   app.useGlobalPipes(
@@ -37,11 +54,18 @@ async function bootstrap() {
 
   // exception filter
   app.useGlobalFilters(new ErrorExceptionFilter());
-  await app.listen(CONFIG.applicationPort);
+  const server = await app.listen(CONFIG.applicationPort);
+  server.setTimeout(30 * 60 * 1000);
 
-  Logger.log(
-    `Server running on http://localhost:${CONFIG.applicationPort}`,
-    'Bootstrap',
+  // Call service
+  const locationFetchService: LocationFetchScheduleService = app.get<LocationFetchScheduleService>(
+    LocationFetchScheduleService,
   );
+  if (locationFetchService) {
+    await locationFetchService.fetchAndStoreLocation();
+    logger.log(`Location service fetch [DONE]`);
+  }
+
+  logger.log(`Server running on http://localhost:${CONFIG.applicationPort}`, 'Bootstrap');
 }
 bootstrap();

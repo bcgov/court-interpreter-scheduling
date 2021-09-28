@@ -19,19 +19,28 @@ import SearchContext from 'contexts/SearchContext'
 import { Initial, Schema } from 'components/form/schemas/daterange-search.schema'
 import { StyledFormControl, StyledLabel, StyledTextField } from 'components/form/inputs/DirectoryInputs'
 import { PeriodRadio } from 'components/form/inputs/Check'
+import { BookingDate } from 'constants/interfaces'
 
 import { eachDayOfInterval, formatISO, compareAsc, isBefore, isSameDay } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import { Calendar } from 'react-nice-dates'
 
-function Picker () {
+function Picker({ existingDates }: { existingDates: BookingDate[] }) {
   const [, , helpers] = useField('dates')
   const [lastDate, setLastDate] = useState<Date>()
   const [selectedDates, setSelectedDates] = useState<Array<Date>>([])
 
   useEffect(() => {
     helpers.setValue(selectedDates)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDates])
+
+  useEffect(() => {
+    if (existingDates) {
+      setSelectedDates(existingDates.map(d => new Date(d.date)))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const modifiers = {
     selected: (date: Date | number) => selectedDates.some(selectedDate => isSameDay(selectedDate, date))
@@ -63,14 +72,12 @@ function Picker () {
   }
 
   return (
-    <>
-      <Calendar
-        locale={enUS}
-        onDayClick={handleDayClick}
-        modifiers={modifiers}
-        minimumDate={new Date()}
-      />
-    </>
+    <Calendar
+      locale={enUS}
+      onDayClick={handleDayClick}
+      modifiers={modifiers}
+      minimumDate={new Date()}
+    />
   )
 }
 
@@ -82,20 +89,24 @@ export default function Range() {
   const { values: searchValues, setFieldValue } = useFormikContext()
   const [, meta] = useField('dates')
   const { search, updateSearchContext } = useContext(SearchContext)
+
   useEffect(() => {
     if (search?.dates && search?.dates.length) {
       setFieldValue('dates', search.dates)
     }
   }, [setFieldValue, search])
+
   const inputText = search?.dates.length ?
     `${moment(search.dates[0]?.date).format(dateFormat)} to ${moment(search.dates[search.dates.length - 1]?.date).format(dateFormat)}` :
       meta?.value ?
-    `${moment(meta.value[0]?.date).format(dateFormat)} to ${moment(meta.value[meta.value.length - 1]?.date).format(dateFormat)}` :
+    `${moment(meta.value[0]?.date).format(dateFormat)}` :
     `${moment().format(dateFormat)} to ${moment().add(1, 'days').format(dateFormat)}`
-  return (
+
+    return (
     <Formik
       initialValues={Initial}
       validationSchema={Schema}
+      enableReinitialize
       onSubmit={async (values, actions) => {
 
         const baseDay = {
@@ -154,7 +165,7 @@ export default function Range() {
 
               <Grid item xs={12} md={6} className='rangeParent'>
                 <Box p={1}>
-                  <Picker />
+                  <Picker existingDates={meta.value} />
                   <ErrorMessage name='dates' render={() => <Box px={3} pb={1}>Please select a date range</Box>} />
                 </Box>
               </Grid>

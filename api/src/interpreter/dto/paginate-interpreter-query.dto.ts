@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsOptional,
-  ValidateNested,
-  Max,
-  Min,
-  IsNumber,
-  IsDate,
-} from 'class-validator';
+import { IsOptional, ValidateNested, Max, Min, IsNumber, IsDate } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { BookingDateDto } from 'src/booking/dto/booking-date.dto';
 import { BookingPeriod } from 'src/booking/enums/booking-period.enum';
@@ -57,6 +50,20 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
   city?: string;
 
   @ApiProperty({
+    description: 'Courthouse address',
+    example: '555 Columbia Avenue',
+  })
+  @IsOptional()
+  courtAddr?: string;
+
+  @ApiProperty({
+    description: 'Distance limit between Courthouse address',
+    example: true,
+  })
+  @IsOptional()
+  distanceLimit?: boolean;
+
+  @ApiProperty({
     description: 'Booking date',
     example: [
       {
@@ -103,16 +110,11 @@ export class PaginateInterpreterQueryDto extends PaginationQueryDTO {
 
   @AndWhere('intLang.level IN (:...level)', 'level')
   @AndWhere('LOWER(interpreter.city) = LOWER(:city)', 'city')
-  @AndWhere(
-    `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:name)`,
-    'name',
-  )
+  @AndWhere(`LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:name)`, 'name')
   @AndWhere('interpreter.contract_extension = :active', 'active')
   filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
-    return super
-      .filter(query)
-      .andWhere('LOWER(intLang.language.name) LIKE LOWER(:language)', {
-        language: `${this.language || ''}%`,
-      });
+    return super.filter(query).andWhere('LOWER(intLang.language.name) LIKE LOWER(:language)', {
+      language: `${this.language || ''}%`,
+    });
   }
 }

@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Box, FormGroup, Grid, Hidden } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AutocompleteInput from 'components/form/inputs/Autocomplete';
+import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
 
 import {
   StyledFormControl,
@@ -23,7 +24,6 @@ import Check from 'components/form/inputs/Check';
 import { StyledButton } from 'components/Buttons';
 
 import InterpreterSearchContext from 'contexts/InterpreterSearchContext';
-import { languages } from 'constants/languages';
 import { courtLocations } from 'constants/courtLocations';
 import { InterpreterSearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, Formik, FormikProps, FieldProps } from 'formik';
@@ -131,9 +131,8 @@ export default function Search({
               <Grid item xs={4}>
                 <StyledFormControl>
                   <StyledLabel htmlFor="language">Language</StyledLabel>
-                  <AutocompleteInput
-                    fieldName="language"
-                    options={languages}
+                  <AutoCompleteLanguage
+                    name="language"
                     initialValue={search?.language}
                   />
                   <ErrorMessage name="language" />
@@ -155,6 +154,7 @@ export default function Search({
                 <StyledFormControl>
                   <StyledLabel htmlFor="active">Active/Inactive</StyledLabel>
                   <AutocompleteInput
+                    disableHackFix={true}
                     fieldName="active"
                     options={['Active', 'Inactive']}
                     initialValue={activeStatusString()}

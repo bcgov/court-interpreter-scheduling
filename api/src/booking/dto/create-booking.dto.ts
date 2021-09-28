@@ -117,4 +117,18 @@ export class CreateBookingDto {
   })
   @IsOptional()
   comment?: string;
+
+  @ApiProperty({
+    description: 'Method of Appearance',
+    example: 'In-Person, MS Teams, Via Teleconference, RIS',
+  })
+  @IsOptional()
+  methodOfAppearance?: string;
+
+  @ApiProperty({
+    description: 'Id of the location object',
+    example: 2,
+  })
+  @IsOptional()
+  locationId?: number;
 }

@@ -1,18 +1,22 @@
-import  * as yup from 'yup'
+import * as yup from 'yup';
+
+import { RequestedByOptions, InterpretForOptions, MethodOfAppearanceOptions } from 'constants/booking';
 
 const Initial = {
   room: '',
   registry: '',
   file: '',
-  interpretFor: '',
+  interpretFor: InterpretForOptions[0],
   caseName: '',
-  requestedBy: '',
+  requestedBy: RequestedByOptions[0],
   federal: undefined,
   language: '',
   reason: '',
   prosecutor: '',
   comment: '',
-}
+  locationName: '',
+  methodOfAppearance: MethodOfAppearanceOptions[0],
+};
 
 const Schema = yup.object({
   room: yup.string(),
@@ -23,9 +27,10 @@ const Schema = yup.object({
   requestedBy: yup.string(),
   federal: yup.boolean(),
   language: yup.string(),
-  reason: yup.string(),
+  reason: yup.string().max(6, 'max limit 6 characters'),
   prosecutor: yup.string(),
   comment: yup.string(),
-})
+  locationName: yup.string(),
+});
 
-export { Initial, Schema }
+export { Initial, Schema };

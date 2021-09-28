@@ -12,15 +12,22 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
+  Logger,
+  Header,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
+
 import { InterpreterService } from './interpreter.service';
 import { CreateInterpreterDto } from './dto/create-interpreter.dto';
 import { UpdateInterpreterDto } from './dto/update-interpreter.dto';
 import { InterpreterEntity } from './entities/interpreter.entity';
 import { InterpreterRO } from './ro/interpreter.ro';
-import { ApiTags } from '@nestjs/swagger';
 
 import { PaginateInterpreterQueryDto } from './dto/paginate-interpreter-query.dto';
+import { UpdateObject } from 'src/common/interface/UpdateObject.interface';
 
 import { InterpreterLanguageService } from './interpreter-language.service';
 import { InterpreterLanguageEntity } from './entities/interpreter-language.entity';
@@ -30,6 +37,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as csvtojson from 'csvtojson';
 import { mappingDirectories } from 'src/utils';
 import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
+import { DistanceService } from 'src/distance/distance.service';
+import { EventService } from 'src/event/event.service';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -50,6 +59,9 @@ export class InterpreterController {
   constructor(
     private readonly interpreterService: InterpreterService,
     private readonly interpreterLanguageService: InterpreterLanguageService,
+    private readonly distanceService: DistanceService,
+    private readonly eventService: EventService,
+    @InjectPinoLogger(InterpreterController.name) private readonly logger: PinoLogger,
   ) {}
 
   @Post()
@@ -91,12 +103,33 @@ export class InterpreterController {
     return await this.interpreterService.findAll(paginateInterpreterQueryDto);
   }
 
+  @Get('/file-export')
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename=interpreter.xlsx')
+  async export(@Res() resp: Response) {
+    const workbook = await this.interpreterService.exportToWorkbook();
+
+    return await workbook.xlsx.write(resp);
+  }
+
   @Post('search')
   @HttpCode(200)
   async search(
     @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
-    return await this.interpreterService.findAll(paginateInterpreterQueryDTO);
+    const interpreters = await this.interpreterService.findAll(paginateInterpreterQueryDTO);
+    const { courtAddr, distanceLimit } = paginateInterpreterQueryDTO;
+    if (courtAddr) {
+      const { data } = interpreters;
+      const newIntps = await this.distanceService.addDistanceToInterpreters(
+        data as InterpreterRO[],
+        courtAddr,
+        distanceLimit,
+      );
+      interpreters.data = newIntps;
+    }
+
+    return interpreters;
   }
 
   @Get(':id')
@@ -121,7 +154,20 @@ export class InterpreterController {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }
     }
-    await this.interpreterService.update(+id, updateDto, langs);
+
+    try {
+      const updatedFields = await this.eventService.parseInterpreterUpdate(
+        interpreter,
+        updateDto,
+        originLangs,
+        languages,
+      );
+      updatedFields.map((update: UpdateObject) => this.eventService.createInterpreterEvent({ interpreter, ...update }));
+    } catch (error) {
+      Logger.log(`Failed to create update events: ${error.message}`);
+    } finally {
+      await this.interpreterService.update(+id, updateDto, langs);
+    }
   }
 
   @Delete(':id')
@@ -140,7 +186,10 @@ export class InterpreterController {
        * check if it's correct file type
        */
       if (file.mimetype !== 'text/csv') {
-        throw new Error('file type not correct');
+        throw new HttpException(
+          { status: HttpStatus.BAD_REQUEST, error: 'file type not correct' },
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       /**
@@ -167,6 +216,7 @@ export class InterpreterController {
         'comments',
         'adminComments',
         'contractExtension',
+        'siteCode',
       ];
       if (fileUploadInterpreterDto.isVisual) {
         headers = [
@@ -189,6 +239,7 @@ export class InterpreterController {
           'comments',
           'adminComments',
           'contractExtension',
+          'siteCode',
         ];
       }
 
@@ -198,7 +249,9 @@ export class InterpreterController {
       let json = await csvtojson({
         noheader: false,
         headers,
+        colParser: { siteCode: 'string' },
       }).fromString(file.buffer.toString());
+      this.logger.info(json, 'json');
 
       /**
        * mapping function to organize the dirty row json data
@@ -218,7 +271,12 @@ export class InterpreterController {
       /**
        * insert json to database
        */
-      const uploadedDirectories = await this.uploadDirectoriesToDatabase(directories);
+      let uploadedDirectories: InterpreterRO[] = [];
+      if (fileUploadInterpreterDto.isUpdate) {
+        uploadedDirectories = await this.upsertDirectoriesToDatabase(directories);
+      } else {
+        uploadedDirectories = await this.uploadDirectoriesToDatabase(directories);
+      }
 
       /**
        * return detail info
@@ -255,6 +313,59 @@ export class InterpreterController {
         }
 
         const interpreter = await this.interpreterService.create(createInterpreterDto, interpreterLangs);
+
+        return interpreter.toResponseObject();
+      }),
+    );
+  }
+
+  /**
+   * update json to database
+   * assume field "supplier" is unique
+   * @param directories
+   * @returns
+   */
+  private async upsertDirectoriesToDatabase(directories: CreateInterpreterDto[]) {
+    return Promise.all(
+      directories.map(async (createInterpreterDto: CreateInterpreterDto) => {
+        // langs
+        let interpreterLangs: InterpreterLanguageEntity[] = [];
+        const { languages, ...updateInterpreterDto } = createInterpreterDto;
+        if (languages && languages.length > 0) {
+          try {
+            interpreterLangs = await this.interpreterLanguageService.createMany(languages);
+          } catch (err) {
+            throw new HttpException(err, HttpStatus.BAD_REQUEST);
+          }
+        }
+
+        let interpreter: InterpreterEntity = null;
+        let existInterpreter: InterpreterEntity = null;
+
+        if (createInterpreterDto.supplier) {
+          existInterpreter = await this.interpreterService.findOneByKey('supplier', createInterpreterDto.supplier);
+        } else if (createInterpreterDto.email) {
+          this.logger.info(createInterpreterDto, 'find user by email');
+          existInterpreter = await this.interpreterService.findOneByKey('email', createInterpreterDto.email);
+        } else {
+          this.logger.info(createInterpreterDto, 'has no identity to find the interpreter, return null');
+          return null;
+        }
+
+        if (existInterpreter) {
+          // update exists interpreter
+          interpreter = await this.interpreterService.update(
+            existInterpreter.id,
+            updateInterpreterDto,
+            interpreterLangs,
+          );
+          this.logger.info(existInterpreter, 'exist interpreter');
+          this.logger.info(interpreter, 'updated interpreter');
+        } else {
+          // insert new interpreter
+          interpreter = await this.interpreterService.create(createInterpreterDto, interpreterLangs);
+          this.logger.info(interpreter, 'new interpreter');
+        }
 
         return interpreter.toResponseObject();
       }),

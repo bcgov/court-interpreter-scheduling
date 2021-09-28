@@ -30,11 +30,12 @@ export default function Check ({ value }: { value: string }) {
   )
 }
 
-export function TextCheck ({ value, label, name }: { value: string, label: string, name: string }) {
+export function TextCheck ({ value, label, name, disabled = false }: { value: string, label: string, name: string, disabled?: boolean }) {
   return (
     <FormControlLabel
       label={label}
       labelPlacement='end'
+      disabled={disabled}
       control={
         <Field
           type='checkbox'
@@ -54,11 +55,12 @@ export function TextCheck ({ value, label, name }: { value: string, label: strin
   )
 }
 
-export function SingleCheck ({ label, name }: { label: string, name: string }) {
+export function SingleCheck ({ label, name, disabled = false }: { label: string, name: string, disabled?: boolean }) {
   return (
     <FormControlLabel
       label={label}
       labelPlacement='end'
+      disabled={disabled}
       control={
         <Field
           type='checkbox'

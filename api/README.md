@@ -41,7 +41,7 @@ In root folder:
 - Start Keycloak and Database in docker first
 
 ```
-docker-compose up keycloak
+docker-compose -f docker-compose.dev.yml  up keycloak
 ```
 
 - Application
@@ -190,7 +190,7 @@ Add additional notes about how to deploy this on a live system.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
-- [Postgres](https://www.postgresql.org/) - Database
+- [Postgres-v12.6](https://www.postgresql.org/) - Database
 - [NestJs](https://nestjs.com/) - Server Environment
 - [Schemaspy](http://schemaspy.org/) - Display Schema of database
 - [Typeorm](https://typeorm.io/#/) - Database ORM

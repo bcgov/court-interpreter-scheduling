@@ -4,6 +4,7 @@ import { DatabaseService } from './database.service';
 
 import { join } from 'path';
 import * as dotenv from 'dotenv';
+import { isProduction } from 'src/utils';
 
 dotenv.config();
 
@@ -11,8 +12,6 @@ const entities =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? join(__dirname, '../**/**.entity{.ts,.js}')
     : 'dist/**/*.entity{ .ts,.js}';
-
-const synchronize = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? true : false;
 
 const option: any = {
   type: 'postgres',
@@ -26,12 +25,13 @@ const option: any = {
   cli: {
     migrationsDir: 'src/migrations',
   },
-  synchronize,
-  migrationsRun: process.env.NODE_ENV === 'production',
+  synchronize: false,
+  migrationsRun: true,
   dropSchema: false,
   seeds: ['src/database/seeds/**/*{.ts,.js}'],
   factories: ['src/database/factories/**/*{.ts,.js}'],
   keepConnectionAlive: true,
+  logging: ['error', 'warn'],
 };
 
 @Module({

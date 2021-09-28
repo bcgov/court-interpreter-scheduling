@@ -16,6 +16,9 @@ jobs:
         run: docker-compose -f docker-compose.test.yml build --no-cache
 
       - name: Start app containers
+        env:
+          MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
+          GOOGLE_API_KEY : ${{ secrets.GOOGLE_API_KEY }}
         run: docker-compose -f docker-compose.test.yml up -d client api postgres keycloak
 
       - name: Wait for Keycloak

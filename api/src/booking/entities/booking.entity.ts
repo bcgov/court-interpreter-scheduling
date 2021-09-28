@@ -1,9 +1,12 @@
 import { InterpreterEntity } from 'src/interpreter/entities/interpreter.entity';
+import { BookingEventEntity } from 'src/event/entities/booking-event.entity';
 import { LanguageEntity } from 'src/language/entities/language.entity';
+import { LocationEntity } from 'src/location/entities/location.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -13,6 +16,8 @@ import {
 import { BookingStatus } from '../enums/booking-status.enum';
 import { BookingRO } from '../ro/booking.ro';
 import { BookingDateEntity } from './booking-date.entity';
+
+import { sortBookingDates } from 'src/utils';
 
 @Entity('booking')
 export class BookingEntity {
@@ -68,6 +73,13 @@ export class BookingEntity {
   )
   language: LanguageEntity;
 
+  @ManyToOne(type => LocationEntity, { eager: true, onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({
+    name: 'court_location_id',
+    referencedColumnName: 'id',
+  })
+  location: LocationEntity;
+
   @Column({ nullable: true })
   reason: string;
 
@@ -76,6 +88,15 @@ export class BookingEntity {
 
   @Column({ nullable: true })
   comment: string;
+
+  @Column({ nullable: true, name: 'method_of_appearance' })
+  methodOfAppearance: string;
+
+  @OneToMany(
+    type => BookingEventEntity,
+    (event: BookingEventEntity) => event.booking,
+  )
+  events: BookingEventEntity[];
 
   @CreateDateColumn({
     name: 'created_at',
@@ -95,7 +116,7 @@ export class BookingEntity {
       caseName: this.caseName,
       room: this.room,
       status: this.status,
-      dates: this.dates.map(d => d.toResponseObject()),
+      dates: this.dates.map(d => d.toResponseObject()).sort(sortBookingDates),
       registry: this.registry,
       file: this.file,
       interpretFor: this.interpretFor,
@@ -105,8 +126,11 @@ export class BookingEntity {
       reason: this.reason,
       prosecutor: this.prosecutor,
       comment: this.comment,
+      methodOfAppearance: this.methodOfAppearance,
+      events: this.events?.map(e => e.toResponseObject()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      location: this.location,
     };
   }
 }

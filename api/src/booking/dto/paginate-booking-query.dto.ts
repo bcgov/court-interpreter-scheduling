@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsNumber,
-  IsOptional,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsNumber, IsOptional, Max, Min, ValidateNested } from 'class-validator';
 import * as faker from 'faker/locale/en_CA';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -52,7 +46,14 @@ export class PaginateBookingQueryDto extends PaginationQueryDTO {
     example: 'Vancouver',
   })
   @IsOptional()
-  location?: string;
+  locationName?: string;
+
+  @ApiProperty({
+    description: 'Courthouse location id',
+    example: '1',
+  })
+  @IsOptional()
+  locationId?: number;
 
   @ApiProperty({
     description: 'Case File Number',
@@ -68,10 +69,7 @@ export class PaginateBookingQueryDto extends PaginationQueryDTO {
   @IsOptional()
   isStartFromToday?: boolean;
 
-  @AndWhere(
-    `LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:interpreter)`,
-    'interpreter',
-  )
+  @AndWhere(`LOWER(CONCAT(interpreter.firstName, ' ', interpreter.lastName)) LIKE LOWER(:interpreter)`, 'interpreter')
   @AndWhere('LOWER(booking.file) LIKE LOWER(:file)', 'file')
   filter(query: SelectQueryBuilder<any>): SelectQueryBuilder<any> {
     return super.filter(query);

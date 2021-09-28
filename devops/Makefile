@@ -15,7 +15,7 @@ export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), $$BUILD_NS)
 export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
 export DB_NAME := $(or $(DB_NAME), court-interpreter-scheduling)
 export KC_AUTH_URL := $(or $(KC_AUTH_URL), https://oidc.gov.bc.ca/auth/)
-export KC_REALM := $(or $(KC_REALM), joxo7v8f)
+export KC_REALM := $(or $(KC_REALM), tz0e228w)
 
 export DEPLOYMENT_ENV := $(or $(DEPLOYMENT_ENV), dev)
 export DEPLOYMENT_ENV_HIDDEN_FLAG := $(or $(DEPLOYMENT_ENV_HIDDEN_FLAG), prod)
@@ -30,9 +30,11 @@ default:
 oc-build: app-check print-status build
 oc-build-api: app-check print-status build-api
 oc-build-app: app-check print-status build-app
+# oc-build-proxied-app: app-check print-status build-proxied-app
 oc-deploy-db: app-check print-status deploy-db
 oc-deploy-api: app-check print-status deploy-api
 oc-deploy-app: app-check print-status deploy-app
+# oc-deploy-proxied-app: app-check print-status deploy-proxied-app
 oc-delete: app-check print-status delete
 DIR := ${CURDIR}
 
@@ -65,6 +67,11 @@ define APP
 "app-$(APP_NAME)"
 endef
 
+# The front-end when routed through the justice proxy
+# define APP_PROXIED 
+# "proxied-app-$(APP_NAME)"
+# endef
+
 define APP_INSTANCE
 "app-$(APP_NAME)-$(BUILD_ID)"
 endef
@@ -89,13 +96,13 @@ define DOCKER_BUILD_TEMPLATE_PATH
 "./openshift/docker-build.yml"
 endef
 
-define KEYCLOAK_IMAGE_NAME
-"courts-keycloak"
-endef
+# define KEYCLOAK_IMAGE_NAME
+# "courts-keycloak"
+# endef
 
-define KC_NGINX_IMAGE_NAME
-"$(KEYCLOAK_IMAGE_NAME)-nginx"
-endef
+# define KC_NGINX_IMAGE_NAME
+# "$(KEYCLOAK_IMAGE_NAME)-nginx"
+# endef
 
 
 define rollout_and_wait
@@ -133,9 +140,9 @@ init-project:
 	@oc process -f openshift/networkpolicy.yml -p NAMESPACE=$$(oc project --short) | oc apply -f -
 	@oc -n $(BUILD_NAMESPACE) policy add-role-to-group system:image-puller system:serviceaccounts:$$(oc project --short)
 
-init-keycloak:
-	@oc process -f openshift/keycloak-pre-req.yml | oc apply -f -
-	@oc process -f openshift/createdb-job.yml -p DB_NAME=keycloak -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) | oc apply -f -
+# init-keycloak:
+# 	@oc process -f openshift/keycloak-pre-req.yml | oc apply -f -
+# 	@oc process -f openshift/createdb-job.yml -p DB_NAME=keycloak -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) | oc apply -f -
 
 init-patroni:
 	@oc process -f openshift/patroni-pre-req.yml | oc apply -f -
@@ -157,21 +164,44 @@ build-api:
 build-app:
 	test -n "$(BRANCH)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ BUILIDING APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) -p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) -p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" -p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" -p SOURCE_CONTEXT_DIR=frontend -p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@echo "+\n++ BUILIDING $(APP) with tag: $(BUILD_TAG)\n+"
+		@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
+		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
+		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
+		-p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) \
+		-p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" \
+		-p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" \
+		-p SOURCE_CONTEXT_DIR=frontend \
+		-p NAME=$(APP) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP) --wait
+
+# build-proxied-app:
+# 	test -n "$(BRANCH)"
+# 	test -n "$(BUILD_NAMESPACE)"
+# 	@echo "+\n++ BUILIDING $(APP_PROXIED) with tag: $(BUILD_TAG)\n+"
+# 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) \
+# 		-p ARG_KEY_1=REACT_APP_REALM_AUTH_URL -p ARG_VAL_1=$(KC_AUTH_URL) \
+# 		-p ARG_KEY_2=KC_REALM -p ARG_VAL_2=$(KC_REALM) \
+# 		-p ARG_KEY_3=PUBLIC_URL -p ARG_VAL_3=/interpreter-scheduling \
+# 		-p ARG_KEY_4=REACT_APP_API_HOST -p ARG_VAL_4=https://$(APP_HOST)/api/v1 \
+# 		-p TAG=$(BUILD_TAG) -p SOURCE_REPOSITORY_REF=$(BRANCH) \
+# 		-p BASE_IMAGE_NAME="nodejs-12" -p BASE_IMAGE_TAG="1" \
+# 		-p BASE_IMAGE_REPO="registry.access.redhat.com/ubi8/" \
+# 		-p SOURCE_CONTEXT_DIR=frontend \
+# 		-p NAME=$(APP_PROXIED) | oc -n $(BUILD_NAMESPACE) apply -f -
+# 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(APP_PROXIED) --wait
 
 build-patroni:
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=patroni -p TAG="12-latest" -p BASE_IMAGE_NAME=postgres -p BASE_IMAGE_TAG="12" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/platform-services.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="apps/pgsql/patroni/docker" | oc -n $(BUILD_NAMESPACE) apply -f -
 	@oc -n $(BUILD_NAMESPACE) start-build bc/patroni --wait
 
-build-keycloak-nginx: 
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=nginx -p BASE_IMAGE_TAG="1.19.3" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p SOURCE_CONTEXT_DIR=".docker/keycloak-nginx" -p NAME=$(KC_NGINX_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
-	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KC_NGINX_IMAGE_NAME) --wait
+# build-keycloak-nginx: 
+# 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=nginx -p BASE_IMAGE_TAG="1.19.3" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p SOURCE_CONTEXT_DIR=".docker/keycloak-nginx" -p NAME=$(KC_NGINX_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+# 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KC_NGINX_IMAGE_NAME) --wait
 
-build-keycloak:
-	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=keycloak -p BASE_IMAGE_TAG="11.0.2" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_REPO="jboss/" -p SOURCE_CONTEXT_DIR=".docker/keycloak" -p NAME=$(KEYCLOAK_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
-	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KEYCLOAK_IMAGE_NAME) --wait
+# build-keycloak:
+# 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p BASE_IMAGE_NAME=keycloak -p BASE_IMAGE_TAG="11.0.2" -p SOURCE_REPOSITORY_REF=$(BRANCH) -p BASE_IMAGE_REPO="jboss/" -p SOURCE_CONTEXT_DIR=".docker/keycloak" -p NAME=$(KEYCLOAK_IMAGE_NAME) | oc -n $(BUILD_NAMESPACE) apply -f -
+# 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(KEYCLOAK_IMAGE_NAME) --wait
 
 build-db-backup:
 	@oc -n $(BUILD_NAMESPACE) process -f $(DOCKER_BUILD_TEMPLATE_PATH) -p NAME=$(DB_BACKUP_APP) -p TAG="12-latest" -p BASE_IMAGE_NAME="postgresql-12-rhel7" -p BASE_IMAGE_TAG="latest" -p BASE_IMAGE_REPO="registry.redhat.io/rhscl/" -p SOURCE_REPOSITORY_URL="https://github.com/BCDevOps/backup-container.git" -p SOURCE_REPOSITORY_REF="master" -p SOURCE_CONTEXT_DIR="docker" | oc -n $(BUILD_NAMESPACE) apply -f -
@@ -190,7 +220,21 @@ deploy-api:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying API with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f openshift/api-deploy.yml -p NAME=$(API) -p HOST_NAME=$(APP_HOST) -p DB_SERVICE=$(DB_SERVICE_NAME) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" -p KEYCLOAK_URL=$(KC_AUTH_URL)  -p DB_NAME=$(DB_NAME) -p DEPLOYMENT_ENV=$(DEPLOYMENT_ENV) -p DEPLOYMENT_ENV_HIDDEN_FLAG=$(DEPLOYMENT_ENV_HIDDEN_FLAG)| oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/api-deploy.yml \
+		-p NAME=$(API) \
+		-p HOST_NAME=$(APP_HOST) \
+		-p DB_SERVICE=$(DB_SERVICE_NAME) \
+		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+		-p IMAGE_STREAM_TAG="$(API):$(BUILD_TAG)" \
+		-p KEYCLOAK_URL=$(KC_AUTH_URL)  \
+		-p DB_NAME=$(DB_NAME) \
+		-p DEPLOYMENT_ENV=$(DEPLOYMENT_ENV) \
+		-p DEPLOYMENT_ENV_HIDDEN_FLAG=$(DEPLOYMENT_ENV_HIDDEN_FLAG) \
+		-p SS_API_PASSWORD=$(SS_API_PASSWORD) \
+		-p SS_API_USERNAME=$(SS_API_USERNAME) \
+		-p MAP_BOX_TOKEN=$(MAP_BOX_TOKEN) \
+		-p GOOGLE_API_KEY=$(GOOGLE_API_KEY) \
+		| oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(API))
 
 deploy-app:
@@ -198,16 +242,32 @@ deploy-app:
 	test -n "$(BUILD_NAMESPACE)"
 	test -n "$(BRANCH)"
 	@echo "+\n++ Deploying APP with tag: $(BUILD_TAG)\n+"
-	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml -p NAME=$(APP) -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
+	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
+		-p NAME=$(APP) \
+		-p HOST_NAME=$(APP_HOST) \
+		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+		-p IMAGE_STREAM_TAG="$(APP):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(APP))
 
-deploy-keycloak:
-	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
-	$(call rollout_and_wait,dc/keycloak)
+# deploy-proxied-app:
+# 	test -n "$(NAMESPACE)"
+# 	test -n "$(BUILD_NAMESPACE)"
+# 	test -n "$(BRANCH)"
+# 	@echo "+\n++ Deploying proxied APP with tag: $(BUILD_TAG) to proxied-$(APP_HOST) \n+"
+# 	@oc -n $(NAMESPACE) process -f openshift/app-deploy.yml \
+# 		-p NAME=$(APP_PROXIED) \
+# 		-p HOST_NAME=proxied-$(APP_HOST) \
+# 		-p BUILD_NAMESPACE=$(BUILD_NAMESPACE) \
+# 		-p IMAGE_STREAM_TAG="$(APP_PROXIED):$(BUILD_TAG)" | oc -n $(NAMESPACE) apply -f -
+# 	$(call rollout_and_wait,dc/$(APP_PROXIED))
 
-deploy-keycloak-nginx:
-	@oc process -f openshift/keycloak-nginx-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KC_NGINX_IMAGE_NAME):latest | oc apply -f -
-	$(call rollout_and_wait,dc/keycloak-nginx)
+# deploy-keycloak:
+# 	@oc process -f openshift/keycloak-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KEYCLOAK_IMAGE_NAME):latest | oc apply -f -
+# 	$(call rollout_and_wait,dc/keycloak)
+
+# deploy-keycloak-nginx:
+# 	@oc process -f openshift/keycloak-nginx-deploy.yml -p HOST_NAME=$(APP_HOST) -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=$(KC_NGINX_IMAGE_NAME):latest | oc apply -f -
+# 	$(call rollout_and_wait,dc/keycloak-nginx)
 
 deploy-patroni:
 	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -

@@ -93,13 +93,13 @@ parameters:
   - name: BASE_IMAGE_TAG
     required: true
   - name: CPU_LIMIT
-    value: "2"
+    value: "4"
   - name: MEMORY_LIMIT
-    value: "4Gi"
+    value: "8Gi"
   - name: CPU_REQUEST
-    value: "1"
+    value: "4"
   - name: MEMORY_REQUEST
-    value: "2Gi"
+    value: "8Gi"
   - name: ARG_KEY_1
     value: __DUMMY_1
   - name: ARG_KEY_2

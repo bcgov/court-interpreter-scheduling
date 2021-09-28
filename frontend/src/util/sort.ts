@@ -1,10 +1,17 @@
 import { Interpreter, Language } from 'constants/interfaces'
+import { getUnixTime } from 'date-fns';
 
 const fieldSort = (field: string) =>
   (a: any, b: any): number =>
     a[field] === b[field]
       ? 0
       : a[field] > b[field] ? 1 : -1
+
+const objectFieldSort = (field: string, key: string) =>
+  (a: any, b: any): number =>
+    a[field][key] === b[field][key]
+      ? 0
+      : a[field][key] > b[field][key] ? 1 : -1
 
 const arrayFieldSort = (field: string, index: number, subField: string) =>
   (a: any, b: any): number =>
@@ -32,6 +39,14 @@ const languageArraySort = (language: string, subField: string = 'level') => {
   }
 }
 
+const bookingDateSort = (a: any, b: any) => {
+  // compares first date in array
+  const aDate = getUnixTime(new Date(a.dates[0].date));
+  const bDate = getUnixTime(new Date(b.dates[0].date));
+  if (aDate === bDate) return 0;
+  return aDate > bDate ? 1 : -1;
+}
+
 const levelSort = (interpreters: Interpreter[], language: string) => {
   const mapped = interpreters.map(
     (interpreter: Interpreter, index: number) => ({
@@ -46,6 +61,8 @@ const levelSort = (interpreters: Interpreter[], language: string) => {
 export {
   fieldSort,
   arrayFieldSort,
+  objectFieldSort,
+  bookingDateSort,
   languageArraySort,
   levelSort,
 }

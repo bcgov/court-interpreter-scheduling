@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
 import CalendarIcon from '@material-ui/icons/CalendarToday';
@@ -11,6 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { getLocations } from 'util/apiHelper';
+import { Interpreter, Location } from 'constants/interfaces';
 
 import {
   StyledFormControl,
@@ -23,15 +25,29 @@ import EditBookingDates from 'components/form/inputs/EditBookingDates';
 
 import { Booking, BookingDate, SearchParams } from 'constants/interfaces';
 import { ErrorMessage, Field, useFormikContext, FieldProps } from 'formik';
-import { fixLanguageName } from 'constants/languages';
+import {
+  AutoCompleteField,
+  ACFC,
+} from 'components/form/inputs/AutoCompleteField';
+import { AutoCompleteLanguage } from 'components/form/inputs/AutocompleteLanguage';
+import { InterpretForOptions, MethodOfAppearanceOptions, RequestedByOptions } from 'constants/booking';
+
+const ACField = AutoCompleteField as ACFC<Location>;
+const ACStringField = AutoCompleteField as ACFC<string>;
 
 type GridItemInputProps = {
   name: string;
   label: string;
   rows?: any;
+  placeholder?: string;
 };
 
-const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
+const StyledField = ({
+  name,
+  label,
+  rows = { xs: 6 },
+  placeholder,
+}: GridItemInputProps) => (
   <Grid item {...rows}>
     <StyledFormControl>
       <StyledLabel htmlFor={name}>{label}</StyledLabel>
@@ -41,11 +57,15 @@ const StyledField = ({ name, label, rows = { xs: 6 } }: GridItemInputProps) => (
             id={name}
             variant="outlined"
             size="small"
+            placeholder={placeholder}
             {...field}
             {...props}
           />
         )}
       </Field>
+      <ErrorMessage name={name}>
+        {(msg) => <div style={{ color: '#D0454C' }}>{msg}</div>}
+      </ErrorMessage>
     </StyledFormControl>
   </Grid>
 );
@@ -93,14 +113,16 @@ const StyledSelect = ({
   options = [],
   name,
   rows = { xs: 6 },
+  label,
 }: {
   options: string[];
   name: string;
   rows?: GridItemInputProps['rows'];
+  label?: string;
 }) => (
   <Grid item {...rows}>
     <StyledFormControl>
-      <StyledLabel htmlFor={name}>{name}</StyledLabel>
+      <StyledLabel htmlFor={label || name}>{label || name}</StyledLabel>
       <StyledNativeSelect
         input={
           <Field
@@ -119,7 +141,6 @@ const StyledSelect = ({
           </option>
         ))}
       </StyledNativeSelect>
-      <ErrorMessage name={name} />
     </StyledFormControl>
   </Grid>
 );
@@ -159,11 +180,20 @@ export default function BookingInputs({
   booking,
   edit,
 }: {
-  interpreter?: any;
+  interpreter?: Interpreter;
   search?: SearchParams;
   booking?: Booking;
   edit?: boolean;
 }) {
+  const [locations, setLocations] = useState<Location[]>([]);
+  useEffect(() => {
+    async function fetchLocation() {
+      const fetchedLocations = await getLocations();
+      setLocations(fetchedLocations);
+    }
+    fetchLocation();
+  }, []);
+
   return (
     <Grid container spacing={4}>
       <StyledSelect
@@ -187,11 +217,19 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledField
-        name="registry"
-        label="Registry Location"
-        rows={{ xs: 6, lg: 5 }}
-      />
+
+      {/* location */}
+      <Grid item xs={6}>
+        <ACField
+          name="locationId"
+          label="Registry Location"
+          options={locations}
+          getOptionLabel={(option) => option.name}
+          defaultValue={booking?.location || search?.location}
+          onChange={(form) => (event, value) =>
+            form.setFieldValue('locationId', value?.id)}
+        />
+      </Grid>
 
       <StyledField
         name="file"
@@ -201,34 +239,57 @@ export default function BookingInputs({
       <Hidden mdDown>
         <Grid item xs={3} />
       </Hidden>
-      <StyledField
+
+      <StyledSelect
+        rows={{ xs: 6, lg: 3 }}
         name="interpretFor"
         label="Interpret For"
-        rows={{ xs: 6, lg: 3 }}
+        options={InterpretForOptions}
       />
 
       <StyledField name="caseName" label="Case Name" />
-      <StyledField
+
+      <StyledSelect
+        rows={{ xs: 6, lg: 3 }}
         name="requestedBy"
         label="Requested By"
-        rows={{ xs: 6, lg: 3 }}
+        options={RequestedByOptions}
       />
 
-      {edit ? (
-        <StyledField name="language" label="Language" />
-      ) : (
-        <StyledSelect
-          name="language"
-          options={interpreter?.languages
-            .map(fixLanguageName)
-            .map((l: { languageName: string }) => l.languageName)}
-        />
-      )}
+      {/** Language auto complete */}
+      {
+        <Grid item xs={6}>
+          <StyledFormControl>
+            <StyledLabel htmlFor="language">Language</StyledLabel>
+            <AutoCompleteLanguage
+              name="language"
+              initialValue={
+                booking?.language ||
+                search?.language ||
+                interpreter?.languages[0]?.languageName
+              }
+            />
+          </StyledFormControl>
+        </Grid>
+      }
 
       <StyledRadios />
 
-      <StyledField name="reason" label="Reason" />
+      <StyledField name="reason" label="Reason Code" placeholder="FA, HR" />
       <StyledField name="prosecutor" label="Federal Prosecutor Name" />
+
+       {/* Method of Appearance */}
+       <Grid item xs={6}>
+        <ACStringField
+          name="methodOfAppearance"
+          label="Method of Appearance"
+          options={MethodOfAppearanceOptions}
+          getOptionLabel={(option) => option}
+          defaultValue={booking?.methodOfAppearance || MethodOfAppearanceOptions[0]}
+          onChange={(form) => (event, value) =>
+            form.setFieldValue('methodOfAppearance', value)}
+        />
+      </Grid>
 
       <Grid item xs={6}>
         <StyledFormControl>

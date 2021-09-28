@@ -66,6 +66,19 @@ describe('Languages', () => {
     ]);
   });
 
+  it(`/GET languages names`, async () => {
+    await repository.save([{ name: 'French' }, { name: 'Chinese' }, { name: 'Asl' }]);
+
+    const { body } = await request
+      .agent(app.getHttpServer())
+      .get('/language/names')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(HttpStatus.OK);
+
+    expect(body).toEqual(['French', 'Chinese', 'ASL'].sort());
+  });
+
   it('should create a language', async () => {
     const dto = new CreateLanguageDto();
     dto.name = 'French';

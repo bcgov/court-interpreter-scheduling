@@ -1,5 +1,15 @@
 import { BookingEntity } from 'src/booking/entities/booking.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { InterpreterEventEntity } from 'src/event/entities/interpreter-event.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  AfterLoad,
+} from 'typeorm';
+import { parse } from 'date-fns';
 
 import { InterpreterRO } from '../ro/interpreter.ro';
 
@@ -34,6 +44,12 @@ export class InterpreterEntity {
     (booking: BookingEntity) => booking.interpreter,
   )
   bookings: BookingEntity[];
+
+  @OneToMany(
+    type => InterpreterEventEntity,
+    (event: InterpreterEventEntity) => event.interpreter,
+  )
+  events: InterpreterEventEntity[];
 
   @Column({ nullable: true })
   address: string;
@@ -101,6 +117,19 @@ export class InterpreterEntity {
   @Column({ nullable: true, name: 'page12_contract' })
   page12ContractReceived: string;
 
+  @Column({
+    nullable: true,
+    name: 'site_code',
+  })
+  siteCode: string;
+
+  // relation pseudo columns
+  @Column({ nullable: true, select: false, insert: false, readonly: true })
+  intpAddr?: string;
+
+  @Column({ nullable: true, select: false, insert: false, readonly: true })
+  distance?: number;
+
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -111,6 +140,21 @@ export class InterpreterEntity {
   })
   updatedAt: Date;
 
+  requireForceUpdate = false;
+
+  @AfterLoad()
+  checkCRCDate() {
+    if (this.criminalRecordCheck && !this.criminalRecordCheckDate) {
+      try {
+        const dateObject = parse(this.criminalRecordCheck, 'dd-MMM-yy', new Date());
+        if (dateObject.toString() !== 'Invalid Date') {
+          this.criminalRecordCheckDate = dateObject;
+          this.requireForceUpdate = true;
+        }
+      } catch (exc) {}
+    }
+  }
+
   toResponseObject(): InterpreterRO {
     return {
       id: this.id,
@@ -119,6 +163,7 @@ export class InterpreterEntity {
       languages: this.languages
         .map((intLang: InterpreterLanguageEntity) => intLang.toResponseObject())
         .sort((a, b) => a.level - b.level),
+      events: this.events?.map(e => e.toResponseObject()),
       bookings: this.bookings,
       address: this.address,
       city: this.city,
@@ -135,6 +180,9 @@ export class InterpreterEntity {
       comments: this.comments,
       adminComments: this.adminComments,
       contractExtension: this.contractExtension,
+      siteCode: this.siteCode,
+      intpAddr: this.intpAddr,
+      distance: this.distance,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

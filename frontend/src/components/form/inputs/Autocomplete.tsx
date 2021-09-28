@@ -8,11 +8,13 @@ export default function AutocompleteInput({
   options,
   initialValue,
   transform,
+  disableHackFix,
 }: {
   fieldName: string;
   options: string[];
   initialValue?: string;
   transform?: (value: string | null) => any;
+  disableHackFix?: boolean;
 }) {
   const [field, , helpers] = useField(fieldName);
   useEffect(() => {
@@ -21,6 +23,7 @@ export default function AutocompleteInput({
         ? helpers.setValue(transform(initialValue))
         : helpers.setValue(initialValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValue]);
   return (
     <Autocomplete
@@ -28,9 +31,16 @@ export default function AutocompleteInput({
       getOptionLabel={(option) => option}
       size="small"
       inputValue={field.value}
-      onChange={(event, value) =>
-        transform ? helpers.setValue(transform(value)) : helpers.setValue(value)
-      }
+      onChange={(event, value) => {
+        if (!value && !disableHackFix) {
+          // fix the null error
+          helpers.setValue('');
+          return;
+        }
+        transform
+          ? helpers.setValue(transform(value))
+          : helpers.setValue(value);
+      }}
       renderInput={(params) => (
         <StyledTextField {...params} variant="outlined" {...field} />
       )}

@@ -7,10 +7,11 @@ configure({ axios, cache: false });
 
 function successInterceptor(request: AxiosRequestConfig) {
   if (request.headers) {
-    request.headers['Authorization'] = `Bearer ${keycloak?.token}`;
+    keycloak().updateToken(30);
+    request.headers['Authorization'] = `Bearer ${keycloak()?.token}`;
   } else {
     request.headers = {
-      Authorization: `Bearer ${keycloak?.token}`,
+      Authorization: `Bearer ${keycloak()?.token}`,
     };
   }
   return request;
@@ -37,7 +38,7 @@ const axiosPatch = axios.create({
   },
 });
 
-const axiosGet = axios.create({
+export const axiosGet = axios.create({
   method: 'GET',
 });
 
@@ -56,6 +57,15 @@ axiosPatch.interceptors.request.use(successInterceptor);
 axiosGet.interceptors.request.use(successInterceptor);
 axiosFileGet.interceptors.request.use(successInterceptor);
 axiosDelete.interceptors.request.use(successInterceptor);
+
+export function axiosGetter() {
+  return {
+    axiosGet,
+    axiosPost,
+    axiosPatch,
+    axiosFileGet,
+  };
+}
 
 export const useAxiosPost = makeUseAxios({
   cache: false,

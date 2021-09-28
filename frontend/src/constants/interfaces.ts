@@ -9,6 +9,8 @@ export type BookingBase = {
   reason: string;
   prosecutor: string;
   comment: string;
+  methodOfAppearance?: string;
+  location: Location;
 };
 
 export interface BookingCreate extends BookingBase {
@@ -35,16 +37,32 @@ export enum BookingStatus {
   CANCELLED = 'Cancelled',
 }
 
+export const BookingStatusColor = {
+  [BookingStatus.PENDING]:  '#FCBA19',
+  [BookingStatus.CANCELLED]: '#FF8686',
+  [BookingStatus.BOOKED]: '#58CB7D',
+}
+
+
 export type BookingDate = {
   date: Date;
   period?: BookingPeriod;
   arrivalTime?: Date;
 };
 
+export interface Location {
+  id: number;
+  name: string;
+  locationCode: string;
+  addressLine1: string;
+  city: string;
+  postalCode: string;
+}
+
 export type SearchParams = {
   language: string;
   level: string[];
-  city: string;
+  location: Location | null;
   dates: Array<BookingDate>;
 };
 
@@ -57,6 +75,13 @@ export type InterpreterSearchParams = {
   active?: boolean;
   criminalRecordCheck?: Date;
 };
+
+export type BookingSearchParams = {
+  dates?: Array<BookingDate>;
+  interpreter?: string;
+  file?: string;
+  locationId?: number;
+}
 
 export enum Level {
   one = 1,
@@ -111,4 +136,29 @@ export interface InterpreterCreate extends InterpreterBase {
 export interface Interpreter extends InterpreterBase {
   languages: Language[];
   bookings: Booking[];
+  distance?: number;
+  conflicts?: Conflict[];
+}
+
+export interface UserResponse {
+  id: string;
+  location: Location;
+}
+
+export interface Event {
+  field: string;
+  subfield?: string;
+  language?: string;
+  previous: string;
+  updated: string;
+  createdAt: Date;
+}
+
+export interface BookingEvent extends Event {
+  user: string;
+}
+
+export interface Conflict {
+  file: string;
+  location: string;
 }

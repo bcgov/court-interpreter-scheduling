@@ -1,5 +1,3 @@
-import { LanguageBase } from './interfaces';
-
 export const languages = [
   'Afghani-Dari',
   'Albanian',
@@ -56,7 +54,6 @@ export const languages = [
   'Lithuanian',
   'Malay',
   'Malayalam',
-  'Mandarin',
   'Mandarin',
   'Nepali',
   'Oromo',
