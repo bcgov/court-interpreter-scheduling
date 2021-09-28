@@ -353,7 +353,7 @@ export class BookingService {
     } else {
       setCell2({ row: 15, column: 'S', value: 0 });
     }
- 
+
     // Set the Expenses Travel Kilometres Rate to 0.55 if distance > 32 and set the total distance if available
     if (distance && Number(distance?.distance) > 32) {
       // Expenses, Travel Kilometres, Rate
