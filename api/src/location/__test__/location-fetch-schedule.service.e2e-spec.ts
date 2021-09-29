@@ -19,7 +19,7 @@ describe('LocationFetchScheduleService e2e tests', () => {
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.DB_HOST,
-          port: parseInt(process.env.DB_PORT, 10) || 5432,
+          port: parseInt(process.env.DB_PORT, 10) || 5435,
           username: process.env.POSTGRESQL_USER,
           password: process.env.POSTGRESQL_PASSWORD,
           database: process.env.DB_TEST_DATABASE,
