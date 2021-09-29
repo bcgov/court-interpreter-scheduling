@@ -6,7 +6,7 @@ import { tearDownDatabase } from 'typeorm-seeding';
 import { LocationEntity } from '../entities/location.entity';
 
 import { activeLocationList, LocationFetchScheduleService } from '../location-fetch-schedule.service';
-import { SSCourtLocation } from '../sheriff-scheduling-api';
+import { SSCourtLocation } from '../jc-interface-location-api';
 
 dotenv.config();
 

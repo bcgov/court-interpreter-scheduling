@@ -57,16 +57,7 @@ jobs:
       - name: Build APP/Front-end Images
         working-directory: "./devops"
         run: |
-          make oc-build-app
-      # - name: Build proxied APP/Front-end Images
-      #   working-directory: "./devops"
-      #   run: |
-      #     if [ "$BRANCH" != "prod" ]
-      #     then
-      #       export HOST_PREFIX=$BRANCH-
-      #     fi
-      #     echo "HOST_PREFIX=$HOST_PREFIX"
-      #     make oc-build-proxied-app
+          make oc-build-app      
 
   # Deploy API/App images in Dev
   deployDev:
@@ -82,6 +73,9 @@ jobs:
       KC_AUTH_URL: https://dev.oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: dev
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
+      JC_INTERFACE_API_LOCATION_URL: ${{ secrets.JC_INTERFACE_API_LOCATION_URL }}
+      JC_INTERFACE_API_USERNAME: ${{ secrets.JC_INTERFACE_API_USERNAME }}
+      JC_INTERFACE_API_PASSWORD: ${{ secrets.JC_INTERFACE_API_PASSWORD }}      
       MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
       GOOGLE_API_KEY : ${{ secrets.GOOGLE_API_KEY }}
     needs:
@@ -118,10 +112,6 @@ jobs:
         working-directory: "./devops/"
         run: |
           make oc-deploy-app
-      # - name: Deploy proxied APP
-      #   working-directory: "./devops/"
-      #   run: |
-      #     make oc-deploy-proxied-app
 
   # Deploy API/App images in prod
   deployProd:
@@ -136,8 +126,9 @@ jobs:
       KC_AUTH_URL: https://oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: prod
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
-      SS_API_USERNAME: ${{ secrets.SS_API_USERNAME }}
-      SS_API_PASSWORD: ${{ secrets.SS_API_PASSWORD }}
+      JC_INTERFACE_API_LOCATION_URL: ${{ secrets.JC_INTERFACE_API_LOCATION_URL }}
+      JC_INTERFACE_API_USERNAME: ${{ secrets.JC_INTERFACE_API_USERNAME }}
+      JC_INTERFACE_API_PASSWORD: ${{ secrets.JC_INTERFACE_API_PASSWORD }}
       MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
       GOOGLE_API_KEY : ${{ secrets.GOOGLE_API_KEY }}
     needs:
@@ -188,6 +179,9 @@ jobs:
       KC_AUTH_URL: https://test.oidc.gov.bc.ca/auth/
       DEPLOYMENT_ENV: test
       DEPLOYMENT_ENV_HIDDEN_FLAG: prod
+      JC_INTERFACE_API_LOCATION_URL: ${{ secrets.JC_INTERFACE_API_LOCATION_URL }}
+      JC_INTERFACE_API_USERNAME: ${{ secrets.JC_INTERFACE_API_USERNAME }}
+      JC_INTERFACE_API_PASSWORD: ${{ secrets.JC_INTERFACE_API_PASSWORD }}      
       MAP_BOX_TOKEN : ${{ secrets.MAP_BOX_TOKEN }}
       GOOGLE_API_KEY : ${{ secrets.GOOGLE_API_KEY }}
     needs:
