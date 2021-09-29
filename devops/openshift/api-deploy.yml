@@ -180,11 +180,8 @@ parameters:
   - name: DEPLOYMENT_ENV_HIDDEN_FLAG
     required: true
   - name: JC_INTERFACE_API_LOCATION_URL
-    required: true
   - name: JC_INTERFACE_API_USERNAME
-    required: true
   - name: JC_INTERFACE_API_PASSWORD
-    required: true
   - name: MAP_BOX_TOKEN
     required: true
   - name: GOOGLE_API_KEY
