@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LocationEntity } from './entities/location.entity';
 
-import { fetchCourtLocations, SSCourtLocation } from './sheriff-scheduling-api';
+import { fetchCourtLocations, SSCourtLocation } from './jc-interface-location-api';
 
 const mbxGeoCode = require('@mapbox/mapbox-sdk/services/geocoding');
 

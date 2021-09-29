@@ -365,7 +365,7 @@ export class BookingService {
         value: distance.distance
       });
     }
- 
+
   /*
   Section 6 - Authorizations
    */

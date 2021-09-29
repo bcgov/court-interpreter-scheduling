@@ -59,10 +59,21 @@ objects:
                   value: ${DEPLOYMENT_ENV}
                 - name: DEPLOYMENT_ENV_HIDDEN_FLAG
                   value: ${DEPLOYMENT_ENV_HIDDEN_FLAG}
-                - name: SS_API_PASSWORD
-                  value: ${SS_API_PASSWORD}
-                - name: SS_API_USERNAME
-                  value: ${SS_API_USERNAME}
+                - name: JC_INTERFACE_API_LOCATION_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_LOCATION_URL
+                      name: api
+                - name: JC_INTERFACE_API_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_USERNAME
+                      name: api
+                - name: JC_INTERFACE_API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_PASSWORD
+                      name: api
                 - name: MAP_BOX_TOKEN
                   value: ${MAP_BOX_TOKEN}
                 - name: GOOGLE_API_KEY
@@ -177,8 +188,6 @@ parameters:
     required: true
   - name: DEPLOYMENT_ENV_HIDDEN_FLAG
     required: true
-  - name: SS_API_PASSWORD
-  - name: SS_API_USERNAME
   - name: MAP_BOX_TOKEN
     required: true
   - name: GOOGLE_API_KEY
