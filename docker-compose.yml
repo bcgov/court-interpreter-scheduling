@@ -11,25 +11,25 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "4000:4000"
-    environment:
-      - JWT_SECRET=123_JWT_SECRET!
-      - NODE_ENV=development
-      - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - POSTGRESQL_DATABASE=nest_api_dev
-      - POSTGRESQL_USER=court_nestapi
-      - POSTGRESQL_PASSWORD=court_nest123
-      - DB_TEST_DATABASE=nest_api_test
-      - DEPLOY_ENV=node-api-dev
-      - MERGE_BRANCH=dev
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - KEYCLOAK_CLIENT=court-client
-      - KEYCLOAK_FE_CLIENT=court-fe
-      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
-      - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    # environment:
+    #   - JWT_SECRET=123_JWT_SECRET!
+    #   - NODE_ENV=development
+    #   - DB_CONNECTION=pgsql
+    #   - DB_HOST=postgres
+    #   - DB_PORT=5432
+    #   - POSTGRESQL_DATABASE=nest_api_dev
+    #   - POSTGRESQL_USER=court_nestapi
+    #   - POSTGRESQL_PASSWORD=court_nest123
+    #   - DB_TEST_DATABASE=nest_api_test
+    #   - DEPLOY_ENV=node-api-dev
+    #   - MERGE_BRANCH=dev
+    #   - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+    #   - KEYCLOAK_CLIENT=court-client
+    #   - KEYCLOAK_FE_CLIENT=court-fe
+    #   - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
+    #   - KEYCLOAK_SECRET=${KEYCLOAK_SECRET}
+    #   - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
+    #   - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     expose:
       - "4000"
     volumes:
@@ -52,25 +52,26 @@ services:
     ports:
       - "5435:5432"
     environment:
-      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations","sonar"
+      - POSTGRES_MULTIPLE_DATABASES="nest_api_dev","nest_api_test","court_migrations"
+      # ,"sonar"
       - POSTGRES_USER=court_nestapi
       - POSTGRES_PASSWORD=court_nest123
     networks:
       - backend
 
-  ### Schemaspy #############################
-  schemaspy:
-    image: schemaspy/schemaspy:latest
-    user: ${UID}:${GID}
-    depends_on:
-      - postgres
-      - api
-    command: ["-configFile", "/config/schemaspy.properties"]
-    volumes:
-      - ./api/documentation/schema:/output
-      - ./api/schemaspy.properties:/config/schemaspy.properties
-    networks:
-      - backend
+  # ### Schemaspy #############################
+  # schemaspy:
+  #   image: schemaspy/schemaspy:latest
+  #   user: ${UID}:${GID}
+  #   depends_on:
+  #     - postgres
+  #     - api
+  #   command: ["-configFile", "/config/schemaspy.properties"]
+  #   volumes:
+  #     - ./api/documentation/schema:/output
+  #     - ./api/schemaspy.properties:/config/schemaspy.properties
+  #   networks:
+  #     - backend
 
   ### Frontend ##############################
   client:
@@ -80,8 +81,8 @@ services:
       context: ./frontend/
       dockerfile: ./Dockerfile
       args:
-        REACT_APP_REALM_AUTH_URL: http://keycloak.local.freshworks.club:8080/auth
-        REACT_APP_API_HOST: http://keycloak.local.freshworks.club:4000/api/v1
+        REACT_APP_REALM_AUTH_URL: https://oidc.gov.bc.ca/auth
+        REACT_APP_API_HOST: https://court-interpreter-scheduling.apps.silver.devops.gov.bc.ca/api/v1
     ports:
       - "8888:5000"
     expose:
@@ -89,72 +90,72 @@ services:
     networks:
       - backend
 
-  ### Sonarqube #############################
-  sonarqube:
-    image: sonarqube:8.2-community
-    environment:
-      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonar
-      SONAR_JDBC_USERNAME: court_nestapi # database username
-      SONAR_JDBC_PASSWORD: court_nest123 # database password
-    ports:
-      - "9000:9000"
-    depends_on:
-      - postgres
-    networks:
-      - backend
+  # ### Sonarqube #############################
+  # sonarqube:
+  #   image: sonarqube:8.2-community
+  #   environment:
+  #     SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonar
+  #     SONAR_JDBC_USERNAME: court_nestapi # database username
+  #     SONAR_JDBC_PASSWORD: court_nest123 # database password
+  #   ports:
+  #     - "9000:9000"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - backend
 
-  ### KeyCloak ##############################
-  keycloak:
-    image: jboss/keycloak
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: nest_api_dev
-      DB_USER: court_nestapi
-      DB_PASSWORD: court_nest123
-      KEYCLOAK_LOGLEVEL: DEBUG
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
-      KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
-    ports:
-      - 8080:8080
-    expose:
-      - "8080"
-    volumes:
-      - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
-      - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
-    depends_on:
-      - postgres
-    networks:
-      backend:
-        aliases:
-          - keycloak.local.freshworks.club
+  # ### KeyCloak ##############################
+  # keycloak:
+  #   image: jboss/keycloak
+  #   environment:
+  #     DB_VENDOR: POSTGRES
+  #     DB_ADDR: postgres
+  #     DB_DATABASE: nest_api_dev
+  #     DB_USER: court_nestapi
+  #     DB_PASSWORD: court_nest123
+  #     KEYCLOAK_LOGLEVEL: DEBUG
+  #     KEYCLOAK_USER: admin
+  #     KEYCLOAK_PASSWORD: password
+  #     KEYCLOAK_IMPORT: /tmp/test-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+  #   ports:
+  #     - 8080:8080
+  #   expose:
+  #     - "8080"
+  #   volumes:
+  #     - ./.docker/keycloak/test-realm.json:/tmp/test-realm.json
+  #     - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     backend:
+  #       aliases:
+  #         - keycloak.local.freshworks.club
 
-  ### KeyCloak for Cypress ##################
-  keycloak-cypress:
-    image: jboss/keycloak
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: nest_api_dev
-      DB_USER: court_nestapi
-      DB_PASSWORD: court_nest123
-      KEYCLOAK_LOGLEVEL: DEBUG
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
-      KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
-    ports:
-      - 8080:8080
-    expose:
-      - "8080"
-    volumes:
-      - ./.docker/keycloak/realm-testing.json:/tmp/realm-testing.json
-    depends_on:
-      - postgres
-    networks:
-      backend:
-        aliases:
-          - keycloak.local.freshworks.club
+  # ### KeyCloak for Cypress ##################
+  # keycloak-cypress:
+  #   image: jboss/keycloak
+  #   environment:
+  #     DB_VENDOR: POSTGRES
+  #     DB_ADDR: postgres
+  #     DB_DATABASE: nest_api_dev
+  #     DB_USER: court_nestapi
+  #     DB_PASSWORD: court_nest123
+  #     KEYCLOAK_LOGLEVEL: DEBUG
+  #     KEYCLOAK_USER: admin
+  #     KEYCLOAK_PASSWORD: password
+  #     KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
+  #   ports:
+  #     - 8080:8080
+  #   expose:
+  #     - "8080"
+  #   volumes:
+  #     - ./.docker/keycloak/realm-testing.json:/tmp/realm-testing.json
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     backend:
+  #       aliases:
+  #         - keycloak.local.freshworks.club
 
 networks:
   backend:
