@@ -41,4 +41,4 @@ export async function fetchCourtLocations(): Promise<SSCourtLocation[]> {
   //   console.error(err)
   //   throw err;
   // }
-} 
+}
