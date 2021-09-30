@@ -31,7 +31,7 @@ export default function Header() {
       headerText = `Upcoming Bookings - Victoria`
       break
     case '/directory':
-      headerText = `Search Interpreters`
+      headerText = ``
       break
     case '/interpreters':
       headerText = `Manage Interpreters`
