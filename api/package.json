@@ -113,4 +113,4 @@
     "coverageDirectory": "../documentation/jest",
     "testEnvironment": "node"
   }
-}
+} 
