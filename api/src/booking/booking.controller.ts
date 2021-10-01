@@ -32,6 +32,7 @@ import { EventService } from 'src/event/event.service'
 import { User as IUser } from 'src/common/interface/user.interface';
 import { DBUser } from 'src/common/decorator/user.decorator';
 import { DistanceService } from 'src/distance/distance.service';
+import { RoleMatchingMode, Roles } from 'nest-keycloak-connect';
 
 @ApiTags('booking')
 @Controller('booking')
@@ -44,6 +45,7 @@ export class BookingController {
   ) {}
 
   @Post()
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async create(@Body() createBookingDto: CreateBookingDto): Promise<BookingRO> {
     let bookingDates: BookingDateEntity[];
     const { dates } = createBookingDto;
@@ -65,22 +67,26 @@ export class BookingController {
   */
 
   @Get()
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async findAll(@Query() paginateBookingQueryDto: PaginateBookingQueryDto): Promise<SuccessResponse<BookingRO[]>> {
     return await this.bookingService.findAll(Object.assign(paginateBookingQueryDto, { isStartFromToday: true }));
   }
 
   @Post('search')
   @HttpCode(200)
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async search(@Body() paginateBookingQueryDto: PaginateBookingQueryDto): Promise<SuccessResponse<BookingRO[]>> {
     return await this.bookingService.findAll(paginateBookingQueryDto);
   }
 
   @Get(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   findOne(@Param('id') id: string) {
     return this.bookingService.findOne(+id);
   }
 
   @Patch(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async update(
     @Param('id') id: string,
     @Body() updateBookingDto: UpdateBookingDto,
@@ -122,6 +128,7 @@ export class BookingController {
   }
 
   @Delete(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   remove(@Param('id') id: string) {
     return this.bookingService.remove(+id);
   }
@@ -129,6 +136,7 @@ export class BookingController {
   @Get('/export/:id')
   @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   @Header('Content-Disposition', 'attachment; filename=test.xlsx')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async exportExcel(@Param('id') id: string, @Res() res: Response) {
     // query booking
     const booking = await this.bookingService.findOne(+id);
