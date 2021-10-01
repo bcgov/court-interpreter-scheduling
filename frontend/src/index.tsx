@@ -29,7 +29,16 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
       {...rest}
       render={(props) =>
         keycloak?.authenticated ? (
-          <Component {...props} />
+          keycloak?.hasRealmRole('cis-user') || keycloak?.hasRealmRole('cis-admin')  ?
+          (
+            <Component {...props} />
+          )
+            : 
+            (
+              <Box p={2}>
+              <h4>Please request access from an administrator.</h4>
+              </Box>
+            )
         ) : (
           <Redirect to="/login" />
         )

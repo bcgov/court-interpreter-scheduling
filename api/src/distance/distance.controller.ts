@@ -6,6 +6,7 @@ import { InterpreterService } from 'src/interpreter/interpreter.service';
 import { LocationService } from 'src/location/location.service';
 import { DistanceService } from './distance.service';
 import { FileUploadDistanceDto } from './dto/file-upload-distance.dto';
+import { RoleMatchingMode, Roles } from 'nest-keycloak-connect';
 
 @Controller('distance')
 export class DistanceController {
@@ -16,6 +17,7 @@ export class DistanceController {
   ) {}
 
   @Get('generate')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async generateDistance() {
     const courtAddrs = await this.locationService.findAllAddress();
     const intpAddrs = await this.interpreterService.findAllAddress();
@@ -25,6 +27,7 @@ export class DistanceController {
 
   @Post('csv')
   @UseInterceptors(FileInterceptor('file'))
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async uploadCSV(@UploadedFile() file: Express.Multer.File, @Body() fileUploadDistanceDto: FileUploadDistanceDto) {
     try {
       /**
