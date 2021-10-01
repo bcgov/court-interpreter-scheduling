@@ -39,6 +39,7 @@ import { mappingDirectories } from 'src/utils';
 import { FileUploadInterpreterDto } from './dto/file-upload-interpreter.dto';
 import { DistanceService } from 'src/distance/distance.service';
 import { EventService } from 'src/event/event.service';
+import { RoleMatchingMode, Roles } from 'nest-keycloak-connect';
 
 const KEYS_TO_ANONYMISE: Partial<Record<keyof CreateInterpreterDto, ValueType>> = {
   address: 'address',
@@ -65,6 +66,7 @@ export class InterpreterController {
   ) {}
 
   @Post()
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async create(@Body() createInterpreterDto: CreateInterpreterDto): Promise<InterpreterRO> {
     let interpreterLangs: InterpreterLanguageEntity[] = [];
 
@@ -84,6 +86,7 @@ export class InterpreterController {
   }
 
   @Post('/upload')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async upload(
     @Body() createInterpreterDtos: CreateInterpreterDto[],
     @Query() { anonymise }: { anonymise?: boolean },
@@ -97,6 +100,7 @@ export class InterpreterController {
   }
 
   @Get()
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async findAll(
     @Query() paginateInterpreterQueryDto: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
@@ -106,6 +110,7 @@ export class InterpreterController {
   @Get('/file-export')
   @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   @Header('Content-Disposition', 'attachment; filename=interpreter.xlsx')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async export(@Res() resp: Response) {
     const workbook = await this.interpreterService.exportToWorkbook();
 
@@ -114,6 +119,7 @@ export class InterpreterController {
 
   @Post('search')
   @HttpCode(200)
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async search(
     @Body() paginateInterpreterQueryDTO: PaginateInterpreterQueryDto,
   ): Promise<SuccessResponse<InterpreterRO>> {
@@ -133,12 +139,14 @@ export class InterpreterController {
   }
 
   @Get(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async findOne(@Param('id') id: string): Promise<InterpreterEntity> {
     // TODO ask if this should not use `toResponseObject()`
     return await this.interpreterService.findOne(+id);
   }
 
   @Patch(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async update(@Param('id') id: string, @Body() updateInterpreterDto: UpdateInterpreterDto): Promise<void> {
     const { languages, ...updateDto } = updateInterpreterDto;
     const interpreter = await this.interpreterService.findOne(+id);
@@ -171,12 +179,14 @@ export class InterpreterController {
   }
 
   @Delete(':id')
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async remove(@Param('id') id: string): Promise<void> {
     await this.interpreterService.remove(+id);
   }
 
   @Post('csv')
   @UseInterceptors(FileInterceptor('file'))
+  @Roles({ roles: ['realm:cis-admin', 'realm:cis-user'], mode: RoleMatchingMode.ANY })
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body() fileUploadInterpreterDto: FileUploadInterpreterDto,
