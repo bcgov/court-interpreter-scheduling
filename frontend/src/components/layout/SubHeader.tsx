@@ -78,7 +78,7 @@ export default function Header() {
       <BCTabs value={activeTab} onChange={handleNav}>
         <WithFlagTab label="Bookings" value="/bookings" />
         <BCTab label="Search Interpreters" value="/create" />
-        {keycloak?.hasRealmRole('court-admin') && (
+        {keycloak?.hasRealmRole('cis-admin') && (
           <BCTab label="Interpreter Directory" value="/directory" />
         )}
       </BCTabs>

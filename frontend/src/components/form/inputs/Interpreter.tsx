@@ -245,7 +245,7 @@ export default function InterpreterInputs() {
           </Field>
         </StyledFormControl>
       </Grid>
-      {keycloak?.hasRealmRole('court-admin') ? (
+      {keycloak?.hasRealmRole('cis-admin') ? (
         <Grid item xs={8} lg={8}>
           <StyledFormControl>
             <StyledLabel htmlFor="adminComments">Admin Comment</StyledLabel>
