@@ -204,7 +204,7 @@ deploy-app:
 	$(call rollout_and_wait,dc/$(APP))
 
 deploy-patroni:
-	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-latest | oc apply -f -
+	@oc process -f openshift/patroni-deploy.yml -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p IMAGE_STREAM_TAG=patroni:12-stable | oc apply -f -
 
 deploy-db-backup:
 	@oc -n $(NAMESPACE) process -f openshift/db-backup-deploy.yml -p NAME=$(DB_BACKUP_APP) -p IMAGE_STREAM_TAG=$(DB_BACKUP_APP):12-latest -p BUILD_NAMESPACE=$(BUILD_NAMESPACE) -p BUILD_ID=$(BUILD_ID) -p DB_NAME=$(DB_NAME)  | oc -n $(NAMESPACE) apply -f -
