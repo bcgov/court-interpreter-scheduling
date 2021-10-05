@@ -9,7 +9,7 @@
 ```bash
 $ docker-compose -f docker-compose.dev.yml up -d
 ```
-
+ 
 NB: the frontend and api need to be run outside of Docker to take advantage of watch-mode for development
 
 - Login to keycloak to add yourself a new user:
