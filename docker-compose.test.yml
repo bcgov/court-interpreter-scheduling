@@ -13,24 +13,6 @@ services:
       - .env.test
     ports:
       - "4000:4000"
-    # environment:
-    #   - JWT_SECRET=123_JWT_SECRET!
-    #   - NODE_ENV=development
-    #   - DB_CONNECTION=pgsql
-    #   - DB_HOST=postgres
-    #   - DB_PORT=5432
-    #   - POSTGRESQL_DATABASE=nest_api_dev
-    #   - POSTGRESQL_USER=court_nestapi
-    #   - POSTGRESQL_PASSWORD=court_nest123
-    #   - DB_TEST_DATABASE=nest_api_test
-    #   - DEPLOY_ENV=node-api-dev
-    #   - MERGE_BRANCH=dev
-    #   - KEYCLOAK_REALM=court
-    #   - KEYCLOAK_CLIENT=court-client
-    #   - KEYCLOAK_AUTH_URL=http://keycloak.local.freshworks.club:8080/auth
-    #   - KEYCLOAK_SECRET=d0f59151-cd6c-415c-ba78-091bada8b017
-    #   - MAP_BOX_TOKEN=${MAP_BOX_TOKEN}
-    #   - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     expose:
       - "4000"
     volumes:
@@ -77,58 +59,12 @@ services:
     env_file: 
       - .env.test
     restart: always
-    # depends_on:
-    #   - keycloak
     ports:
       - "5000:5000"
     expose:
       - "5000"
     networks:
-      backend:
-        aliases:
-          - client.local.freshworks.club
-
-  # ### KeyCloak for Cypress ##################
-  # keycloak:
-  #   image: jboss/keycloak
-  #   environment:
-  #     DB_VENDOR: POSTGRES
-  #     DB_ADDR: postgres
-  #     DB_DATABASE: nest_api_dev
-  #     DB_USER: court_nestapi
-  #     DB_PASSWORD: court_nest123
-  #     KEYCLOAK_USER: admin
-  #     KEYCLOAK_PASSWORD: password
-  #     KEYCLOAK_IMPORT: /tmp/realm-testing.json -Dkeycloak.profile.feature.upload_scripts=enabled
-  #   ports:
-  #     - 8080:8080
-  #   expose:
-  #     - "8080"
-  #   volumes:
-  #     - ./.docker/keycloak/realm-testing.json:/tmp/realm-testing.json
-  #     - ./.docker/keycloak/create-users.sh:/opt/jboss/startup-scripts/create-users.sh
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     backend:
-  #       aliases:
-  #         - keycloak.local.freshworks.club
-
-  # ### Cypress ##############################
-  # cypress:
-  #   image: cypress
-  #   container_name: cypress
-  #   build: ./e2e
-  #   networks:
-  #     - backend
-  #   depends_on:
-  #     - keycloak
-  #   environment:
-  #     - CYPRESS_baseUrl=http://client.local.freshworks.club:5000
-  #   command: npx cypress run
-  #   volumes:
-  #     - ./e2e/cypress:/app/cypress
-  #     - ./e2e/cypress.json:/app/cypress.json
+      - backend
 
 networks:
   backend:
