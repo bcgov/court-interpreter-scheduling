@@ -1,0 +1,307 @@
+#!/bin/bash
+export MSYS_NO_PATHCONV=1
+set -e
+SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
+
+# =================================================================================================================
+# Usage:
+# -----------------------------------------------------------------------------------------------------------------
+usage () {
+  cat <<-EOF
+
+  Allows you to manage certain aspects of the application environment.
+
+  Usage: 
+    $0 [options] [commands]
+
+    buildandtag <tag/>
+      - Build the images for the project in OCP using the local working copy of the code.
+      - Tags the built images with the specified tag.
+      Example;
+        $0 -e tools buildAndTag efiling
+
+    build [<image/>]
+      - Build the images for the project in OCP using the local working copy of the code.
+      Examples;
+      - Build everything:
+        $0 -e tools build
+      - Build the web-runtime image only:
+        $0 -e tools build web-runtime
+      Images:
+      - web-artifacts
+      - web-runtime
+      - web
+      - api
+
+    tag <sourceTag/> <destinationTag/>
+      - Tags all of the application images.
+      Example;
+        $0 -e tools tag latest efiling
+
+    resetDatabase [<apiPodName/>] [<dbPodName/>]
+      - Reset the application database
+      Example;
+        $0 -e dev resetDatabase
+
+    listDatabases [<dbPodName/>]
+      - List the databases hosted on a given postgresql pod instance.
+      Example;
+        $0 -e dev listdatabases wallet
+
+    getRecordCounts <podName/> [<databaseName/>]
+      - Gets a list of tables and the total number of record in each table.
+        Examples;
+          $0 -e dev getrecordcounts wallet agent_indy_cat_wallet
+            - Get the record counts for the 'agent_indy_cat_wallet' database off the 'wallet' pod.
+
+          $0 -e dev getrecordcounts event-db
+          - Get the record counts for the '${POSTGRESQL_DATABASE}' (the pod's default database) database off the 'event-db' pod.
+
+    clean
+      - Deletes all application resources from a given environment.
+EOF
+}
+
+# =================================================================================================================
+# Process the local command line arguments and pass everything else along.
+# - The 'getopts' options string must start with ':' for this to work.
+# -----------------------------------------------------------------------------------------------------------------
+while [ ${OPTIND} -le $# ]; do
+  if getopts : FLAG; then
+    case ${FLAG} in
+      # Pass unrecognized options ...
+      \?) pass+=" -${OPTARG}" ;;
+    esac
+  else
+    # Pass unrecognized arguments ...
+    pass+=" ${!OPTIND}"
+    let OPTIND++
+  fi
+done
+
+# Pass the unrecognized arguments along for further processing ...
+shift $((OPTIND-1))
+set -- "$@" $(echo -e "${pass}" | sed -e 's/^[[:space:]]*//')
+# =================================================================================================================
+
+# -----------------------------------------------------------------------------------------------------------------
+# Define hook scripts:
+# - These must be defined before the main settings script 'settings.sh' is loaded.
+# -----------------------------------------------------------------------------------------------------------------
+onRequiredOptionsExist() {
+  (
+    if [ -z "${DEPLOYMENT_ENV_NAME}" ]; then
+      _red='\033[0;31m'
+      _nc='\033[0m' # No Color
+          echo -e "\n${_red}You MUST specify an environment name using the '-e' flag.${_nc}"
+          echo -e "${_red}Assuming a default would have unwanted consequences.${_nc}\n"
+          return 1
+        else
+          return 0
+    fi
+  )
+}
+
+onUsesCommandLineArguments() {
+  (
+    # This script is expecting command line arguments to be passed ...
+    return 0
+  )
+}
+
+# -----------------------------------------------------------------------------------------------------------------
+# Initialization:
+# -----------------------------------------------------------------------------------------------------------------
+# Load the project settings and functions ...
+_includeFile="ocFunctions.inc"
+_settingsFile="settings.sh"
+if [ ! -z $(type -p ${_includeFile}) ]; then
+  _includeFilePath=$(type -p ${_includeFile})
+  export OCTOOLSBIN=$(dirname ${_includeFilePath})
+
+  if [ -f ${OCTOOLSBIN}/${_settingsFile} ]; then
+    . ${OCTOOLSBIN}/${_settingsFile}
+  fi
+
+  if [ -f ${OCTOOLSBIN}/${_includeFile} ]; then
+    . ${OCTOOLSBIN}/${_includeFile}
+  fi
+else
+  _red='\033[0;31m'
+  _yellow='\033[1;33m'
+  _nc='\033[0m' # No Color
+  echo -e \\n"${_red}${_includeFile} could not be found on the path.${_nc}"
+  echo -e "${_yellow}Please ensure the openshift-developer-tools are installed on and registered on your path.${_nc}"
+  echo -e "${_yellow}https://github.com/BCDevOps/openshift-developer-tools${_nc}"
+fi
+
+# -----------------------------------------------------------------------------------------------------------------
+# Functions:
+# -----------------------------------------------------------------------------------------------------------------
+function resetDatabase() {
+  _apiPodName=${1}
+  _dbPodName=${2}
+  if [ -z "${_apiPodName}" ] || [ -z "${_dbPodName}" ]; then
+    echo -e \\n"resetDatabase; Missing parameter!"\\n
+    exit 1
+  fi
+
+  switchProject
+  exitOnError
+
+  dropAndRecreateDatabaseWithMigrations ${_apiPodName} ${_dbPodName}
+
+  echoWarning "\nThe project's database has been reset."
+}
+
+function cleanEnv() {
+  printAndAskToContinue "If you contiune all of the application resources will be perminently deleted from $(getProjectName)."
+  oc -n $(getProjectName) delete all,pvc,secret,networksecuritypolicies -l app=cis
+}
+
+function functionExists() {
+  (
+    if [ ! -z ${1} ] && type ${1} &>/dev/null; then
+      return 0
+    else
+      return 1
+    fi
+  )
+}
+
+function build-and-tag() {
+  (
+    _tag=${1}
+    
+    if [ -z "${_tag}" ]; then
+      echoError "\ntag; You MUST supply a tag.\n"
+      exit 1
+    fi
+
+    build-all
+    tag "latest" "${_tag}"
+  )
+}
+
+function build-all() {
+ build-web-artifacts
+ build-web-runtime
+ build-web
+ build-api
+}
+
+function build-web-artifacts() {
+  _namespace=$(getProjectName)
+  echo -e "\n\n===================================================================================================="
+  echo -e "Building the 'web-artifacts' image via binary build ..."
+  echo -e "----------------------------------------------------------------------------------------------------"
+  oc -n ${_namespace} start-build web-artifacts --follow=true --from-dir=.. --no-cache
+  echo -e "===================================================================================================="
+}
+
+function build-web-runtime() {
+  _namespace=$(getProjectName)
+  echo -e "\n\n===================================================================================================="
+  echo -e "Building the 'web-runtime' image via binary build ..."
+  echo -e "----------------------------------------------------------------------------------------------------"
+  oc -n ${_namespace} start-build web-runtime --follow=true --from-dir=.. --no-cache
+  echo -e "===================================================================================================="
+}
+
+function build-web() {
+  _namespace=$(getProjectName)
+  echo -e "\n\n===================================================================================================="
+  echo -e "Building the 'web' image via binary build ..."
+  echo -e "----------------------------------------------------------------------------------------------------"
+  oc -n ${_namespace} start-build web --follow=true --no-cache
+  echo -e "===================================================================================================="
+}
+
+function build-api() {
+  _namespace=$(getProjectName)
+  echo -e "\n\n===================================================================================================="
+  echo -e "Building the 'api' image via binary build ..."
+  echo -e "----------------------------------------------------------------------------------------------------"
+  oc -n ${_namespace} start-build api --follow=true --from-dir=.. --no-cache
+  echo -e "===================================================================================================="
+}
+
+function tag()
+{
+  (
+    _sourceTag=${1}
+    _destTag=${2}
+    
+    if [ -z "${_sourceTag}" ] || [ -z "${_destTag}" ]; then
+      echoError "\ntag; You MUST supply both 'source' and 'destination' tag.\n"
+      exit 1
+    fi
+
+    images="db api web"
+    for image in ${images}; do
+      # Tag images ...
+      echo -e "\nTagging ${image}:${_sourceTag} as ${image}:${_destTag} ..."
+      oc -n ${TOOLS} tag ${image}:${_sourceTag} ${image}:${_destTag}
+    done
+  )
+}
+# =================================================================================================================
+
+pushd ${SCRIPT_HOME} >/dev/null
+_cmd=$(toLower ${1})
+shift
+
+case "${_cmd}" in
+  resetdatabase)
+    # Allow all of the other parameters to be overridden ...
+    apiPodName=${1:-api}
+    dbPodName=${2:-db}
+    resetDatabase "${apiPodName}" "${dbPodName}"
+    ;;
+  listdatabases)
+    dbPodName=${1:-db}
+    listDatabases "${dbPodName}"
+    ;;
+  getrecordcounts)
+    if (( $# <= 1 )); then
+      dbPodName=${1}
+    else
+      dbPodName=${1}
+      databaseName=${2}
+    fi
+    getRecordCounts "${dbPodName}" "${databaseName}"
+    ;;
+  clean)
+    cleanEnv
+    ;;
+  build)
+    buildImage=$(toLower ${1})
+    shift || buildImage=all
+    buildImage=$(echo ${buildImage} | sed s~^vcr-~~)
+    case "$buildImage" in
+      *=*)
+        buildImage=all
+        ;;
+    esac
+
+    if functionExists "build-${buildImage}"; then
+      eval "build-${buildImage}"
+    else
+      echo -e "Error:\nThe build function, build-${buildImage}, does not exist.  Please check your build parameters and try again.\nUse '-h' to get full help details."
+      exit 1
+    fi
+    ;;
+  tag)
+    tag "${1}" "${2}"
+    ;;
+  buildandtag)
+    build-and-tag "${@}"
+    ;;
+
+  *)
+    echoWarning "Unrecognized command; ${_cmd}"
+    globalUsage
+    ;;
+esac
+
+popd >/dev/null
