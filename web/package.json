@@ -55,6 +55,7 @@
   },
   "scripts": {
     "start": "PORT=8081 react-scripts start",
+    "start-dev": "PORT=8081 PUBLIC_URL=court-interpreter-scheduling react-scripts start",
     "build": "react-scripts build",
     "build-prod": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",

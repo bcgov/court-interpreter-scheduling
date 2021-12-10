@@ -43,6 +43,7 @@ services:
       - DEFAULT_BASE_URL=${DEFAULT_BASE_URL}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DATA_SECURITY_KEY=${DATA_SECURITY_KEY}
+      - URL_SCHEME=${URL_SCHEME}
       
     volumes:
       - ../api/api:/opt/app-root/src/api

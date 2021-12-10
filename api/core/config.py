@@ -21,11 +21,17 @@ class Settings(BaseSettings):
 
     FRONTEND_HOST_URL = os.getenv('FRONTEND_HOST_URL','http://localhost:8081')
     DEFAULT_BASE_URL = os.getenv('DEFAULT_BASE_URL' ,'/court-interpreter-scheduling')
+    URL_SCHEME = os.getenv('URL_SCHEME' ,'http')
     
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY','5e094faa6ca25ahc81816')
     DATA_SECURITY_KEY = os.getenv('DATA_SECURITY_KEY','1tjhb7a9563je93f7099')
     
+    # # JC Interface
+    JC_INTERFACE_API_LOCATION_URL = os.getenv('JC_INTERFACE_API_LOCATION_URL')
+    JC_INTERFACE_API_USERNAME = os.getenv('JC_INTERFACE_API_USERNAME')
+    JC_INTERFACE_API_PASSWORD = os.getenv('JC_INTERFACE_API_PASSWORD')
 
+    
     # # API
     API_PREFIX = os.getenv('API_PREFIX', '/api/v1')
     API_VERSION = '0.1.0'

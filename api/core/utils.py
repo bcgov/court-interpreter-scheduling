@@ -1,5 +1,5 @@
 from starlette.requests import Request
-# from core.config import settings
+from core.config import settings
 
 def getBaseUrl(request: Request):
     print("__UTIL_____")
@@ -11,10 +11,10 @@ def getBaseUrl(request: Request):
         and ":" not in request.headers["x-forwarded-host"]
     ):
         print("__FORWARDED__")
-        return f"{request.url.scheme}://{request.headers['x-forwarded-host']}:{request.headers['x-forwarded-port']}"
+        return f"{settings.URL_SCHEME}://{request.headers['x-forwarded-host']}:{request.headers['x-forwarded-port']}"
     else:
         print("__regular__")
-        return f"{request.url.scheme}://{request.url.netloc}"
+        return f"{settings.URL_SCHEME}://{request.url.netloc}"
 
 
 def getLoginUrl(request: Request):
