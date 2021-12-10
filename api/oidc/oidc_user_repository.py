@@ -8,7 +8,7 @@ from models.user_model import UserModel
 from models.oidc_model import OidcUserModel
 from datetime import datetime
 
-
+# claim = {'sub': '123456-3456-56756-5676-122343253', 'email_verified': False, 'name': 'Full name', 'preferred_username': 'x@bceid', 'given_name': 'first', 'family_name': 'last', 'email': 'abc@gmail.com'}
 
 def oidc_user_repository(claims, db: Session):
     print("____REPOSITORY________")
@@ -59,8 +59,9 @@ def update_oidc_user_from_claims(oidc_user_query, claims, db: Session):
     updating_user_query = db.query(UserModel).filter(UserModel.id == jointuser.id)      
     updating_user_query.update({
         "email": claims.get('email'),
-        "universal_id": claims.get('universal-id'),
-        "idir_userid": claims.get('idir_userid')
+        "display_name": claims.get('name'),
+        "first_name": claims.get('given_name'),
+        "last_name": claims.get('family_name'),
     })
     db.commit()
     print("___REFRESH__")
@@ -69,15 +70,11 @@ def update_oidc_user_from_claims(oidc_user_query, claims, db: Session):
 
 def get_or_create_user(username, claims, db: Session):
     username = username.decode("utf-8")
-    universal_id = claims.get('universal-id')
-    idir_userid = claims.get('idir_userid')
 
-    if idir_userid:
-        users_query = db.query(UserModel).filter(UserModel.idir_userid == idir_userid)
-    elif universal_id:
-        users_query = db.query(UserModel).filter(UserModel.universal_id == universal_id)
+    if username:
+        users_query = db.query(UserModel).filter(UserModel.username == username)   
     else:
-        raise HTTPException(status.HTTP_403_FORBIDDEN,'No universal-id or idir_userid provided.')
+        raise HTTPException(status.HTTP_403_FORBIDDEN,'No Username.')
 
     print("__GET_OR_CREATE__USER__")
 
@@ -89,11 +86,9 @@ def get_or_create_user(username, claims, db: Session):
             last_name = claims.get("family_name") or "",    
             email =  claims.get("email"),
             is_staff =  False,   
-            date_joined = datetime.now(),
-            universal_id = universal_id,
-            idir_userid =  idir_userid,
+            date_joined = datetime.now(),            
             authorization_id = claims.get("sub"),
-            display_name = claims.get("display_name") 
+            display_name = claims.get("name") or claims.get("family_name") or "Not defined",
         )        
         db.add(new_user)
         db.commit()

@@ -76,10 +76,10 @@ export default function Header() {
   return (
     <ContentBox className={classes.subheader}>
       <BCTabs value={activeTab} onChange={handleNav}>
-        <WithFlagTab label="Bookings" value="/bookings" />
-        <BCTab label="Search Interpreters" value="/create" />
+        <WithFlagTab label="Bookings" value="/home/bookings" />
+        <BCTab label="Search Interpreters" value="/home/create" />
         {keycloak?.hasRealmRole('cis-admin') && (
-          <BCTab label="Interpreter Directory" value="/directory" />
+          <BCTab label="Interpreter Directory" value="/home/directory" />
         )}
       </BCTabs>
     </ContentBox>

@@ -8,8 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_sqlalchemy import DBSessionMiddleware
 from core.config import settings
 from core.multi_database_middleware import DATABASE_URL
+
 from api.api import router as api_router
 from oidc.oidc_router import router as oidc_router
+from jc_interface.jc_router import router as jc_router
+
 from core.auth import logged_in_user
 from api.schemas import UserSchema
 
@@ -37,9 +40,10 @@ def get_application() -> FastAPI:
         allow_headers=["*"],
     )
 
-    new_app.add_middleware(SessionMiddleware, secret_key="test secret key")
+    new_app.add_middleware(SessionMiddleware, secret_key="store secret key")
     new_app.include_router(oidc_router)
     new_app.include_router(api_router)
+    new_app.include_router(jc_router)
 
     new_app.add_middleware(DBSessionMiddleware, db_url=DATABASE_URL)
 
@@ -50,12 +54,18 @@ def get_application() -> FastAPI:
 app = get_application()
 
 
-@app.get('/api/v1/health')
+@app.get('/api/v1/call-auth-test')
 def checkHealth(user: UserSchema = Depends(logged_in_user)):
-    print("______Health check for OpenShift______")  
+    print("______checking added Auth______")  
     print(user)  
-    return "Healthy"
+    return "Test User Auth"
 
+
+
+@app.get('/api/v1/health')
+def checkHealth():
+    #______Health check for OpenShift______
+    return "Healthy"
 
 def start_main():
 
