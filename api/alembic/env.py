@@ -19,9 +19,11 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from models import user_model, cis, oidc_model
+from models import user_model, cis, oidc_model, language_model, interpreter_model
 target_metadata = user_model.Base.metadata
 target_metadata = oidc_model.Base.metadata
+target_metadata = language_model.Base.metadata
+target_metadata = interpreter_model.Base.metadata
 target_metadata = cis.Base.metadata
 
 
