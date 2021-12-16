@@ -13,7 +13,8 @@ pyjwt
 cryptography
 itsdangerous
 jose
-
+pandas
+openpyxl
 
 
 
