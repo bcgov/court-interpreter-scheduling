@@ -1,30 +1,30 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { configure, makeUseAxios } from 'axios-hooks';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
+// import createAuthRefreshInterceptor from 'axios-auth-refresh';
+// import {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
 
 axios.defaults.baseURL = '/api/v1' //`${process.env.PUBLIC_URL}/api/v1`;
 
 configure({ axios, cache: false });
 
-const options: AxiosAuthRefreshOptions = {
-  statusCodes: [ 401, 403 ]
-}
+// const options: AxiosAuthRefreshOptions = {
+//   statusCodes: [ 401, 403 ]
+// }
 
-const refreshAuthLogic = (failedRequest: any) => axios.get('/token').then(response => {
+// const refreshAuthLogic = (failedRequest: any) => axios.get('/token').then(response => {
 
-  if (response.status == 200 && response.data.access_token == null) {
-      window.location.replace(response.data.login_url);
-      return Promise.resolve();
-  }
-  localStorage.setItem('token', response.data.access_token);
+//   if (response.status == 200 && response.data.access_token == null) {
+//       window.location.replace(response.data.login_url);
+//       return Promise.resolve();
+//   }
+//   localStorage.setItem('token', response.data.access_token);
 
-  if (failedRequest != null)
-      failedRequest.response.config.headers['Authorization'] = 'Bearer ' + response.data.access_token;
-  return Promise.resolve();
-});
+//   if (failedRequest != null)
+//       failedRequest.response.config.headers['Authorization'] = 'Bearer ' + response.data.access_token;
+//   return Promise.resolve();
+// });
 
-createAuthRefreshInterceptor(axios, refreshAuthLogic, options);
+// createAuthRefreshInterceptor(axios, refreshAuthLogic, options);
 
 function successInterceptor(request: AxiosRequestConfig) {
   console.log("intercept")
@@ -40,13 +40,36 @@ function successInterceptor(request: AxiosRequestConfig) {
 }
 
 function successResponse(response: any){
+  console.log("successResponse")
   console.log(response)
   return response
 }
 
+// function errorResponse(error: any){
+//   console.log("errorResponse")
+//   return axios(error.config)
+// }
+
+
 function errorResponse(error: any){
-  return axios(error.config)
-}
+  if (error.config && error.response && error.response.status === 401) {
+      return axios.get('/token').then( (response: any) => {
+        if (response.status == 200 && response.data.access_token == null) {
+          window.location.replace(response.data.login_url);
+        }
+        localStorage.setItem('token', response.data.access_token);
+        error.config.headers['Authorization'] = 'Bearer ' + response.data.access_token;
+        return axios.request(error.config);
+      });
+  }
+
+  return Promise.reject(error);
+};
+
+// function errorRequest(error: any){
+//   console.log("errorREQUEST")
+//   return axios(error.config)
+// }
 
 
 const axiosPost = axios.create({

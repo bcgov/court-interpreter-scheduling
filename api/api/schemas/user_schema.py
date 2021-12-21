@@ -1,6 +1,7 @@
 import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
+from .role_schema import RoleSchema
 
 class UserSchema(BaseModel):
     authorization_id: str = Field(alias="user_id")
@@ -9,8 +10,8 @@ class UserSchema(BaseModel):
     display_name: str   
     last_login: datetime.datetime    
     email: str    
-    universal_id: Optional[str] = None
-    idir_userid: Optional[str] = None
+    role: List[RoleSchema] = []
+
     class Config():
         orm_mode = True
         allow_population_by_field_name = True

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
-import { KeycloakInstance } from 'keycloak-js';
+import { useAxiosGet } from 'hooks/axios';
 
-import { makeStyles, Tab, Tabs, withStyles, Theme } from '@material-ui/core';
-
+import { makeStyles, Tab, Tabs, withStyles, Theme,Box, CircularProgress } from '@material-ui/core';
+ 
 import ContentBox from 'components/layout/ContentBox';
 import { withFlag } from 'components/reusable/withFlag';
 
@@ -59,7 +58,9 @@ export default function Header() {
   const location = useLocation();
   const history = useHistory();
   const classes = useStyles();
-  const { keycloak } = useKeycloak<KeycloakInstance>();
+
+  const [{ data, error, loading }, getUserInfo] = useAxiosGet('/user-info/');
+
   const [activeTab, setActiveTab] = useState(location.pathname);
 
   const handleNav = (event: React.ChangeEvent<{}>, value: any) => {
@@ -73,12 +74,19 @@ export default function Header() {
     }
   }, [location.pathname, activeTab]);
 
+  if (loading) 
+    return (
+      <Box p={2}>
+        <CircularProgress />
+      </Box>
+    );
+  
   return (
     <ContentBox className={classes.subheader}>
       <BCTabs value={activeTab} onChange={handleNav}>
         <WithFlagTab label="Bookings" value="/home/bookings" />
         <BCTab label="Search Interpreters" value="/home/create" />
-        {keycloak?.hasRealmRole('cis-admin') && (
+        { data?.role?.filter((role: {id: number, role_name: string; }) => {return role.role_name=='cis-admin'}).length >0  && (
           <BCTab label="Interpreter Directory" value="/home/directory" />
         )}
       </BCTabs>

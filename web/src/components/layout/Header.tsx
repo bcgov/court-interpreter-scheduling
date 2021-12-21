@@ -1,13 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { useKeycloak } from '@react-keycloak/web'
-import { KeycloakInstance } from 'keycloak-js'
-
-import { makeStyles, Typography } from '@material-ui/core'
+import { makeStyles, Typography, Box, CircularProgress } from '@material-ui/core'
 import ContentBox from 'components/layout/ContentBox'
 
 import logo from '../../assets/images/logo-banner.svg'
+
+import { useAxiosGet } from 'hooks/axios';
 
 const useStyles = makeStyles({
   header: {
@@ -69,8 +68,19 @@ const useStyles = makeStyles({
 })
 
 export default function Header() {
+  const [{ data, error, loading }] = useAxiosGet('/user-info/logout-route');
+
   const classes = useStyles()
-  const { keycloak } = useKeycloak<KeycloakInstance>()
+
+  if (loading) 
+    return (
+      <Box p={2}>
+        <CircularProgress />
+      </Box>
+    );
+
+  console.log(data)
+
   return (
     <ContentBox className={classes.header}>
       <Link to='/' className={classes.logoWrapper}>
@@ -82,9 +92,9 @@ export default function Header() {
         </Typography>
       </div>
       {
-        keycloak?.authenticated && (
+        data?.logout_url && (
           <div>
-            <Typography onClick={() => keycloak?.logout()} className='pointer'>Logout</Typography>
+            <Typography onClick={() => window.location.replace(data.logout_url)} className='pointer'>Logout</Typography>
           </div>
         )
       }

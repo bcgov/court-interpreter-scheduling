@@ -12,7 +12,7 @@ const Login = () => {
 
   const [{ data, error, loading }, getUserInfoFromBackend] = useAxiosGet('/user-info/',{manual:true});
   
-  const GetUserInfo = async () => {    
+  const GetUserInfo = async () => {   
     getUserInfoFromBackend()
   }
   console.log(data)

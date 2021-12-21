@@ -17,6 +17,8 @@ class UserModel(Base):
     date_joined =  Column(DateTime(timezone=True), server_default=func.now(), nullable=False)    
     authorization_id =   Column(String, unique=False, index=False, nullable=True)
     display_name = Column(String, unique=False, index=False, nullable=True)
-    user_role = Column(String, unique=False, index=True,  nullable=True)
+    location = Column(String, unique=False, index=False, nullable=True)
 
     oidcuser = relationship("OidcUserModel", back_populates="user")
+
+    role = relationship("RoleModel",secondary='user_role', back_populates="user")
