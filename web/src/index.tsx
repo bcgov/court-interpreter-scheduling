@@ -3,13 +3,6 @@ import { render } from 'react-dom';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 import { useAxiosGet } from 'hooks/axios';
-// import {
-//   ReactKeycloakProvider as KeycloakProvider,
-//   useKeycloak,
-// } from '@react-keycloak/web';
-// import keycloakClient from './keycloak';
-// import { KeycloakInstance } from 'keycloak-js';
-// import * as localStorageUtil from 'util/localStorageUtil';
 
 import { ThemeProvider, Box, CircularProgress } from '@material-ui/core';
 import 'react-nice-dates/build/style.css';
@@ -18,7 +11,6 @@ import '@bcgov/bc-sans/css/BCSans.css';
 import { theme } from 'theme';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
-// import { loadavg } from 'os';
 
 const Login = lazy(() => import('views/login'));
 const App = lazy(() => import('App'));
@@ -36,29 +28,29 @@ const PrivateRoute: React.FC<any> = ({ component: Component, ...rest }) => {
 
   if (error) return <Redirect to="/" />
   if (!data?.user_id) return <Redirect to="/" />
-
+      
   return (
     <Route
       {...rest}
       render={(props) =>
-        // keycloak?.authenticated ? (
-          <Component {...props} />
-          // keycloak?.hasRealmRole('cis-user') || keycloak?.hasRealmRole('cis-admin')  ?
-          // (
-          //   <Component {...props} />
-          // )
-          //   : 
-          //   (
-          //     <Box p={2}>
-          //     <h4>Please request access from an administrator.</h4>
-          //     </Box>
-          //   )
-        // ) : (
-        //   <Redirect to="/" />
-        // )
+        data?.user_id? (          
+          data.role.filter((role: {id: number, role_name: string; }) => {return (role.role_name=='cis-user' || role.role_name=='cis-admin')}).length >0  ?
+          (
+            <Component {...props} />
+          )
+            : 
+            (
+              <Box p={2}>
+              <h4>Please request access from an administrator.</h4>
+              </Box>
+            )
+        ) : (
+          <Redirect to="/" />
+        )
       }
     />
   );
+  
 };
 
 const Routes = () => {

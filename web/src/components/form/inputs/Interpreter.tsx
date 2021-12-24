@@ -8,8 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { useKeycloak } from '@react-keycloak/web';
-import { KeycloakInstance } from 'keycloak-js';
 
 import {
   StyledFormControl,
@@ -21,6 +19,7 @@ import { SingleCheck } from 'components/form/inputs/Check';
 import { StyledFormDatePicker } from 'components/form/inputs/StyledDateAndTimeInput';
 
 import { Interpreter, Language } from 'constants/interfaces';
+import { useAxiosGet } from 'hooks/axios';
 
 type GridItemInputProps = {
   name: string;
@@ -95,8 +94,8 @@ const StyledDateField = ({
 };
 
 export default function InterpreterInputs() {
+  const [{ data, error, loading }, getUserInfo] = useAxiosGet('/user-info/');
   const { values } = useFormikContext<Interpreter>();
-  const { keycloak } = useKeycloak<KeycloakInstance>();
   return (
     <Grid container spacing={6}>
       <StyledField
@@ -245,7 +244,7 @@ export default function InterpreterInputs() {
           </Field>
         </StyledFormControl>
       </Grid>
-      {keycloak?.hasRealmRole('cis-admin') ? (
+      {data.role.filter((role: {id: number, role_name: string; }) => {return role.role_name=='cis-admin'}).length >0  ? (
         <Grid item xs={8} lg={8}>
           <StyledFormControl>
             <StyledLabel htmlFor="adminComments">Admin Comment</StyledLabel>

@@ -37,15 +37,16 @@ class OpenIDConnect:
         self.client_secret = client_secret
         self.hint = hint
 
-        endpoints = self.to_dict_or_raise(
-            requests.get(self.well_known_pattern.format(host, realm))
-        )
+        endpoints = self.to_dict_or_raise(requests.get(self.well_known_pattern.format(host, realm)))
+        # print("______________________________ENDPOINTS____________________")
+        # print(endpoints)
         self.issuer = endpoints.get("issuer")
         self.authorization_endpoint = endpoints.get("authorization_endpoint")
         self.token_endpoint = endpoints.get("token_endpoint")
         self.userinfo_endpoint = endpoints.get("userinfo_endpoint")
         self.jwks_uri = endpoints.get("jwks_uri")
         self.logout_uri = endpoints.get("end_session_endpoint")
+        self.introspection_uri = endpoints.get("introspection_endpoint")
 
     def authenticate(
         self, code: str, callback_uri: str, include_user_info: bool = False
@@ -104,8 +105,25 @@ class OpenIDConnect:
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
         }        
-        response = requests.post( self.token_endpoint, data=data, headers=headers )
+        response = requests.post( self.token_endpoint, data=data, headers=headers )        
+
         return self.to_dict_or_raise(response)
+       
+
+    def get_introspection_info(self, token) -> str:
+        
+        authstring = "Bearer " +token
+        headers = {"Authorization": authstring}
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,            
+            'token': token,
+        } 
+        response = requests.post(self.introspection_uri, data=data, headers=headers )
+        if response.status_code ==200 :
+            return self.to_dict_or_raise(response)
+        else:
+            return {'realm_access':{'roles':[]}}
 
     def obtain_validated_token(self, alg: str, id_token: str) -> Dict:
         if alg == "HS256":
@@ -162,7 +180,11 @@ class OpenIDConnect:
         bearer = "Bearer {}".format(access_token)
         headers = {"Authorization": bearer}
         response = requests.get(self.userinfo_endpoint, headers=headers)
-        return self.to_dict_or_raise(response)
+        if response.status_code ==200 :
+            return self.to_dict_or_raise(response)
+        else:
+            return {'sub':''}
+        
 
     @staticmethod
     def validate_sub_matching(token: Dict, user_info: Dict) -> None:

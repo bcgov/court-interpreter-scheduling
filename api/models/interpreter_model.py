@@ -9,8 +9,7 @@ class InterpreterModel(Base):
     created_at =   Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)      
     updated_at =  Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_by =  Column(String, unique=False, index=False, nullable=True)
-
-    level =  Column(String, unique=False, index=False, nullable=True)    
+  
     last_name = Column(String, unique=False, index=False, nullable=True)
     first_name = Column(String, unique=False, index=False, nullable=True)
     address = Column(String, unique=False, index=False, nullable=True)
@@ -36,8 +35,10 @@ class InterpreterModel(Base):
     address_longitude = Column(Float, unique=False, index=False, nullable=True) 
     address_latitude = Column(Float, unique=False, index=False, nullable=True)
 
-    languages = relationship('LanguageModel', secondary='interpreter_language', backref='interpreter')
+    disabled = Column(Boolean, nullable=False, default=False)
 
+    # languages = relationship('LanguageModel', cascade = 'all,delete', secondary='interpreter_language', backref='interpreter')
+    languages = relationship("InterpreterLanguageModel",overlaps="interpreters, language", back_populates="interpreter_relation")
 
     
        

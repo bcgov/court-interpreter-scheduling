@@ -1,21 +1,20 @@
-"""add_interpreter_visual_table
+"""added_interpreter_language_table
 
-Revision ID: 9f63c1b92396
-Revises: 8788b5f3f2db
-Create Date: 2021-12-15 15:53:59.962454
+Revision ID: e15dc8fa858a
+Revises: 8706729850e5
+Create Date: 2021-12-22 13:31:54.010280
 
 """
 from alembic import op
 import sqlalchemy as sa
-
 import json
 import os
 import pandas
 from datetime import date
 
 # revision identifiers, used by Alembic.
-revision = '9f63c1b92396'
-down_revision = '8788b5f3f2db'
+revision = 'e15dc8fa858a'
+down_revision = '8706729850e5'
 branch_labels = None
 depends_on = None
 
@@ -27,7 +26,6 @@ def upgrade():
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_by', sa.String(), nullable=True),
-        sa.Column('level', sa.String(), nullable=True),
         sa.Column('last_name', sa.String(), nullable=True),
         sa.Column('first_name', sa.String(), nullable=True),
         sa.Column('address', sa.String(), nullable=True),
@@ -43,13 +41,14 @@ def upgrade():
         sa.Column('comments', sa.String(), nullable=True),
         sa.Column('crc_check_date', sa.DateTime(timezone=True), nullable=True),
         sa.Column('crc_comment', sa.String(), nullable=True),
-        sa.Column('contract_valid', sa.Boolean(), nullable=False, default=False),
+        sa.Column('contract_valid', sa.Boolean(), nullable=False),
         sa.Column('contract_comment', sa.String(), nullable=True),
-        sa.Column('completed_training', sa.Boolean(), nullable=False, default=False),
+        sa.Column('completed_training', sa.Boolean(), nullable=False),
         sa.Column('fax', sa.String(), nullable=True),
         sa.Column('admin_comment', sa.String(), nullable=True),
         sa.Column('address_longitude', sa.Float(), nullable=True),
         sa.Column('address_latitude', sa.Float(), nullable=True),
+        sa.Column('disabled', sa.Boolean(), nullable=False, default=False),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_interpreter_id'), 'interpreter', ['id'], unique=False)
@@ -68,14 +67,17 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('language_id', sa.Integer(), nullable=True),
         sa.Column('interpreter_id', sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(['interpreter_id'], ['interpreter.id'], ),
-        sa.ForeignKeyConstraint(['language_id'], ['language.id'], ),
+        sa.Column('level', sa.Integer(), nullable=False),
+        sa.Column('language', sa.String(), nullable=True),
+        sa.Column('comment_on_level', sa.String(), nullable=True),
+        sa.ForeignKeyConstraint(['interpreter_id'], ['interpreter.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['language_id'], ['language.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_interpreter_language_id'), 'interpreter_language', ['id'], unique=False)
     # ### end Alembic commands ###
 
-    # data seed 
+    # Seed Data
     make_relations(interpreter_table, language_table, interpreter_language_table)   
 
 def seed_interpreter_spoken():
@@ -251,12 +253,9 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
         
         id_langguage=[lang for lang in languages_data if lang['name'].upper() == interpreter['language'].upper().strip()][0]['id']
         
-        interpreter['first_name'].upper().strip()
-
         same_interpreter = [inter for inter in interpreters if (
             inter['first_name'].upper().strip() == interpreter['first_name'].upper().strip() and
-            inter['last_name'].upper().strip() == interpreter['last_name'].upper().strip() and
-            inter['level'].upper().strip() == interpreter['level'].upper().strip()
+            inter['last_name'].upper().strip() == interpreter['last_name'].upper().strip()            
         )]
 
         id_interpreter = 0
@@ -267,8 +266,24 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
             id_interpreter = counter
         else:
             id_interpreter = same_interpreter[0]['id']
+
+        level_str = interpreter['level'].strip()
+        level=0
+        if level_str=="Level 1":
+            level=1
+        elif level_str=="Level 2":
+            level=2
+        elif level_str=="Level 3":
+            level=3
+        elif level_str=="Level 4":
+            level=4        
         
-        interpreter_language.append({'language_id':id_langguage, 'interpreter_id':id_interpreter})
+        interpreter_language.append({
+            'language_id':id_langguage, 
+            'interpreter_id':id_interpreter, 
+            'level':level, 
+            'language':interpreter['language'].strip()
+        })
         
     op.bulk_insert(interpreter_table, interpreters)
     op.bulk_insert(language_table, languages_data)
