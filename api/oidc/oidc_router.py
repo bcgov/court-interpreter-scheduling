@@ -50,12 +50,16 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     print(request.query_params.get("state"))    
     print("______request.session.STATE_____________")
     # print(request.session)
-    print(request.session["oidc_auth_state"])
+    # print(request.session["oidc_auth_state"])
 
     code = request.query_params.get("code")
-    
+    # logout=getLogoutUrl(request)
+    # return RedirectResponse(logout)
     if ("oidc_auth_state" not in request.session or request.session["oidc_auth_state"] != request.query_params.get("state")):        
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value.")
+        print("______Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value._____________")
+        logout=getLogoutUrl(request)
+        return RedirectResponse(logout)
+        # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value.")
     
     request.session.clear()
     

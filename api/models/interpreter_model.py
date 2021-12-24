@@ -35,6 +35,8 @@ class InterpreterModel(Base):
     address_longitude = Column(Float, unique=False, index=False, nullable=True) 
     address_latitude = Column(Float, unique=False, index=False, nullable=True)
 
+    disabled = Column(Boolean, nullable=False, default=False)
+
     # languages = relationship('LanguageModel', cascade = 'all,delete', secondary='interpreter_language', backref='interpreter')
     languages = relationship("InterpreterLanguageModel",overlaps="interpreters, language", back_populates="interpreter_relation")
 

@@ -10,7 +10,7 @@ class InterpreterLanguageModel(Base):
     language_id = Column(Integer, ForeignKey('language.id', ondelete="CASCADE"))
     interpreter_id = Column(Integer, ForeignKey('interpreter.id', ondelete="CASCADE"))
 
-    level = Column(String, unique=False) 
+    level = Column(Integer, unique=False) 
     language = Column(String, unique=False)
     comment_on_level = Column(String, unique=False)
 

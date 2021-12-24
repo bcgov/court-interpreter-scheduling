@@ -106,10 +106,9 @@ class OpenIDConnect:
             'refresh_token': refresh_token,
         }        
         response = requests.post( self.token_endpoint, data=data, headers=headers )        
-        if response.status_code ==200 :
-            return self.to_dict_or_raise(response)
-        else:
-            return {'access_token':''}
+
+        return self.to_dict_or_raise(response)
+       
 
     def get_introspection_info(self, token) -> str:
         
