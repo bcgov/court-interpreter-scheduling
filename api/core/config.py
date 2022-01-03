@@ -31,13 +31,22 @@ class Settings(BaseSettings):
     JC_INTERFACE_API_USERNAME = os.getenv('JC_INTERFACE_API_USERNAME')
     JC_INTERFACE_API_PASSWORD = os.getenv('JC_INTERFACE_API_PASSWORD')
 
-    
+    # # Efiling Hub
+    EFILING_HUB_API_BASE_URL = os.getenv('EFILING_HUB_API_BASE_URL')
+    EFILING_HUB_KEYCLOAK_CLIENT_ID = os.getenv('EFILING_HUB_KEYCLOAK_CLIENT_ID')
+    EFILING_HUB_KEYCLOAK_BASE_URL = os.getenv('EFILING_HUB_KEYCLOAK_BASE_URL')
+    EFILING_HUB_KEYCLOAK_SECRET = os.getenv('EFILING_HUB_KEYCLOAK_SECRET')
+    EFILING_HUB_KEYCLOAK_REALM = os.getenv('EFILING_HUB_KEYCLOAK_REALM')
+
     # # API
     API_PREFIX = os.getenv('API_PREFIX', '/api/v1')
     API_VERSION = '0.1.0'
     API_TITLE = 'Court Interpreter System API'
     API_DESCRIPTION = API_TITLE
    
+    # # Geo coordinate calls
+    GOOGLE_MAP_URL = os.getenv('GOOGLE_MAP_URL')
+    OPENROAD_MAP_URL = os.getenv('OPENROAD_MAP_URL')
 
     # # cors
     CORS_ORIGIN = str(os.getenv('CORS_ORIGIN', '*')).split(',')    
