@@ -19,13 +19,13 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from models import user_model, role_model, oidc_model, language_model, interpreter_model
+from models import user_model, role_model, oidc_model, language_model, interpreter_model, court_location_model
 target_metadata = user_model.Base.metadata
 target_metadata = oidc_model.Base.metadata
 target_metadata = language_model.Base.metadata
 target_metadata = interpreter_model.Base.metadata
 target_metadata = role_model.Base.metadata
-
+target_metadata = court_location_model.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

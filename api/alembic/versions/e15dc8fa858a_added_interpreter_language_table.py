@@ -82,7 +82,7 @@ def upgrade():
 
 def seed_interpreter_spoken():
     filepath = os.getcwd()+'/alembic/seeds/SpokenLanguageDirectoryOctober12_2021_Quartech.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021')
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     
@@ -153,7 +153,7 @@ def seed_interpreter_spoken():
 
 def seed_interpreter_visual():
     filepath = os.getcwd()+'/alembic/seeds/VisualLanguageInterpretersList_as_of_ September14_2021e.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021')
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     
@@ -228,7 +228,7 @@ def seed_interpreter_visual():
 
 def seed_languages():
     filepath = os.getcwd()+'/alembic/seeds/Languages.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='Sheet1')
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='Sheet1', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     name = json_content['name']

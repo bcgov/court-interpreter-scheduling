@@ -3,6 +3,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from api.schemas.language_schema import InterpreterLanguageSchema
+from api.schemas.location_schema import LocationSchema
 
 class InterpreterSchema(BaseModel):
     
@@ -40,5 +41,31 @@ class InterpreterSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
  
-    
-    
+class PageSchema(BaseModel):
+    page: int = 1
+    limit: int = 1000
+
+class InterpreterResponseSchema(BaseModel):
+    data: List[InterpreterSchema]
+    pagination: PageSchema
+    class Config():
+        orm_mode = True
+
+       
+class InterpreterRequestSchema(BaseModel):    
+    language:  Optional[str]
+    level: Optional[List[str]]
+    city: Optional[str]
+    dates: Optional[List[datetime]]
+    name: Optional[str]
+    keywords: Optional[str]
+    active: Optional[bool]
+    criminalRecordCheck: Optional[datetime]
+    courtAddr: Optional[str]
+    distanceLimit: Optional[bool]
+    location: Optional[LocationSchema]
+    # file: Optional[str]
+    # interpreter: Optional[str]
+    # isStartFromToday: Optional[bool]
+
+# payload_in_page_directory = criminalRecordCheck":"2021-12-25T03:39:00.000Z"} "Time is back utc. selected 2021-12-24T19:39Vancouver"
