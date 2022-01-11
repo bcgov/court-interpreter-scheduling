@@ -43,24 +43,19 @@ router = APIRouter(
 )
 
 
-@router.get('/login/cb')
+
+@router.get('/login/session/cb')
 async def oidc_login_callback(request: Request, db: Session = Depends(get_db_session)):
     
     print("_________OIDC_CALLBACK____________")
-    print(request.query_params.get("state"))    
-    print("______request.session.STATE_____________")
-    # print(request.session)
-    # print(request.session["oidc_auth_state"])
-
+   
     code = request.query_params.get("code")
-    # logout=getLogoutUrl(request)
-    # return RedirectResponse(logout)
+   
     if ("oidc_auth_state" not in request.session or request.session["oidc_auth_state"] != request.query_params.get("state")):        
         print("______Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value._____________")
         logout=getLogoutUrl(request)
         return RedirectResponse(logout)
-        # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value.")
-    
+            
     request.session.clear()
     
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"
@@ -68,22 +63,12 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     
     # _____________________________
     print("_________OIDC_AUTH____________")
-    # print(callback_uri)
-    print(oidc_userinfo)
-    # print("_______________OIDC__REFRESH_TOKEN___________")
+    # print(oidc_userinfo)    
     # print(oidc_refresh_token)
-    # _____________________________
     
-    # oidc_user = oidc_user_repository(oidc_userinfo, db)
-    # access_token = JWTtoken.create_access_token(data={"sub": oidc_user.user.email, "username": oidc_user.user.username})
-    # "user":jsonable_encoder(oidc_user.user)})
-    # request.session["access_token"]=access_token
     request.session["oidc_refresh_token"] = oidc_refresh_token
     request.session["oidc_user_email"] = oidc_userinfo['email']
-    # request.session["callback_uri"]= callback_uri
-
-    #___________GOTO the Frontend Route__________
-    #___________GOTO the Frontend Route__________
+    
     #___________GOTO the Frontend Route__________
     if ("x-forwarded-host" not in request.headers 
         and "host" in request.headers
@@ -95,39 +80,51 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     
     return RedirectResponse(redirect_url)
 
+
+
 @router.get('/login')
 def web_login_callback(request: Request):
     
-    callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
+    callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/session"
 
     # _____________________________
-    print("______Login______")
-    print(callback_uri)
-    # print(request.base_url)
-    # print(request.url)
-    # print(request.client)
-    # print(request.headers)
-    # print(request)
-    # _____________________________
-
+    print("______Clear_Session_____")
+    # print(callback_uri)
+    
     request.session["oidc_refresh_token"] = None
     request.session["oidc_auth_state"] = None 
     request.session["oidc_user_email"] = None 
     request.session.clear()
-    # print("________________SESSION_")
-    # print(request.session)
+    
+    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
+
+
+
+@router.get('/login/session')
+def web_login_callback(request: Request):
+
+    callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
+
+    # _____________________________
+    print("______Login______")
+    # print(callback_uri)
+
+    request.session["oidc_refresh_token"] = None
+    request.session["oidc_auth_state"] = None 
+    request.session["oidc_user_email"] = None
+    request.session.clear()
 
     session_key = str(uuid4())
     request.session["oidc_auth_state"]=session_key
     login_url = oidc.get_auth_redirect_uri(callback_uri,session_key)
     
-    # _____________________________
-    # print(request.session)    
-    print("______Login__URL____")    
-    print(login_url)
+    # _____________________________   
+    # print("______Login__URL____")    
+    # print(login_url)
     # _____________________________
 
     return RedirectResponse(login_url)
+
 
 
 @router.get('/logout')
@@ -141,6 +138,8 @@ def web_logout_user(request: Request):
     
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
     return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
+
+
 
 @router.get('/logout/cb')
 def oidc_logout_done(request: Request):
@@ -160,6 +159,7 @@ def oidc_logout_done(request: Request):
         redirect_url = f"{getBaseUrl(request)}{settings.DEFAULT_BASE_URL}/"
 
     return RedirectResponse(redirect_url)
+
 
 
 @router.get('/token')

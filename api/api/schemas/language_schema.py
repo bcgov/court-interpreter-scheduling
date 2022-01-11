@@ -3,6 +3,11 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
+class LanguageSchemaRequest(BaseModel):
+   
+    name: str   
+
+
 class LanguageSchema(BaseModel):
    
     id: int

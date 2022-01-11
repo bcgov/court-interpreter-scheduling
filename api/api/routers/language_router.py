@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import LanguageSchema
+from sqlalchemy import exc
+from api.schemas import LanguageSchema, LanguageSchemaRequest
 from models.language_model import LanguageModel
 
 
@@ -33,6 +34,30 @@ def get_Language_By_Id(id: int, db: Session= Depends(get_db_session)):
     language = db.query(LanguageModel).filter(LanguageModel.id==id).first()
     language.interpreters   
     return language
+
+
+@router.post('', status_code=status.HTTP_200_OK )
+def create_Language(request: LanguageSchemaRequest, db: Session = Depends(get_db_session)):
+    
+    try:
+        new_language = LanguageModel(         
+            name=request.name        
+        )
+        db.add(new_language)
+        db.commit()
+        db.refresh(new_language)
+        return new_language
+    except exc.SQLAlchemyError as e: 
+        error_msg = str(e.__dict__['orig'])
+        stat = status.HTTP_400_BAD_REQUEST
+        if "duplicate" in error_msg or "already exists" in error_msg:
+            stat = status.HTTP_409_CONFLICT
+        err = error_msg.split("DETAIL")
+        if len(err)>1:
+           error_msg =  err[1]
+        raise HTTPException(status_code=stat, detail=error_msg)
+
+
 
 
 # @router.delete('/{id}', status_code=status.HTTP_202_ACCEPTED)

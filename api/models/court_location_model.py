@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, func, Float
 from core.multi_database_middleware import DeclarativeBase as Base
-
+from sqlalchemy.orm import relationship
     
 
 class CourtLocationModel(Base):
@@ -19,3 +19,6 @@ class CourtLocationModel(Base):
     province = Column(String, unique=False, index=False, nullable=True)
     latitude = Column(Float, unique=False, index=False, nullable=True)
     longitude = Column(Float, unique=False, index=False, nullable=True)
+
+        
+    user = relationship ("UserModel", back_populates="location")
