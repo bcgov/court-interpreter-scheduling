@@ -2,6 +2,7 @@ import React from 'react';
 import { Field, useFormikContext, FieldArray } from 'formik';
 import moment from 'moment';
 
+import {Box, CircularProgress } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
@@ -96,6 +97,14 @@ const StyledDateField = ({
 export default function InterpreterInputs() {
   const [{ data, error, loading }, getUserInfo] = useAxiosGet('/user-info/');
   const { values } = useFormikContext<Interpreter>();
+
+  if (loading) 
+    return (
+      <Box p={2}>
+        <CircularProgress />
+      </Box>
+    );
+  
   return (
     <Grid container spacing={6}>
       <StyledField

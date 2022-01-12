@@ -21,7 +21,7 @@ export async function getLocations(): Promise<Location[]> {
 
 export async function getUserLocation(): Promise<Location> {
   const axios = axiosGetter().axiosGet;
-  const resp = await axios.get('/user');
+  const resp = await axios.get('/user-info/');
   const respData: UserResponse = resp.data as UserResponse;
   return respData.location;
 }
@@ -30,7 +30,7 @@ export async function updateUserLocation(
   locationId: number
 ): Promise<Location> {
   const axios = axiosGetter().axiosPatch;
-  const resp = await axios.patch('/user/save-location', {
+  const resp = await axios.put('/user-info/save-location', {
     locationId,
   });
   const respData: UserResponse = resp.data as UserResponse;

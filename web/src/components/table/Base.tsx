@@ -20,12 +20,14 @@ const StyledCell = withStyles({
   }
 })(MTableCell)
 
-const StyledTable = withStyles({
-  root: {
-    borderCollapse: 'separate',
-    borderSpacing: '0 20px',
-  }
-})(MaterialTable)
+// const StyledTable = withStyles({
+//   root: {
+//     borderCollapse: 'separate',
+//     borderSpacing: '0 20px',
+//   }
+// })(MaterialTable)
+
+const StyledTable=MaterialTable
 
 const StyledBox = withStyles({
   root: {
@@ -66,7 +68,7 @@ const BaseTable:TableFC = ({
     },
   }
   const { options = {}, ...rest } = overrides
-  return (
+  return (    
     <StyledTable
       data={data}
       columns={columns}

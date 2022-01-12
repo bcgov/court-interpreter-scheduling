@@ -17,8 +17,11 @@ class UserModel(Base):
     date_joined =  Column(DateTime(timezone=True), server_default=func.now(), nullable=False)    
     authorization_id =   Column(String, unique=False, index=False, nullable=True)
     display_name = Column(String, unique=False, index=False, nullable=True)
-    location = Column(String, unique=False, index=False, nullable=True)
+    
 
     oidcuser = relationship("OidcUserModel", back_populates="user")
 
     role = relationship("RoleModel",secondary='user_role', back_populates="user")
+
+    location_id = Column(Integer, ForeignKey('court_location.id'))
+    location = relationship("CourtLocationModel", back_populates="user")

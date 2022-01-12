@@ -27,21 +27,21 @@ configure({ axios, cache: false });
 // createAuthRefreshInterceptor(axios, refreshAuthLogic, options);
 
 function successInterceptor(request: AxiosRequestConfig) {
-  console.log("intercept")
-  console.log(window.location.origin)
-  console.log(process.env)
+  // console.log("intercept")
+  // console.log(window.location.origin)
+  // console.log(process.env)
 
   const token = localStorage.getItem('token');
   request.headers['Authorization'] = 'Bearer ' +  token; 
 
-  console.log(axios.defaults.baseURL)//TODO remove
+  // console.log(axios.defaults.baseURL)//TODO remove
  
   return request;
 }
 
 function successResponse(response: any){
-  console.log("successResponse")
-  console.log(response)
+  // console.log("successResponse")
+  // console.log(response)
   return response
 }
 
