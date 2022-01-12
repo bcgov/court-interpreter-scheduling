@@ -52,7 +52,7 @@ class InterpreterResponseSchema(BaseModel):
         orm_mode = True
 
        
-class InterpreterRequestSchema(BaseModel):    
+class InterpreterSearchRequestSchema(BaseModel):    
     language:  Optional[str]
     level: Optional[List[str]]
     city: Optional[str]
@@ -69,3 +69,38 @@ class InterpreterRequestSchema(BaseModel):
     # isStartFromToday: Optional[bool]
 
 # payload_in_page_directory = criminalRecordCheck":"2021-12-25T03:39:00.000Z"} "Time is back utc. selected 2021-12-24T19:39Vancouver"
+
+class InterpreterRequestSchema(BaseModel):    
+
+    last_name: Optional[str] = Field(alias="lastName")
+    first_name: Optional[str] = Field(alias="firstName")
+
+    address: Optional[str]
+    city: Optional[str]
+    province: Optional[str] = "BC"
+    postal_code: Optional[str] = Field(alias="postal")
+    
+    home_phone: Optional[str] = Field(alias="homePhone")
+    business_phone: Optional[str] = Field(alias="businessPhone")
+    cell_phone: Optional[str] = Field(alias="phone")
+    fax: Optional[str] = None    
+    email: Optional[str] =''
+
+    supplier_no: Optional[str] = Field(alias="supplier")
+    gst_no: Optional[str] = Field(alias="gst")
+    
+    crc_check_date: Optional[datetime] = Field(alias="criminalRecordCheckDate")
+    
+    contract_valid: Optional[bool] = Field(False, alias="contractExtension")
+    completed_training: Optional[bool] = False    
+
+    languages: Optional[List[InterpreterLanguageSchema]] = []
+
+    admin_comment: Optional[str] = Field("", alias="adminComments")
+    comments: Optional[str] = None
+    crc_comment: Optional[str] = Field(None, alias="criminalRecordCheck")
+    contract_comment: Optional[str] = None
+    
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True

@@ -53,17 +53,8 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-
-@app.get('/api/v1/call-auth-test')
-def checkHealth(user: UserSchema = Depends(logged_in_user)):
-    print("______checking added Auth______")  
-    print(user)  
-    return "Test User Auth"
-
-
-
 @app.get('/api/v1/health')
-def checkHealth():
+def openshift_Health_Check():
     #______Health check for OpenShift______
     return "Healthy"
 

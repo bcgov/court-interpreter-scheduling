@@ -79,7 +79,7 @@ export default function Header() {
       </Box>
     );
 
-  console.log(data)
+  // console.log(data)
 
   return (
     <ContentBox className={classes.header}>
