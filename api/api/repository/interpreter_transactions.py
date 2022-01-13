@@ -49,6 +49,33 @@ def create_interpreter_in_db(request:InterpreterRequestSchema, db: Session, user
     return new_interpreter.id
 
 
+def modify_interpreter_in_db(id: int, request:InterpreterRequestSchema, db: Session, username):
+
+    interpreter_request = request.dict()
+    check_required_fields(interpreter_request, db)
+
+    interpreter_languages = interpreter_request['languages']
+    del interpreter_request['languages']
+
+    interpreter_request['province'] = province_abvr(interpreter_request['province'])
+
+    interpreter_request = add_update_by(interpreter_request, db, username)
+          
+    interpreter_query = db.query(InterpreterModel).filter(InterpreterModel.id==id)
+    interpreter = interpreter_query.first()    
+    if not interpreter:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Interpreter does not exist.")
+
+    interpreter_request = apply_address_changes(interpreter, interpreter_request)
+
+    interpreter_query.update(interpreter_request)    
+    db.commit()
+
+    add_language(interpreter_languages, db, id)
+
+    return interpreter.id
+
+
 def add_update_by(interpreter_request, db: Session, username):
 
     current_user = db.query(UserModel).filter( UserModel.username==username).first()    
@@ -75,18 +102,37 @@ def add_geo_coordinates(interpreter_request):
 
 
 def add_language(interpreter_languages, db: Session, interpreter_id):
-    for interpreter_language in interpreter_languages:
-        language = db.query(LanguageModel).filter(func.lower(LanguageModel.name)==func.lower(interpreter_language['language'])).first()
-        new_inter_lang = InterpreterLanguageModel(
-            language_id =language.id,
-            language = language.name,
-            interpreter_id = interpreter_id,
-            level = interpreter_language['level'],
-            comment_on_level = interpreter_language['comment_on_level']
-        )
-        db.add(new_inter_lang)
-    db.commit()
+    
+    new_interpreter_languages=list()
 
+    for interpreter_language in interpreter_languages:
+        interpreter_language_name = interpreter_language['language'].lower()
+        new_interpreter_languages.append(interpreter_language_name)
+        language = db.query(LanguageModel).filter(func.lower(LanguageModel.name)==interpreter_language_name).first()
+        
+        inter_lang_relation = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.language_id==language.id, InterpreterLanguageModel.interpreter_id==interpreter_id).first()
+        
+        if not inter_lang_relation:
+            # print(language.id," -> ",interpreter_id," no relation")
+            new_inter_lang = InterpreterLanguageModel(
+                language_id =language.id,
+                language = language.name,
+                interpreter_id = interpreter_id,
+                level = interpreter_language['level'],
+                comment_on_level = interpreter_language['comment_on_level']
+            )
+            db.add(new_inter_lang)
+
+    # print(new_interpreter_languages)
+
+    previous_interpreter_languages = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.interpreter_id==interpreter_id).all()
+    for previous_interpreter_language in previous_interpreter_languages:
+        # print(previous_interpreter_language.language)
+        if(previous_interpreter_language.language).lower() not in new_interpreter_languages :
+            inter_lang_relation_query = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.id==previous_interpreter_language.id)
+            inter_lang_relation_query.delete(synchronize_session=False)
+    
+    db.commit()
 
 def province_abvr(province):
    
@@ -159,5 +205,39 @@ def check_required_fields(interpreter_request, db: Session):
     for language in interpreter_request['languages']:
         if language['language'].lower() not in language_names:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Language '{language['language']}' does not exist.")
-        
+
+
+def apply_address_changes(old_interpreter, interpreter_request): 
+
+    old_address = old_interpreter.address
+    if old_address is None: old_address=""
+
+    new_address = interpreter_request['address']
+    if new_address is None: new_address=""
+
+    old_city = old_interpreter.city
+    if old_city is None: old_city=""
+
+    new_city = interpreter_request['city']
+    if new_city is None: new_city=""
+   
+    old_province = old_interpreter.province
+    if old_province is None: old_province=""
+
+    new_province = interpreter_request['province']
+    if new_province is None: new_province=""
+
+    old_postal_code = old_interpreter.postal_code
+    if old_postal_code is None: old_postal_code=""
+
+    new_postal_code = interpreter_request['postal_code']
+    if new_postal_code is None: new_postal_code=""
+
+    if (old_address.lower().strip() != new_address.lower().strip() or
+        old_city.lower().strip() != new_city.lower().strip() or
+        old_province.lower().strip() != new_province.lower().strip() or
+        old_postal_code.lower().strip() != new_postal_code.lower().strip()
+    ):
+        interpreter_request = add_geo_coordinates(interpreter_request)
     
+    return  interpreter_request

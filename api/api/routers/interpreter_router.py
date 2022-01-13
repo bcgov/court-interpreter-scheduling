@@ -8,7 +8,7 @@ from api.repository import search_transactions
 from models.interpreter_model import InterpreterModel
 from core.auth import logged_in_user
 
-from api.repository.interpreter_transactions import update_interpreter_geo_coordinates_in_db, create_interpreter_in_db
+from api.repository.interpreter_transactions import update_interpreter_geo_coordinates_in_db, create_interpreter_in_db, modify_interpreter_in_db
 
 router = APIRouter(
     prefix="/interpreter",
@@ -56,3 +56,8 @@ def update_geo_coordinates_of_All_Interpreters(db: Session= Depends(get_db_sessi
 @router.post('', status_code=status.HTTP_200_OK)
 def create_Interpreter(request:InterpreterRequestSchema, db: Session = Depends(get_db_session), user = Depends(logged_in_user)):
     return create_interpreter_in_db(request, db, user['username'])
+
+
+@router.put('/{id}', status_code=status.HTTP_200_OK)
+def modify_Interpreter(id: int, request:InterpreterRequestSchema, db: Session = Depends(get_db_session), user = Depends(logged_in_user)):
+    return modify_interpreter_in_db(id, request, db, user['username'])
