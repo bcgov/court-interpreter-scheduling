@@ -9,9 +9,12 @@ import CloseIcon from '@material-ui/icons/Close'
 import { Interpreter } from 'constants/interfaces'
 import { fullName } from 'util/tableHelpers'
 
-export default function InterpreterName({ interpreter }: { interpreter?: Interpreter }) {
+export default function InterpreterName({row}: {row?: any}) {
   const [open, toggle] = useState(false)
   const anchorEl = useRef(null)
+  const interpreter: Interpreter = row.interpreter
+  const location = row.locationId
+
   return interpreter ? (
     <>
       <span
@@ -61,7 +64,7 @@ export default function InterpreterName({ interpreter }: { interpreter?: Interpr
               <b>Court location</b>
             </Grid>
             <Grid xs={6} item>
-              lorem ipsum
+              {location}
             </Grid>
           </Grid>
         </Box>

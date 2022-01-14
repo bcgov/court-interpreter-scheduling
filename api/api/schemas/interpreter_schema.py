@@ -51,12 +51,17 @@ class InterpreterResponseSchema(BaseModel):
     class Config():
         orm_mode = True
 
-       
+class DatesSchema(BaseModel):
+    arrivalTime: Optional[str]
+    date: Optional[datetime]
+    period: Optional[str]
+
+
 class InterpreterSearchRequestSchema(BaseModel):    
     language:  Optional[str]
     level: Optional[List[str]]
     city: Optional[str]
-    dates: Optional[List[datetime]]
+    dates: Optional[List[DatesSchema]]
     name: Optional[str]
     keywords: Optional[str]
     active: Optional[bool]
@@ -67,6 +72,7 @@ class InterpreterSearchRequestSchema(BaseModel):
     # file: Optional[str]
     # interpreter: Optional[str]
     # isStartFromToday: Optional[bool]
+
 
 # payload_in_page_directory = criminalRecordCheck":"2021-12-25T03:39:00.000Z"} "Time is back utc. selected 2021-12-24T19:39Vancouver"
 
@@ -101,6 +107,19 @@ class InterpreterRequestSchema(BaseModel):
     crc_comment: Optional[str] = Field(None, alias="criminalRecordCheck")
     contract_comment: Optional[str] = None
     
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class InterpreterBookingResponseSchema(BaseModel):
+    last_name: Optional[str] = Field(alias="lastName")
+    first_name: Optional[str] = Field(alias="firstName")
+    cell_phone: Optional[str] = Field(alias="phone")
+    email: Optional[str]
+    languages: Optional[List[InterpreterLanguageSchema]] = []
+    
+
     class Config():
         orm_mode = True
         allow_population_by_field_name = True

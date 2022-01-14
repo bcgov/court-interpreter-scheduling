@@ -92,7 +92,7 @@ class OpenIDConnect:
             "code": code,
             "redirect_uri": callback_uri,
         }        
-        response = requests.post( self.token_endpoint, data=data, headers=headers )
+        response = requests.post( self.token_endpoint, data=data, headers=headers, timeout=10)
         return self.to_dict_or_raise(response)
 
     def get_refresh_token(self, refresh_token) -> str:
@@ -105,7 +105,7 @@ class OpenIDConnect:
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
         }        
-        response = requests.post( self.token_endpoint, data=data, headers=headers )        
+        response = requests.post( self.token_endpoint, data=data, headers=headers, timeout=5)        
 
         return self.to_dict_or_raise(response)
        

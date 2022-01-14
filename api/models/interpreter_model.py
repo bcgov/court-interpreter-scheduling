@@ -40,5 +40,5 @@ class InterpreterModel(Base):
     # languages = relationship('LanguageModel', cascade = 'all,delete', secondary='interpreter_language', backref='interpreter')
     languages = relationship("InterpreterLanguageModel",overlaps="interpreters, language", back_populates="interpreter_relation")
 
-    
+    booking = relationship ("BookingModel", back_populates="interpreter")
        
