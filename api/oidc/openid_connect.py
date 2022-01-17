@@ -1,19 +1,15 @@
 import json
 import logging
 from base64 import b64encode
-from functools import wraps
 from json.decoder import JSONDecodeError
 from typing import Dict
 from urllib.parse import quote
-from fastapi.encoders import jsonable_encoder
 
 import jwt
 from jwt import DecodeError
 from jwt import InvalidTokenError
 
 import requests
-from fastapi import Request
-from starlette.responses import RedirectResponse
 
 from .exceptions import OpenIDConnectException
 

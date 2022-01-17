@@ -4,7 +4,7 @@ from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from api.schemas import InterpreterResponseSchema, InterpreterSearchRequestSchema, InterpreterRequestSchema
 
-from api.repository import search_transactions
+from api.repository.search_interpreter_transactions import search_Interpreter
 from models.interpreter_model import InterpreterModel
 from core.auth import logged_in_user
 
@@ -17,9 +17,9 @@ router = APIRouter(
 
 
 @router.post('/search', status_code=status.HTTP_200_OK, response_model=InterpreterResponseSchema)
-def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
 
-    return InterpreterResponseSchema(data = search_transactions.search_Interpreter(request, db), pagination = {"page":1, "limit":1000})
+    return InterpreterResponseSchema(data = search_Interpreter(request, db), pagination = {"page":1, "limit":1000})
  
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=InterpreterResponseSchema)

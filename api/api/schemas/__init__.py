@@ -5,4 +5,4 @@ from .location_schema import LocationSchema
 from .role_schema import UserRoleSchemaRequest, RoleSchemaRequest
 from .interpreter_schema import InterpreterResponseSchema, InterpreterRequestSchema, InterpreterSearchRequestSchema
 from .language_schema import LanguageSchema, LanguageSchemaRequest
-from .booking_schema import BookingRequestSchema, BookingResponsePageSchema
+from .booking_schema import BookingRequestSchema, BookingResponsePageSchema, BookingSearchRequestSchema

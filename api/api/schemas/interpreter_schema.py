@@ -113,6 +113,7 @@ class InterpreterRequestSchema(BaseModel):
 
 
 class InterpreterBookingResponseSchema(BaseModel):
+    id: Optional[int] 
     last_name: Optional[str] = Field(alias="lastName")
     first_name: Optional[str] = Field(alias="firstName")
     cell_phone: Optional[str] = Field(alias="phone")

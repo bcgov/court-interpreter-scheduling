@@ -1,23 +1,15 @@
-import json
-from fastapi import APIRouter, status, HTTPException, Depends, Response, Request
-from fastapi.encoders import jsonable_encoder
-from starlette import responses
+from fastapi import APIRouter, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.exc import NoResultFound
-from api.schemas import UserSchema
-from models.user_model import UserModel
-from models.oidc_model import OidcUserModel
-from typing import Dict, Optional
+
 from starlette.responses import RedirectResponse
 from oidc.openid_connect import OpenIDConnect
 from core.utils import getBaseUrl, getLoginUrl, getLogoutUrl
-from fastapi.security import HTTPBearer
+
 from uuid import uuid4
 from core.config import settings
 from oidc.oidc_user_repository import oidc_user_repository
 from core import JWTtoken
-import requests
 
 hint = settings.OIDC_RP_KC_IDP_HINT
 host = settings.OIDC_RP_PROVIDER_URL
@@ -27,15 +19,15 @@ client_secret = settings.OIDC_RP_CLIENT_SECRET
 
 oidc = OpenIDConnect(hint, host, realm, client_id, client_secret)
 
-# _____________________________
-print("==================")
-print(oidc.issuer)
-print(oidc.authorization_endpoint)
-print(oidc.token_endpoint)
-print(oidc.userinfo_endpoint)
-print(oidc.jwks_uri)
-print(oidc.logout_uri)
-# _____________________________
+# # _____________________________
+# print("==================")
+# print(oidc.issuer)
+# print(oidc.authorization_endpoint)
+# print(oidc.token_endpoint)
+# print(oidc.userinfo_endpoint)
+# print(oidc.jwks_uri)
+# print(oidc.logout_uri)
+# # _____________________________
 
 router = APIRouter(
     prefix="/api/v1",
@@ -47,7 +39,7 @@ router = APIRouter(
 @router.get('/login/session/cb')
 async def oidc_login_callback(request: Request, db: Session = Depends(get_db_session)):
     
-    print("_________OIDC_CALLBACK____________")
+    # print("_________OIDC_CALLBACK____________")
    
     code = request.query_params.get("code")
    
@@ -62,7 +54,7 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     oidc_userinfo, oidc_refresh_token = oidc.authenticate(code, callback_uri, include_user_info=True)
     
     # _____________________________
-    print("_________OIDC_AUTH____________")
+    # print("_________OIDC_AUTH____________")
     # print(oidc_userinfo)    
     # print(oidc_refresh_token)
     
@@ -88,7 +80,7 @@ def web_login_callback(request: Request):
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/session"
 
     # _____________________________
-    print("______Clear_Session_____")
+    # print("______Clear_Session_____")
     # print(callback_uri)
     
     request.session["oidc_refresh_token"] = None
@@ -106,7 +98,7 @@ def web_login_callback(request: Request):
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
 
     # _____________________________
-    print("______Login______")
+    # print("______Login______")
     # print(callback_uri)
 
     request.session["oidc_refresh_token"] = None
@@ -130,7 +122,7 @@ def web_login_callback(request: Request):
 @router.get('/logout')
 def web_logout_user(request: Request):
     
-    print("________VOID_THE_TOKEN______")
+    # print("________VOID_THE_TOKEN______")
     request.session["oidc_user_email"] = None 
     request.session["oidc_refresh_token"] = None
     request.session["oidc_auth_state"] = None
@@ -144,7 +136,7 @@ def web_logout_user(request: Request):
 @router.get('/logout/cb')
 def oidc_logout_done(request: Request):
     
-    print("_______LOGGED-OUT_______")
+    # print("_______LOGGED-OUT_______")
     request.session["oidc_user_email"] = None 
     request.session["oidc_refresh_token"] = None
     request.session["oidc_auth_state"] = None
@@ -167,7 +159,7 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
     
     login_response = {"access_token": None, "token_type": "bearer", "login_url":getLoginUrl(request), "logout_url":getLogoutUrl(request)}
     
-    print("________REFRESH__TOKEN______")
+    # print("________REFRESH__TOKEN______")
     
     if("oidc_refresh_token" in request.session and request.session["oidc_refresh_token"] is not None):
         
@@ -178,7 +170,7 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
         try:
             response = oidc.get_refresh_token(oidc_refresh_token)
         except:
-            print("________TOKEN___NOT___VALID_____________")
+            # print("________TOKEN___NOT___VALID_____________")
             return login_response
         
         oidc_userinfo = oidc.get_user_info(response['access_token'])

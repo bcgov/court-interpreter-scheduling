@@ -14,16 +14,16 @@ from datetime import datetime
 # roles = ['cis-admin', 'offline_access', 'cis-user', 'uma_authorization']
 
 def oidc_user_repository(claims, roles, db: Session):
-    print("____REPOSITORY__SEARCH_FOR_USER_IN_DB______")
+    # print("____REPOSITORY__SEARCH_FOR_USER_IN_DB______")
     # Tries to retrieve a corresponding user in the local database and creates it if applicable.
     try:
         oidc_user_query = db.query(OidcUserModel).filter(OidcUserModel.sub == claims.get('sub'))
         oidc_user_first = oidc_user_query.one()
     except NoResultFound:
-        print("______EXEPTION___USER_NOT_IN_DB__")
+        # print("______EXEPTION___USER_NOT_IN_DB__")
         oidc_user_first = create_oidc_user_from_claims(claims, roles, db)
     else:
-        print("______FOUND__USER_IN_DB_____")
+        # print("______FOUND__USER_IN_DB_____")
         oidc_user_first = update_oidc_user_from_claims(oidc_user_query, claims, roles, db)
 
     return oidc_user_first
@@ -48,7 +48,7 @@ def create_oidc_user_from_claims(claims, roles, db: Session):
         db.add(oidc_user)
         db.commit()
         db.refresh(oidc_user)
-        print("_______________ROLE__IDS___________")
+        # print("_______________ROLE__IDS___________")
         modify_user_role(roles, user.id, db)
     
     # print("___OIDC____")
@@ -63,7 +63,7 @@ def update_oidc_user_from_claims(oidc_user_query, claims, roles, db: Session):
     oidc_user_query.update({"userinfo": claims})
     jointuser = oidc_user_query.first().user
     
-    print("_______________ROLE__IDS___________________")
+    # print("_______________ROLE__IDS___________________")
     modify_user_role(roles, jointuser.id, db)
 
     updating_user_query = db.query(UserModel).filter(UserModel.id == jointuser.id)          
@@ -85,7 +85,7 @@ def get_or_create_user(username, claims, db: Session):
     else:
         raise HTTPException(status.HTTP_403_FORBIDDEN,'No Username.')
 
-    print("______GET_OR_CREATE__USER_____")
+    # print("______GET_OR_CREATE__USER_____")
 
     if len(users_query.all()) == 0:        
         new_user = UserModel(           

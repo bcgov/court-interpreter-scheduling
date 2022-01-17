@@ -2,7 +2,7 @@ from starlette.requests import Request
 from core.config import settings
 
 def getBaseUrl(request: Request):
-    print("__UTIL_____")
+    # print("__UTIL_____")
     # print(request.headers)
     if (
         "x-forwarded-host" in request.headers
@@ -10,10 +10,10 @@ def getBaseUrl(request: Request):
         and request.headers["x-forwarded-port"] not in ("80", "443")
         and ":" not in request.headers["x-forwarded-host"]
     ):
-        print("____X_FORWARDED_HOST_")
+        # print("____X_FORWARDED_HOST_")
         return f"{settings.URL_SCHEME}://{request.headers['x-forwarded-host']}:{request.headers['x-forwarded-port']}"
     else:
-        print("____regular_URL___")
+        # print("____regular_URL___")
         return f"{settings.URL_SCHEME}://{request.url.netloc}"
 
 

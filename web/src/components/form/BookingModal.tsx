@@ -70,7 +70,7 @@ export default function BookingModal({
               if (state?.booking) {
                 await postBooking({
                   url: `/booking/${state.booking.id}`,
-                  method: 'PATCH',
+                  method: 'PUT',
                   data: {
                     ...values,
                     interpreterId: interpreter?.id,

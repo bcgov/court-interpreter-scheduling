@@ -7,6 +7,7 @@ from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRe
 
 
 class BookingDateSchema(BaseModel):
+    id: Optional[int]
     date: Optional[datetime]
     period: BookingPeriodEnum
     arrivalTime: Optional[str]
@@ -16,7 +17,8 @@ class BookingDateSchema(BaseModel):
         allow_population_by_field_name = True
 
 
-class BookingBase(BaseModel):   
+class BookingBase(BaseModel):
+       
     case_name: Optional[str] = Field(alias="caseName")
     comment: Optional[str]
     method_of_appearance: Optional[BookingMethodOfAppearanceEnum] = Field(alias="methodOfAppearance")
@@ -39,10 +41,11 @@ class BookingBase(BaseModel):
 
 
 class BookingRequestSchema(BookingBase):
-    interpreter_id: int = Field(alias="interpreterId")
+    interpreter_id: Optional[int] = Field(alias="interpreterId")
 
 
-class BookingResponseSchema(BookingBase):       
+class BookingResponseSchema(BookingBase):
+    id: Optional[int]           
     interpreter: InterpreterBookingResponseSchema
 
 
@@ -57,3 +60,20 @@ class BookingResponsePageSchema(BaseModel):
     
     class Config():
         orm_mode = True
+
+
+class DateRangeSchema(BaseModel):
+    endDate: Optional[str]
+    startDate: Optional[str]
+
+
+class BookingSearchRequestSchema(BaseModel):    
+
+    dates: Optional[List[DateRangeSchema]]
+    file: Optional[str]
+    interpreter: Optional[str]
+    isStartFromToday: Optional[bool]
+    locationId: Optional[int]
+    
+    
+    

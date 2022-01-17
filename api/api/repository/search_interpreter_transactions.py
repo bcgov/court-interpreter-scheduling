@@ -1,17 +1,17 @@
 
 import re
-from fastapi import HTTPException, status, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from sqlalchemy.sql.expression import true
 from models.interpreter_model import InterpreterModel
 from models.language_model import InterpreterLanguageModel
-from api.schemas import InterpreterRequestSchema
+from models.booking_model import BookingDatesModel, BookingModel
+from api.schemas import InterpreterSearchRequestSchema
 from datetime import datetime
 from math import sin, cos, sqrt, atan2, radians
 
+from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
-def search_Interpreter(request: InterpreterRequestSchema, db: Session):
+def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session):
 
     interpreter = db.query(InterpreterModel).join(InterpreterLanguageModel).where(InterpreterModel.disabled==False)
 
@@ -23,8 +23,12 @@ def search_Interpreter(request: InterpreterRequestSchema, db: Session):
     interpreter = apply_crc_date(interpreter, request.criminalRecordCheck)
     interpreter = apply_keyword(interpreter, request.keywords)
 
+    all_interpreters = interpreter.all()
+    all_interpreters = apply_dates(all_interpreters, request.dates, db)
+
+
     # distance function
-    interpreters = apply_distance(interpreter.all(), request.distanceLimit, request.location)
+    interpreters = apply_distance(all_interpreters, request.distanceLimit, request.location)
 
     return interpreters
 
@@ -148,3 +152,47 @@ def is_interpreter_with_in_range(latitude1, longitude1, latitude2, longitude2, r
     distance = R * c
 
     return distance < range
+
+
+def apply_dates(interpreters, booking_dates, db):
+    
+    if not booking_dates or len(booking_dates)==0:
+        return interpreters
+
+    interpreters_list = [inter.id for inter in interpreters]
+    booked_dates = db.query(BookingDatesModel).join(BookingModel).filter(BookingModel.status!=BookingStatusEnum.CANCELLED, BookingDatesModel.interpreter_id.in_(interpreters_list)).all()
+
+    whole_day_asked_dates = list()
+    morning_asked_dates = list()
+    afternoon_asked_dates = list()
+
+    for booking_date in booking_dates:        
+        date = booking_date.date.strftime("%Y-%m-%d")
+        if booking_date.period == BookingPeriodEnum.MORNING.value:            
+            morning_asked_dates.append(date)
+        elif booking_date.period == BookingPeriodEnum.AFTERNOON.value:
+            afternoon_asked_dates.append(date)            
+        else:            
+            whole_day_asked_dates .append(date)
+
+    morning=BookingPeriodEnum.MORNING.value
+    afternoon=BookingPeriodEnum.AFTERNOON.value
+    allday=BookingPeriodEnum.WHOLE_DAY.value
+    busy_interpreters = list()
+    
+    for booked_date in booked_dates:
+        
+        interpreter_id = booked_date.interpreter_id
+        if interpreter_id in busy_interpreters:
+            continue
+
+        busy_date = booked_date.date.strftime("%Y-%m-%d")
+
+        if busy_date in whole_day_asked_dates:
+            busy_interpreters.append(interpreter_id)
+        elif busy_date in morning_asked_dates and (booked_date.period==morning or booked_date.period==allday):
+            busy_interpreters.append(interpreter_id)
+        elif busy_date in afternoon_asked_dates and (booked_date.period==afternoon or booked_date.period==allday):
+            busy_interpreters.append(interpreter_id)
+    
+    return [interpreter for interpreter in interpreters if interpreter.id not in busy_interpreters]
