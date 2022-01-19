@@ -49,7 +49,7 @@ def create_oidc_user_from_claims(claims, roles, db: Session):
         db.commit()
         db.refresh(oidc_user)
         # print("_______________ROLE__IDS___________")
-        modify_user_role(roles, user.id, db)
+        # modify_user_role(roles, user.id, db)
     
     # print("___OIDC____")
     # print(oidc_user)
@@ -64,7 +64,7 @@ def update_oidc_user_from_claims(oidc_user_query, claims, roles, db: Session):
     jointuser = oidc_user_query.first().user
     
     # print("_______________ROLE__IDS___________________")
-    modify_user_role(roles, jointuser.id, db)
+    # modify_user_role(roles, jointuser.id, db)
 
     updating_user_query = db.query(UserModel).filter(UserModel.id == jointuser.id)          
     updating_user_query.update({

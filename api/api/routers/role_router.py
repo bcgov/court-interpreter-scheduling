@@ -1,14 +1,23 @@
+
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import UserRoleSchemaRequest, RoleSchemaRequest
+from api.schemas import UserRoleSchemaRequest, RoleSchemaRequest, RoleSchema, RoleRequestAccessSchema
 from models.role_model import RoleModel, UserRoleModel
 from core.auth import logged_in_user
+from typing import List
+from api.repository.role_transactions import modify_user_role
 
 router = APIRouter(
     prefix="/role",
     tags=['Role']
 )
+
+@router.get('/all', status_code=status.HTTP_200_OK, response_model=List[RoleSchema])
+def get_All_Roles(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+
+    role = db.query(RoleModel).all()
+    return role
 
 @router.get('/{id}', status_code=status.HTTP_200_OK)
 def get_Role_By_Id(id: int, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
@@ -34,6 +43,7 @@ def create_Role(request: RoleSchemaRequest, db: Session= Depends(get_db_session)
     db.refresh(new_role)
     return new_role
 
+
 @router.delete('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def delete_Role_By_Id(id: int, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
     
@@ -44,14 +54,8 @@ def delete_Role_By_Id(id: int, db: Session= Depends(get_db_session), user = Depe
 
 
 @router.put('/assign', status_code=status.HTTP_202_ACCEPTED)
-def assign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
-    
-    relation = UserRoleModel(
-        user_id = request.user_id,
-        role_id = request.role_id
-    )
-    db.add(relation)
-    db.commit()
+def assign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(get_db_session)):#, user = Depends(logged_in_user)):
+    modify_user_role(request.roles, request.user_id, db)    
     return "Role assigned."
 
 
@@ -67,6 +71,11 @@ def unassign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(g
     return 'Role unassigned.'    
 
 
+@router.post('/request-access', status_code=status.HTTP_200_OK)
+def request_Access(request: RoleRequestAccessSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+    print("__________REQUEST_ACCESS___________")
+
+    return "sent"
 
 
 # @router.post('/', status_code=status.HTTP_200_OK )

@@ -66,9 +66,9 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
         and "host" in request.headers
         and "localhost:" in request.headers['host']
     ):
-        redirect_url = f"{settings.FRONTEND_HOST_URL}{settings.DEFAULT_BASE_URL}/home"
+        redirect_url = f"{settings.FRONTEND_HOST_URL}{settings.DEFAULT_BASE_URL}/bookings"
     else:
-        redirect_url = f"{getBaseUrl(request)}{settings.DEFAULT_BASE_URL}/home"
+        redirect_url = f"{getBaseUrl(request)}{settings.DEFAULT_BASE_URL}/bookings"
     
     return RedirectResponse(redirect_url)
 

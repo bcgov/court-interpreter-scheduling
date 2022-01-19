@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import UserSchema, UserSchemaRequest
-
+from api.schemas import UserSchema, UserSchemaRequest, UserAllSchema
+from typing import List
 from models.user_model import UserModel
 from core.auth import logged_in_user, logged_in_user_without_raising_error
 from core.utils import getLogoutUrl
@@ -22,6 +22,13 @@ def get_logged_in_User(db: Session= Depends(get_db_session), user = Depends(logg
     if not user:
         raise HTTPException(status_code=404, detail=f"User is not available.")
      
+    return user
+
+@router.get('/all', status_code=status.HTTP_200_OK , response_model=List[UserAllSchema])
+def get_all_Users(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+    
+    user = db.query(UserModel).all()
+
     return user
 
 

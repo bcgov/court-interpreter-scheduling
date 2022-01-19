@@ -20,3 +20,14 @@ class LocationSchema(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+
+class LocationShortSchema(BaseModel):    
+
+    id: int    
+    name: str
+    location_code: str = Field(alias="locationCode")    
+    short_description: str = Field(alias="shortDescription")
+    
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
