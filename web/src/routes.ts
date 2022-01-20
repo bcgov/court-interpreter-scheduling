@@ -1,6 +1,6 @@
 import LandingPage from "@/components/home/LandingPage.vue";
 import BookingsPage from "@/components/tabs/Bookings.vue";
-import CreatePage from "@/components/tabs/Create.vue"
+import SearchInterpretersPage from "@/components/tabs/SearchInterpretersPage.vue"
 import DirectoryPage from "@/components/tabs/Admin/Directory.vue"
 import UserRolePage from "@/components/tabs/Admin/UserRole.vue"
 import LanguagePage from "@/components/tabs/Admin/Language.vue"
@@ -41,7 +41,7 @@ const routes = [
       path: "/create",
       name: "create",
       beforeEnter: authGuard,
-      component: CreatePage
+      component: SearchInterpretersPage
     },
     {
       path: "/directory",

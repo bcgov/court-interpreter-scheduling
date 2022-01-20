@@ -1,6 +1,6 @@
 <template>
     <b-card class="bg-white border-white">
-        <h1>Interpreter Directory</h1>            
+                
             
         <loading-spinner color="#000" v-if="!dataLoaded" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
@@ -337,7 +337,7 @@
                                                     body-class="m-0 px-0 py-1" 
                                                     :border-variant="addLanguageFormColor" 
                                                     style="border:2px solid;">
-                                                    <add-language-form 
+                                                    <add-court-session-form 
                                                         :formData="data.item" 
                                                         :index="data.index" 
                                                         :isCreateLanguage="false" 
@@ -372,7 +372,7 @@
                             :border-variant="addLanguageFormColor" 
                             style="border:2px solid; width: 81%;" 
                             body-class="px-1 py-1">
-                            <add-language-form 
+                            <add-court-session-form 
                                 :formData="{}" 
                                 :index="-1" 
                                 :isCreateLanguage="true" 
@@ -636,9 +636,7 @@
                     >&times;</b-button
                 >
             </template>
-        </b-modal>
-
-        
+        </b-modal>       
     
     </b-card>
 </template>
@@ -647,8 +645,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import InterpreterDetails from "../components/InterpreterDetails.vue";
-import AddLanguageForm from "../components/AddLanguageForm.vue";
+import InterpreterDetails from "./components/InterpreterDetails.vue";
+import AddCourtSessionForm from "./components/AddCourtSessionForm.vue";
 import Spinner from "@/components/utils/Spinner.vue";
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
@@ -663,11 +661,11 @@ const commonState = namespace("Common");
     components:{
         Spinner,
         InterpreterDetails,
-        AddLanguageForm
+        AddCourtSessionForm
 
     }
 })
-export default class DirectoryPage extends Vue {
+export default class SearchInterpretersPage extends Vue {
 
     @commonState.State
     public courtLocations!: locationsInfoType[];
