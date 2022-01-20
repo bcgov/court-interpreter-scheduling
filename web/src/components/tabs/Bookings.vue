@@ -24,7 +24,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import * as _ from 'underscore';
-import { locationsInfoType } from '@/types/Common';
+import { languagesInfoType, locationsInfoType } from "@/types/Common/json";
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -42,6 +42,9 @@ export default class BookingsPage extends Vue {
     @commonState.Action
     public UpdateCourtLocations!: (newCourtLocations: locationsInfoType[]) => void
 
+    @commonState.Action
+    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void
+
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
@@ -57,7 +60,21 @@ export default class BookingsPage extends Vue {
         this.$http.get('/location')
         .then((response) => {            
             if(response?.data){                
-                this.UpdateCourtLocations(response.data)
+                this.UpdateCourtLocations(response.data);
+                this.loadLanguages();
+            }
+            
+        },(err) => {
+            console.log(err)            
+        });
+    }
+
+    public loadLanguages(){
+        this.$http.get('/language')
+        .then((response) => {            
+            if(response?.data){ 
+                const languages = _.sortBy(response.data,'name')               
+                this.UpdateLanguages(languages);                
             }
             this.dataLoaded = true;
         },(err) => {

@@ -82,7 +82,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { SessionManager } from "@/components/utils/utils";
-import { locationsInfoType } from "@/types/Common";
+import { locationsInfoType } from "@/types/Common/json";
 import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";   

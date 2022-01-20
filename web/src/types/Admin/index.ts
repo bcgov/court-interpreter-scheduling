@@ -1,3 +1,5 @@
+import { locationShortInfoType } from "../Common";
+
 export interface allUsersInfoType {
     id: number;
     display_name: string;
@@ -13,12 +15,9 @@ export interface roleInfoType{
     role_name: string;
 }
 
-export interface locationShortInfoType{
-    id: number;
-    locationCode: string;
-    name: string;
-    shortDescription: string;
-}
+
+
+
 
 
 

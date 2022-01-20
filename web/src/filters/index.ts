@@ -146,6 +146,24 @@ Vue.filter('getFullContactInfo',function(nameObject){
 	}
 })
 
+Vue.filter('capitalize', function(str: string){
+	
+	if(str)
+		return str.charAt(0).toUpperCase() + (str.slice(1)).toLowerCase();
+	else
+		return ''
+	
+})
+
+Vue.filter('capitalizefirst', function(str: string){
+	
+	if(str)
+		return str.charAt(0).toUpperCase() + (str.slice(1));
+	else
+		return ''
+	
+})
+
 
 
 Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){

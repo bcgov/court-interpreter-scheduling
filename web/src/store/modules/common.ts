@@ -1,4 +1,4 @@
-import { locationsInfoType } from '@/types/Common';
+import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
 @Module({
@@ -14,6 +14,7 @@ class Common extends VuexModule {
 	public userRole: string[] = [];
     public userLocation: locationsInfoType|null = null;
     public courtLocations: locationsInfoType[] = [];
+    public languages: languagesInfoType[] = [];
 
     // public accountInfo = {} as accountInfoType;
 
@@ -78,6 +79,15 @@ class Common extends VuexModule {
     @Action
     public UpdateCourtLocations(newCourtLocations: locationsInfoType[]): void {
         this.context.commit('setCourtLocations', newCourtLocations)
+    }
+
+    @Mutation
+    public setLanguages(languages: languagesInfoType[]): void {   
+        this.languages = languages
+    }
+    @Action
+    public UpdateLanguages(newLanguages: languagesInfoType[]): void {
+        this.context.commit('setLanguages', newLanguages)
     }
 
 

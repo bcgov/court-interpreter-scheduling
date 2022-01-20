@@ -8,7 +8,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
-import { locationsInfoType } from '@/types/Common';
+import { locationsInfoType } from "@/types/Common/json";
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";

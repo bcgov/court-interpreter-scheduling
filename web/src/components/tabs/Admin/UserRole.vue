@@ -75,8 +75,8 @@
 <script lang="ts">
 import { Component, Vue} from 'vue-property-decorator';
 
-import { allUsersInfoType, roleInfoType } from '@/types/Application';
-import { locationsInfoType } from '@/types/Common';
+import { allUsersInfoType, roleInfoType } from '@/types/Admin';
+import { locationsInfoType } from '@/types/Common/json';
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
