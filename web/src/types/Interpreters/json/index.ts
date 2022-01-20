@@ -11,9 +11,11 @@ export interface interpreterInfoType {
     phone: string;
     email: string;
     supplier: string;
+    siteCode?: string;
     gst: string;
     comments: string;
     criminalRecordCheckDate: string;
+    criminalRecordCheckComment?: string;
     contractExtension: boolean;
     languages: interpreterLanguageInfoType[]
     events: [];

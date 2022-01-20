@@ -45,6 +45,22 @@
                                     </b-dropdown>
                                 </b-col>
                                 <b-col>
+                                    <!-- <b-form-select
+                                        v-model="userCourtLocation"                                        
+                                        @change="ChangeUserLocation()" 
+                                        value-field="id"
+                                        text-field="name">
+                                        <b-form-select-option value=null>
+                                            Select a Location
+                                        </b-form-select-option>
+                                        <b-form-select-option
+                                            v-for="location in sortedCourtLocations" 
+                                            :key="location.id"
+                                            :value="location.name">
+                                                {{location.name}}
+                                        </b-form-select-option>
+
+                                    ></b-form-select> -->
                                     <b-form-select
                                         v-model="userCourtLocation"
                                         :options="sortedCourtLocations"

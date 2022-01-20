@@ -1,5 +1,5 @@
 <template>
-    <b-card no-body v-if="dataLoaded" class="bg-white border-white">       
+    <b-card no-body v-if="dataLoaded" style="border-radius: 0 0 0.25rem 0.25rem;" class="bg-white border-white">       
 
         <b-table            
             :items="interpreterRecordDetail"
