@@ -803,7 +803,7 @@ export default class DirectoryPage extends Vue {
             "active":this.active,
             "language":this.language,
             "level":this.level,
-            "city":this.userLocation?.city?this.userLocation.city:'',
+            "city":'',//this.userLocation?.city?this.userLocation.city:'',
             "keywords":this.keyword,
             "criminalRecordCheck":this.crcExpiryDate?this.crcExpiryDate:null                
         }

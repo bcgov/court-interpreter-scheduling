@@ -35,7 +35,18 @@ const router = new VueRouter({
 });
 
 // Redirect to /court-interpreter-scheduling/
-if(!location.pathname.includes('/bookings') && !location.pathname.includes('/signout'))
+if(  
+    location.pathname.includes('/bookings') ||
+    location.pathname.includes('/create') ||
+    location.pathname.includes('/directory') ||
+    location.pathname.includes('/language') ||
+    location.pathname.includes('/user-role') ||
+    location.pathname.includes('/update-geo')
+){
+    console.log(location.pathname)
+    history.pushState({page: "bookings"}, "", process.env.BASE_URL+"bookings")
+}
+else if(!location.pathname.includes('/signout'))
     history.pushState({page: "home"}, "", process.env.BASE_URL)
 
 
