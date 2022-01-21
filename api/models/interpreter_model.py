@@ -31,6 +31,8 @@ class InterpreterModel(Base):
     completed_training = Column(Boolean, nullable=False, default=False)
     fax= Column(String, unique=False, index=False, nullable=True)
 
+    site_code = Column(String, unique=False, index=False, nullable=True)
+
     admin_comment = Column(String, unique=False, index=False, nullable=True)
     address_longitude = Column(Float, unique=False, index=False, nullable=True) 
     address_latitude = Column(Float, unique=False, index=False, nullable=True)

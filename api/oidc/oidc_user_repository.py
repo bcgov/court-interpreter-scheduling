@@ -146,7 +146,8 @@ def modify_user_role(roles: list(), user_id: int, db: Session):
         if user_role_id not in privious_user_role_ids:
             user_role_relation = UserRoleModel(
                 user_id = user_id,
-                role_id = user_role_id
+                role_id = user_role_id,
+                updated_by = 'OIDC'
             )
             db.add(user_role_relation)
             db.commit()

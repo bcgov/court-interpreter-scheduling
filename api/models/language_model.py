@@ -25,6 +25,7 @@ class LanguageModel(Base):
     name =  Column(String, unique=True, index=True)    
     created_at =   Column(DateTime(timezone=True), server_default=func.now(), nullable=False)      
     updated_at =  Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_by =  Column(String, unique=False, index=False, nullable=True)
     
     #interpreters = relationship("InterpreterLanguageModel", back_populates="language_relation")
     interpreters = relationship('InterpreterModel',overlaps="interpreter_relation", cascade='all,delete', secondary='interpreter_language', backref='language')
