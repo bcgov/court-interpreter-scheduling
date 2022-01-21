@@ -37,6 +37,7 @@ def upgrade():
         sa.Column('cell_phone', sa.String(), nullable=True),
         sa.Column('email', sa.String(), nullable=True),
         sa.Column('supplier_no', sa.String(), nullable=True),
+        sa.Column('site_code', sa.String(), nullable=True),
         sa.Column('gst_no', sa.String(), nullable=True),
         sa.Column('comments', sa.String(), nullable=True),
         sa.Column('crc_check_date', sa.DateTime(timezone=True), nullable=True),
@@ -49,6 +50,7 @@ def upgrade():
         sa.Column('address_longitude', sa.Float(), nullable=True),
         sa.Column('address_latitude', sa.Float(), nullable=True),
         sa.Column('disabled', sa.Boolean(), nullable=False, default=False),
+        
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_interpreter_id'), 'interpreter', ['id'], unique=False)
@@ -58,6 +60,7 @@ def upgrade():
         sa.Column('name', sa.String(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('updated_by', sa.String(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_language_id'), 'language', ['id'], unique=False)
@@ -87,7 +90,7 @@ def seed_interpreter_spoken():
     json_content = json.loads(json_str)
     
     items  = [
-        {'label':'LEVEL', 'field':'level', 'field2':'completed_training', 'field3':'fax'},
+        {'label':'LEVEL', 'field':'level', 'field2':'completed_training', 'field3':'fax', 'field4':'updated_by'},
         {'label':'LANGUAGE', 'field':'language'},
         {'label':'LAST NAME', 'field':'last_name'},
         {'label':'FIRST NAME', 'field':'first_name'},
@@ -99,7 +102,7 @@ def seed_interpreter_spoken():
         {'label':'BUSINESS PHONE', 'field':'business_phone'},
         {'label':'CELL PHONE', 'field':'cell_phone'},
         {'label':'EMAIL ADDRESS', 'field':'email'},
-        {'label':'SUPPLIER #', 'field':'supplier_no'},
+        {'label':'SUPPLIER #', 'field':'supplier_no', 'comment':'site_code'},
         {'label':'GST', 'field':'gst_no'},
         {'label':'Criminal Record Check', 'field':'crc_check_date', 'comment':'crc_comment'},           
         {'label':'COMMENTS', 'field':'comments'},
@@ -114,8 +117,18 @@ def seed_interpreter_spoken():
             
             #LEVEL
             if item['label'] =='LEVEL':
-                data.append({item['field']:name[key].strip(), item['field2']:False, item['field3']:None})   
+                data.append({item['field']:name[key].strip(), item['field2']:False, item['field3']:None, item['field4']:'System'})   
             
+            #SUPPLIER #
+            elif item['label'] =='SUPPLIER #' and not isinstance(name[key], int) and name[key] is not None and 'site' in name[key].lower():
+                words = name[key].lower().split('site') 
+                words[0]=words[0].replace(",","") 
+                data[int(key)][item['field']] = words[0].strip()
+                data[int(key)][item['comment']] = words[1].strip()
+            elif item['label'] =='SUPPLIER #' :
+                data[int(key)][item['field']] = name[key]
+                data[int(key)][item['comment']] = None
+
             #Criminal Record Check
             elif (item['label'] =='Criminal Record Check' and isinstance(name[key], int)):
                 data[int(key)][item['field']] = date.fromtimestamp(28800+int(name[key])/1000)
@@ -158,10 +171,10 @@ def seed_interpreter_visual():
     json_content = json.loads(json_str)
     
     items  = [
-        {'label':'Level', 'field':'level', 'field2':'crc_check_date', 'field3':'crc_comment'},        
+        {'label':'Level', 'field':'level', 'field2':'crc_check_date', 'field3':'crc_comment', 'field4':'updated_by'},        
         {'label':'Completed court or legal training', 'field':'completed_training'},
         {'label':'LANGUAGE', 'field':'language'},
-        {'label':'SUPPLIER #', 'field':'supplier_no'},
+        {'label':'SUPPLIER #', 'field':'supplier_no', 'comment':'site_code'},
         {'label':'GST', 'field':'gst_no'},
         {'label':'LAST NAME', 'field':'last_name'},
         {'label':'FIRST NAME', 'field':'first_name'},
@@ -185,7 +198,17 @@ def seed_interpreter_visual():
             
             #LEVEL
             if item['label'] =='Level':
-                data.append({item['field']:name[key].strip(), item['field2']:None, item['field3']:None})
+                data.append({item['field']:name[key].strip(), item['field2']:None, item['field3']:None, item['field4']:'System'})
+
+            #SUPPLIER #
+            elif item['label'] =='SUPPLIER #' and not isinstance(name[key], int) and name[key] is not None and 'site' in name[key].lower():
+                words = name[key].lower().split('site') 
+                words[0]=words[0].replace(",","") 
+                data[int(key)][item['field']] = words[0].strip()
+                data[int(key)][item['comment']] = words[1].strip()
+            elif item['label'] =='SUPPLIER #' :
+                data[int(key)][item['field']] = name[key]
+                data[int(key)][item['comment']] = None
 
             #Completed court or legal training
             elif (item['label'] =='Completed court or legal training' and  name[key] is not None and name[key].upper().strip() == 'Y'):
@@ -234,7 +257,7 @@ def seed_languages():
     name = json_content['name']
     data = list()
     for key in name:        
-        data.append({'id':int(key)+1, 'name':name[key].strip()})
+        data.append({'id':int(key)+1, 'name':name[key].strip(), 'updated_by':'System'})
 
     return data   
 
@@ -244,7 +267,7 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
     spoken = seed_interpreter_spoken()
     visual = seed_interpreter_visual()
     combined_interpreters = spoken+visual
-    
+   
     interpreters = list()
     interpreter_language = list()
     counter = 0 
