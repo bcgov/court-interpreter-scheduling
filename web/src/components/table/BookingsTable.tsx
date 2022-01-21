@@ -70,7 +70,7 @@ export default function BookingsTable({
           },
           {
             render: (row: any) => (
-              <InterpreterName interpreter={row.interpreter} />
+              <InterpreterName row={row} />
             ),
             title: 'Interpreter',
             customSort: objectFieldSort('interpreter', 'lastName')

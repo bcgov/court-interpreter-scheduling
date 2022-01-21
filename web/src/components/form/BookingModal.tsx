@@ -51,7 +51,7 @@ export default function BookingModal({
   useEffect(() => {
     if ([200, 201].some((status) => status === response?.status)) {
       setInterpreter(null);
-      history.push('/bookings');
+      history.push('/home/bookings');
     }
   }, [response, setInterpreter, history]);
 
@@ -70,7 +70,7 @@ export default function BookingModal({
               if (state?.booking) {
                 await postBooking({
                   url: `/booking/${state.booking.id}`,
-                  method: 'PATCH',
+                  method: 'PUT',
                   data: {
                     ...values,
                     interpreterId: interpreter?.id,

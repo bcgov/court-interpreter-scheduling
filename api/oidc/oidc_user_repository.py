@@ -14,16 +14,16 @@ from datetime import datetime
 # roles = ['cis-admin', 'offline_access', 'cis-user', 'uma_authorization']
 
 def oidc_user_repository(claims, roles, db: Session):
-    print("____REPOSITORY__SEARCH_FOR_USER_IN_DB______")
+    # print("____REPOSITORY__SEARCH_FOR_USER_IN_DB______")
     # Tries to retrieve a corresponding user in the local database and creates it if applicable.
     try:
         oidc_user_query = db.query(OidcUserModel).filter(OidcUserModel.sub == claims.get('sub'))
         oidc_user_first = oidc_user_query.one()
     except NoResultFound:
-        print("______EXEPTION___USER_NOT_IN_DB__")
+        # print("______EXEPTION___USER_NOT_IN_DB__")
         oidc_user_first = create_oidc_user_from_claims(claims, roles, db)
     else:
-        print("______FOUND__USER_IN_DB_____")
+        # print("______FOUND__USER_IN_DB_____")
         oidc_user_first = update_oidc_user_from_claims(oidc_user_query, claims, roles, db)
 
     return oidc_user_first
@@ -48,7 +48,7 @@ def create_oidc_user_from_claims(claims, roles, db: Session):
         db.add(oidc_user)
         db.commit()
         db.refresh(oidc_user)
-        print("_______________ROLE__IDS___________")
+        # print("_______________ROLE__IDS___________")
         modify_user_role(roles, user.id, db)
     
     # print("___OIDC____")
@@ -63,7 +63,7 @@ def update_oidc_user_from_claims(oidc_user_query, claims, roles, db: Session):
     oidc_user_query.update({"userinfo": claims})
     jointuser = oidc_user_query.first().user
     
-    print("_______________ROLE__IDS___________________")
+    # print("_______________ROLE__IDS___________________")
     modify_user_role(roles, jointuser.id, db)
 
     updating_user_query = db.query(UserModel).filter(UserModel.id == jointuser.id)          
@@ -85,7 +85,7 @@ def get_or_create_user(username, claims, db: Session):
     else:
         raise HTTPException(status.HTTP_403_FORBIDDEN,'No Username.')
 
-    print("______GET_OR_CREATE__USER_____")
+    # print("______GET_OR_CREATE__USER_____")
 
     if len(users_query.all()) == 0:        
         new_user = UserModel(           
@@ -117,13 +117,13 @@ def get_or_create_user(username, claims, db: Session):
 
 
 def get_role_ids(roles: list(), db: Session):
-    print(roles)
+    # print(roles)
     role_ids = list()
     for role_name in roles:
         role = db.query(RoleModel).filter(RoleModel.role_name==role_name).first()
         if role is not None:
            role_ids.append(role.id) 
-    print(role_ids)
+    # print(role_ids)
     return role_ids
 
 
@@ -136,10 +136,11 @@ def modify_user_role(roles: list(), user_id: int, db: Session):
         privious_role_id = user_role_query.role_id
         privious_user_role_ids.append(privious_role_id)
         if privious_role_id not in user_role_ids:
-            print("_______DEL_EXTRA_ROLE______________")
+            # print("_______DEL_EXTRA_ROLE______________")
             # print(privious_role_id)            
             user_role = db.query(UserRoleModel).filter(UserRoleModel.user_id==user_id, UserRoleModel.role_id==privious_role_id)            
             user_role.delete(synchronize_session=False)
+            db.commit()
     
     for user_role_id in user_role_ids:  
         if user_role_id not in privious_user_role_ids:

@@ -29,7 +29,7 @@ export async function getUserLocation(): Promise<Location> {
 export async function updateUserLocation(
   locationId: number
 ): Promise<Location> {
-  const axios = axiosGetter().axiosPatch;
+  const axios = axiosGetter().axiosPut;
   const resp = await axios.put('/user-info/save-location', {
     locationId,
   });

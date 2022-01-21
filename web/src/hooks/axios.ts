@@ -93,6 +93,13 @@ const axiosPatch = axios.create({
   },
 });
 
+const axiosPut = axios.create({
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 export const axiosGet = axios.create({
   method: 'GET',
 });
@@ -109,6 +116,7 @@ const axiosDelete = axios.create({
 axiosPost.interceptors.request.use(successInterceptor);
 axiosPostForm.interceptors.request.use(successInterceptor);
 axiosPatch.interceptors.request.use(successInterceptor);
+axiosPut.interceptors.request.use(successInterceptor);
 axiosGet.interceptors.request.use(successInterceptor);
 axiosFileGet.interceptors.request.use(successInterceptor);
 axiosDelete.interceptors.request.use(successInterceptor);
@@ -116,6 +124,7 @@ axiosDelete.interceptors.request.use(successInterceptor);
 axiosPost.interceptors.response.use(successResponse, errorResponse);
 axiosPostForm.interceptors.response.use(successResponse, errorResponse);
 axiosPatch.interceptors.response.use(successResponse, errorResponse);
+axiosPut.interceptors.response.use(successResponse, errorResponse);
 axiosGet.interceptors.response.use(successResponse, errorResponse);
 axiosFileGet.interceptors.response.use(successResponse, errorResponse);
 axiosDelete.interceptors.response.use(successResponse, errorResponse);
@@ -126,6 +135,7 @@ export function axiosGetter() {
     axiosGet,
     axiosPost,
     axiosPatch,
+    axiosPut,
     axiosFileGet,
   };
 }
@@ -143,6 +153,11 @@ export const useAxiosPostFormData = makeUseAxios({
 export const useAxiosPatch = makeUseAxios({
   cache: false,
   axios: axiosPatch,
+});
+
+export const useAxiosPut = makeUseAxios({
+  cache: false,
+  axios: axiosPut,
 });
 
 export const useAxiosGet = makeUseAxios({

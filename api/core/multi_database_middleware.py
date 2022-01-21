@@ -12,8 +12,8 @@ DATABASE_URL = "postgresql+psycopg2://"+\
                 settings.DB_SERVICE_HOST+":"+\
                 settings.DB_SERVICE_PORT+"/"+\
                 settings.DATABASE_NAME
-print("___DB_________")
-print(DATABASE_URL)
+# print("___DB_________")
+# print(DATABASE_URL)
 
 # declare our engines
 engines = {

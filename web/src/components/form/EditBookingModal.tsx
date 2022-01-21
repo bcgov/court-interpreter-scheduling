@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useAxiosPatch } from 'hooks/axios'
+import { useAxiosPut } from 'hooks/axios'
 import useError from 'hooks/useError'
 
 import { StyledButton, ButtonSecondary, BookingButton } from 'components/Buttons'
@@ -38,7 +38,7 @@ export default function BookingModal({ booking, setBooking, refetch }: BookingMo
 
   const [open, toggleOpen] = useState(false)
   const [view, toggleView] = useState('schedule')
-  const [{ response, loading, error }, editBooking] = useAxiosPatch({ url: '/booking' }, { manual: true })
+  const [{ response, loading, error }, editBooking] = useAxiosPut({ url: '/booking' }, { manual: true })
 
   const { search: bookingSearch } = useContext(BookingSearchContext);
 
