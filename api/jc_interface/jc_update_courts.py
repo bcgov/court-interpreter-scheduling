@@ -5,17 +5,23 @@ from sqlalchemy.orm import Session
 
 from core.geo_coordinate_service import get_latitude_longitude_service
 
-def update_courts_info_in_db(db: Session):
+def update_courts_info_in_db(db: Session, google_map: bool):
     
     jc_calls = JcInterfaceCalls()    
     jc_locations = jc_calls.get_court_locations()
     efiling_locations = jc_calls.get_court_locations_address()
     # print(efiling_locations)
 
-    for location in jc_locations:        
-        if location["shortDesc"].isnumeric() and len(location["shortDesc"]):        
-            # print(location)            
+    if google_map:
+        geo_service = "Google Map"
+    else:
+        geo_service = "Nominatim"
 
+    for inx, location in enumerate(jc_locations):        
+        
+        if location["shortDesc"].isnumeric() and len(location["shortDesc"]):        
+            # print(location["longDesc"])            
+       
             court_address = {'address_line1':"", 'address_line2':"", 'postal_code':"", 'city':"", 'province':""} 
 
             efiling_location = [loc for loc in efiling_locations if (loc["short_description"]==location["shortDesc"]and str(loc["location_code"])==location["code"] )]
@@ -28,15 +34,18 @@ def update_courts_info_in_db(db: Session):
             else:
                 court_address = other_courts_addresses(location["code"], location["shortDesc"])
                 
-            latitude, longitude = get_latitude_longitude_service(court_address['address_line1'], court_address['address_line2'], court_address['city'], court_address['postal_code'], court_address['province'], google_map=False)
+            latitude, longitude = get_latitude_longitude_service(court_address['address_line1'], court_address['address_line2'], court_address['city'], court_address['postal_code'], court_address['province'], google_map=google_map)
 
             location_query = db.query(CourtLocationModel).filter(
                 CourtLocationModel.short_description==location["shortDesc"],
                 CourtLocationModel.location_code==location["code"]
             )
-            
+            print("Location Update Progress => "+str(int(100*inx/len(jc_locations)))+" %")
             # print(location_query)
             # print(court_address)
+            
+
+
             if location_query.first() is None:
                 adding_location = CourtLocationModel(
                     name = location["longDesc"],
@@ -48,7 +57,8 @@ def update_courts_info_in_db(db: Session):
                     postal_code = court_address['postal_code'],
                     province = court_address['province'],
                     latitude = latitude,
-                    longitude = longitude
+                    longitude = longitude,
+                    geo_service = geo_service
                 )
                 db.add(adding_location)                
             else:
@@ -62,7 +72,8 @@ def update_courts_info_in_db(db: Session):
                     "postal_code": court_address['postal_code'],
                     "province": court_address['province'],
                     "latitude": latitude,
-                    "longitude": longitude
+                    "longitude": longitude,
+                    "geo_service": geo_service
                 })
                 
     db.commit()

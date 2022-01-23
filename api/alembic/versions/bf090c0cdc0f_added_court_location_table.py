@@ -32,6 +32,7 @@ def upgrade():
     sa.Column('province', sa.String(), nullable=True),
     sa.Column('latitude', sa.Float(), nullable=True),
     sa.Column('longitude', sa.Float(), nullable=True),
+    sa.Column('geo_service', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_court_location_id'), 'court_location', ['id'], unique=False)

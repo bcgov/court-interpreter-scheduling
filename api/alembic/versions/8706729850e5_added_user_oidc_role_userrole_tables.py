@@ -22,6 +22,7 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('updated_by', sa.String(), nullable=True),
         sa.Column('role_name', sa.String(), nullable=False),
         sa.PrimaryKeyConstraint('id')
     )
@@ -60,6 +61,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=True),
         sa.Column('role_id', sa.Integer(), nullable=True),
+        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('updated_by', sa.String(), nullable=True),
         sa.ForeignKeyConstraint(['role_id'], ['role.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
@@ -68,7 +71,7 @@ def upgrade():
     # ### end Alembic commands ###
 
     # data seed 
-    op.bulk_insert(role_table, [{'role_name':'cis-admin'}, {'role_name':'cis-user'}])
+    op.bulk_insert(role_table, [{'role_name':'cis-admin','updated_by':'System'}, {'role_name':'cis-user','updated_by':'System'}])
 
 
 def downgrade():

@@ -12,16 +12,35 @@ from core.geo_coordinate_service import get_latitude_longitude_service
 
 
 
-def update_interpreter_geo_coordinates_in_db(db: Session):
+def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
+
+    geo_service = get_geo_service_name(google_map)
+
+    interpreters_query = db.query(InterpreterModel)
+    try:
+        interpreters = interpreters_query.all()
+    except:
+        interpreters = interpreters_query.all()
+
+    total_interpreters=(len(interpreters))
+    count=0
     
-    interpreters = db.query(InterpreterModel)
-    for interpreter in interpreters.all():
+    for interpreter in interpreters:                
+        latitude, longitude = get_latitude_longitude_service(interpreter.address, "", interpreter.city, interpreter.postal_code, interpreter.province, google_map=google_map)
         
-        latitude, longitude = get_latitude_longitude_service(interpreter.address, "", interpreter.city, interpreter.postal_code, interpreter.province, google_map=False)
-        
-        interpreter_query = interpreters.filter(InterpreterModel.id==interpreter.id)
-        interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude})
+        interpreter_query = interpreters_query.filter(InterpreterModel.id==interpreter.id)
+        interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude, "geo_service":geo_service})
         db.commit()
+        
+        count = count+1
+        print("Interpreter Update Progress => "+str(int(100*count/total_interpreters))+" %")
+
+
+def get_geo_service_name(google_map):
+    if google_map:
+        return "Google Map"
+    else:
+        return "Nominatim"
 
 
 def create_interpreter_in_db(request:InterpreterRequestSchema, db: Session, username):
@@ -98,6 +117,7 @@ def add_geo_coordinates(interpreter_request):
     )
     interpreter_request['address_latitude'] = latitude
     interpreter_request['address_longitude'] = longitude
+    interpreter_request['geo_service'] = get_geo_service_name(google_map=False)
     return interpreter_request
 
 

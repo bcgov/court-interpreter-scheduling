@@ -22,7 +22,8 @@ class InterpreterSchema(BaseModel):
     gst_no: Optional[str] = Field(alias="gst")
     comments: Optional[str] =''
     crc_check_date: Optional[datetime] = Field(alias="criminalRecordCheckDate")
-    # crc_comment: Optional[str] =''
+    crc_comment: Optional[str] =''
+    site_code: Optional[str] =None
     contract_valid: bool= Field(alias="contractExtension")
     # contract_comment: Optional[str] =''
 
@@ -94,10 +95,11 @@ class InterpreterRequestSchema(BaseModel):
 
     supplier_no: Optional[str] = Field(alias="supplier")
     gst_no: Optional[str] = Field(alias="gst")
-    
+    site_code: Optional[str] =None
+
     crc_check_date: Optional[datetime] = Field(alias="criminalRecordCheckDate")
     
-    contract_valid: Optional[bool] = Field(False, alias="contractExtension")
+    contract_valid: Optional[bool] = Field(None, alias="contractExtension")
     completed_training: Optional[bool] = False    
 
     languages: Optional[List[InterpreterLanguageSchema]] = []
