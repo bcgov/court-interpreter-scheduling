@@ -236,7 +236,7 @@
                     </template>
                     <template v-slot:row-details>
                         <b-card bg-variant="primary" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
-                            <interpreter-details :interpreterDetails="expandedInterpreter" />
+                            <interpreter-details :interpreterDirectory="true" :interpreterDetails="expandedInterpreter" />
                         </b-card>
                     </template>
                     
@@ -256,7 +256,7 @@
               
                 <b-card no-body v-if="interpreterDataReady" class="border-white">
 
-                    <b-row v-if="!isCreate">interpreter.name</b-row>
+                    <b-row class="h2 ml-3" v-if="!isCreate">{{interpreter.firstName}} {{interpreter.lastName}}</b-row>
 
                     <b-row class="ml-1">
                         <b-col cols="6">                    

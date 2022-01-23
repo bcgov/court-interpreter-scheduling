@@ -30,13 +30,19 @@ export default class InterpreterDetails extends Vue {
 
     @Prop({required: true})
     interpreterDetails!: interpreterInfoType; 
+
+    @Prop({required: true})
+    interpreterDirectory!: boolean;
+
+
     
     interpreterRecordDetail: interpreterInfoType[] = [];
     dataLoaded = false;
     fullAddress = '';
+
+    detailedFields = [];
    
-    detailedFields = [
-              
+    detailedDirectoryFields = [              
         {
             key: "address",
             label: "Address",
@@ -69,8 +75,37 @@ export default class InterpreterDetails extends Vue {
         }
     ];
 
+    detailedSearchFields = [ 
+        {
+            key: "supplier",
+            label: "Supplier #",
+            sortable: false
+        },
+        {
+            key: "siteCode",
+            label: "Site Code",
+            sortable: false
+        },        
+        {
+            key: "gst",
+            label: "GST #",
+            sortable: false
+        },              
+        {
+            key: "comments",
+            label: "Comments",
+            sortable: false
+        }
+    ];
+
     mounted(){
+        console.log(this.interpreterDirectory)
         this.dataLoaded = false;
+        if (this.interpreterDirectory){
+            this.detailedFields = this.detailedDirectoryFields;
+        } else {
+            this.detailedFields = this.detailedSearchFields;
+        }
         this.extractDetails();
         
         this.dataLoaded = true;        
