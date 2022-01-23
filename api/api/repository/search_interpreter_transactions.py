@@ -40,8 +40,8 @@ def apply_city(interpreter, city):
         return interpreter
 
 def apply_active(interpreter, active):
-    if active == True:
-        return interpreter.where(InterpreterModel.contract_valid == True)
+    if active is not None:
+        return interpreter.where(InterpreterModel.contract_valid == active)
     else:
         return interpreter
 

@@ -36,6 +36,7 @@ class InterpreterModel(Base):
     admin_comment = Column(String, unique=False, index=False, nullable=True)
     address_longitude = Column(Float, unique=False, index=False, nullable=True) 
     address_latitude = Column(Float, unique=False, index=False, nullable=True)
+    geo_service = Column(String, unique=False, index=False, nullable=True)
 
     disabled = Column(Boolean, nullable=False, default=False)
 

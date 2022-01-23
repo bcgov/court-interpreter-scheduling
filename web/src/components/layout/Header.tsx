@@ -67,6 +67,20 @@ const useStyles = makeStyles({
   }
 })
 
+export function UpdateInterpreter(){
+  const [{ data, error, loading }, updateInterpreters] = useAxiosGet('/interpreter/update-geo-coordinates',{manual:true});
+  return(
+    <button style={{margin:"0 0rem", cursor:"text", color:"#FFF", backgroundColor:"#036", border: "0px solid black"}} onClick={()=> updateInterpreters()} >Interpreter</button>
+  )
+}
+
+export function UpdateLocation(){
+  const [{ data, error, loading }, updateLocations] = useAxiosGet('/update-locations',{manual:true});
+  return(
+    <button style={{margin:"0 0rem", cursor:"text", color:"#FFF", backgroundColor:"#036", border: "0px solid black"}} onClick={()=> updateLocations()} >Court</button>
+  )
+}
+
 export default function Header() {
   const [{ data, error, loading }] = useAxiosGet('/user-info/logout-route');
 
@@ -88,7 +102,9 @@ export default function Header() {
       </Link>
       <div className={classes.titleWrapper}>
         <Typography className={classes.topTitle}>
-          Court Interpreter Scheduling
+          <UpdateLocation/>
+          <UpdateInterpreter/> 
+          Scheduling
         </Typography>
       </div>
       {

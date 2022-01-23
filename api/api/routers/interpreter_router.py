@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
-
+from threading import Thread
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from api.schemas import InterpreterResponseSchema, InterpreterSearchRequestSchema, InterpreterRequestSchema
@@ -20,7 +20,15 @@ router = APIRouter(
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
 
     return InterpreterResponseSchema(data = search_Interpreter(request, db), pagination = {"page":1, "limit":1000})
- 
+
+
+@router.get('/update-geo-coordinates')
+def update_geo_coordinates_of_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+    google_map=False
+    update_interpreter_geo_coordinates_in_db(db, google_map)
+    # Thread(target=update_interpreter_geo_coordinates_in_db, args=(db,google_map,)).start()
+    return "Update has been performed."
+
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=InterpreterResponseSchema)
 def get_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
@@ -46,11 +54,7 @@ def delete_Interpreter_By_Id(id: int, db: Session= Depends(get_db_session), user
     return 'Interpreter deleted'
 
 
-@router.put('/update-geo-coordinates')
-def update_geo_coordinates_of_All_Interpreters(db: Session= Depends(get_db_session)):
 
-    update_interpreter_geo_coordinates_in_db(db)    
-    return "Success"
 
 
 @router.post('', status_code=status.HTTP_200_OK)
