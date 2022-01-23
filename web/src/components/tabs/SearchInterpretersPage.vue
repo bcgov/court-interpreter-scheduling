@@ -604,7 +604,7 @@ export default class SearchInterpretersPage extends Vue {
         this.dataLoaded = false;   
         this.locationState = true;     
         this.bookingStates = {} as bookingStatesInfoType;
-        this.extractInfo()       
+        this.extractInfo();       
     }
 
     public extractInfo(){
