@@ -49,6 +49,7 @@ def upgrade():
         sa.Column('admin_comment', sa.String(), nullable=True),
         sa.Column('address_longitude', sa.Float(), nullable=True),
         sa.Column('address_latitude', sa.Float(), nullable=True),
+        sa.Column('geo_service', sa.String(), nullable=True),
         sa.Column('disabled', sa.Boolean(), nullable=False, default=False),
         
         sa.PrimaryKeyConstraint('id')

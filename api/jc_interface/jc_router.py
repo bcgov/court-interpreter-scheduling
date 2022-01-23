@@ -2,6 +2,7 @@
 from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends, Response, Request
 # from fastapi.encoders import jsonable_encoder
+from threading import Thread
 
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
@@ -25,7 +26,8 @@ def get_all_locations(db: Session= Depends(get_db_session), user: UserSchema = D
    
    
 @router.get('/update-locations')
-def update_locations(db: Session= Depends(get_db_session)):
-
-    update_courts_info_in_db(db)
-    return "OK"
+def update_locations(db: Session= Depends(get_db_session), user: UserSchema = Depends(logged_in_user)):
+    google_map=False
+    update_courts_info_in_db(db, google_map)    
+    # Thread(target=update_courts_info_in_db, args=(db,google_map,)).start()
+    return "Update has been performed."
