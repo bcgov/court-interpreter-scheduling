@@ -94,20 +94,19 @@
             <b-card v-else class="home-content border-white p-0">
                 <b-table
                     :items="bookings"
-                    :fields="interpreterFields"
+                    :fields="bookingFields"
                     class="border-info"                                    
                     small
+                    sort-icon-left
                     responsive="sm">
 
-                    <template v-slot:head(email)="data" >                    
-                        <span class="mt-1">{{data.label}}</span>
-                        <b-button style="font-size:14px" 
+                    <template v-slot:cell(interpreter)="data" >                    
+                        
+                        <b-button style="font-size:14px; border: white; text-decoration: underline;" 
                             size="sm"                        
-                            @click="displayInterpreterInfo();" 
-                            class="text-white bg-transparent border-primary ml-2"
-                            v-b-tooltip.hover.top.noninteractive
-                            title="Copy emails to clipboard" 
-                            ><i class="fa fa-clone"></i>
+                            @click="displayInterpreterInfo(data.value);" 
+                            class="text-primary bg-transparent"
+                            >{{data.value.lastName}}, {{data.value.firstName}}
                         </b-button>
 
                     </template>
@@ -116,63 +115,40 @@
                         <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
                     </template>
 
-                    <template v-slot:cell(languages)="data" >    
+                    <template v-slot:cell(dates)="data" >    
                         <span 
-                            v-for="lan,inx in data.item.languages.map(language => {return {name: language.languageName, level:language.level}})" 
+                            v-for="dateInfo,inx in data.value" 
                             :key="inx"
-                            style="display: block;">
-                            <b v-if="lan.name == language">{{lan.name}} {{lan.level}}</b>
-                            <span v-else>{{lan.name}} {{lan.level}}</span>
+                            style="display: block;">                            
+                            <b>{{dateInfo.date | beautify-date-weekday}}</b> - {{dateInfo.arrivalTime | convert-time24to12}}
+                            <span v-if="dateInfo.period != 'WHOLE_DAY'"> ({{dateInfo.period | capitalize}})</span>
                         </span>
 
-                    </template>
+                    </template>                   
 
-                    <template v-slot:cell(fullAddress)="data">    
-                        <span 
-                            v-html="data.value" 
-                            style="display: block;">
-                            {{data.value}}
-                        </span>            
-                    </template>
-
-                    <template v-slot:cell(phone)="data" >    
-                        <span                            
-                            v-if="data.value"                            
-                            style="display: block;">
-                            {{data.value}} mobile
-                        </span>    
-                        <span 
-                            v-if="data.item.businessPhone"                            
-                            style="display: block;">
-                            {{data.item.businessPhone}} work
-                        </span>
-                        <span 
-                            v-if="data.item.homePhone"                            
-                            style="display: block;">
-                            {{data.item.homePhone}} home
-                        </span>                                    
-                    </template>
-
-                    <template v-slot:cell(new)="data" >    
-                        <b-badge 
-                            v-if="!data.item.new"
-                            class="mt-2"
-                            pill
-                            variant="success"
-                            style="float: left;"
-                            >New
-                        </b-badge>                                        
+                    <template v-slot:cell(status)="data" >    
+                        <b-badge v-if="data.value == 'Booked'" class="mt-2" variant="success">Booked</b-badge> 
+                        <b-badge v-else-if="data.value == 'Cancelled'" class="mt-2" variant="danger">Cancelled</b-badge>
+                        <b-badge v-if="data.value == 'Pending'" class="mt-2" variant="warning">Pending</b-badge>                                       
                     </template>                    
 
-                    <template v-slot:cell(edit)="data" >
-                        
-                        <b-button style="font-size:12px" 
-                            size="sm"       
-                            @click="bookInterpreter(data.item);" 
-                            class="text-primary bg-info border-info mt-1" 
-                            >Book                                                       
-                        </b-button>
-                        
+                    <template v-slot:cell(edit)="data">
+                        <b-row  style="float: right;" class="mr-1">
+                            <b-button style="font-size:12px;" 
+                                size="sm"       
+                                @click="downloadAdm(data.item);" 
+                                class="text-primary bg-info border-info mt-1 " 
+                                ><img 
+                                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHaADAAQAAAABAAAAHAAAAADjGz/hAAAC2klEQVRIDe1Wy0uUURQ/9442PTaJLWqaiiCjqP6AwEAhwgja6cCMizaWIwW1aqM0QS1aGjRDERWlU1kpvWmjFhG0aBMFolCUj15ibULS8Z5+99Mr1++bme4IbaJvMfe87u93zrmvIfr//cUOCD/22nj6EpM4QMQBnz/WrwtBN6uqtjb2p2pzfp+tS1vR8mIJvblMsaGhges1qb4yP66tB6qJxNM8F3BGCPHcDi4mM/P9eb8QPWtWyNirC4em522WUJAUjobRbMstK7aoaCXrxSHheyurKuvfphqm/BMD7fUH5NN1+7alupagukDSJh6+/T+Gxrs3HXkUNjYzLop0cHAg831w/Ne6xkydAco3MtO+yYkPPX5f0QX3BxtdCpIKK68ElRsb2vnJyN7IvBQhFah47wI7lJJIo4nzOxSpc4p5lwek6E4kke4NUVnrcOfBiA2Oo1cPvcu2Gdm5vevj6QrFqpdAiIWcFCQmiEQIQLtnhNpuAF1GZ9KcJFTHqzxQKXeOZpOVMhSqRadjYx3Nl13ITIxze0NCvJvB1aE/ZnUXR+QGiZnu0c7kbQNmj3PHLe/udq50+FryDRDa0FLNvQEEx1WOX2JNn0SPdS2zCf8kO5NqIGR/isLhjVLKo0jgqQfOtIe/jiMZ98+5vRoymkjH5fTUt48dze1Q21HlY1Rdh7dhs58y2pipUYr7tF1KUTvSkew3Mc6kADmsFJ3FDhaReGYAL8pnnMFqDcRSPDSALqN7e2XZMxL0YhaUt4CwRsu4FE6XunudSUeuNr0e60xWh5eXr0aVXmUSxwW7t3U2EfdfZ1ID+f5i0xfIw7gcpkSIfxp7KWPgHJknCo6SnjZNinVPYfOcKJYANtXJkistBogdmtKghWK0T8cUrBQTS/rngLV9YMjyVWwIdUwe0ozCIQjYDWChcSzbsmCOTWwT6vmB9griK8hl9pItxOBgN632EzpM/YdCfgOczgLVckVGfAAAAABJRU5ErkJggg==" 
+                                    alt="">                                                                                  
+                            </b-button>
+                            <b-button style="font-size:12px; padding: 0.55rem 0.9rem;" 
+                                size="sm"       
+                                @click="editBooking(data.item);" 
+                                class="text-primary bg-info border-info mt-1 ml-2" >
+                                <b-icon-pencil-fill scale="1.5"/>                                                       
+                            </b-button>
+                        </b-row> 
                     </template>                   
                     
                 </b-table>
@@ -183,7 +159,7 @@
 
         <b-modal size="xl" v-model="showBookingWindow" header-class="bg-primary text-white" :key="updatedBookingInfo">
             <template v-slot:modal-title>
-                <h1 class="my-2 ml-2">Court Interpreter Request</h1> 
+                <h1 class="my-2 ml-2">Update Court Interpreter Request</h1> 
             </template>
 
             <b-card class="bg-white border-white text-dark"> 
@@ -191,7 +167,7 @@
                 <b-card no-body v-if="bookingDataReady" class="border-white">
 
                     <b-row class="mt-1 mb-4 ml-2 h2">
-                        {{interpreter.firstName}} {{interpreter.lastName}} (Level {{interpreter.highestLevel}})                        
+                        {{booking.interpreter.firstName}} {{booking.interpreter.lastName}} (Level {{booking.interpreter.highestLevel}})                        
                     </b-row>
 
                     <b-row class="ml-1">
@@ -335,7 +311,7 @@
                                     :state="bookingStates.language"
                                     v-model="booking.language"> 
                                     <b-form-select-option
-                                        v-for="language in interpreter.languages" 
+                                        v-for="language in booking.interpreter.languages" 
                                         :key="language.languageName"
                                         :value="language.languageName">
                                             {{language.languageName}}
@@ -428,11 +404,10 @@
             <template v-slot:modal-footer>
                 
                 <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
-                <b-button 
-                    
+                <b-button
                     variant="success" 
-                    @click="saveNewBooking">
-                    <b-icon-calendar-check-fill class="mr-1"/>Create Booking
+                    @click="saveBooking">
+                    <b-icon-check-square class="mr-2"/>Save
                 </b-button>
                 
             </template>
@@ -445,7 +420,27 @@
                     >&times;</b-button
                 >
             </template>
-        </b-modal>       
+        </b-modal>     
+
+        <b-modal v-model="showInterpreterDetailsWindow" id="bv-modal-interpreter-details" header-class="bg-white text-primary" centered hide-footer>            
+            <template v-slot:modal-title>
+                <h2 class="my-2">{{interpreterDetails.firstName}} {{interpreterDetails.lastName}}</h2>
+            </template>
+
+            <b-row>
+                <b-col style="font-weight: 700;">Phone</b-col>
+                <b-col>{{interpreterDetails.phone}}</b-col>
+            </b-row>
+            <b-row>
+                <b-col style="font-weight: 700;">Email Address</b-col>
+                <b-col>{{interpreterDetails.email}}</b-col>
+            </b-row>            
+                       
+            <template v-slot:modal-header-close>                 
+                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary closeButton" @click="$bvModal.hide('bv-modal-interpreter-details')"
+                 >&times;</b-button>
+            </template>
+        </b-modal>  
     
     </b-card>
 </template>
@@ -468,7 +463,7 @@ import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
 import { bookingStatesInfoType } from '@/types/Bookings';
-import { bookingDateInfoType, bookingInfoType, bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingDateInfoType, bookingInfoType, bookingInterpreterInfoType, bookingSearchInfoType, dateRangeInfoType } from '@/types/Bookings/json';
 import { max } from 'underscore';
 
 enum bookingStatus {'Pending'='Pending', 'Booked'='Booked', 'Cancelled'='Cancelled'}
@@ -489,31 +484,28 @@ enum bookingRequest {'Court'='Court', 'Crown'='Crown', 'Applicant'='Applicant', 
 })
 export default class BookingsPage extends Vue {
 
-    @commonState.Action
-    public UpdateCourtLocations!: (newCourtLocations: locationsInfoType[]) => void
-
-    @commonState.Action
-    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void
-
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
     @commonState.State
     public languages!: languagesInfoType[];    
 
-    AddNewLanguageForm = false;       
-    addLanguageFormColor = 'court';
-    latestEditLanguageData;
-    isEditLanguageOpen = false;
+    @commonState.State
+    public userLocation!: locationsInfoType;
+
+    @commonState.Action
+    public UpdateCourtLocations!: (newCourtLocations: locationsInfoType[]) => void
+
+    @commonState.Action
+    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void    
 
     updated = 0;
     updatedBookingInfo = 0;
     
-    bookingDataReady = false;      
-   
-    updateTable = 0;
+    bookingDataReady = false;
+    
     showBookingWindow = false;
-    showConfirmDeleteInterpreter = false;
+    showInterpreterDetailsWindow = false;
     bookingStates = {} as bookingStatesInfoType;    
     
     dataLoaded = false;  
@@ -522,14 +514,15 @@ export default class BookingsPage extends Vue {
     
     location = {} as locationsInfoType;
     
-    dates = [];
+    dates: dateRangeInfoType[] = [];
     
     courtFileNumber = '';    
     interpreterName = '';
    
-    booking = {} as bookingInfoType;
+    booking = {} as bookingSearchInfoType;
     interpreter = {} as interpreterInfoType;
     bookings: bookingSearchInfoType[] = [];  
+    interpreterDetails = {} as bookingInterpreterInfoType;
 
     statusOptions = [
         {text: 'Pending',         value: bookingStatus.Pending}, 
@@ -564,96 +557,70 @@ export default class BookingsPage extends Vue {
         {text: 'Via Teleconference',   value: bookingMethodOfAppearance.RIS}
     ]   
 
-    interpreterFields = [
-        {key:'details',             label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'name',                label:'Name',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'languages',           label:'Language', cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'fullAddress',         label:'Address',  cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'phone',               label:'Phone',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'email',               label:'Email',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'new',                 label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'edit',                label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'}
+    bookingFields = [        
+        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'file',           label:'Court File Number', sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'caseName',       label:'Case Name',         sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'language',       label:'Language',          sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'interpreter',    label:'Interpreter',       sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'status',         label:'Status',            sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'}
     ];    
    
     mounted() {  
         this.dataLoaded = false;
         this.bookingStates = {} as bookingStatesInfoType;
-        this.extractInfo();
-        
+        this.extractInfo(); 
+    }
+
+    public extractInfo(){      
+        this.loadCourtLocations();        
+    }
+
+     public find(){        
        
-    }
+        this.resultsLoaded = false;
+        this.searching = true;
+        this.bookings = [];
 
-    public extractInfo(){
+        const body = {
+            "file":this.courtFileNumber?this.courtFileNumber:'',
+            "interpreter":this.interpreterName?this.interpreterName:'',  
+            "dates": [],                           
+            // "dates":this.dates,
+            "location":this.location?this.location:null                
+        }
 
-      
-        this.loadCourtLocations();
-        
-    }
-
-     public find(){
-        
-        // this.locationState = this.location?.id?true:false;
-
-        // if (this.locationState){ 
-            this.resultsLoaded = false;
-            this.searching = true;
-            this.bookings = [];
-
-            const body = {
-                "file":this.courtFileNumber?this.courtFileNumber:'',
-                "interpreter":this.interpreterName?this.interpreterName:'',                             
-                "dates":this.dates,
-                "location":this.location?this.location:null                
+        this.$http.post('/booking/search', body)
+        .then((response) => {            
+            if(response?.data?.data){                     
+                this.bookings = response.data.data;        
+                this.resultsLoaded = true;              
             }
-
-            this.$http.post('/interpreter/search', body)
-            .then((response) => {            
-                if(response?.data?.data){
-                    this.extractInterpreterDetails(response.data.data);                    
-                }
-                
-            },(err) => {
-                this.resultsLoaded = true;            
-            });
-            this.searching = false;
-        // }
+            
+        },(err) => {
+            this.resultsLoaded = true;            
+        });
+        this.searching = false;
+        
     }
 
-    public extractInterpreterDetails(bookingData){
+    public editBooking(bookingToEdit: bookingSearchInfoType){
 
-        // const bookingInfo: bookingInfoType[] = [];        
+        this.booking = bookingToEdit;
 
-        // for (const booking of bookingData){            
-        //     const address = interpreter.address?interpreter.address+'<br>':'';
-        //     const city = interpreter.city?interpreter.city:'';
-        //     const province = interpreter.province?interpreter.province:'';
-        //     const postalCode = interpreter.postal?interpreter.postal:'';
-        //     interpreter.fullAddress = address + ' ' + city + ' ' + province + ' ' + postalCode;
-        //     bookingInfo.push(interpreter);
-        // }
-
-        this.bookings = bookingData;
-        
-        this.resultsLoaded = true;
-    }
-
-    public bookInterpreter(interpreterToBook: interpreterInfoType){        
-        // Add functioanlity to get interpreter details      
-        this.interpreter = interpreterToBook;
-        this.booking = {} as bookingInfoType;
-        this.booking.interpreterId = interpreterToBook.id;
-
-        const levels = interpreterToBook.languages.map(language => {return language.level})
-        this.interpreter.highestLevel = max(levels);
-        
+        const levels = this.booking.interpreter.languages.map(language => {return language.level})
+        this.booking.interpreter.highestLevel = max(levels);        
         this.showBookingWindow = true;
         this.bookingDataReady = true;        
+        
     }
 
-     public saveNewBooking(){
+     public saveBooking(){
         if (this.checkBookingStates()){ 
             
-            this.$http.post('/booking', this.booking)
+            this.$http.put('/booking/' + this.booking.id, this.booking)
             .then((response) => {            
                 if(response?.data){
                     this.closeBookingWindow();
@@ -672,8 +639,7 @@ export default class BookingsPage extends Vue {
         let stateCheck = true;
     
         this.bookingStates.status = !(this.booking.status)? false : null;
-        this.bookingStates.room = !(this.booking.room)? false : null;
-        
+        this.bookingStates.room = !(this.booking.room)? false : null;        
       
         this.bookingStates.location = !(this.booking.locationId)? false : null;
         this.bookingStates.file = !(this.booking.file)? false : null;
@@ -704,17 +670,19 @@ export default class BookingsPage extends Vue {
     public clearStates(){
 
         for(const field of Object.keys(this.bookingStates)){
-            this.bookingStates[field] = null;
-                
+            this.bookingStates[field] = null;                
         }
                              
     }
 
-    public displayInterpreterInfo(){
-        console.log('display details')
+    public displayInterpreterInfo(interpreterInfo: bookingInterpreterInfoType){
+        this.interpreterDetails = interpreterInfo;
+        this.showInterpreterDetailsWindow = true;
     }
 
-
+    public downloadAdm(bookingInfo: bookingSearchInfoType){
+        console.log('downloading');
+    }
 
     public loadCourtLocations(){
         this.$http.get('/location')
@@ -736,6 +704,7 @@ export default class BookingsPage extends Vue {
                 const languages = _.sortBy(response.data,'name')               
                 this.UpdateLanguages(languages);                
             }
+            this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
             this.dataLoaded = true;
         },(err) => {
             this.dataLoaded = true;            

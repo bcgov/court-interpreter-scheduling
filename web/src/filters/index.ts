@@ -88,9 +88,16 @@ Vue.filter('beautify-date-blank', function(date){
 		return ' '
 })
 
-Vue.filter('beautify-date-weekday', function(date){
+Vue.filter('beautify-date-weekday-time', function(date){
 	if(date)
 		return	moment(date).format('ddd MMM DD, YYYY HH:mm');
+	else
+		return ''
+})
+
+Vue.filter('beautify-date-weekday', function(date){
+	if(date)
+		return	moment(date).format('ddd, MMM DD, YYYY');
 	else
 		return ''
 })

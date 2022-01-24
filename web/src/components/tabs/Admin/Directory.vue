@@ -148,7 +148,8 @@
                 <b-table
                     :items="interpreters"
                     :fields="interpreterFields"
-                    class="border-info"                                    
+                    class="border-info" 
+                    sort-icon-left                                   
                     small
                     responsive="sm">
 
@@ -165,7 +166,7 @@
 
                     </template>
 
-                    <template v-slot:cell(name)="data" >                    
+                    <template v-slot:cell(lastName)="data" >                    
                         <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
                     </template>
 
@@ -241,7 +242,6 @@
                     </template>
                     
                 </b-table>
-
             
             </b-card>
         </div>
@@ -252,9 +252,9 @@
                 <h1 v-else class="my-2 ml-2">Update Interpreter Details</h1>
             </template>
 
-            <b-card class="bg-white border-white text-dark"> 
+            <b-card v-if="interpreterDataReady" class="bg-white border-white text-dark"> 
               
-                <b-card no-body v-if="interpreterDataReady" class="border-white">
+                <b-card no-body class="border-white">
 
                     <b-row class="h2 ml-3" v-if="!isCreate">{{interpreter.firstName}} {{interpreter.lastName}}</b-row>
 
@@ -287,322 +287,318 @@
                         </b-col>         
                     </b-row>
 
-                    <b-card no-body v-if="interpreterDataReady" class="border-white">
-
-                        <b-card no-body class="border-white">
-                            <b-row class="ml-1">   
-                                <b-col cols="10">
-                                    <b-form-group
-                                        class="labels text-primary"                
-                                        label="Languages:" 
-                                        label-for="languages">
-                                        <span 
-                                            v-if="interpreter.languages.length == 0 && !AddNewLanguageForm" 
-                                            id="languages" 
-                                            class="text-muted ml-2 my-2 input-line">No languages have been assigned.
-                                        </span>                                        
-                                        <b-table
-                                            v-else-if="interpreter.languages.length > 0"
-                                            :key="updated"                                
-                                            id="languages"
-                                            :items="interpreter.languages"
-                                            :fields="languageFields"                                            
-                                            borderless    
-                                            small                                            
-                                            responsive="sm"
-                                            >                                             
-                                            <template v-slot:cell(edit)="data" >   
-                                                <div style="float: right;">                                                                     
-                                                    <b-button 
-                                                        class="mr-2" 
-                                                        size="sm" 
-                                                        variant="transparent" 
-                                                        @click="removeLanguage(data)">
-                                                        <b-icon 
-                                                            icon="trash-fill" 
-                                                            font-scale="1.25" 
-                                                            variant="danger"/>
-                                                    </b-button>
-                                                    <b-button 
-                                                        size="sm" 
-                                                        variant="transparent" 
-                                                        @click="editLanguage(data)">
-                                                        <b-icon icon="pencil-square" font-scale="1.25" variant="primary"/>
-                                                    </b-button>
-                                                </div>
-                                            </template>
-
-                                            <template v-slot:row-details="data">
-                                                <b-card 
-                                                    body-class="m-0 px-0 py-1" 
-                                                    :border-variant="addLanguageFormColor" 
-                                                    style="border:2px solid;">
-                                                    <add-language-form 
-                                                        :formData="data.item" 
-                                                        :index="data.index" 
-                                                        :isCreateLanguage="false" 
-                                                        v-on:submit="modifyLanguageList" 
-                                                        v-on:cancel="closeLanguageForm" />
-                                                </b-card>
-                                            </template>
-                                        </b-table>
-                                    </b-form-group>
-                                    
-                                </b-col>  
-                                <b-col cols="2">           
-                                    <b-button 
-                                        style="margin-top: 2.25rem; height: 2.25rem; font-size: 0.75rem;"
-                                        v-if="!AddNewLanguageForm" 
-                                        size="sm" 
-                                        variant="court" 
-                                        @click="addNewLanguage"><b-icon-plus class="mr-1"/>Add Language</b-button>
-                                    <span 
-                                        v-if="interpreterStates.languages == false"
-                                        style="display: block; font-size: 9pt;"
-                                        class="text-danger my-2">At least one language is required.
-                                    </span>
-                                </b-col>
-                            </b-row>
-                        </b-card>           
-
-                        <b-card 
-                            v-if="AddNewLanguageForm" 
-                            id="addLanguageForm" 
-                            class="my-1 ml-4" 
-                            :border-variant="addLanguageFormColor" 
-                            style="border:2px solid; width: 81%;" 
-                            body-class="px-1 py-1">
-                            <add-language-form 
-                                :formData="{}" 
-                                :index="-1" 
-                                :isCreateLanguage="true" 
-                                v-on:submit="modifyLanguageList" 
-                                v-on:cancel="closeLanguageForm" />                
-                        </b-card>                        
-
-                    </b-card>
-
-                    <h1 class="ml-3 pl-1 labels text-primary">Contact Information</h1>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
+                    <b-row v-if="interpreterDataReady" class="border-white ml-1 mt-1">   
+                        <b-col cols="10">
                             <b-form-group
-                                class="labels"                
-                                label="Address" 
-                                label-for="address">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="address"                                         
-                                    v-model="interpreter.address">
-                                </b-form-input>
+                                class="labels text-primary h1"                
+                                label="Languages:" 
+                                label-for="languages">
+                                <span 
+                                    v-if="interpreter.languages.length == 0 && !AddNewLanguageForm" 
+                                    id="languages" 
+                                    class="text-muted ml-2 my-2 input-line">No languages have been assigned.
+                                </span>                                        
+                                <b-table
+                                    v-else-if="interpreter.languages.length > 0"
+                                    :key="updated"                                
+                                    id="languages"
+                                    :items="interpreter.languages"
+                                    :fields="languageFields"                                            
+                                    borderless    
+                                    small                                            
+                                    responsive="sm"
+                                    >                                             
+                                    <template v-slot:cell(edit)="data" >   
+                                        <div style="float: right;">                                                                     
+                                            <b-button 
+                                                class="mr-2" 
+                                                size="sm" 
+                                                variant="transparent" 
+                                                @click="removeLanguage(data)">
+                                                <b-icon 
+                                                    icon="trash-fill" 
+                                                    font-scale="1.25" 
+                                                    variant="danger"/>
+                                            </b-button>
+                                            <b-button 
+                                                size="sm" 
+                                                variant="transparent" 
+                                                @click="editLanguage(data)">
+                                                <b-icon icon="pencil-square" font-scale="1.25" variant="primary"/>
+                                            </b-button>
+                                        </div>
+                                    </template>
+
+                                    <template v-slot:row-details="data">
+                                        <b-card 
+                                            body-class="m-0 px-0 py-1" 
+                                            :border-variant="addLanguageFormColor" 
+                                            style="border:2px solid;">
+                                            <add-language-form 
+                                                :formData="data.item" 
+                                                :index="data.index" 
+                                                :isCreateLanguage="false" 
+                                                v-on:submit="modifyLanguageList" 
+                                                v-on:cancel="closeLanguageForm" />
+                                        </b-card>
+                                    </template>
+                                </b-table>
                             </b-form-group>
+                            
+                        </b-col>  
+                        <b-col cols="2">           
+                            <b-button 
+                                style="margin-top: 2.25rem; height: 2.25rem; font-size: 0.75rem;"
+                                v-if="!AddNewLanguageForm" 
+                                size="sm" 
+                                variant="court" 
+                                @click="addNewLanguage"><b-icon-plus class="mr-1"/>Add Language</b-button>
+                            <span 
+                                v-if="interpreterStates.languages == false"
+                                style="display: block; font-size: 9pt;"
+                                class="text-danger my-2">At least one language is required.
+                            </span>
                         </b-col>
                     </b-row>
+                    
+                    <b-card 
+                        v-if="AddNewLanguageForm" 
+                        id="addLanguageForm" 
+                        class="my-1 ml-4" 
+                        :border-variant="addLanguageFormColor" 
+                        style="border:2px solid; width: 81%;" 
+                        body-class="px-1 py-1">
+                        <add-language-form 
+                            :formData="{}" 
+                            :index="-1" 
+                            :isCreateLanguage="true" 
+                            v-on:submit="modifyLanguageList" 
+                            v-on:cancel="closeLanguageForm" />                
+                    </b-card>                        
 
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="City" 
-                                label-for="city">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="city"     
-                                    :state="interpreterStates.city"                                          
-                                    v-model="interpreter.city">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Postal Code" 
-                                label-for="postal">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="postal"     
-                                    :state="interpreterStates.postal"                                                  
-                                    v-model="interpreter.postal">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Province" 
-                                label-for="province">
-                                <b-form-select 
-                                    class="input-line"
-                                    id="province"     
-                                    :state="interpreterStates.province"                                                  
-                                    v-model="interpreter.province"
-                                    :options="provinceOptions">
-                                </b-form-select>                               
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Phone" 
-                                label-for="phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="phone"                                        
-                                    v-model="interpreter.phone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Home Phone" 
-                                label-for="home-phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="home-phone"                                                  
-                                    v-model="interpreter.homePhone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Business Phone" 
-                                label-for="business-phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="business-phone"                              
-                                    v-model="interpreter.businessPhone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Email" 
-                                label-for="email">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="email"                                        
-                                    v-model="interpreter.email">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>                     
-                    </b-row>
-
-                    <h1 class="ml-3 pl-1 mt-2 labels text-primary">Details</h1>
-
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Supplier #" 
-                                label-for="supplier">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="supplier"                                        
-                                    v-model="interpreter.supplier">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Site Code" 
-                                label-for="site-code">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="site-code" 
-                                    placeholder="001"                                                 
-                                    v-model="interpreter.siteCode">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="GST" 
-                                label-for="gst">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="gst"                              
-                                    v-model="interpreter.gst">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Criminal Record Check Date" 
-                                label-for="crc-date">
-                                <b-form-datepicker                            
-                                    id="crc-date"
-                                    v-model="interpreter.criminalRecordCheckDate"                                                                                           
-                                    :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
-                                    locale="en-US">
-                                </b-form-datepicker>                                
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment On Criminal Record Check" 
-                                label-for="crc-comment">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="crc-comment"                                                 
-                                    v-model="interpreter.criminalRecordCheckComment">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="2"> 
-                            <b-form-group>                           
-                                <b-form-checkbox 
-                                    class="mt-4 labels"
-                                    style="padding-top: 0.75rem;"                                                                                             
-                                    v-model="interpreter.contractExtension">Contract Active
-                                </b-form-checkbox> 
-                            </b-form-group>                           
-                        </b-col>          
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment" 
-                                label-for="comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="comment"                                                   
-                                    v-model="interpreter.comments">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
-                            <b-form-group
-                                class="labels"                
-                                label="Admin Comment" 
-                                label-for="admin-comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="admin-comment"                                                   
-                                    v-model="interpreter.adminComments">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>                                
                 </b-card>
+
+                <h1 class="ml-3 pl-1 labels text-primary">Contact Information</h1>
+
+                <b-row class="ml-1">
+                    <b-col cols="12">
+                        <b-form-group
+                            class="labels"                
+                            label="Address" 
+                            label-for="address">
+                            <b-form-input 
+                                class="input-line"
+                                id="address"                                         
+                                v-model="interpreter.address">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+
+                <b-row class="ml-1">
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="City" 
+                            label-for="city">
+                            <b-form-input 
+                                class="input-line"
+                                id="city"     
+                                :state="interpreterStates.city"                                          
+                                v-model="interpreter.city">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Postal Code" 
+                            label-for="postal">
+                            <b-form-input 
+                                class="input-line"
+                                id="postal"     
+                                :state="interpreterStates.postal"                                                  
+                                v-model="interpreter.postal">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col> 
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Province" 
+                            label-for="province">
+                            <b-form-select 
+                                class="input-line"
+                                id="province"     
+                                :state="interpreterStates.province"                                                  
+                                v-model="interpreter.province"
+                                :options="provinceOptions">
+                            </b-form-select>                               
+                        </b-form-group>
+                    </b-col>          
+                </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Phone" 
+                            label-for="phone">
+                            <b-form-input 
+                                class="input-line"
+                                id="phone"                                        
+                                v-model="interpreter.phone">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Home Phone" 
+                            label-for="home-phone">
+                            <b-form-input 
+                                class="input-line"
+                                id="home-phone"                                                  
+                                v-model="interpreter.homePhone">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col> 
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Business Phone" 
+                            label-for="business-phone">
+                            <b-form-input 
+                                class="input-line"
+                                id="business-phone"                              
+                                v-model="interpreter.businessPhone">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>          
+                </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Email" 
+                            label-for="email">
+                            <b-form-input 
+                                class="input-line"
+                                id="email"                                        
+                                v-model="interpreter.email">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>                     
+                </b-row>
+
+                <h1 class="ml-3 pl-1 mt-2 labels text-primary">Details</h1>
+
+                <b-row class="ml-1">
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Supplier #" 
+                            label-for="supplier">
+                            <b-form-input 
+                                class="input-line"
+                                id="supplier"                                        
+                                v-model="interpreter.supplier">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Site Code" 
+                            label-for="site-code">
+                            <b-form-input 
+                                class="input-line"
+                                id="site-code" 
+                                placeholder="001"                                                 
+                                v-model="interpreter.site_code">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col> 
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="GST" 
+                            label-for="gst">
+                            <b-form-input 
+                                class="input-line"
+                                id="gst"                              
+                                v-model="interpreter.gst">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>          
+                </b-row>
+
+                <b-row class="ml-1">
+                    <b-col cols="4">
+                        <b-form-group
+                            class="labels"                
+                            label="Criminal Record Check Date" 
+                            label-for="crc-date">
+                            <b-form-datepicker                            
+                                id="crc-date"
+                                v-model="interpreter.criminalRecordCheckDate"                                                                                           
+                                
+                                locale="en-US">
+                            </b-form-datepicker>                                
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Comment On Criminal Record Check" 
+                            label-for="crc-comment">
+                            <b-form-input 
+                                class="input-line"
+                                id="crc-comment"                                                 
+                                v-model="interpreter.criminalRecordCheckComment">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col> 
+                    <b-col cols="2"> 
+                        <b-form-group>                           
+                            <b-form-checkbox 
+                                class="mt-4 labels"
+                                style="padding-top: 0.75rem;"                                                                                             
+                                v-model="interpreter.contractExtension">Contract Active
+                            </b-form-checkbox> 
+                        </b-form-group>                           
+                    </b-col>          
+                </b-row>
+
+                <b-row class="ml-1">
+                    <b-col cols="12">
+                        <b-form-group
+                            class="labels"                
+                            label="Comment" 
+                            label-for="comment">
+                            <b-form-textarea 
+                                class="input-line"
+                                id="comment"                                                   
+                                v-model="interpreter.comments">
+                            </b-form-textarea>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+
+                <b-row class="ml-1">
+                    <b-col cols="12">
+                        <b-form-group
+                            class="labels"                
+                            label="Admin Comment" 
+                            label-for="admin-comment">
+                            <b-form-textarea 
+                                class="input-line"
+                                id="admin-comment"                                                   
+                                v-model="interpreter.adminComments">
+                            </b-form-textarea>
+                        </b-form-group>
+                    </b-col>
+                </b-row>                                
+                <!-- </b-card> -->
             </b-card>            
 
             <template v-slot:modal-footer>
@@ -657,6 +653,7 @@ import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interp
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
 import { interpreterStatesInfoType } from '@/types/Interpreters';
+import moment from 'moment-timezone';
 const commonState = namespace("Common");
 
 @Component({
@@ -738,16 +735,16 @@ export default class DirectoryPage extends Vue {
     ]
 
     interpreterFields = [
-        {key:'details',             label:'',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'name',                label:'Name',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'phone',               label:'Phone',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'email',               label:'Email',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'languages',           label:'Language', cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'level',               label:'Level',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'contractExtension',   label:'Active',   cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'city',                label:'City',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'new',                 label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'edit',                label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'}
+        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
+        {key:'phone',               label:'Phone',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
+        {key:'level',               label:'Level',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'contractExtension',   label:'Active',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'city',                label:'City',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'}
     ];
 
     languageFields = [
@@ -781,15 +778,13 @@ export default class DirectoryPage extends Vue {
     ]    
    
     mounted() {  
-        this.dataLoaded = false;        
+        this.dataLoaded = false; 
         this.interpreterStates = {} as interpreterStatesInfoType;
         this.extractInfo()       
     }
 
     public extractInfo(){
-
         this.languageNames = this.languages.map( language => {return language.name});
-
         this.dataLoaded = true;
     }
 
@@ -842,11 +837,13 @@ export default class DirectoryPage extends Vue {
 
     public createInterpreter(){       
         this.interpreter = {} as interpreterInfoType;        
-        this.isCreate = true;
-        this.showInterpreterWindow = true;
+        this.isCreate = true;        
         this.interpreterDataReady = false;
-        this.interpreter.languages = [];       
+        this.interpreter.languages = [];  
+        this.interpreter.province = this.provinceOptions[1].value;    
+        this.interpreter.contractExtension = true;
         this.interpreterDataReady = true;
+        this.showInterpreterWindow = true;
     }
 
     public downloadArchive(){
@@ -860,12 +857,15 @@ export default class DirectoryPage extends Vue {
     
     public saveNewInterpreter(){
         if (this.checkInterpreterStates()){ 
-            
+
+            const crcDate = new Date(this.interpreter.criminalRecordCheckDate);           
+            this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+
             this.$http.post('/interpreter', this.interpreter)
             .then((response) => {            
                 if(response?.data){
                     this.closeInterpreterWindow();
-                    this.find();                
+                    // this.find();                
                 }
                 
             },(err) => {
@@ -879,25 +879,19 @@ export default class DirectoryPage extends Vue {
         
         if (this.checkInterpreterStates()){
 
+            const crcDate = new Date(this.interpreter.criminalRecordCheckDate);
+            this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+
             this.$http.put('/interpreter/' + this.interpreter.id, this.interpreter)
             .then((response) => {            
                 if(response?.data){
                     this.closeInterpreterWindow();
-                    this.find();                
+                    // this.find();                
                 }
                 
             },(err) => {
                             
-            });        
-        
-            //TODO call find 
-            // const index = this.interpreters.findIndex(originalInterpreter => originalInterpreter.id == this.interpreter.id)  //may not be required                       
-            // this.interpreters[index] = this.interpreter; //may not be required
-            
-                
-            // this.closeInterpreterWindow();
-
-            // this.updateTable ++;
+            });            
 
         }
         

@@ -12,7 +12,7 @@ export interface interpreterInfoType {
     phone: string;
     email: string;
     supplier: string;
-    siteCode?: string;
+    'site_code'?: string;
     gst: string;
     comments: string;
     criminalRecordCheckDate: string;

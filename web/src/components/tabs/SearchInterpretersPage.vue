@@ -104,7 +104,8 @@
                 <b-table
                     :items="interpreters"
                     :fields="interpreterFields"
-                    class="border-info"                                    
+                    class="border-info"
+                    sort-icon-left                                    
                     small
                     responsive="sm">
 
@@ -121,7 +122,7 @@
 
                     </template>
 
-                    <template v-slot:cell(name)="data" >                    
+                    <template v-slot:cell(lastName)="data" >                    
                         <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
                     </template>
 
@@ -213,243 +214,238 @@
                 <h1 class="my-2 ml-2">Court Interpreter Request</h1> 
             </template>
 
-            <b-card class="bg-white border-white text-dark"> 
-              
-                <b-card no-body v-if="interpreterDataReady" class="border-white">
+            <b-card v-if="interpreterDataReady" class="border-white text-dark bg-white"> 
+                <b-row class="mt-1 mb-4 ml-2 h2">
+                    {{interpreter.firstName}} {{interpreter.lastName}} (Level {{interpreter.highestLevel}})                        
+                </b-row>
 
-                    <b-row class="mt-1 mb-4 ml-2 h2">
-                        {{interpreter.firstName}} {{interpreter.lastName}} (Level {{interpreter.highestLevel}})                        
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">                    
-                            <b-form-group
-                                class="labels"                
-                                label="Status" 
-                                label-for="status">
-                                <b-form-select 
-                                    class="input-line"
-                                    id="status"                                       
-                                    :options="statusOptions"                                 
-                                    :state="bookingStates.status"                  
-                                    v-model="booking.status">
-                                </b-form-select>
-                            </b-form-group>
-                        </b-col>   
-                        <b-col cols="6">
-                              
-                        </b-col>         
-                    </b-row>
-
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">                    
+                <b-row class="ml-1">
+                    <b-col cols="6">                    
+                        <b-form-group
+                            class="labels"                
+                            label="Status" 
+                            label-for="status">
+                            <b-form-select 
+                                class="input-line"
+                                id="status"                                       
+                                :options="statusOptions"                                 
+                                :state="bookingStates.status"                  
+                                v-model="booking.status">
+                            </b-form-select>
+                        </b-form-group>
+                    </b-col>   
+                    <b-col cols="6">
                             
-                        </b-col>   
-                        <b-col cols="6">
-                           
-                        </b-col>         
-                    </b-row>
+                    </b-col>         
+                </b-row>
 
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Court Room" 
-                                label-for="room">
-                                <b-form-input 
-                                    :state="bookingStates.room"
-                                    class="input-line"
-                                    id="room"                                         
-                                    v-model="booking.room">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Court Location" 
-                                class="labels"
-                                label-for="location">
-                                <b-form-select 
-                                    id="location" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :state="bookingStates.location"
-                                    v-model="booking.locationId"> 
-                                    <b-form-select-option
-                                        v-for="courtLocation in courtLocations" 
-                                        :key="courtLocation.id"
-                                        :value="courtLocation.id">
-                                            {{courtLocation.name}}
-                                    </b-form-select-option>
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">                    
+                        
+                    </b-col>   
+                    <b-col cols="6">
+                        
+                    </b-col>         
+                </b-row>
 
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Court File Number" 
-                                label-for="file-number">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="file-number" 
-                                    :state="bookingStates.file"                                        
-                                    v-model="booking.file">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Interpret For" 
-                                class="labels"
-                                label-for="interpret-for">
-                                <b-form-select 
-                                    id="interpret-for" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :options="interpreterRequestOptions"
-                                    :state="bookingStates.interpretFor"
-                                    v-model="booking.interpretFor">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Court Room" 
+                            label-for="room">
+                            <b-form-input 
+                                :state="bookingStates.room"
+                                class="input-line"
+                                id="room"                                         
+                                v-model="booking.room">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Court Location" 
+                            class="labels"
+                            label-for="location">
+                            <b-form-select 
+                                id="location" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :state="bookingStates.location"
+                                v-model="booking.locationId"> 
+                                <b-form-select-option
+                                    v-for="courtLocation in courtLocations" 
+                                    :key="courtLocation.id"
+                                    :value="courtLocation.id">
+                                        {{courtLocation.name}}
+                                </b-form-select-option>
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
 
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Case Name" 
-                                label-for="case-name">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="case-name" 
-                                    :state="bookingStates.caseName"                                        
-                                    v-model="booking.caseName">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Requested By" 
-                                class="labels"
-                                label-for="requested-by">
-                                <b-form-select 
-                                    id="requested-by" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :options="requestOptions"
-                                    :state="bookingStates.request"
-                                    v-model="booking.requestedBy">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Court File Number" 
+                            label-for="file-number">
+                            <b-form-input 
+                                class="input-line"
+                                id="file-number" 
+                                :state="bookingStates.file"                                        
+                                v-model="booking.file">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Interpret For" 
+                            class="labels"
+                            label-for="interpret-for">
+                            <b-form-select 
+                                id="interpret-for" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :options="interpretForOptions"
+                                :state="bookingStates.interpretFor"
+                                v-model="booking.interpretFor">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
 
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Language" 
-                                class="labels"
-                                label-for="language">
-                                <b-form-select 
-                                    id="language" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :state="bookingStates.language"
-                                    v-model="booking.language"> 
-                                    <b-form-select-option
-                                        v-for="language in interpreter.languages" 
-                                        :key="language.languageName"
-                                        :value="language.languageName">
-                                            {{language.languageName}}
-                                    </b-form-select-option>
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Federal" 
-                                class="labels"
-                                label-for="federal">
-                                <b-form-radio-group 
-                                    id="requested-by" 
-                                    class="input-line"                           
-                                    style="display:inline"                                    
-                                    :state="bookingStates.federal"
-                                    v-model="booking.federal"> 
-                                    <b-form-radio :value="true">Yes</b-form-radio> 
-                                    <b-form-radio :value="false">No</b-form-radio>                                  
-                                </b-form-radio-group> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Case Name" 
+                            label-for="case-name">
+                            <b-form-input 
+                                class="input-line"
+                                id="case-name" 
+                                :state="bookingStates.caseName"                                        
+                                v-model="booking.caseName">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Requested By" 
+                            class="labels"
+                            label-for="requested-by">
+                            <b-form-select 
+                                id="requested-by" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :options="requestOptions"
+                                :state="bookingStates.request"
+                                v-model="booking.requestedBy">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Language" 
+                            class="labels"
+                            label-for="language">
+                            <b-form-select 
+                                id="language" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :state="bookingStates.language"
+                                v-model="booking.language"> 
+                                <b-form-select-option
+                                    v-for="language in interpreter.languages" 
+                                    :key="language.languageName"
+                                    :value="language.languageName">
+                                        {{language.languageName}}
+                                </b-form-select-option>
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Federal" 
+                            class="labels"
+                            label-for="federal">
+                            <b-form-radio-group 
+                                id="requested-by" 
+                                class="input-line"                           
+                                style="display:inline"                                    
+                                :state="bookingStates.federal"
+                                v-model="booking.federal"> 
+                                <b-form-radio :value="true">Yes</b-form-radio> 
+                                <b-form-radio :value="false">No</b-form-radio>                                  
+                            </b-form-radio-group> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Reason Code" 
+                            label-for="reason-code">
+                            <b-form-input 
+                                class="input-line"
+                                id="reason-code"  
+                                placeholder="FA, HR"  
+                                :state="bookingStates.reason"                                    
+                                v-model="booking.reason">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Federal Prosecutor Name" 
+                            label-for="prosecutor-name">
+                            <b-form-input 
+                                class="input-line"
+                                id="prosecutor-name" 
+                                :state="bookingStates.prosecutor"                                                 
+                                v-model="booking.prosecutor">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                </b-row>                                
+
+                <b-row class="ml-1" style="padding-bottom:0; margin-bottom:0;">
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Method Of Appearance" 
+                            class="labels"
+                            label-for="appearance-method">
+                            <b-form-select 
+                                id="appearance-method" 
+                                class="input-line"                           
+                                style="display:inline"                                
+                                :options="bookingMethodOfAppearanceOptions"
+                                :state="bookingStates.methodOfAppearance"
+                                v-model="booking.methodOfAppearance">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Comment" 
+                            label-for="comment">
+                            <b-form-textarea 
+                                class="input-line"
+                                rows="3"
+                                id="comment"                                                   
+                                v-model="booking.comment">
+                            </b-form-textarea>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
                   
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Reason Code" 
-                                label-for="reason-code">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="reason-code"  
-                                    placeholder="FA, HR"  
-                                    :state="bookingStates.reason"                                    
-                                    v-model="booking.reason">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Federal Prosecutor Name" 
-                                label-for="prosecutor-name">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="prosecutor-name" 
-                                    :state="bookingStates.prosecutor"                                                 
-                                    v-model="booking.prosecutor">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>                                
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Method Of Appearance" 
-                                class="labels"
-                                label-for="appearance-method">
-                                <b-form-select 
-                                    id="appearance-method" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    
-                                    :options="bookingMethodOfAppearanceOptions"
-                                    :state="bookingStates.methodOfAppearance"
-                                    v-model="booking.methodOfAppearance">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment" 
-                                label-for="comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="comment"                                                   
-                                    v-model="booking.comment">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                                                
-                </b-card>
             </b-card>            
 
             <template v-slot:modal-footer>
@@ -497,7 +493,7 @@ const commonState = namespace("Common");
 
 enum bookingStatus {'Pending'='Pending', 'Booked'='Booked', 'Cancelled'='Cancelled'}
 enum bookingPeriod {'Morning'='MORNING', 'Afternoon'='AFTERNOON', 'Full Day'='WHOLE_DAY'}
-enum bookingInterpreterRequest {'Witness'='Witness', 'Party'='Party', 'Accused'='Accused'}
+enum bookingInterpretFor {'Witness'='Witness', 'Party'='Party', 'Accused'='Accused'}
 enum bookingMethodOfAppearance {'In Person'='In-Person', 'MS Teams'='MS Teams', 'Via Teleconference'='Via Teleconference', 'RIS'='RIS'}
 enum bookingRequest {'Court'='Court', 'Crown'='Crown', 'Applicant'='Applicant', 'Defence'='Defence', 'Respondent'='Respondent'}
 
@@ -515,7 +511,10 @@ export default class SearchInterpretersPage extends Vue {
     public courtLocations!: locationsInfoType[];
 
     @commonState.State
-    public languages!: languagesInfoType[];    
+    public languages!: languagesInfoType[];   
+    
+    @commonState.State
+    public userLocation!: locationsInfoType;
 
     AddNewLanguageForm = false;       
     addLanguageFormColor = 'court';
@@ -561,10 +560,10 @@ export default class SearchInterpretersPage extends Vue {
         {text: 'Cancelled',       value: bookingStatus.Cancelled}
     ]
 
-    interpreterRequestOptions = [
-        {text: 'Witness',       value: bookingInterpreterRequest.Witness}, 
-        {text: 'Party',         value: bookingInterpreterRequest.Party},
-        {text: 'Accused',       value: bookingInterpreterRequest.Accused}
+    interpretForOptions = [
+        {text: 'Witness',       value: bookingInterpretFor.Witness}, 
+        {text: 'Party',         value: bookingInterpretFor.Party},
+        {text: 'Accused',       value: bookingInterpretFor.Accused}
     ]
 
     requestOptions = [
@@ -589,14 +588,14 @@ export default class SearchInterpretersPage extends Vue {
     ]   
 
     interpreterFields = [
-        {key:'details',             label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'name',                label:'Name',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'languages',           label:'Language', cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'fullAddress',         label:'Address',  cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'phone',               label:'Phone',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'email',               label:'Email',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'new',                 label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'edit',                label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'}
+        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'lastName',                label:'Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'fullAddress',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'}
     ]; 
    
     mounted() {  
@@ -610,6 +609,7 @@ export default class SearchInterpretersPage extends Vue {
     public extractInfo(){
 
         this.languageNames = this.languages.map( language => {return language.name});
+        this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
 
         this.dataLoaded = true;
     }
@@ -668,12 +668,22 @@ export default class SearchInterpretersPage extends Vue {
         this.interpreter = interpreterToBook;
         this.booking = {} as bookingInfoType;
         this.booking.interpreterId = interpreterToBook.id;
-
         const levels = interpreterToBook.languages.map(language => {return language.level})
         this.interpreter.highestLevel = max(levels);
+        this.prepopulateDefaultValues();
         
         this.showBookingWindow = true;
         this.interpreterDataReady = true;        
+    }
+
+    public prepopulateDefaultValues(){
+        this.booking.status = this.statusOptions[0].value;
+        this.booking.interpretFor = this.interpretForOptions[0].value;
+        this.booking.requestedBy = this.requestOptions[0].value;
+        this.booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
+        this.booking.locationId = this.location.id;
+        this.booking.language = this.interpreter.languages[0].languageName;
+
     }
 
     public copyEmails(){        
@@ -698,7 +708,7 @@ export default class SearchInterpretersPage extends Vue {
             .then((response) => {            
                 if(response?.data){
                     this.closeBookingWindow();
-                    this.find();                
+                    this.$router.push({ name: "bookings" });                
                 }
                 
             },(err) => {

@@ -10,10 +10,7 @@
                                 tabindex="1"
                                 size = "sm"
                                 v-model="selectedLanguageName"
-                                :state = "languageNameState?null:false">
-                                    <b-form-select-option :value="{}">
-                                        Select a Language *
-                                    </b-form-select-option>
+                                :state = "languageNameState?null:false">                                    
                                     <b-form-select-option
                                         v-for="language in languages" 
                                         :key="language.id"
@@ -31,10 +28,7 @@
                                 tabindex="2"
                                 size = "sm"
                                 v-model="selectedLanguageLevel"
-                                :state = "languageLevelState?null:false">
-                                    <b-form-select-option :value="{}">
-                                        Select a Level *
-                                    </b-form-select-option>
+                                :state = "languageLevelState?null:false">                                   
                                     <b-form-select-option
                                         v-for="level in levels" 
                                         :key="level"

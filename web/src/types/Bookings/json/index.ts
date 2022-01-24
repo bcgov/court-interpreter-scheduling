@@ -53,4 +53,10 @@ export interface bookingInterpreterInfoType {
     phone: string;
     email: string;
     languages: interpreterLanguageInfoType[];
+    highestLevel?: number;
+}
+
+export interface dateRangeInfoType {
+    startDate: string;
+    endDate: string;
 }

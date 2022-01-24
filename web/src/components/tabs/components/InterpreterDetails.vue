@@ -54,7 +54,7 @@ export default class InterpreterDetails extends Vue {
             sortable: false
         },
         {
-            key: "siteCode",
+            key: "site_code",
             label: "Site Code",
             sortable: false
         },        
