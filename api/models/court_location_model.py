@@ -19,6 +19,6 @@ class CourtLocationModel(Base):
     province = Column(String, unique=False, index=False, nullable=True)
     latitude = Column(Float, unique=False, index=False, nullable=True)
     longitude = Column(Float, unique=False, index=False, nullable=True)
-
+    geo_service = Column(String, unique=False, index=False, nullable=True)
         
     user = relationship ("UserModel", back_populates="location")
