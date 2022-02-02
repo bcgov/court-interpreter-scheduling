@@ -1,40 +1,9 @@
 <template>
-    <b-card class="bg-white border-white">
-                
+    <b-card class="bg-white border-white">                
             
         <loading-spinner color="#000" v-if="!dataLoaded" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
-            <b-row>
-                <b-col cols="4">
-                    <b-form-group                        
-                        label="Name" 
-                        label-for="name">
-                        <b-form-input 
-                            id="name"                            
-                            style="display:inline"
-                            v-model="name"
-                            placeholder="First, last or both"
-                        >
-                        </b-form-input> 
-                    </b-form-group>
-                </b-col>
-                <b-col cols="4"></b-col>
-                <b-col cols="4">
-                    <b-form-group                        
-                        label="Keywords" 
-                        label-for="keywords">
-                        <b-form-input 
-                            id="keywords"                            
-                            style="display:inline"
-                            v-model="keyword"
-                            placeholder="Email, phone etc"
-                        >
-                        </b-form-input> 
-                    </b-form-group>
-                </b-col>
-                
-            </b-row>
-
+           
             <b-row>
                 <b-col cols="4">
                     <b-form-group                        
@@ -66,15 +35,27 @@
                 </b-col>
                 <b-col cols="4">
                     <b-form-group                        
-                        label="Active/Inactive" 
-                        label-for="active">
+                        label="Court Location" 
+                        label-for="location">
                         <b-form-select 
-                            id="active"                            
+                            id="location"                            
                             style="display:inline"
-                            v-model="active"
-                            :options="activeOptions"
-                        >
+                            :state="locationState?null:false"
+                            v-model="location"> 
+                            <b-form-select-option
+                                v-for="courtLocation in courtLocations" 
+                                :key="courtLocation.id"
+                                :value="courtLocation">
+                                    {{courtLocation.name}}
+                            </b-form-select-option>
                         </b-form-select> 
+                    </b-form-group>
+                    <b-form-group>                           
+                        <b-form-checkbox 
+                            class="mt-0 labels"
+                                                                                                                         
+                            v-model="limitDistance">Limit Search to 32KM
+                        </b-form-checkbox> 
                     </b-form-group>
                 </b-col>
                 
@@ -83,58 +64,33 @@
             <b-row>
                 <b-col cols="4">
                     <b-form-group                        
-                        label="Criminal Record Check Expiry" 
-                        label-for="crcExpiryDate">
+                        label="Dates" 
+                        label-for="sessionDates">
                         <b-form-datepicker                            
-                            id="crcExpiryDate"
-                            v-model="crcExpiryDate"                                                                                           
+                            id="sessionDates"
+                            v-model="dates"                                                                                           
                             :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
                             locale="en-US">
                         </b-form-datepicker>                        
                     </b-form-group>
                 </b-col>
                 <b-col cols="4">
-                     <b-button 
-                        
-                        style="margin: 2rem 6rem; padding: 0.25rem 2rem;" 
+                </b-col>
+                <b-col cols="4">
+                    <b-button
+                        style="margin-top: 2rem; padding: 0.25rem 2rem; width: 100%;" 
                         :disabled="searching"
                         variant="primary"
                         @click="find()"
                         ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; transform:translate(0px,0px);"/>
                         <span style="font-size: 20px;" v-else>Search</span>
                     </b-button>
-
                 </b-col>
-                <b-col cols="4"></b-col>
                 
             </b-row>
-        </b-card>
+        
 
-        <b-row class="mb-2">
-
-            <b-col cols="10"></b-col>
-            
-            <b-col cols="2">                
-                <b-button 
-                    class="ml-5 bg-transparent border border-success"
-                    size="lg"
-                    @click="createInterpreter"
-                    v-b-tooltip.hover.noninteractive.v-success
-                    title="create new interpreter">
-                    <b-icon-plus scale="1.5" variant="success"/>
-                </b-button>
-
-                <b-button 
-                    class="ml-2 bg-transparent border border-primary"
-                    size="lg"
-                    @click="downloadArchive"
-                    v-b-tooltip.hover.noninteractive.v-primary
-                    title="download archive">
-                    <b-icon-download variant="primary"/>
-                </b-button>
-            </b-col>
-
-        </b-row>
+        </b-card>        
 
         <loading-spinner color="#000" v-if="searching && !resultsLoaded" waitingText="Loading Results ..." /> 
 
@@ -148,7 +104,8 @@
                 <b-table
                     :items="interpreters"
                     :fields="interpreterFields"
-                    class="border-info"                                    
+                    class="border-info"
+                    sort-icon-left                                    
                     small
                     responsive="sm">
 
@@ -165,27 +122,45 @@
 
                     </template>
 
-                    <template v-slot:cell(name)="data" >                    
+                    <template v-slot:cell(lastName)="data" >                    
                         <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
                     </template>
 
                     <template v-slot:cell(languages)="data" >    
                         <span 
-                            v-for="lan,inx in data.item.languages.map(language => {return language.languageName})" 
+                            v-for="lan,inx in data.item.languages.map(language => {return {name: language.languageName, level:language.level}})" 
                             :key="inx"
                             style="display: block;">
-                            <b v-if="lan == language">{{lan}}</b>
-                            <span v-else>{{lan}}</span>
-                        </span>                                        
+                            <b v-if="lan.name == language">{{lan.name}} {{lan.level}}</b>
+                            <span v-else>{{lan.name}} {{lan.level}}</span>
+                        </span>
+
                     </template>
 
-                    <template v-slot:cell(level)="data" >    
+                    <template v-slot:cell(fullAddress)="data">    
                         <span 
-                            v-for="level,inx in data.item.languages.map(language => {return language.level})" 
-                            :key="inx"
-                            style="display: block; margin-left:0.25rem;">
-                            {{level}}
-                        </span>                                        
+                            v-html="data.value" 
+                            style="display: block;">
+                            {{data.value}}
+                        </span>            
+                    </template>
+
+                    <template v-slot:cell(phone)="data" >    
+                        <span                            
+                            v-if="data.value"                            
+                            style="display: block;">
+                            {{data.value}} mobile
+                        </span>    
+                        <span 
+                            v-if="data.item.businessPhone"                            
+                            style="display: block;">
+                            {{data.item.businessPhone}} work
+                        </span>
+                        <span 
+                            v-if="data.item.homePhone"                            
+                            style="display: block;">
+                            {{data.item.homePhone}} home
+                        </span>                                    
                     </template>
 
                     <template v-slot:cell(new)="data" >    
@@ -197,27 +172,15 @@
                             style="float: left;"
                             >New
                         </b-badge>                                        
-                    </template>
-
-                    <template v-slot:cell(contractExtension)="data">    
-                        <span v-if="data.value"
-                            style="display: block; margin-left:0.25rem;">
-                            Active
-                        </span>
-                        <span v-else
-                            style="display: block; margin-left:0.25rem;">
-                            Inactive
-                        </span>
-                                            
-                    </template>
+                    </template>                    
 
                     <template v-slot:cell(edit)="data" >
                         
                         <b-button style="font-size:12px" 
-                            size="sm"                        
-                            @click="editInterpreter(data.item);" 
+                            size="sm"       
+                            @click="bookInterpreter(data.item);" 
                             class="text-primary bg-info border-info mt-1" 
-                            ><b-icon-pencil-fill/>                                                       
+                            >Book                                                       
                         </b-button>
                         
                     </template>
@@ -236,7 +199,7 @@
                     </template>
                     <template v-slot:row-details>
                         <b-card bg-variant="primary" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
-                            <interpreter-details :interpreterDetails="expandedInterpreter" />
+                            <interpreter-details :interpreterDirectory="false" :interpreterDetails="expandedInterpreter" />
                         </b-card>
                     </template>
                     
@@ -246,393 +209,262 @@
             </b-card>
         </div>
 
-        <b-modal size="xl" v-model="showInterpreterWindow" header-class="bg-primary text-white" :key="updatedInterpreterInfo">
+        <b-modal size="xl" v-model="showBookingWindow" header-class="bg-primary text-white" :key="updatedBookingInfo">
             <template v-slot:modal-title>
-                <h1 v-if="isCreate" class="my-2 ml-2">Add Interpreter</h1>
-                <h1 v-else class="my-2 ml-2">Update Interpreter Details</h1>
+                <h1 class="my-2 ml-2">Court Interpreter Request</h1> 
             </template>
 
-            <b-card class="bg-white border-white text-dark"> 
-              
-                <b-card no-body v-if="interpreterDataReady" class="border-white">
+            <b-card v-if="interpreterDataReady" class="border-white text-dark bg-white"> 
+                <b-row class="mt-1 mb-4 ml-2 h2">
+                    {{interpreter.firstName}} {{interpreter.lastName}} (Level {{interpreter.highestLevel}})                        
+                </b-row>
 
-                    <b-row v-if="!isCreate">interpreter.name</b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">                    
+                        <b-form-group
+                            class="labels"                
+                            label="Status" 
+                            label-for="status">
+                            <b-form-select 
+                                class="input-line"
+                                id="status"                                       
+                                :options="statusOptions"                                 
+                                :state="bookingStates.status"                  
+                                v-model="booking.status">
+                            </b-form-select>
+                        </b-form-group>
+                    </b-col>   
+                    <b-col cols="6">
+                            
+                    </b-col>         
+                </b-row>
 
-                    <b-row class="ml-1">
-                        <b-col cols="6">                    
-                            <b-form-group
-                                class="labels"                
-                                label="First Name" 
-                                label-for="firstname">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="firstname"                                    
-                                    :state="interpreterStates.firstName"                  
-                                    v-model="interpreter.firstName">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>   
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Last Name" 
-                                label-for="lastname">
-                                <b-form-input
-                                    class="input-line" 
-                                    id="lastname"                                    
-                                    :state="interpreterStates.lastName"                  
-                                    v-model="interpreter.lastName">
-                                </b-form-input>
-                            </b-form-group>       
-                        </b-col>         
-                    </b-row>
+                <b-row class="ml-1">
+                    <b-col cols="6">                    
+                        
+                    </b-col>   
+                    <b-col cols="6">
+                        
+                    </b-col>         
+                </b-row>
 
-                    <b-card no-body v-if="interpreterDataReady" class="border-white">
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Court Room" 
+                            label-for="room">
+                            <b-form-input 
+                                :state="bookingStates.room"
+                                class="input-line"
+                                id="room"                                         
+                                v-model="booking.room">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Court Location" 
+                            class="labels"
+                            label-for="location">
+                            <b-form-select 
+                                id="location" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :state="bookingStates.location"
+                                v-model="booking.locationId"> 
+                                <b-form-select-option
+                                    v-for="courtLocation in courtLocations" 
+                                    :key="courtLocation.id"
+                                    :value="courtLocation.id">
+                                        {{courtLocation.name}}
+                                </b-form-select-option>
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
 
-                        <b-card no-body class="border-white">
-                            <b-row class="ml-1">   
-                                <b-col cols="10">
-                                    <b-form-group
-                                        class="labels text-primary"                
-                                        label="Languages:" 
-                                        label-for="languages">
-                                        <span 
-                                            v-if="interpreter.languages.length == 0 && !AddNewLanguageForm" 
-                                            id="languages" 
-                                            class="text-muted ml-2 my-2 input-line">No languages have been assigned.
-                                        </span>                                        
-                                        <b-table
-                                            v-else-if="interpreter.languages.length > 0"
-                                            :key="updated"                                
-                                            id="languages"
-                                            :items="interpreter.languages"
-                                            :fields="languageFields"                                            
-                                            borderless    
-                                            small                                            
-                                            responsive="sm"
-                                            >                                             
-                                            <template v-slot:cell(edit)="data" >   
-                                                <div style="float: right;">                                                                     
-                                                    <b-button 
-                                                        class="mr-2" 
-                                                        size="sm" 
-                                                        variant="transparent" 
-                                                        @click="removeLanguage(data)">
-                                                        <b-icon 
-                                                            icon="trash-fill" 
-                                                            font-scale="1.25" 
-                                                            variant="danger"/>
-                                                    </b-button>
-                                                    <b-button 
-                                                        size="sm" 
-                                                        variant="transparent" 
-                                                        @click="editLanguage(data)">
-                                                        <b-icon icon="pencil-square" font-scale="1.25" variant="primary"/>
-                                                    </b-button>
-                                                </div>
-                                            </template>
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Court File Number" 
+                            label-for="file-number">
+                            <b-form-input 
+                                class="input-line"
+                                id="file-number" 
+                                :state="bookingStates.file"                                        
+                                v-model="booking.file">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Interpret For" 
+                            class="labels"
+                            label-for="interpret-for">
+                            <b-form-select 
+                                id="interpret-for" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :options="interpretForOptions"
+                                :state="bookingStates.interpretFor"
+                                v-model="booking.interpretFor">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
 
-                                            <template v-slot:row-details="data">
-                                                <b-card 
-                                                    body-class="m-0 px-0 py-1" 
-                                                    :border-variant="addLanguageFormColor" 
-                                                    style="border:2px solid;">
-                                                    <add-court-session-form 
-                                                        :formData="data.item" 
-                                                        :index="data.index" 
-                                                        :isCreateLanguage="false" 
-                                                        v-on:submit="modifyLanguageList" 
-                                                        v-on:cancel="closeLanguageForm" />
-                                                </b-card>
-                                            </template>
-                                        </b-table>
-                                    </b-form-group>
-                                    
-                                </b-col>  
-                                <b-col cols="2">           
-                                    <b-button 
-                                        style="margin-top: 2.25rem; height: 2.25rem; font-size: 0.75rem;"
-                                        v-if="!AddNewLanguageForm" 
-                                        size="sm" 
-                                        variant="court" 
-                                        @click="addNewLanguage"><b-icon-plus class="mr-1"/>Add Language</b-button>
-                                    <span 
-                                        v-if="interpreterStates.languages == false"
-                                        style="display: block; font-size: 9pt;"
-                                        class="text-danger my-2">At least one language is required.
-                                    </span>
-                                </b-col>
-                            </b-row>
-                        </b-card>           
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Case Name" 
+                            label-for="case-name">
+                            <b-form-input 
+                                class="input-line"
+                                id="case-name" 
+                                :state="bookingStates.caseName"                                        
+                                v-model="booking.caseName">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Requested By" 
+                            class="labels"
+                            label-for="requested-by">
+                            <b-form-select 
+                                id="requested-by" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :options="requestOptions"
+                                :state="bookingStates.request"
+                                v-model="booking.requestedBy">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
 
-                        <b-card 
-                            v-if="AddNewLanguageForm" 
-                            id="addLanguageForm" 
-                            class="my-1 ml-4" 
-                            :border-variant="addLanguageFormColor" 
-                            style="border:2px solid; width: 81%;" 
-                            body-class="px-1 py-1">
-                            <add-court-session-form 
-                                :formData="{}" 
-                                :index="-1" 
-                                :isCreateLanguage="true" 
-                                v-on:submit="modifyLanguageList" 
-                                v-on:cancel="closeLanguageForm" />                
-                        </b-card>                        
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Language" 
+                            class="labels"
+                            label-for="language">
+                            <b-form-select 
+                                id="language" 
+                                class="input-line"                           
+                                style="display:inline"
+                                :state="bookingStates.language"
+                                v-model="booking.language"> 
+                                <b-form-select-option
+                                    v-for="language in interpreter.languages" 
+                                    :key="language.languageName"
+                                    :value="language.languageName">
+                                        {{language.languageName}}
+                                </b-form-select-option>
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Federal" 
+                            class="labels"
+                            label-for="federal">
+                            <b-form-radio-group 
+                                id="requested-by" 
+                                class="input-line"                           
+                                style="display:inline"                                    
+                                :state="bookingStates.federal"
+                                v-model="booking.federal"> 
+                                <b-form-radio :value="true">Yes</b-form-radio> 
+                                <b-form-radio :value="false">No</b-form-radio>                                  
+                            </b-form-radio-group> 
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                
+                <b-row class="ml-1">
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Reason Code" 
+                            label-for="reason-code">
+                            <b-form-input 
+                                class="input-line"
+                                id="reason-code"  
+                                placeholder="FA, HR"  
+                                :state="bookingStates.reason"                                    
+                                v-model="booking.reason">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Federal Prosecutor Name" 
+                            label-for="prosecutor-name">
+                            <b-form-input 
+                                class="input-line"
+                                id="prosecutor-name" 
+                                :state="bookingStates.prosecutor"                                                 
+                                v-model="booking.prosecutor">
+                            </b-form-input>
+                        </b-form-group>
+                    </b-col>
+                </b-row>                                
 
-                    </b-card>
-
-                    <h1 class="ml-3 pl-1 labels text-primary">Contact Information</h1>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
-                            <b-form-group
-                                class="labels"                
-                                label="Address" 
-                                label-for="address">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="address"                                         
-                                    v-model="interpreter.address">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="City" 
-                                label-for="city">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="city"     
-                                    :state="interpreterStates.city"                                          
-                                    v-model="interpreter.city">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Postal Code" 
-                                label-for="postal">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="postal"     
-                                    :state="interpreterStates.postal"                                                  
-                                    v-model="interpreter.postal">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Province" 
-                                label-for="province">
-                                <b-form-select 
-                                    class="input-line"
-                                    id="province"     
-                                    :state="interpreterStates.province"                                                  
-                                    v-model="interpreter.province"
-                                    :options="provinceOptions">
-                                </b-form-select>                               
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Phone" 
-                                label-for="phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="phone"                                        
-                                    v-model="interpreter.phone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Home Phone" 
-                                label-for="home-phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="home-phone"                                                  
-                                    v-model="interpreter.homePhone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Business Phone" 
-                                label-for="business-phone">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="business-phone"                              
-                                    v-model="interpreter.businessPhone">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Email" 
-                                label-for="email">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="email"                                        
-                                    v-model="interpreter.email">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>                     
-                    </b-row>
-
-                    <h1 class="ml-3 pl-1 mt-2 labels text-primary">Details</h1>
-
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Supplier #" 
-                                label-for="supplier">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="supplier"                                        
-                                    v-model="interpreter.supplier">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Site Code" 
-                                label-for="site-code">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="site-code" 
-                                    placeholder="001"                                                 
-                                    v-model="interpreter.siteCode">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="GST" 
-                                label-for="gst">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="gst"                              
-                                    v-model="interpreter.gst">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>          
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="4">
-                            <b-form-group
-                                class="labels"                
-                                label="Criminal Record Check Date" 
-                                label-for="crc-date">
-                                <b-form-datepicker                            
-                                    id="crc-date"
-                                    v-model="interpreter.criminalRecordCheckDate"                                                                                           
-                                    :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
-                                    locale="en-US">
-                                </b-form-datepicker>                                
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment On Criminal Record Check" 
-                                label-for="crc-comment">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="crc-comment"                                                 
-                                    v-model="interpreter.criminalRecordCheckComment">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col> 
-                        <b-col cols="2"> 
-                            <b-form-group>                           
-                                <b-form-checkbox 
-                                    class="mt-4 labels"
-                                    style="padding-top: 0.75rem;"                                                                                             
-                                    v-model="interpreter.contractExtension">Contract Active
-                                </b-form-checkbox> 
-                            </b-form-group>                           
-                        </b-col>          
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment" 
-                                label-for="comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="comment"                                                   
-                                    v-model="interpreter.comments">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="12">
-                            <b-form-group
-                                class="labels"                
-                                label="Admin Comment" 
-                                label-for="admin-comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="admin-comment"                                                   
-                                    v-model="interpreter.adminComments">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>                                
-                </b-card>
+                <b-row class="ml-1" style="padding-bottom:0; margin-bottom:0;">
+                    <b-col cols="6">
+                        <b-form-group                        
+                            label="Method Of Appearance" 
+                            class="labels"
+                            label-for="appearance-method">
+                            <b-form-select 
+                                id="appearance-method" 
+                                class="input-line"                           
+                                style="display:inline"                                
+                                :options="bookingMethodOfAppearanceOptions"
+                                :state="bookingStates.methodOfAppearance"
+                                v-model="booking.methodOfAppearance">                                    
+                            </b-form-select> 
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                        <b-form-group
+                            class="labels"                
+                            label="Comment" 
+                            label-for="comment">
+                            <b-form-textarea 
+                                class="input-line"
+                                rows="3"
+                                id="comment"                                                   
+                                v-model="booking.comment">
+                            </b-form-textarea>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                  
             </b-card>            
 
             <template v-slot:modal-footer>
+                
+                <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
                 <b-button 
-                    v-if="!isCreate"
-                    variant="danger"
-                    class="mr-auto" 
-                    @click="confirmDeleteInterpreter">
-                    <b-icon-person-x-fill class="mr-1" />Delete
-                </b-button>
-                <b-button variant="dark" @click="closeInterpreterWindow">Cancel</b-button>
-                <b-button 
-                    v-if="isCreate"
+                    
                     variant="success" 
-                    @click="saveNewInterpreter">
-                    <b-icon-person-plus-fill class="mr-1"/>Add Interpreter
+                    @click="saveNewBooking">
+                    <b-icon-calendar-check-fill class="mr-1"/>Create Booking
                 </b-button>
-                <b-button 
-                    v-else-if="!isCreate"
-                    variant="success" 
-                    @click="saveInterpreter">
-                    <b-icon-person-check-fill class="mr-1"/>Save
-                </b-button>
+                
             </template>
 
             <template v-slot:modal-header-close>
                 <b-button
                     variant="outline-dark"
                     class="closeButton"
-                    @click="closeInterpreterWindow"
+                    @click="closeBookingWindow"
                     >&times;</b-button
                 >
             </template>
@@ -650,12 +482,20 @@ import AddCourtSessionForm from "./components/AddCourtSessionForm.vue";
 import Spinner from "@/components/utils/Spinner.vue";
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
-import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interpreters/json';
+import { interpreterInfoType } from '@/types/Interpreters/json';
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
-import { interpreterStatesInfoType } from '@/types/Interpreters';
+import { bookingStatesInfoType } from '@/types/Bookings';
+import { bookingDateInfoType, bookingInfoType } from '@/types/Bookings/json';
+import { max } from 'underscore';
 const commonState = namespace("Common");
+
+enum bookingStatus {'Pending'='Pending', 'Booked'='Booked', 'Cancelled'='Cancelled'}
+enum bookingPeriod {'Morning'='MORNING', 'Afternoon'='AFTERNOON', 'Full Day'='WHOLE_DAY'}
+enum bookingInterpretFor {'Witness'='Witness', 'Party'='Party', 'Accused'='Accused'}
+enum bookingMethodOfAppearance {'In Person'='In-Person', 'MS Teams'='MS Teams', 'Via Teleconference'='Via Teleconference', 'RIS'='RIS'}
+enum bookingRequest {'Court'='Court', 'Crown'='Crown', 'Applicant'='Applicant', 'Defence'='Defence', 'Respondent'='Respondent'}
 
 @Component({
     components:{
@@ -671,12 +511,10 @@ export default class SearchInterpretersPage extends Vue {
     public courtLocations!: locationsInfoType[];
 
     @commonState.State
-    public languages!: languagesInfoType[];
-
+    public languages!: languagesInfoType[];   
+    
     @commonState.State
-    public userLocation!: locationsInfoType;    
-
-    isCreate = false;
+    public userLocation!: locationsInfoType;
 
     AddNewLanguageForm = false;       
     addLanguageFormColor = 'court';
@@ -684,147 +522,168 @@ export default class SearchInterpretersPage extends Vue {
     isEditLanguageOpen = false;
 
     updated = 0;
-    updatedInterpreterInfo = 0;
+    updatedBookingInfo = 0;
     
     interpreterDataReady = false;
 
     interpreter = {} as interpreterInfoType;    
    
     updateTable = 0;
-    showInterpreterWindow = false;
+    showBookingWindow = false;
     showConfirmDeleteInterpreter = false;
-    interpreterStates = {} as interpreterStatesInfoType;    
+    bookingStates = {} as bookingStatesInfoType;    
     
     dataLoaded = false;  
     resultsLoaded = false; 
     searching = false;
     
-    name = '';
-    keyword = '';
-    active = true;
+    location = {} as locationsInfoType;
+    limitDistance = false;
+    dates = [];
+    
     language = '';    
     level: string[] = [];
-    crcExpiryDate = '';
+    locationState = true;
+    booking = {} as bookingInfoType;
+    
 
     interpreters: interpreterInfoType[] = [];
     expandedInterpreter = {} as interpreterInfoType;
 
-    languageNames: string[] = [];    
-
-    activeOptions = [
-        {text: 'Active', value: true}, 
-        {text: 'Inactive', value: false}
-    ];
+    languageNames: string[] = [];     
 
     levelOptions = ['1', '2', '3', '4'];
 
-    provinceOptions = [
-        {text: 'Alberta',                   value: 'AB'}, 
-        {text: 'British Columbia',          value: 'BC'},
-        {text: 'Manitoba',                  value: 'MB'}, 
-        {text: 'New Brunswick',             value: 'NB'},
-        {text: 'Newfoundland and Labrador', value: 'NL'},
-        {text: 'Northwest Territories',     value: 'NT'},
-        {text: 'Nova Scotia',               value: 'NS'},
-        {text: 'Nunavut',                   value: 'NU'},
-        {text: 'Ontario',                   value: 'ON'},
-        {text: 'Prince Edward Island',      value: 'PE'},         
-        {text: 'Quebec',                    value: 'QC'},
-        {text: 'Saskatchewan',              value: 'SK'}, 
-        {text: 'Washington - US',           value: 'WA'}, 
-        {text: 'Yukon',                     value: 'YT'}        
+    statusOptions = [
+        {text: 'Pending',         value: bookingStatus.Pending}, 
+        {text: 'Booked',          value: bookingStatus.Booked},
+        {text: 'Cancelled',       value: bookingStatus.Cancelled}
     ]
 
-    interpreterFields = [
-        {key:'details',             label:'',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'name',                label:'Name',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'phone',               label:'Phone',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'email',               label:'Email',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'languages',           label:'Language', cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'level',               label:'Level',    cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'contractExtension',   label:'Active',   cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'city',                label:'City',     cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'new',                 label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'edit',                label:'',         cellStyle:'', thClass:'bg-primary text-white align-middle'}
-    ];
+    interpretForOptions = [
+        {text: 'Witness',       value: bookingInterpretFor.Witness}, 
+        {text: 'Party',         value: bookingInterpretFor.Party},
+        {text: 'Accused',       value: bookingInterpretFor.Accused}
+    ]
 
-    languageFields = [
-        {
-            key:'languageName',          
-            label:'Language',                  
-            thClass: 'text-white bg-court',
-            thStyle: 'font-size: 1rem;',            
-            sortable:false            
-        }, 
-        {
-            key:'level',          
-            label:'Level',   
-            thClass: 'text-white bg-court', 
-            thStyle: 'font-size: 1rem;',          
-            sortable:false            
-        }, 
-        {
-            key:'commentOnLevel',          
-            label:'Comment',   
-            thClass: 'text-white bg-court', 
-            thStyle: 'font-size: 1rem;',          
-            sortable:false            
-        },
-        {
-            key:'edit',          
-            label:'',   
-            thClass: 'text-white bg-court',           
-            sortable:false            
-        }        
-    ]    
+    requestOptions = [
+        {text: 'Court',         value: bookingRequest.Court}, 
+        {text: 'Crown',         value: bookingRequest.Crown},
+        {text: 'Applicant',     value: bookingRequest.Applicant},
+        {text: 'Defence',       value: bookingRequest.Defence},
+        {text: 'Respondent',    value: bookingRequest.Respondent}
+    ]
+
+    bookingPeriodOptions = [
+        {text: 'Full Day',      value: bookingPeriod['Full Day']}, 
+        {text: 'Morning',       value: bookingPeriod.Morning},
+        {text: 'Afternoon',     value: bookingPeriod.Afternoon}
+    ]
+
+    bookingMethodOfAppearanceOptions = [
+        {text: 'In Person',            value: bookingMethodOfAppearance['In Person']}, 
+        {text: 'MS Teams',             value: bookingMethodOfAppearance['MS Teams']},
+        {text: 'Afternoon',            value: bookingMethodOfAppearance['Via Teleconference']},
+        {text: 'Via Teleconference',   value: bookingMethodOfAppearance.RIS}
+    ]   
+
+    interpreterFields = [
+        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'lastName',                label:'Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'fullAddress',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
+        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'}
+    ]; 
    
     mounted() {  
-        this.dataLoaded = false;        
-        this.interpreterStates = {} as interpreterStatesInfoType;
-        this.extractInfo()       
+        
+        this.dataLoaded = false;   
+        this.locationState = true;     
+        this.bookingStates = {} as bookingStatesInfoType;
+        this.extractInfo();       
     }
 
     public extractInfo(){
 
         this.languageNames = this.languages.map( language => {return language.name});
+        this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
 
         this.dataLoaded = true;
     }
 
     public find(){
-        this.resultsLoaded = false;
-        this.searching = true;
-        this.interpreters = [];
+        
+        this.locationState = this.location?.id?true:false;
 
-        const body = {
-            "name":this.name,
-            "active":this.active,
-            "language":this.language,
-            "level":this.level,
-            "city":this.userLocation?.city?this.userLocation.city:'',
-            "keywords":this.keyword,
-            "criminalRecordCheck":this.crcExpiryDate?this.crcExpiryDate:null                
-        }
+        if (this.locationState){ 
+            this.resultsLoaded = false;
+            this.searching = true;
+            this.interpreters = [];
 
-        this.$http.post('/interpreter/search', body)
-        .then((response) => {            
-            if(response?.data?.data){ 
-                console.log(response.data)
-                this.interpreters = _.sortBy(response.data.data,'lastName');
-                this.resultsLoaded = true;
+            const body = {
+                "courtAddr":this.location?.addressLine1?this.location.addressLine1:'',
+                "distanceLimit":this.limitDistance,
+                "language":this.language,
+                "level":this.level,
+                "city":'',
+                "dates":this.dates,
+                "location":this.location?this.location:null                
             }
-            
-        },(err) => {
-            this.resultsLoaded = true;            
-        });
-        this.searching = false;
+
+            this.$http.post('/interpreter/search', body)
+            .then((response) => {            
+                if(response?.data?.data){
+                    this.extractInterpreterDetails(response.data.data);                    
+                }
+                
+            },(err) => {
+                this.resultsLoaded = true;            
+            });
+            this.searching = false;
+        }
     }
 
-    public editInterpreter(interpreterToEdit: interpreterInfoType){              
-        this.interpreter = interpreterToEdit;
-        this.isCreate = false;
-        this.showInterpreterWindow = true;
+    public extractInterpreterDetails(interpreterData){
+
+        const interpreterInfo: interpreterInfoType[] = [];        
+
+        for (const interpreter of interpreterData){            
+            const address = interpreter.address?interpreter.address+'<br>':'';
+            const city = interpreter.city?interpreter.city:'';
+            const province = interpreter.province?interpreter.province:'';
+            const postalCode = interpreter.postal?interpreter.postal:'';
+            interpreter.fullAddress = address + ' ' + city + ' ' + province + ' ' + postalCode;
+            interpreterInfo.push(interpreter);
+        }
+
+        this.interpreters = _.sortBy(interpreterInfo,'lastName');
+        
+        this.resultsLoaded = true;
+    }
+
+    public bookInterpreter(interpreterToBook: interpreterInfoType){              
+        this.interpreter = interpreterToBook;
+        this.booking = {} as bookingInfoType;
+        this.booking.interpreterId = interpreterToBook.id;
+        const levels = interpreterToBook.languages.map(language => {return language.level})
+        this.interpreter.highestLevel = max(levels);
+        this.prepopulateDefaultValues();
+        
+        this.showBookingWindow = true;
         this.interpreterDataReady = true;        
+    }
+
+    public prepopulateDefaultValues(){
+        this.booking.status = this.statusOptions[0].value;
+        this.booking.interpretFor = this.interpretForOptions[0].value;
+        this.booking.requestedBy = this.requestOptions[0].value;
+        this.booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
+        this.booking.locationId = this.location.id;
+        this.booking.language = this.interpreter.languages[0].languageName;
+
     }
 
     public copyEmails(){        
@@ -836,34 +695,20 @@ export default class SearchInterpretersPage extends Vue {
         inputField.select();
         document.execCommand('copy',false);
         inputField.remove();
-    }
-
-    public createInterpreter(){       
-        this.interpreter = {} as interpreterInfoType;        
-        this.isCreate = true;
-        this.showInterpreterWindow = true;
-        this.interpreterDataReady = false;
-        this.interpreter.languages = [];       
-        this.interpreterDataReady = true;
-    }
-
-    public downloadArchive(){
-        console.log('copying');
-
-    }
+    }    
 
     public openDetails(newExpandedInterpreter: interpreterInfoType){
         this.expandedInterpreter = newExpandedInterpreter;
     }
     
-    public saveNewInterpreter(){
-        if (this.checkInterpreterStates()){ 
+    public saveNewBooking(){
+        if (this.checkBookingStates()){ 
             
-            this.$http.post('/interpreter', this.interpreter)
+            this.$http.post('/booking', this.booking)
             .then((response) => {            
                 if(response?.data){
-                    this.closeInterpreterWindow();
-                    this.find();                
+                    this.closeBookingWindow();
+                    this.$router.push({ name: "bookings" });                
                 }
                 
             },(err) => {
@@ -871,136 +716,50 @@ export default class SearchInterpretersPage extends Vue {
             });
 
         }        
-    }
+    }    
 
-    public saveInterpreter(){    
-        
-        if (this.checkInterpreterStates()){
-
-            this.$http.put('/interpreter/' + this.interpreter.id, this.interpreter)
-            .then((response) => {            
-                if(response?.data){
-                    this.closeInterpreterWindow();
-                    this.find();                
-                }
-                
-            },(err) => {
-                            
-            });        
-        
-            //TODO call find 
-            // const index = this.interpreters.findIndex(originalInterpreter => originalInterpreter.id == this.interpreter.id)  //may not be required                       
-            // this.interpreters[index] = this.interpreter; //may not be required
-            
-                
-            // this.closeInterpreterWindow();
-
-            // this.updateTable ++;
-
-        }
-        
-        
-    }
-
-    public checkInterpreterStates(){
+    public checkBookingStates(){
 
         let stateCheck = true;
     
-        this.interpreterStates.lastName = !(this.interpreter.lastName)? false : null;
-        this.interpreterStates.firstName = !(this.interpreter.firstName)? false : null;
-        this.interpreterStates.languages = !(this.interpreter.languages && this.interpreter.languages.length > 0)? false : null;
+        this.bookingStates.status = !(this.booking.status)? false : null;
+        this.bookingStates.room = !(this.booking.room)? false : null;
+        
       
-        this.interpreterStates.city = !(this.interpreter.city)? false : null;
-        this.interpreterStates.province = !(this.interpreter.province)? false : null;
-        this.interpreterStates.postal = !(this.interpreter.postal)? false : null;
+        this.bookingStates.location = !(this.booking.locationId)? false : null;
+        this.bookingStates.file = !(this.booking.file)? false : null;
+        this.bookingStates.interpretFor = !(this.booking.interpretFor)? false : null;
+        this.bookingStates.caseName = !(this.booking.caseName)? false : null;
+        this.bookingStates.request = !(this.booking.requestedBy)? false : null;
+        this.bookingStates.language = !(this.booking.language)? false : null;
+        this.bookingStates.reason = !(this.booking.reason)? false : null;
+        this.bookingStates.prosecutor = !(this.booking.prosecutor)? false : null;
+        this.bookingStates.methodOfAppearance = !(this.booking.methodOfAppearance)? false : null;
+        this.bookingStates.federal = !(this.booking.federal != null)? false : null;
       
-        this.updatedInterpreterInfo ++;
+        this.updatedBookingInfo ++;
 
-        for(const field of Object.keys(this.interpreterStates)){
-            if(this.interpreterStates[field]==false)
+        for(const field of Object.keys(this.bookingStates)){
+            if(this.bookingStates[field]==false)
                 stateCheck = false;
         }
 
         return stateCheck;            
     }
 
-    public addNewLanguage(){
-        if(this.isEditLanguageOpen){            
-            this.addLanguageFormColor = 'danger'
-        }else{
-            this.AddNewLanguageForm = true;            
-        }
-    }
-
-    public modifyLanguageList(isCreateLanguage: boolean, newLanguage: interpreterLanguageInfoType, index: number){    
-        //TODO: add check states    
-
-        if (isCreateLanguage){           
-            this.interpreter.languages.push(newLanguage)
-            this.closeLanguageForm();
-        } else {           
-            this.interpreter.languages[index].languageName = newLanguage.languageName;
-            this.interpreter.languages[index].level = newLanguage.level;     
-            this.interpreter.languages[index].commentOnLevel = newLanguage.commentOnLevel;       
-            this.closeLanguageForm();
-        }
-        this.updated ++;
-        
-    }
-
-    public removeLanguage(data){        
-        this.interpreter.languages.splice(data.index,1);
-        this.updated ++;        
-    }
-
-    public closeLanguageForm() {                     
-        this.AddNewLanguageForm= false; 
-        this.addLanguageFormColor = 'court'
-        if(this.isEditLanguageOpen){
-            this.latestEditLanguageData.toggleDetails();
-            this.isEditLanguageOpen = false;
-        } 
-    }
-
-     public editLanguage(data) {
-        if(this.AddNewLanguageForm || this.isEditLanguageOpen){            
-            this.addLanguageFormColor = 'danger';                     
-        }else if(!this.isEditLanguageOpen && !data.detailsShowing){
-            data.toggleDetails();
-            this.isEditLanguageOpen = true;
-            this.latestEditLanguageData = data            
-        }   
-    }
-
-    public confirmDeleteInterpreter(){        
-        this.showConfirmDeleteInterpreter = true;
+    public addNewDateBooking(){
+        //TODO: add date
     }
     
-    public cancelInterpreterDeletion() {
-        this.showConfirmDeleteInterpreter = false;
-    }
-
-    public deleteInterpreter(){
-        
-        this.showConfirmDeleteInterpreter = false;
-        //TODO: add api call
-        const index = this.interpreters.findIndex(originalInterpreter => originalInterpreter.id == this.interpreter.id) //may not need this                        
-        this.interpreters.splice(index, 1);      //may not need this 
-               
-        this.closeInterpreterWindow();
-        //TODO call the find() method
-        this.updateTable ++; //may not need this
-    }
-
-    public closeInterpreterWindow(){
-        this.showInterpreterWindow = false; 
+    public closeBookingWindow(){
+        this.showBookingWindow = false; 
         this.clearStates();
     }
 
     public clearStates(){
 
-        for(const field of Object.keys(this.interpreterStates)){
-            this.interpreterStates[field] = null;
+        for(const field of Object.keys(this.bookingStates)){
+            this.bookingStates[field] = null;
                 
         }
                              

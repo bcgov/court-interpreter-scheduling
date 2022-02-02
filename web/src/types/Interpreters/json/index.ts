@@ -2,6 +2,7 @@ export interface interpreterInfoType {
     id: number;
     lastName: string;
     firstName: string;
+    fullAddress?:string;
     address: string;
     city: string;
     province: string;
@@ -11,13 +12,14 @@ export interface interpreterInfoType {
     phone: string;
     email: string;
     supplier: string;
-    siteCode?: string;
+    'site_code'?: string;
     gst: string;
     comments: string;
     criminalRecordCheckDate: string;
     criminalRecordCheckComment?: string;
     contractExtension: boolean;
     languages: interpreterLanguageInfoType[]
+    highestLevel?: number;
     events: [];
     bookings: [];
     adminComments: string;
