@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from api.schemas import LanguageSchema, LanguageSchemaRequest
 from models.language_model import LanguageModel
-from core.auth import logged_in_user
+from core.auth import admin_user, user_in_role
 from api.repository.language_transactions import create_language_in_db
 
 router = APIRouter(
@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.get('/names', status_code=status.HTTP_200_OK)
-def get_All_Language_Names(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+def get_All_Language_Names(db: Session= Depends(get_db_session), user = Depends(user_in_role)):
 
     languages = db.query(LanguageModel).all()    
     names = ([language.name for language in languages])
@@ -23,14 +23,14 @@ def get_All_Language_Names(db: Session= Depends(get_db_session), user = Depends(
 
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=List[LanguageSchema])
-def get_All_Languages(db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+def get_All_Languages(db: Session= Depends(get_db_session), user = Depends(user_in_role)):
 
     language = db.query(LanguageModel).all()    
     return language
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK)
-def get_Language_By_Id(id: int, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
+def get_Language_By_Id(id: int, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
    
     language = db.query(LanguageModel).filter(LanguageModel.id==id).first()
     language.interpreters   
@@ -38,8 +38,8 @@ def get_Language_By_Id(id: int, db: Session= Depends(get_db_session), user = Dep
 
 
 @router.post('', status_code=status.HTTP_200_OK )
-def create_Language(request: LanguageSchemaRequest, db: Session = Depends(get_db_session) , user = Depends(logged_in_user)):
-    return create_language_in_db(request, db)
+def create_Language(request: LanguageSchemaRequest, db: Session = Depends(get_db_session) , user = Depends(admin_user)):
+    return create_language_in_db(request, db, user['username'])
     
 
 

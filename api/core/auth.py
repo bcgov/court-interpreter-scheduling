@@ -1,12 +1,63 @@
 from fastapi import Request, status, HTTPException, Depends
 from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 from core import JWTtoken
+from core.multi_database_middleware import get_db_session
+from sqlalchemy.orm import Session
+from models.user_model import UserModel
 
 token_bearer_schema = HTTPBearer()
 
+
+
+
+def logged_in_user_without_raising_error(request: Request, token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
+       
+    user = JWTtoken.verify_token_without_error(token.credentials, request)        
+    return user
+
+
+
 def logged_in_user(request: Request, token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
 
-    # print("_________Check_If_User_is_Logged_in")
+    return verify_user(request, token)
+
+
+
+def admin_user(request: Request, db: Session= Depends(get_db_session), token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
+    
+    require_roles = ['cis-admin']
+    user_info = verify_user(request, token)
+    check_user_roles(require_roles, user_info, db)
+
+    return user_info
+
+
+
+def user_in_role(request: Request, db: Session= Depends(get_db_session), token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
+    
+    require_roles = ['cis-admin', 'cis-user']
+    user_info = verify_user(request, token)
+    check_user_roles(require_roles, user_info, db)
+
+    return user_info
+
+
+
+
+def check_user_roles(require_roles, user_info, db: Session):    
+    user = db.query(UserModel).filter( UserModel.username==user_info['username']).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User is not available.")
+
+    for require_role in require_roles:        
+        if require_role in [role.role_name for role in user.role]:
+            return
+
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized user.")
+
+
+
+def verify_user(request: Request, token: HTTPAuthorizationCredentials):
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -18,17 +69,7 @@ def logged_in_user(request: Request, token: HTTPAuthorizationCredentials = Depen
 
     if ("username" not in user or "email" not in user):
         raise credentials_exception
-    elif (user["username"] is None and user["email"] is None ):
-        # print("___INTERNAL_TOKEN_HAS_BEEN_EXPIRED______REFRESH_IS_REQUIRED__")    
+    elif (user["username"] is None and user["email"] is None ):  
         raise credentials_exception
     else:
         return user
-
-
-def logged_in_user_without_raising_error(request: Request, token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
-    
-    # print("_________Check_If_User_is_Logged_in_without_raising_error______")
-    
-    user = JWTtoken.verify_token_without_error(token.credentials, request)        
-    return user
-

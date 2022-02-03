@@ -54,6 +54,12 @@ class Settings(BaseSettings):
     # # # TESTING: CORS_ORIGIN=https://www.???
     # # # PRODUCTION: CORS_ORIGIN=https://www.???
 
+    # # CHES Email service
+    CHES_AUTH_URL = os.getenv('CHES_AUTH_URL')
+    CHES_EMAIL_URL = os.getenv('CHES_EMAIL_URL')
+    EMAIL_SERVICE_CLIENT_ID = os.getenv('EMAIL_SERVICE_CLIENT_ID')
+    EMAIL_SERVICE_CLIENT_SECRET = os.getenv('EMAIL_SERVICE_CLIENT_SECRET')
+    RECIPIENT_EMAILS = os.getenv('RECIPIENT_EMAILS')
 
     class Config:
         case_sensitive = True
