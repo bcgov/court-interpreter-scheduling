@@ -10,7 +10,8 @@
                         label="Name" 
                         label-for="name">
                         <b-form-input 
-                            id="name"                            
+                            id="name"
+                            @change="searchAgain"                            
                             style="display:inline"
                             v-model="name"
                             placeholder="First, last or both"
@@ -24,7 +25,8 @@
                         label="Keywords" 
                         label-for="keywords">
                         <b-form-input 
-                            id="keywords"                            
+                            id="keywords"
+                            @change="searchAgain"                            
                             style="display:inline"
                             v-model="keyword"
                             placeholder="Email, phone etc"
@@ -41,7 +43,8 @@
                         label="Language" 
                         label-for="language">
                         <b-form-select 
-                            id="language"                            
+                            id="language"
+                            @change="searchAgain"                      
                             style="display:inline"
                             v-model="language"
                             :options="languageNames"
@@ -55,7 +58,9 @@
                         label-for="level">
                         <b-form-checkbox-group
                             id="level"
+                            @change="searchAgain"
                             class="mt-3"
+                            size="lg"
                             style="max-width:75%;"                   
                             v-model="level"
                             :options="levelOptions"                
@@ -69,7 +74,8 @@
                         label="Active/Inactive" 
                         label-for="active">
                         <b-form-select 
-                            id="active"                            
+                            id="active"
+                            @change="searchAgain"                            
                             style="display:inline"
                             v-model="active"
                             :options="activeOptions"
@@ -87,11 +93,15 @@
                         label-for="crcExpiryDate">
                         <b-form-datepicker                            
                             id="crcExpiryDate"
-                            v-model="crcExpiryDate"                                                                                           
+                            v-model="crcExpiryDate"
+                            today-button
+                            reset-button
+                            close-button
+                            @hidden="searchAgain"                                                                                       
                             :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
                             locale="en-US">
                         </b-form-datepicker>                        
-                    </b-form-group>
+                    </b-form-group>                    
                 </b-col>
                 <b-col cols="4">
                      <b-button 
@@ -100,7 +110,7 @@
                         :disabled="searching"
                         variant="primary"
                         @click="find()"
-                        ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; transform:translate(0px,0px);"/>
+                        ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; height:2rem; transform:translate(0px,-24px);"/>
                         <span style="font-size: 20px;" v-else>Search</span>
                     </b-button>
 
@@ -136,7 +146,7 @@
 
         </b-row>
 
-        <loading-spinner color="#000" v-if="searching && !resultsLoaded" waitingText="Loading Results ..." /> 
+        <loading-spinner color="#000" v-if="searching" waitingText="Loading Results ..." /> 
 
         <div v-else> 
 
@@ -170,6 +180,10 @@
                         <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
                     </template>
 
+                    <template v-slot:cell(phone)="data" >
+                        {{data.value | beautify-phone-no}}
+                    </template>
+
                     <template v-slot:cell(languages)="data" >    
                         <span 
                             v-for="lan,inx in data.item.languages.map(language => {return language.languageName})" 
@@ -192,7 +206,7 @@
                     <template v-slot:cell(new)="data" >    
                         <b-badge 
                             v-if="!data.item.new"
-                            class="mt-2"
+                            class="mt-0"
                             pill
                             variant="success"
                             style="float: left;"
@@ -217,7 +231,7 @@
                         <b-button style="font-size:12px" 
                             size="sm"                        
                             @click="editInterpreter(data.item);" 
-                            class="text-primary bg-info border-info mt-1" 
+                            class="text-primary bg-info border-info mt-0" 
                             ><b-icon-pencil-fill/>                                                       
                         </b-button>
                         
@@ -286,13 +300,12 @@
                             </b-form-group>       
                         </b-col>         
                     </b-row>
-
-                    <b-row v-if="interpreterDataReady" class="border-white ml-1 mt-1">   
+                    <h1 class="ml-3 pl-1 mt-3 mb-0 pb-0 labels text-primary">Languages</h1>
+                    <b-row v-if="interpreterDataReady" class="border-white ml-1 mt-1">                           
                         <b-col cols="10">
                             <b-form-group
-                                class="labels text-primary h1"                
-                                label="Languages:" 
-                                label-for="languages">
+                                class="labels text-primary"                
+                                >
                                 <span 
                                     v-if="interpreter.languages.length == 0 && !AddNewLanguageForm" 
                                     id="languages" 
@@ -490,7 +503,7 @@
                     </b-col>                     
                 </b-row>
 
-                <h1 class="ml-3 pl-1 mt-2 labels text-primary">Details</h1>
+                <h1 class="ml-3 pl-1 mt-3 labels text-primary">Details</h1>
 
                 <b-row class="ml-1">
                     <b-col cols="4">
@@ -694,8 +707,7 @@ export default class DirectoryPage extends Vue {
     showConfirmDeleteInterpreter = false;
     interpreterStates = {} as interpreterStatesInfoType;    
     
-    dataLoaded = false;  
-    resultsLoaded = false; 
+    dataLoaded = false;
     searching = false;
     
     name = '';
@@ -735,16 +747,16 @@ export default class DirectoryPage extends Vue {
     ]
 
     interpreterFields = [
-        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
-        {key:'phone',               label:'Phone',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
-        {key:'email',               label:'Email',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
-        {key:'languages',           label:'Language', sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle'},
-        {key:'level',               label:'Level',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'contractExtension',   label:'Active',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'city',                label:'City',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'},
-        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle'}
+        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
+        {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'phone',               label:'Phone',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'',  thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'level',               label:'Level',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'contractExtension',   label:'Active',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'city',                label:'City',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',tdClass:'align-middle'},
+        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',tdClass:'align-middle'}
     ];
 
     languageFields = [
@@ -752,21 +764,24 @@ export default class DirectoryPage extends Vue {
             key:'languageName',          
             label:'Language',                  
             thClass: 'text-white bg-court',
-            thStyle: 'font-size: 1rem;',            
+            thStyle: 'font-size: 1rem;',
+            tdClass:'align-middle',            
             sortable:false            
         }, 
         {
             key:'level',          
             label:'Level',   
             thClass: 'text-white bg-court', 
-            thStyle: 'font-size: 1rem;',          
+            thStyle: 'font-size: 1rem;',
+            tdClass:'align-middle',    
             sortable:false            
         }, 
         {
             key:'commentOnLevel',          
             label:'Comment',   
             thClass: 'text-white bg-court', 
-            thStyle: 'font-size: 1rem;',          
+            thStyle: 'font-size: 1rem;',
+            tdClass:'align-middle', 
             sortable:false            
         },
         {
@@ -779,6 +794,7 @@ export default class DirectoryPage extends Vue {
    
     mounted() {  
         this.dataLoaded = false; 
+        this.searching = false;
         this.interpreterStates = {} as interpreterStatesInfoType;
         this.extractInfo()       
     }
@@ -789,7 +805,6 @@ export default class DirectoryPage extends Vue {
     }
 
     public find(){
-        this.resultsLoaded = false;
         this.searching = true;
         this.interpreters = [];
 
@@ -800,7 +815,7 @@ export default class DirectoryPage extends Vue {
             "level":this.level,
             "city":'',//this.userLocation?.city?this.userLocation.city:'',
             "keywords":this.keyword,
-            "criminalRecordCheck":this.crcExpiryDate?this.crcExpiryDate:null                
+            "criminalRecordCheck":this.crcExpiryDate?moment(this.crcExpiryDate).toISOString():null                
         }
 
         this.$http.post('/interpreter/search', body)
@@ -808,13 +823,13 @@ export default class DirectoryPage extends Vue {
             if(response?.data?.data){ 
                 console.log(response.data)
                 this.interpreters = _.sortBy(response.data.data,'lastName');
-                this.resultsLoaded = true;
-            }
+            }    
+                this.searching = false;            
             
         },(err) => {
-            this.resultsLoaded = true;            
+            this.searching = false;            
         });
-        this.searching = false;
+        
     }
 
     public editInterpreter(interpreterToEdit: interpreterInfoType){              
@@ -998,8 +1013,11 @@ export default class DirectoryPage extends Vue {
         for(const field of Object.keys(this.interpreterStates)){
             this.interpreterStates[field] = null;
                 
-        }
-                             
+        }                             
+    }
+
+    public searchAgain(){
+        this.interpreters =[] 
     }
 }
 </script>
@@ -1007,11 +1025,15 @@ export default class DirectoryPage extends Vue {
 <style scoped lang="scss">
 
     .labels {
-        font-size: 16px; font-weight:600;
+        font-size: 16px; font-weight:600; line-height: 1rem;
+    }
+
+    h1.labels{
+        font-size: 22px; font-weight:600; line-height: 1rem;
     }
 
     .input-line {
-        font-size: 12px; font-weight:600;
+        font-size: 14px; font-weight:600;
     }
 
     .closeButton {

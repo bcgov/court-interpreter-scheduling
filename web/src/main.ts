@@ -9,6 +9,10 @@ import http from "./plugins/http";
 import "./filters";
 import LoadingSpinner from "./components/utils/LoadingSpinner.vue";
 
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+import '@mdi/font/css/materialdesignicons.css'
+
 import "@/styles/index.scss";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
@@ -17,6 +21,7 @@ import "font-awesome/css/font-awesome.min.css";
 // import UpdatePrototype from "./prototypes/UpdatePrototype"
 
 Vue.config.productionTip = false;
+Vue.use(Vuetify)
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 Vue.use(VueRouter);
@@ -24,6 +29,8 @@ Vue.use(VueCookies);
 Vue.use(http);
 // Vue.use(UpdatePrototype);
 Vue.component('loading-spinner', LoadingSpinner);
+
+
 
 const router = new VueRouter({
     routes: routes, 
@@ -51,6 +58,7 @@ else if(!location.pathname.includes('/signout'))
 
 
 new Vue({
+    vuetify: new Vuetify({}),
     router: router,
     render: (h) => h(App),
     store: store,

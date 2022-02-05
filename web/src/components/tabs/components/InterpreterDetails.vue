@@ -13,7 +13,7 @@
                 <span v-if="row.item.criminalRecordCheckDate">{{ row.item.criminalRecordCheckDate | beautify-date}}</span>
             </template>
 
-            <template v-slot:cell(address)="row" >
+            <template v-slot:cell(address) >
                 <span>{{ fullAddress }}</span>
             </template>
         </b-table>    

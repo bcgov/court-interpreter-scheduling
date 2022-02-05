@@ -1,5 +1,5 @@
 <template>
-	<header v-if="dataReady" name="menu-bar" class="app-header">
+	<header v-if="dataReady" name="menu-bar" class="app-header" :key="update">
 		<b-navbar toggleable="lg" class="navbar navbar-expand-lg navbar-dark m-0 p-0" style="background-color: #38598a;">    
            
 			<b-navbar-nav v-if="userRole.includes('cis-admin')||userRole.includes('cis-user')" class="my-0 mx-5">
@@ -36,8 +36,9 @@
 </template>
 
 <script lang="ts">
-	import { Component, Vue} from 'vue-property-decorator';	
-
+	import { Component, Vue, Watch} from 'vue-property-decorator';	
+	import { Route } from 'vue-router';
+	
 	import { namespace } from "vuex-class";   
 	import "@/store/modules/common";
 	const commonState = namespace("Common");
@@ -51,6 +52,7 @@
         bgClass={}
 		dataReady=false;
 		adminTab = false;
+		update=0;
 		
 		bothGroup=[
 			{name:'bookings', label:'Bookings'},
@@ -62,14 +64,16 @@
 			{name:'user-role', label:'Manage User'},
 			{name:'update-geo', label:'Update Coordinates'}
 		]
-		
 
-        mounted() {
-			this.dataReady=false;
-			const items = this.bothGroup.concat(this.adminGroup)
-			for(const item of items)
-        		this.bgClass[item.name]=""
-			this.bgClass['bookings']="bg-cyan"
+		@Watch('$route', { immediate: true, deep: true })
+		onUrlChange(newVal: Route) {			
+			this.ChangeClass(newVal.name)
+			this.update++;			
+		}
+
+        mounted() {			
+			this.dataReady=false;			
+			this.ChangeClass('bookings')
 			this.dataReady=true;
         }
 

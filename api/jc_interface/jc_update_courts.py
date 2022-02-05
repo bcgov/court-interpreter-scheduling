@@ -1,7 +1,8 @@
-
+from datetime import datetime
 from jc_interface.jc_calls import JcInterfaceCalls
 from models.court_location_model import CourtLocationModel
 from sqlalchemy.orm import Session
+from models.geo_status_model import GeoStatusModel
 
 from core.geo_coordinate_service import get_latitude_longitude_service
 
@@ -11,6 +12,9 @@ def update_courts_info_in_db(db: Session, google_map: bool):
     jc_locations = jc_calls.get_court_locations()
     efiling_locations = jc_calls.get_court_locations_address()
     # print(efiling_locations)
+
+    geo_status = db.query(GeoStatusModel).where(GeoStatusModel.name=='locations')
+
 
     if google_map:
         geo_service = "Google Map"
@@ -40,10 +44,13 @@ def update_courts_info_in_db(db: Session, google_map: bool):
                 CourtLocationModel.short_description==location["shortDesc"],
                 CourtLocationModel.location_code==location["code"]
             )
-            print("Location Update Progress => "+str(int(100*inx/len(jc_locations)))+" %")
+            progress = int(100*inx/len(jc_locations))+1
+            if progress>99: progress=99
+            print("Location Update Progress => "+str(progress)+" %")
             # print(location_query)
             # print(court_address)
-            
+            geo_status.update({"progress":progress})
+            db.commit()
 
 
             if location_query.first() is None:
@@ -75,7 +82,8 @@ def update_courts_info_in_db(db: Session, google_map: bool):
                     "longitude": longitude,
                     "geo_service": geo_service
                 })
-                
+
+    geo_status.update({"progress":100, "updated_at":datetime.now(), 'update_service': geo_service})          
     db.commit()
 
 

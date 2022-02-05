@@ -102,6 +102,13 @@ Vue.filter('beautify-date-weekday', function(date){
 		return ''
 })
 
+Vue.filter('beautify-date-weekday-month-day', function(date){
+	if(date)
+		return	moment(date).format('ddd, MMM DD');
+	else
+		return ''
+})
+
 Vue.filter('scrollToLocation', function(locationName){
 	if(locationName){
 		Vue.nextTick(()=>{
@@ -151,6 +158,13 @@ Vue.filter('getFullContactInfo',function(nameObject){
 	} else{
 		return " "
 	}
+})
+
+Vue.filter('beautify-phone-no', function(num){
+	if(num?.trim().length==12)
+		return	'('+num.slice(0,3)+') '+num.slice(4,7)+'-'+num.slice(8,12);
+	else
+		return num
 })
 
 Vue.filter('capitalize', function(str: string){

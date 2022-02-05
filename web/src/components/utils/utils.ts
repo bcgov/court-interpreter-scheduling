@@ -11,7 +11,8 @@ export const SessionManager = {
         try {
             var response = await Axios.get('/user-info/');
                         
-            const userId = response.data.user_id;           
+            const userId = response.data.user_id; 
+            const userEmail = response.data.email
             const userLocation = response.data.location;
 
             if (userId) {
@@ -23,6 +24,7 @@ export const SessionManager = {
                 const userRole = roles.map(role => role.role_name)
                 const userName = response.data.display_name || response.data.first_name + " " + response.data.last_name;
                 store.commit("Common/setUserName", userName);
+                store.commit("Common/setUserEmail", userEmail);
                 store.commit("Common/setUserId", userId);
                 store.commit("Common/setUserRole",userRole);
                 store.commit("Common/setUserLocation",userLocation);             

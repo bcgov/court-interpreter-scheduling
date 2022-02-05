@@ -2,11 +2,13 @@ from starlette import status
 from models.interpreter_model import InterpreterModel
 from models.user_model import UserModel
 from models.language_model import LanguageModel, InterpreterLanguageModel
+from datetime import datetime
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 from api.schemas import InterpreterRequestSchema
+from models.geo_status_model import GeoStatusModel
 
 from core.geo_coordinate_service import get_latitude_longitude_service
 
@@ -15,6 +17,8 @@ from core.geo_coordinate_service import get_latitude_longitude_service
 def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
 
     geo_service = get_geo_service_name(google_map)
+
+    geo_status = db.query(GeoStatusModel).where(GeoStatusModel.name=='interpreters')
 
     interpreters_query = db.query(InterpreterModel)
     try:
@@ -30,10 +34,18 @@ def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
         
         interpreter_query = interpreters_query.filter(InterpreterModel.id==interpreter.id)
         interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude, "geo_service":geo_service})
+        count = count+1
+        progress = int(100*count/total_interpreters)+1
+        if progress>99: progress=99
+        print("Interpreter Update Progress => "+str(progress)+" %")
+        geo_status.update({"progress":progress})
+
         db.commit()
         
-        count = count+1
-        print("Interpreter Update Progress => "+str(int(100*count/total_interpreters))+" %")
+        
+    
+    geo_status.update({"progress":100, "updated_at":datetime.now(), 'update_service': geo_service})          
+    db.commit()
 
 
 def get_geo_service_name(google_map):

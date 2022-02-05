@@ -1,9 +1,9 @@
 <template>
     <b-card bg-variant="white" border-variant="white">
-        <b-overlay :show= "dismissCountDown" style="width:20rem; margin:0 auto;"> 
+        <b-overlay :show="dismissCountDown != 0" style="width:20rem; margin:0 auto;"> 
             <div style="width:20rem; font-size:24pt; font-weight:600; margin:0 auto;" class="text-center">User Roles</div>
             <template v-slot:overlay>               
-                <b-alert style="margin: auto 0; width:20rem" :variant="alertType" :show="dismissCountDown"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
+                <b-alert style="margin: auto 0; width:20rem" :variant="alertType" :show="dismissCountDown !=0"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
                     <b v-if="alertType=='success'" class="pl-4 ml-5"> Role Saved <b-icon-check-square-fill class="ml-2"/> </b>
                     <b v-else class="pl-5 ml-5"> Error <b-icon-exclamation-circle-fill class="ml-2"/> </b>
                 </b-alert>            
@@ -44,6 +44,7 @@
                 :fields="userFields"
                 head-row-variant="primary"
                 borderless
+                striped
                 sort-icon-left
                 sort-by="last_name"
                 :sort-desc="true"
@@ -69,6 +70,26 @@
             </template>
             </b-table>
         </b-card>
+
+        <b-modal size="lg" v-model="showConfirmAssignAdmin" header-class="bg-warning text-light">
+            
+            <template v-slot:modal-title>
+                <h2 class="mb-0 text-light">Confirm Assign Admin Role</h2>                    
+            </template>			
+            <div>
+                <h3 class="text-danger" >Admin Role is very sensitive.</h3> 
+                <h4> Are you sure you want to assign the <b>Admin Role</b> to <b class="text-danger">{{tempUser.display_name}} "{{tempUser.email}}"</b>?</h4>
+            </div>
+            <template v-slot:modal-footer>
+                <b-button variant="primary" @click="CancelAssignRole">Cancel</b-button>
+                <b-button variant="danger" @click="AssignRole(tempUser)">Confirm</b-button>                
+            </template>            
+            <template v-slot:modal-header-close>                 
+                <b-button variant="outline-warning" class="text-light closeButton" @click="CancelAssignRole"
+                >&times;</b-button>
+            </template>
+
+        </b-modal>
     </b-card>
 </template>
 
@@ -94,8 +115,12 @@ export default class UserRolePage extends Vue {
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
+    @commonState.State
+    public userEmail!: string;
+
     dataLoaded = false;    
     allUsers: allUsersInfoType[]= []
+    allUsersOriginal: allUsersInfoType[]= []
     filterUsersBy="All"
     filterKeyword=""
     filterRoles = [{id:-1, role_name:"All"},{id:-2, role_name:"No Role"},{id:-3, role_name:"Keyword:"},]
@@ -105,6 +130,8 @@ export default class UserRolePage extends Vue {
     alertType="danger"
 
     assignedRoles=[]
+    tempUser: allUsersInfoType ={id:0, display_name:'', email:'', first_name:'', last_name:'', location: null, role:[]}
+    showConfirmAssignAdmin=false
 
     userFields = 
     [   
@@ -117,7 +144,8 @@ export default class UserRolePage extends Vue {
     ]  
 
     
-    mounted() {  
+    mounted() { 
+        this.showConfirmAssignAdmin=false 
         this.dataLoaded = false;
         this.loadAllRoles()
        
@@ -131,7 +159,7 @@ export default class UserRolePage extends Vue {
         this.$http.get('/role/all')
         .then((response) => {
             if(response?.data){
-                console.log(response.data)
+                // console.log(response.data)
                 this.allRoles = response.data
                 this.filterRoles = this.allRoles.concat(this.filterRoles)
                 this.loadAllUsers()
@@ -146,8 +174,12 @@ export default class UserRolePage extends Vue {
         this.$http.get('/user-info/all')
         .then((response) => {            
             if(response?.data){                
-                console.log(response.data)
+                // console.log(response.data)
                 this.allUsers = response.data
+                const currentUser = this.allUsers.filter(usr => usr.email == this.userEmail)[0]
+                currentUser['_rowVariant']="warning"
+
+                this.allUsersOriginal=JSON.parse(JSON.stringify(response.data))
             }
             this.dataLoaded = true;
         },(err) => {
@@ -162,12 +194,39 @@ export default class UserRolePage extends Vue {
 
 
     public RolesChanged(user){
+
+        this.tempUser=user
+        
+        if(user?.id && user.role){
+
+            const originalUser = this.allUsersOriginal.filter(usr => usr.id == user.id)[0]
+            const originalRoles = originalUser.role.map(role => role.role_name)
+            const currentRoles = user.role.map(role => role.role_name)
+                        
+            if(currentRoles.includes('cis-admin') && originalRoles.includes('cis-admin')==false){                
+                this.showConfirmAssignAdmin=true
+                return                
+            }
+            this.AssignRole(user)
+        }
+    }
+
+
+    public CancelAssignRole(){
+        this.showConfirmAssignAdmin = false; 
+        this.loadAllUsers()
+    }
+
+
+    public AssignRole(user){
+        
+        this.showConfirmAssignAdmin=false 
         
         if(user?.id && user.role){
 
             const roles = user.role.map(role=>{return role.id})
             const data = {
-                "user_id":user?.id,
+                "user_id":user.id,
                 "roles": roles
             }
 

@@ -9,6 +9,8 @@ $bcgov-font-path: "../../node_modules/@bcgov/bootstrap-theme/dist/fonts/";
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
 @import "~bootstrap-vue/src/index.scss";
 
+@import "_custom_vuetify.scss";
+
 .breadcrumb {
   margin-bottom: 0;
 }

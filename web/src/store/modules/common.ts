@@ -9,7 +9,8 @@ class Common extends VuexModule {
     public token = '';
     public tokenExpiry: Date = new Date();
 	public logoutUrl = "";
-    public userName = ""	
+    public userName = ""
+    public userEmail = ""	
 	public userId = ""
 	public userRole: string[] = [];
     public userLocation: locationsInfoType|null = null;
@@ -70,6 +71,16 @@ class Common extends VuexModule {
     public UpdateUserLocation(newUserLocation: locationsInfoType|null): void {
         this.context.commit('setUserLocation', newUserLocation)
     }
+
+    @Mutation
+    public  setUserEmail(userEmail: string): void {
+        this.userEmail = userEmail;
+    }
+    @Action
+    public UpdateUserEmail(newUserEmail: string) {
+        this.context.commit("setUserEmail", newUserEmail);
+    }
+    
 
 
     @Mutation
