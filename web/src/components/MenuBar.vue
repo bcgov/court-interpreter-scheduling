@@ -2,7 +2,7 @@
 	<header v-if="dataReady" name="menu-bar" class="app-header" :key="update">
 		<b-navbar toggleable="lg" class="navbar navbar-expand-lg navbar-dark m-0 p-0" style="background-color: #38598a;">    
            
-			<b-navbar-nav v-if="userRole.includes('cis-admin')||userRole.includes('cis-user')" class="my-0 mx-5">
+			<b-navbar-nav v-if="userRole.includes('super-admin')||userRole.includes('cis-admin')||userRole.includes('cis-user')" class="my-0 mx-5">
                 <b-nav-item 
 					v-for="item,inx in bothGroup" 
 					:key="inx"
@@ -12,7 +12,7 @@
 					<div class="booking-tab">{{item.label}}</div>
 				</b-nav-item>
 				
-				<div v-if="userRole.includes('cis-admin')">
+				<div v-if="userRole.includes('super-admin')||userRole.includes('cis-admin')">
 					<b-dropdown :variant="adminTab?'cyan':'primary'">
 						<template #button-content >
 							<div style="display:inline; font-size:14pt;">

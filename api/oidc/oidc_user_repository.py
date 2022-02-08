@@ -72,9 +72,18 @@ def update_oidc_user_from_claims(oidc_user_query, claims, roles, db: Session):
         "display_name": claims.get('name'),
         "first_name": claims.get('given_name'),
         "last_name": claims.get('family_name'),
+        "is_staff": is_staff(claims.get('preferred_username'))
     })
     db.commit()
     return oidc_user_query.first()
+
+
+def is_staff(preferred_username):
+    
+    if(len(preferred_username)>5 and preferred_username[-5:]=='@idir'):
+        return True
+    else:
+        return False
 
 
 def get_or_create_user(username, claims, db: Session):
@@ -94,7 +103,7 @@ def get_or_create_user(username, claims, db: Session):
             first_name = claims.get("given_name") or "", 
             last_name = claims.get("family_name") or "",    
             email =  claims.get("email"),
-            is_staff =  False,   
+            is_staff =  is_staff(claims.get("preferred_username")),   
             date_joined = datetime.now(),            
             authorization_id = claims.get("sub"),
             display_name = claims.get("name") or claims.get("family_name") or "Not defined",

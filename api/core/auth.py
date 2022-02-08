@@ -25,7 +25,7 @@ def logged_in_user(request: Request, token: HTTPAuthorizationCredentials = Depen
 
 def admin_user(request: Request, db: Session= Depends(get_db_session), token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
     
-    require_roles = ['cis-admin']
+    require_roles = ['super-admin', 'cis-admin']
     user_info = verify_user(request, token)
     check_user_roles(require_roles, user_info, db)
 
@@ -45,7 +45,7 @@ def super_admin(request: Request, db: Session= Depends(get_db_session), token: H
 
 def user_in_role(request: Request, db: Session= Depends(get_db_session), token: HTTPAuthorizationCredentials = Depends(token_bearer_schema)):
     
-    require_roles = ['cis-admin', 'cis-user']
+    require_roles = ['super-admin', 'cis-admin', 'cis-user']
     user_info = verify_user(request, token)
     check_user_roles(require_roles, user_info, db)
 
