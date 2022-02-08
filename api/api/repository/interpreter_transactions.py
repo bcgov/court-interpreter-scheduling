@@ -13,6 +13,16 @@ from models.geo_status_model import GeoStatusModel
 from core.geo_coordinate_service import get_latitude_longitude_service
 
 
+def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session, google_map: bool):
+
+    geo_service = get_geo_service_name(google_map)
+
+    interpreter_query = db.query(InterpreterModel).filter(InterpreterModel.id==id)
+    interpreter = interpreter_query.first()
+    latitude, longitude = get_latitude_longitude_service(interpreter.address, "", interpreter.city, interpreter.postal_code, interpreter.province, google_map=google_map)
+    interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude, "geo_service":geo_service})
+    db.commit()
+
 
 def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
 

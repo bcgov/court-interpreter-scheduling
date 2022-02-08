@@ -22,6 +22,7 @@
 					<b-dropdown-item 
 						v-for="item,inx in adminGroup" 
 						:key="inx"
+						:disabled="!userRole.includes('super-admin') && item.super_admin"
 						@click="ChangeClass(item.name);adminTab = true;" 
 						:to="'/'+item.name"
 						:class="bgClass[item.name]" >
@@ -55,14 +56,14 @@
 		update=0;
 		
 		bothGroup=[
-			{name:'bookings', label:'Bookings'},
-			{name:'create', label:'Search Interpreters'},
+			{name:'bookings', label:'Bookings', super_admin:false},
+			{name:'create', label:'Search Interpreters', super_admin:false},
 		]
 		adminGroup=[
-			{name:'directory', label:'Interpreter Directory'},
-			{name:'language', label:'Language Directory'},
-			{name:'user-role', label:'Manage User'},
-			{name:'update-geo', label:'Update Coordinates'}
+			{name:'directory', label:'Interpreter Directory', super_admin:false},
+			{name:'language', label:'Language Directory', super_admin:false},
+			{name:'user-role', label:'Manage User', super_admin:false},
+			{name:'update-geo', label:'Update Coordinates', super_admin:true}
 		]
 
 		@Watch('$route', { immediate: true, deep: true })

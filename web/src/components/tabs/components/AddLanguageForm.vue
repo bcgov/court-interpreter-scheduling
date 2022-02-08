@@ -5,7 +5,7 @@
                 <b-tr>
                     <b-td>
                         <label class="h6 ml-2 m-0 p-0"> Language: </label>
-                        <b-form-group style="margin: 0.05rem 0 0 0.5rem;width: 20rem;"> 
+                        <b-form-group style="margin: 0.05rem 0 0 0.5rem;width: 18rem;"> 
                             <b-form-select
                                 tabindex="1"
                                 size = "sm"
@@ -23,7 +23,7 @@
                     </b-td>
                     <b-td>
                         <label class="h6 ml-2 m-0 p-0"> Level: </label>
-                        <b-form-group style="margin: 0.05rem 0 0 0.5rem;width: 3rem;"> 
+                        <b-form-group style="margin: 0.05rem 0 0 0.5rem;width: 5rem;"> 
                             <b-form-select
                                 tabindex="2"
                                 size = "sm"

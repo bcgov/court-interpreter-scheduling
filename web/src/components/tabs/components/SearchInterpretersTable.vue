@@ -46,11 +46,18 @@
                     </template>
 
                     <template v-slot:cell(fullAddress)="data">    
-                        <span 
+                        <div 
                             v-html="data.value" 
-                            style="display: block;">
+                            style="display:inline">
                             {{data.value}}
-                        </span>            
+                        </div>
+                        <a
+                            style="margin-left:0.5rem; display:inline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            :href="'https://www.google.com/maps/dir/?api=1&origin='+data.value+' '+data.item.postal+'&destination='+data.item.city+' BC courthouse'"                            
+                        >{{data.item.postal}} 
+                        </a>           
                     </template>
 
                     <template v-slot:cell(phone)="data" >    
@@ -74,23 +81,27 @@
                     <template v-slot:cell(new)="data" >
                         <b-badge 
                             v-if="!data.item.new"
-                            class="mt-0"
-                            pill
-                            variant="success"
+                            class="mt-0 text-success border py-2"                            
+                            variant="white"
                             style="float: left;"
                             >New
                         </b-badge>                                        
                     </template>                    
 
                     <template v-slot:cell(edit)="data" >
-                        
-                        <b-button style="font-size:12px" 
-                            size="sm" 
-                            :disabled="bookingDates.length==0"
-                            @click="bookInterpreter(data.item);" 
-                            class="text-primary bg-info border-info mt-0" 
-                            ><b>Book</b>
-                        </b-button>
+                        <div
+                            v-b-tooltip.hover.left.noninteractive.v-danger
+                            :title="bookingDates.length==0?'Please, first select the dates':''" 
+                        >
+                            <b-button style="font-size:12px" 
+                                size="sm" 
+                                :disabled="bookingDates.length==0"
+                                @click="bookInterpreter(data.item);" 
+                                
+                                class="text-primary bg-info border-info mt-0 px-3" 
+                                ><b>Book</b>
+                            </b-button>
+                        </div>
                         
                     </template>
 
@@ -107,7 +118,7 @@
                         
                     </template>
                     <template v-slot:row-details>
-                        <b-card bg-variant="primary" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
+                        <b-card bg-variant="inactive" class="mb-3" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
                             <interpreter-details :interpreterDirectory="false" :interpreterDetails="expandedInterpreter" />
                         </b-card>
                     </template>
@@ -391,7 +402,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import InterpreterDetails from "./InterpreterDetails.vue";
-import AddCourtSessionForm from "./AddCourtSessionForm.vue";
 
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
@@ -407,11 +417,8 @@ const commonState = namespace("Common");
 import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from './BookingEnums'
 
 @Component({
-    components:{
-       
+    components:{       
         InterpreterDetails,
-        AddCourtSessionForm
-
     }
 })
 export default class SearchInterpretersTable extends Vue {
@@ -476,14 +483,14 @@ export default class SearchInterpretersTable extends Vue {
 
    
     interpreterFields = [
-        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'fullAddress',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'}
+        {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'},
+        {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:20%'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:14%'},
+        {key:'fullAddress',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:21%'},
+        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:14%'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:16%'},
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'},
+        {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'}
     ]; 
 
     statusOptions

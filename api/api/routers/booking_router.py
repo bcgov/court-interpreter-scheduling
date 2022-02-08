@@ -3,11 +3,11 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from api.schemas import BookingRequestSchema, BookingResponsePageSchema, BookingSearchRequestSchema
-from models.booking_model import BookingModel
+from models.booking_model import BookingModel, BookingDatesModel
 from core.auth import admin_user, user_in_role
 from api.repository.booking_transactions import create_booking_in_db, update_booking_in_db
 from api.repository.search_booking_transactions import search_Booking
-
+from models.booking_enums import BookingStatusEnum
 
 router = APIRouter(
     prefix="/booking",
@@ -20,6 +20,16 @@ router = APIRouter(
 def search_Bookings(request: BookingSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
 
     return BookingResponsePageSchema(data = search_Booking(request, db), pagination = {"page":1, "limit":1000})
+
+
+@router.get('/interpreter/{id}', status_code=status.HTTP_200_OK)
+def get_All_Active_Bookings_For_Interpreter(id: int, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
+    
+    if id>0:
+        return db.query(BookingDatesModel).join(BookingModel).filter(BookingModel.status!=BookingStatusEnum.CANCELLED,BookingDatesModel.interpreter_id==id).all()
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking date does not exist.")
+
 
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=BookingResponsePageSchema)

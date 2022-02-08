@@ -35,6 +35,9 @@ def modify_user_role(user_role_ids: list(), user_id: int, db: Session, username)
             db.commit()
     
     for user_role_id in user_role_ids:  
+        role = db.query(RoleModel).filter(RoleModel.id==user_role_id).first()
+        if role.role_name == 'super-admin': continue
+
         if user_role_id not in privious_user_role_ids:
             user_role_relation = UserRoleModel(
                 user_id = user_id,

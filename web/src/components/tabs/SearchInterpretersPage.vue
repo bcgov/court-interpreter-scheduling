@@ -1,7 +1,7 @@
 <template>
     <b-card class="bg-white border-white">                
             
-        <loading-spinner color="#000" v-if="!dataLoaded" waitingText="Loading ..." />
+        <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
            
             <b-row>
@@ -74,8 +74,10 @@
                 </b-col>
                 <b-col cols="4">
                     <b-button
+                        name="search"
                         style="margin-top: 0rem; padding: 0.25rem 2rem; width: 100%;" 
                         :disabled="searching"
+                        v-on:keyup.enter="find()"
                         variant="primary"
                         @click="find()"
                         ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; height:2rem; transform:translate(0px,-24px);"/>
@@ -93,6 +95,7 @@
         </b-card>        
    
         <search-interpreters-table 
+            v-if="dataLoaded"
             :interpreters="interpreters" 
             :searching="searching" 
             :searchLocation="location"
@@ -103,12 +106,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import * as _ from 'underscore';
 import moment from 'moment-timezone'
 
 import Spinner from '@/components/utils/Spinner.vue'
-import AddCourtSessionForm from "./components/AddCourtSessionForm.vue";
 import SearchInterpretersTable from "./components/SearchInterpretersTable.vue";
 import DateCard from "./components/DateCard.vue"
 import BookingDatePicker from "./components/BookingDatePicker.vue"
@@ -119,7 +121,6 @@ import { interpreterInfoType } from '@/types/Interpreters/json';
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
 import { bookingDateInfoType } from '@/types/Bookings/json';
-import InterpreterDetails from './components/InterpreterDetails.vue';
 
 const commonState = namespace("Common");
 
@@ -127,7 +128,6 @@ const commonState = namespace("Common");
 
 @Component({
     components:{
-        // AddCourtSessionForm,
         SearchInterpretersTable,
         Spinner,
         DateCard,
@@ -146,8 +146,9 @@ export default class SearchInterpretersPage extends Vue {
     @commonState.State
     public userLocation!: locationsInfoType;
     
-    dataLoaded = false; 
+    dataReady = false; 
     searching = false;
+    dataLoaded = false
     
     location = {} as locationsInfoType;
     limitDistance = false;
@@ -165,11 +166,17 @@ export default class SearchInterpretersPage extends Vue {
     bookingDates: bookingDateInfoType[]=[];
     update = 0; 
 
+    @Watch('userLocation')
+    defaultLocationChanged(){
+        this.extractInfo();
+    }
+
     mounted() {  
-        
-        this.dataLoaded = false;   
+        this.dataLoaded = false;
+        this.dataReady = false;   
         this.locationState = true;
         this.extractInfo();  
+        this.focusSearchButton()
     }
 
     public extractInfo(){
@@ -177,15 +184,15 @@ export default class SearchInterpretersPage extends Vue {
         this.languageNames = this.languages.map( language => {return language.name});
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
 
-        this.dataLoaded = true;
+        this.dataReady = true;
     }
 
     public find(){
-        
+       
         this.locationState = this.location?.id?true:false;
 
         if (this.locationState){ 
-            
+             this.dataLoaded = true
             this.searching = true;
             this.interpreters = [];
 
@@ -223,7 +230,7 @@ export default class SearchInterpretersPage extends Vue {
             const province = interpreter.province?interpreter.province:'';
             const postalCode = interpreter.postal?interpreter.postal:'';
             interpreter.new = moment(interpreter.created_at).diff(currentTime, 'days') < -30; //new for less than 30 days
-            interpreter.fullAddress = address + ' ' + city + ' ' + province + ' ' + postalCode;
+            interpreter.fullAddress = address + ' ' + city + ' ' + province;
             interpreterInfo.push(interpreter);
         }
 
@@ -233,7 +240,16 @@ export default class SearchInterpretersPage extends Vue {
     }
 
     public searchAgain(){
-        this.interpreters =[] 
+        this.interpreters =[]
+        this.dataLoaded = false
+        this.focusSearchButton()        
+    }
+
+    public focusSearchButton(){
+        Vue.nextTick(()=>{
+            const el = document.getElementsByName("search")[0];
+            if(el) el.focus();
+        })        
     }
 
     public addBookingDates(bookingDates){
@@ -245,6 +261,7 @@ export default class SearchInterpretersPage extends Vue {
     public RemoveBookingDate(date){
         this.bookingDates = this.bookingDates.filter(booking => booking.date!=date)
         this.update++;
+        this.searchAgain()
     }
 
     public ChangeBookingDate(bookingDate){

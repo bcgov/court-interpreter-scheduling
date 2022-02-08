@@ -2,7 +2,7 @@
     <b-card class="bg-white border-white">
         <h1>Interpreter Directory</h1>            
             
-        <loading-spinner color="#000" v-if="!dataLoaded" waitingText="Loading ..." />
+        <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
             <b-row>
                 <b-col cols="4">
@@ -105,7 +105,8 @@
                 </b-col>
                 <b-col cols="4">
                      <b-button 
-                        
+                        name="search"
+                        @keyup.enter="find()"
                         style="margin: 2rem 6rem; padding: 0.25rem 2rem;" 
                         :disabled="searching"
                         variant="primary"
@@ -120,7 +121,7 @@
             </b-row>
         </b-card>
 
-        <b-row class="mb-2">
+        <b-row class="mb-2" v-if="dataReady">
 
             <b-col cols="10"></b-col>
             
@@ -134,21 +135,21 @@
                     <b-icon-plus scale="1.5" variant="success"/>
                 </b-button>
 
-                <b-button 
+                <!-- <b-button 
                     class="ml-2 bg-transparent border border-primary"
                     size="lg"
                     @click="downloadArchive"
                     v-b-tooltip.hover.noninteractive.v-primary
                     title="download archive">
                     <b-icon-download variant="primary"/>
-                </b-button>
+                </b-button> -->
             </b-col>
 
         </b-row>
 
         <loading-spinner color="#000" v-if="searching" waitingText="Loading Results ..." /> 
 
-        <div v-else> 
+        <div v-else-if="dataLoaded"> 
 
             <b-card no-body border-variant="white" bg-variant="white" v-if="!interpreters.length">
                 <span class="text-muted ml-4 mb-5">No records found.</span>
@@ -206,9 +207,8 @@
                     <template v-slot:cell(new)="data" >    
                         <b-badge 
                             v-if="!data.item.new"
-                            class="mt-0"
-                            pill
-                            variant="success"
+                            class="mt-0 text-success border py-2"                            
+                            variant="white"
                             style="float: left;"
                             >New
                         </b-badge>                                        
@@ -260,13 +260,13 @@
             </b-card>
         </div>
 
-        <b-modal size="xl" v-model="showInterpreterWindow" header-class="bg-primary text-white" :key="updatedInterpreterInfo">
+        <b-modal size="xl" v-model="showInterpreterWindow" header-class="bg-primary text-white" >
             <template v-slot:modal-title>
                 <h1 v-if="isCreate" class="my-2 ml-2">Add Interpreter</h1>
                 <h1 v-else class="my-2 ml-2">Update Interpreter Details</h1>
             </template>
 
-            <b-card v-if="interpreterDataReady" class="bg-white border-white text-dark"> 
+            <b-card v-if="interpreterDataReady" class="bg-white border-white text-dark" :key="updatedInterpreterInfo"> 
               
                 <b-card no-body class="border-white">
 
@@ -707,8 +707,9 @@ export default class DirectoryPage extends Vue {
     showConfirmDeleteInterpreter = false;
     interpreterStates = {} as interpreterStatesInfoType;    
     
-    dataLoaded = false;
+    dataReady = false;
     searching = false;
+    dataLoaded = false;
     
     name = '';
     keyword = '';
@@ -793,18 +794,21 @@ export default class DirectoryPage extends Vue {
     ]    
    
     mounted() {  
-        this.dataLoaded = false; 
+        this.dataLoaded = false;
+        this.dataReady = false; 
         this.searching = false;
         this.interpreterStates = {} as interpreterStatesInfoType;
-        this.extractInfo()       
+        this.extractInfo()
+        this.focusSearchButton()       
     }
 
     public extractInfo(){
         this.languageNames = this.languages.map( language => {return language.name});
-        this.dataLoaded = true;
+        this.find()
     }
 
     public find(){
+        this.dataLoaded = true;
         this.searching = true;
         this.interpreters = [];
 
@@ -821,13 +825,15 @@ export default class DirectoryPage extends Vue {
         this.$http.post('/interpreter/search', body)
         .then((response) => {            
             if(response?.data?.data){ 
-                console.log(response.data)
+                // console.log(response.data)
                 this.interpreters = _.sortBy(response.data.data,'lastName');
             }    
-                this.searching = false;            
+                this.searching = false; 
+                this.dataReady = true;           
             
         },(err) => {
-            this.searching = false;            
+            this.searching = false; 
+            this.dataReady = true;           
         });
         
     }
@@ -873,8 +879,10 @@ export default class DirectoryPage extends Vue {
     public saveNewInterpreter(){
         if (this.checkInterpreterStates()){ 
 
-            const crcDate = new Date(this.interpreter.criminalRecordCheckDate);           
-            this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+            if(this.interpreter.criminalRecordCheckDate){
+                const crcDate = new Date(this.interpreter.criminalRecordCheckDate);           
+                this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+            }
 
             this.$http.post('/interpreter', this.interpreter)
             .then((response) => {            
@@ -906,11 +914,8 @@ export default class DirectoryPage extends Vue {
                 
             },(err) => {
                             
-            });            
-
+            });
         }
-        
-        
     }
 
     public checkInterpreterStates(){
@@ -1017,7 +1022,16 @@ export default class DirectoryPage extends Vue {
     }
 
     public searchAgain(){
-        this.interpreters =[] 
+        this.interpreters =[]
+        this.dataLoaded = false;
+        this.focusSearchButton();
+    }
+
+    public focusSearchButton(){
+        Vue.nextTick(()=>{
+            const el = document.getElementsByName("search")[0];
+            if(el) el.focus();
+        })        
     }
 }
 </script>

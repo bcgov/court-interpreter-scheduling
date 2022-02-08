@@ -11,6 +11,7 @@ export interface bookingStatesInfoType {
     prosecutor: null | boolean;
     reason: null | boolean;
     methodOfAppearance: null | boolean;
+    dates: null | boolean;
 }
 
 

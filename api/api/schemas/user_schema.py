@@ -21,7 +21,7 @@ class UserSchema(BaseModel):
     
 class UserSchemaRequest(BaseModel):
    
-    locationId: Optional[int]   
+    locationId: Optional[int] = None  
 
 class UserAllSchema(BaseModel):
     id: int

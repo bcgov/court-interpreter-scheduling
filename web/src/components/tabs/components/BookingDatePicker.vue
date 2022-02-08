@@ -26,7 +26,7 @@
                                 :events="arrayEvents"
                                 color="warning"
                                 show-adjacent-months
-                                
+                                :allowed-dates="allowedDates"
                                 multiple
                                 header-color="red"
                             ></v-date-picker>                            
@@ -69,7 +69,7 @@
             </div>
             <b-row class="mt-0">
                 <b-col>
-                    <b-button @click="onShow=false" class="border" variant="white">Cancel</b-button>
+                    <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
                 </b-col>
                 <b-col>
                     <b-button @click="AddDates" class="px-4" variant="success" style="float:right">Add</b-button>
@@ -92,6 +92,9 @@ export default class BookingDatePicker extends Vue {
     @Prop({required: true})
     bookingDates!: bookingDateInfoType[];
 
+    @Prop({required: false})
+    blockedDates!: string[];
+
     onShow= false
     dates = []
     arrayEvents = []
@@ -108,6 +111,13 @@ export default class BookingDatePicker extends Vue {
 
     mounted(){
         this.clearDates()
+    }
+
+    public allowedDates(date){
+        if(this.blockedDates?.length>0)
+            return !this.blockedDates.includes(date)
+        else
+            return true
     }
 
 
@@ -163,6 +173,13 @@ export default class BookingDatePicker extends Vue {
         
         this.$emit('datesAdded',newBookingDates)
         this.onShow= false
+    }
+
+    public focusSearchButton(){
+        Vue.nextTick(()=>{
+            const el = document.getElementsByName("search")[0];
+            if(el) el.focus();
+        })        
     }
 }
 </script>

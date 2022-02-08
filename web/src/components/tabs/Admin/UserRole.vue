@@ -1,10 +1,10 @@
 <template>
     <b-card bg-variant="white" border-variant="white">
-        <b-overlay :show="dismissCountDown != 0" style="width:20rem; margin:0 auto;"> 
+        <b-overlay :show="dismissCountDown>0" style="width:20rem; margin:0 auto;"> 
             <div style="width:20rem; font-size:24pt; font-weight:600; margin:0 auto;" class="text-center">User Roles</div>
             <template v-slot:overlay>               
-                <b-alert style="margin: auto 0; width:20rem" :variant="alertType" :show="dismissCountDown !=0"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
-                    <b v-if="alertType=='success'" class="pl-4 ml-5"> Role Saved <b-icon-check-square-fill class="ml-2"/> </b>
+                <b-alert style="margin: auto 0; width:20rem" :variant="alertType" :show="dismissCountDown"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
+                    <b v-if="alertType=='success'" class="pl-4 ml-5">{{dismissCountDown}} Role Saved <b-icon-check-square-fill class="ml-2"/> </b>
                     <b v-else class="pl-5 ml-5"> Error <b-icon-exclamation-circle-fill class="ml-2"/> </b>
                 </b-alert>            
             </template> 

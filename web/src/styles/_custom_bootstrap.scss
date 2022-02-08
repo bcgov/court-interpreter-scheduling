@@ -50,6 +50,7 @@ $select:  #e6d9e2 !default;
 $inactive:  #cccccc !default;
 
 
+
 $colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
 $colors: map-merge(
@@ -98,7 +99,8 @@ $theme-colors: map-merge(
     "inactive":   $inactive,
     "escort":     $escort,
     "other":      $other,
-    "select":     $select
+    "select":     $select,
+    "orange":     $orange
   ),
   $theme-colors
 );

@@ -3,7 +3,7 @@ from fastapi import HTTPException, APIRouter, status
 from api.schemas import BookingRequestSchema
 from models.booking_model import BookingModel, BookingDatesModel
 from models.user_model import UserModel
-
+from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
 
 def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
@@ -43,15 +43,38 @@ def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, use
     if not booking:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking does not exist.")
 
+    check_conflict_dates(db, booking, booking_request, booking_dates)
+
     booking_query.update(booking_request)    
     db.commit()
-    print(booking)
-    print(booking.interpreter_id)
+    # print(booking)
+    # print(booking.interpreter_id)
 
     add_dates(booking_dates, db, id, booking.interpreter_id)
 
     return booking.id
 
+
+def check_conflict_dates(db:Session , booking, booking_request, booking_dates):
+       
+    other_bookinag_date_query = db.query(BookingDatesModel).join(BookingModel).filter(
+        BookingModel.status!=BookingStatusEnum.CANCELLED, 
+        BookingDatesModel.interpreter_id==booking.interpreter_id,
+        BookingDatesModel.booking_id!=booking.id).all()
+    current_interpreter_scheduel_date = [date.date for date in other_bookinag_date_query]
+    current_interpreter_scheduel_period = [date.period for date in other_bookinag_date_query]
+    
+    for booking_date in booking_dates:
+        
+        if booking_date['date'] in current_interpreter_scheduel_date:
+            inx = current_interpreter_scheduel_date.index(booking_date['date'])
+            current_scheduel_period = current_interpreter_scheduel_period[inx]  
+            if ( 
+                booking_date['period'] == current_scheduel_period or
+                booking_date['period'] == BookingPeriodEnum.WHOLE_DAY or
+                current_scheduel_period== BookingPeriodEnum.WHOLE_DAY                
+            ):               
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Booking date '{booking_date['date'].strftime('%b %d %Y')}' conflicts with the current interpreter schedule.")
 
 
 def add_update_by(booking_request, db: Session, username):
@@ -76,7 +99,7 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
             req_booking_date =[booking_date for booking_date in booking_dates if (('id' in booking_date) and (booking_date['id']==existing_date.id))]
             db_booking_date = db.query(BookingDatesModel).filter(BookingDatesModel.id==existing_date.id)
             
-            print(req_booking_date)
+            # print(req_booking_date)
             if len(req_booking_date)>0:
                 #modify
                 db_booking_date.update(req_booking_date[0])
@@ -86,7 +109,7 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
                 db_booking_date.delete(synchronize_session=False)
         db.commit()    
 
-    print(booking_dates)
+    # print(booking_dates)
 
     for booking_date in booking_dates:
 

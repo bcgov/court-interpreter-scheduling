@@ -127,3 +127,26 @@ class InterpreterBookingResponseSchema(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+
+
+
+class InterpreterGeoStatusSchema(BaseModel):
+    id: int
+    update_started = False
+    last_name: Optional[str] = Field(alias="lastName")
+    first_name: Optional[str] = Field(alias="firstName")
+
+    address: Optional[str]
+    city: Optional[str]
+    province: Optional[str] = "BC"
+    postal_code: Optional[str] = Field(alias="postal")
+
+    updated_at: Optional[datetime]
+    contract_valid: Optional[bool] = Field(None, alias="contractExtension")
+    geo_service: Optional[str]
+
+
+
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True

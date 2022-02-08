@@ -1,18 +1,23 @@
 <template>
     <b-card class="bg-white border-white">                
             
-        <loading-spinner color="#000" v-if="!dataLoaded" waitingText="Loading ..." />
+        <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
            
             <b-row>
                 <b-col cols="4">
-                    <b-form-group                        
+                    <b-form-group 
+                        class="labels"              
                         label="Court Location" 
                         label-for="location">
                         <b-form-select 
-                            id="location"                            
+                            id="location" 
+                            @change="searchAgain"                           
                             style="display:inline"                            
-                            v-model="location"> 
+                            v-model="location">
+                            <b-form-select-option :value="alllocations">
+                                --- All Locations ---
+                            </b-form-select-option> 
                             <b-form-select-option
                                 v-for="courtLocation in courtLocations" 
                                 :key="courtLocation.id"
@@ -30,7 +35,8 @@
                         label-for="interpreter">
                         <b-form-input
                             class="input-line"
-                            id="interpreter"                                         
+                            id="interpreter"
+                            @change="searchAgain"                                         
                             v-model="interpreterName">
                         </b-form-input>
                     </b-form-group>
@@ -45,7 +51,8 @@
                         label-for="file-number">
                         <b-form-input                             
                             class="input-line"
-                            id="file-number"                                         
+                            id="file-number"
+                            @change="searchAgain"                                         
                             v-model="courtFileNumber">
                         </b-form-input>
                     </b-form-group>                    
@@ -55,34 +62,27 @@
             </b-row>
 
             <b-row>
-                <b-col cols="4">
-                    <b-form-group                        
-                        label="Date Range" 
-                        label-for="sessionDates">
-                        <b-form-datepicker                            
-                            id="sessionDates"
-                            v-model="dates"                                                                                           
-                            :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
-                            locale="en-US">
-                        </b-form-datepicker>                        
-                    </b-form-group>
+                <b-col cols="4 mt-2">
+                    <booking-date-range-picker :key="update" :bookingRange="dates" @datesAdded="addBookingDates"/>
                 </b-col>
                 <b-col cols="4">
                 </b-col>
                 <b-col cols="4">
                     <b-button
-                        style="margin-top: 2rem; padding: 0.25rem 2rem; width: 100%;" 
+                        name="search"
+                        @keyup.enter="find()"
+                        style="margin-top: 0.6rem; padding: 0.25rem 2rem; width: 100%;" 
                         :disabled="searching"
                         variant="primary"
                         @click="find()"
-                        ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; transform:translate(0px,0px);"/>
+                        ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; height:2rem; transform:translate(0px,-25px);"/>
                         <span style="font-size: 20px;" v-else>Search</span>
                     </b-button>
                 </b-col>                
             </b-row>
         </b-card>
         
-        <booking-table :bookings="bookings" @find="find" :searching="searching" />
+        <booking-table v-if="dataLoaded" :bookings="bookings" @find="find" :searching="searching" />
     
     </b-card>
 </template>
@@ -90,7 +90,7 @@
 <script lang="ts">
 
 
-import { Component, Vue} from 'vue-property-decorator';
+import { Component, Vue, Watch} from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";
@@ -98,7 +98,6 @@ import "@/store/modules/common";
 const commonState = namespace("Common");
 
 import InterpreterDetails from "./components/InterpreterDetails.vue";
-import AddCourtSessionForm from "./components/AddCourtSessionForm.vue";
 import BookingTable from './components/BookingTable.vue'
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
@@ -107,13 +106,14 @@ import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingSearchInfoType, dateRangeInfoType } from '@/types/Bookings/json';
 import Spinner from '@/components/utils/Spinner.vue'
 
+import BookingDateRangePicker from './components/BookingDateRangePicker.vue'
 
 @Component({
     components:{
         InterpreterDetails,
-        AddCourtSessionForm,
         BookingTable,
-        Spinner
+        Spinner,
+        BookingDateRangePicker
     }
 })
 export default class BookingsPage extends Vue {
@@ -133,14 +133,29 @@ export default class BookingsPage extends Vue {
     @commonState.Action
     public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void    
 
-    updated = 0;
+    update = 0;
     
     dataLoaded = false; 
     searching = false;
+    dataReady = false;
     
     location = {} as locationsInfoType;
+
+    alllocations: locationsInfoType= {
+        id:null, 
+        addressLine1: null,
+        addressLine2:null,
+        city:null,
+        createdAt:"",
+        latitude: null,
+        locationCode: "",
+        longitude: null,
+        name: '',
+        postalCode: null,
+        shortDescription: '',
+        updatedAt: ''}
     
-    dates: dateRangeInfoType[] = [];
+    dates: dateRangeInfoType = {startDate:null, endDate:null};
     
     courtFileNumber = '';    
     interpreterName = '';
@@ -148,10 +163,15 @@ export default class BookingsPage extends Vue {
     interpreter = {} as interpreterInfoType;
     bookings: bookingSearchInfoType[] = [];  
     
+    @Watch('userLocation')
+    defaultLocationChanged(){
+        this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+    }
    
     mounted() {  
-        this.dataLoaded = false;
-        this.extractInfo(); 
+        this.dataReady = false;
+        this.extractInfo();
+        this.focusSearchButton()
     }
 
     public extractInfo(){      
@@ -159,16 +179,15 @@ export default class BookingsPage extends Vue {
     }
 
     public find(){
-        
+        this.dataLoaded = true;
         this.searching = true;
         this.bookings = [];
 
         const body = {
             "file":this.courtFileNumber?this.courtFileNumber:'',
             "interpreter":this.interpreterName?this.interpreterName:'',  
-            "dates": [],                           
-            // "dates":this.dates,
-            "location":this.location?this.location:null                
+            "dates": [this.dates],                           
+            "locationId":this.location.id?this.location.id:null                
         }
 
         this.$http.post('/booking/search', body)
@@ -206,14 +225,34 @@ export default class BookingsPage extends Vue {
                 this.UpdateLanguages(languages);                
             }
             this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
-            this.dataLoaded = true;
+            this.dataReady = true;
+            this.find()
         },(err) => {
-            this.dataLoaded = true;            
+            this.dataReady = true;            
         });
     }
 
     get sortedCourtLocations(){
         return _.sortBy(this.courtLocations,'name')
+    }
+
+    public addBookingDates(dateRange){
+        this.dates = dateRange
+        this.update++;          
+        this.searchAgain()
+    }
+
+    public searchAgain(){
+        this.bookings = [];
+        this.dataLoaded = false;
+        this.focusSearchButton()
+    }
+
+    public focusSearchButton(){
+        Vue.nextTick(()=>{
+            const el = document.getElementsByName("search")[0];
+            if(el) el.focus();
+        })        
     }
 
 }
@@ -226,7 +265,7 @@ export default class BookingsPage extends Vue {
     }
 
     .input-line {
-        font-size: 12px; font-weight:600;
+        font-size: 16px; font-weight:300;
     }
 
 </style>

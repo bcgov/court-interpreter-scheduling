@@ -45,31 +45,24 @@
                                     </b-dropdown>
                                 </b-col>
                                 <b-col>
-                                    <!-- <b-form-select
+                                    <b-form-select
                                         v-model="userCourtLocation"                                        
                                         @change="ChangeUserLocation()" 
-                                        value-field="id"
-                                        text-field="name">
+                                        >
                                         <b-form-select-option value=null>
-                                            Select a Location
+                                            --- Remove Location ---
                                         </b-form-select-option>
                                         <b-form-select-option
                                             v-for="location in sortedCourtLocations" 
                                             :key="location.id"
-                                            :value="location.name">
+                                            :value="location.id">
                                                 {{location.name}}
                                         </b-form-select-option>
 
-                                    ></b-form-select> -->
-                                    <b-form-select
-                                        v-model="userCourtLocation"
-                                        :options="sortedCourtLocations"
-                                        @change="ChangeUserLocation()" 
-                                        value-field="id"
-                                        text-field="name"
-                                    ></b-form-select>  
+                                    ></b-form-select>
+                                    
                                 </b-col>                                
-                                <b-alert :variant="alertType" :show="dismissCountDown"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
+                                <b-alert style="margin-top:0.8rem" :variant="alertType" :show="dismissCountDown"  @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged">
                                     <b v-if="alertType=='success'">Saved <b-icon-check-square-fill/> </b>
                                     <b v-else>Error <b-icon-exclamation-circle-fill/> </b>
                                 </b-alert>
@@ -140,20 +133,27 @@ export default class NavigationTopbar extends Vue {
     }
 
     public ChangeUserLocation(){
-        const data = {
-            "locationId": this.userCourtLocation
-        }
-        this.$http.put('/user-info/save-location', data).then(res=>{
-            // console.log(res)
-            this.alertType="success"
-            this.dismissCountDown = 1;
-            const newUserCourtLocation = (this.courtLocations.filter(loc=>{return loc.id == this.userCourtLocation}))
-            if(newUserCourtLocation.length==1)
-                this.UpdateUserLocation(newUserCourtLocation[0])
-        },error => {
-            this.alertType="danger"
-            this.dismissCountDown = 1;
-            this.userCourtLocation = this.userLocation?.id
+        Vue.nextTick(()=>{
+            let data = {
+                "locationId": this.userCourtLocation
+            }
+
+            if(!data.locationId || (String(data.locationId)=='null') )
+                data = {} as {"locationId": number}
+
+
+            this.$http.put('/user-info/save-location', data).then(res=>{
+                // console.log(res)
+                this.alertType="success"
+                this.dismissCountDown = 1;
+                const newUserCourtLocation = (this.courtLocations.filter(loc=>{return loc.id == this.userCourtLocation}))
+                if(newUserCourtLocation.length==1)
+                    this.UpdateUserLocation(newUserCourtLocation[0])
+            },error => {
+                this.alertType="danger"
+                this.dismissCountDown = 1;
+                this.userCourtLocation = this.userLocation?.id
+            })
         })
     }
 

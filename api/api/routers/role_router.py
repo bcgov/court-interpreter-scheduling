@@ -20,7 +20,7 @@ router = APIRouter(
 @router.get('/all', status_code=status.HTTP_200_OK, response_model=List[RoleSchema])
 def get_All_Roles(db: Session= Depends(get_db_session), user = Depends(admin_user)):
 
-    role = db.query(RoleModel).all()
+    role = db.query(RoleModel).filter(RoleModel.role_name!='super-admin').all()
     return role
 
 
@@ -41,7 +41,9 @@ def create_Role(request: RoleSchemaRequest, db: Session= Depends(get_db_session)
 @router.delete('/{id}', status_code=status.HTTP_202_ACCEPTED)
 def delete_Role_By_Id(id: int, db: Session= Depends(get_db_session), user = Depends(admin_user)):
     
-    role = db.query(RoleModel).filter(RoleModel.id==id)    
+    role = db.query(RoleModel).filter(RoleModel.id==id)
+    if role.first().role_name == 'super_user': 
+        raise HTTPException(status_code=status.HTTP_423_LOCKED, detail=f"Forbidden.")   
     role.delete(synchronize_session=False)
     db.commit()      
     return 'Role deleted.'
@@ -56,6 +58,10 @@ def assign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(get
 @router.delete('/unassign', status_code=status.HTTP_202_ACCEPTED)
 def unassign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(get_db_session), user = Depends(admin_user)):
     
+    role = db.query(RoleModel).filter(RoleModel.id==request.role_id)
+    if role.first().role_name == 'super_user': 
+        raise HTTPException(status_code=status.HTTP_423_LOCKED, detail=f"Forbidden.") 
+
     user_role = db.query(UserRoleModel).where(
         UserRoleModel.user_id==request.user_id, 
         UserRoleModel.role_id==request.role_id

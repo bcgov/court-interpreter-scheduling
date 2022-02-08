@@ -69,11 +69,15 @@ def apply_interpreter(bookings, name, db):
 
 def apply_dates(bookings, booking_ranges):
     
-    if not booking_ranges or len(booking_ranges)==0:
+    if (not booking_ranges or 
+        len(booking_ranges)==0 or
+        not booking_ranges[0].startDate or
+        not booking_ranges[0].endDate
+    ):
         return bookings
 
-    start_date = datetime.strptime(booking_ranges[0].startDate,"%Y-%m-%d")
-    end_date = datetime.strptime(booking_ranges[0].endDate,"%Y-%m-%d")
+    start_date = booking_ranges[0].startDate
+    end_date = booking_ranges[0].endDate
 
     return bookings.where(BookingDatesModel.date >= start_date, BookingDatesModel.date <= end_date)
     

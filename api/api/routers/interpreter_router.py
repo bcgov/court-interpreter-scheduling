@@ -8,7 +8,7 @@ from api.repository.search_interpreter_transactions import search_Interpreter
 from models.interpreter_model import InterpreterModel
 from core.auth import admin_user, user_in_role
 
-from api.repository.interpreter_transactions import update_interpreter_geo_coordinates_in_db, create_interpreter_in_db, modify_interpreter_in_db
+from api.repository.interpreter_transactions import create_interpreter_in_db, modify_interpreter_in_db
 from api.repository.user_transactions import get_update_by
 
 
@@ -23,14 +23,6 @@ router = APIRouter(
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
 
     return InterpreterResponseSchema(data = search_Interpreter(request, db), pagination = {"page":1, "limit":1000})
-
-
-@router.get('/update-geo-coordinates')
-def update_geo_coordinates_of_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(admin_user)):
-    google_map=False
-    update_interpreter_geo_coordinates_in_db(db, google_map)
-    # Thread(target=update_interpreter_geo_coordinates_in_db, args=(db,google_map,)).start()
-    return "Update has been performed."
 
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=InterpreterResponseSchema)
