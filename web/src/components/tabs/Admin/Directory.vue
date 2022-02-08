@@ -434,6 +434,7 @@
                                 v-model="interpreter.postal">
                             </b-form-input>
                         </b-form-group>
+                        <div v-if="interpreterStates.postal==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Postal Code <i class="text-secondary">(Accepts: A1A 1A1)</i> </div>
                     </b-col> 
                     <b-col cols="4">
                         <b-form-group
@@ -458,10 +459,12 @@
                             label-for="phone">
                             <b-form-input 
                                 class="input-line"
-                                id="phone"                                        
+                                id="phone"
+                                :state="interpreterStates.phone"                                        
                                 v-model="interpreter.phone">
                             </b-form-input>
                         </b-form-group>
+                        <div v-if="interpreterStates.phone==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Phone Format <i class="text-secondary">(Accepts: 123-456-7890)</i> </div>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -470,10 +473,12 @@
                             label-for="home-phone">
                             <b-form-input 
                                 class="input-line"
-                                id="home-phone"                                                  
+                                id="home-phone"
+                                :state="interpreterStates.homePhone"                                                 
                                 v-model="interpreter.homePhone">
                             </b-form-input>
                         </b-form-group>
+                        <div v-if="interpreterStates.homePhone==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Phone Format <i class="text-secondary">(Accepts: 123-456-7890)</i> </div>
                     </b-col> 
                     <b-col cols="4">
                         <b-form-group
@@ -482,10 +487,12 @@
                             label-for="business-phone">
                             <b-form-input 
                                 class="input-line"
-                                id="business-phone"                              
+                                id="business-phone"
+                                :state="interpreterStates.businessPhone"                            
                                 v-model="interpreter.businessPhone">
                             </b-form-input>
                         </b-form-group>
+                        <div v-if="interpreterStates.businessPhone==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Phone Format <i class="text-secondary">(Accepts: 123-456-7890)</i> </div>
                     </b-col>          
                 </b-row>
                 <b-row class="ml-1">
@@ -496,10 +503,12 @@
                             label-for="email">
                             <b-form-input 
                                 class="input-line"
-                                id="email"                                        
+                                id="email"
+                                :state="interpreterStates.email"
                                 v-model="interpreter.email">
                             </b-form-input>
                         </b-form-group>
+                        <div v-if="interpreterStates.email==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Email</div>         
                     </b-col>                     
                 </b-row>
 
@@ -839,7 +848,7 @@ export default class DirectoryPage extends Vue {
     }
 
     public editInterpreter(interpreterToEdit: interpreterInfoType){              
-        this.interpreter = interpreterToEdit;
+        this.interpreter = JSON.parse(JSON.stringify(interpreterToEdit));
         this.isCreate = false;
         this.showInterpreterWindow = true;
         this.interpreterDataReady = true;        
@@ -909,7 +918,7 @@ export default class DirectoryPage extends Vue {
             .then((response) => {            
                 if(response?.data){
                     this.closeInterpreterWindow();
-                    // this.find();                
+                    this.find();                
                 }
                 
             },(err) => {
@@ -928,8 +937,13 @@ export default class DirectoryPage extends Vue {
       
         this.interpreterStates.city = !(this.interpreter.city)? false : null;
         this.interpreterStates.province = !(this.interpreter.province)? false : null;
-        this.interpreterStates.postal = !(this.interpreter.postal)? false : null;
-      
+        this.interpreterStates.postal = !(this.checkPostCodeFormat(this.interpreter.postal, this.interpreter.province))? false : null;
+        
+        this.interpreterStates.email = this.checkEmailFormat(this.interpreter.email)
+        this.interpreterStates.phone = this.checkPhoneFormat(this.interpreter.phone)
+        this.interpreterStates.homePhone = this.checkPhoneFormat(this.interpreter.homePhone)
+        this.interpreterStates.businessPhone = this.checkPhoneFormat(this.interpreter.businessPhone)
+
         this.updatedInterpreterInfo ++;
 
         for(const field of Object.keys(this.interpreterStates)){
@@ -938,6 +952,43 @@ export default class DirectoryPage extends Vue {
         }
 
         return stateCheck;            
+    }
+
+    public checkPostCodeFormat(postcode, province){
+        if(province =='WA' && postcode){ 
+            const postcodeFormat = /(^[0-9]{5}?$)|(^[0-9]{5}\-[0-9]{4}?$)/;                                
+            if(!postcodeFormat.test(postcode)) return false
+            return true
+        }
+        else if(postcode){
+            const postcodeFormat = /^[a-zA-Z][0-9][a-zA-Z] [0-9][a-zA-Z][0-9]?$/;                              
+            if(!postcodeFormat.test(postcode)) return false
+            if(postcode?.substring(0,3) == 'A1A' && province != 'NL') return false
+            if(postcode.length != 7 ) return false 
+            return true
+        }
+        return false
+    }
+
+    public checkEmailFormat(email){
+        
+        const emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;               
+        if(email){     
+            if(!emailFormat.test(email)) return false
+            return null
+        }
+        return null
+    }
+
+    public checkPhoneFormat(phone){
+       
+        const phoneFormat = /^[0-9]{3}[\-\.\ ][0-9]{3}[\-\.\ ][0-9]{4}?$/;
+        
+        if(phone){                
+            if(!phoneFormat.test(phone)) return false
+            return null
+        }
+        return null           
     }
 
     public addNewLanguage(){

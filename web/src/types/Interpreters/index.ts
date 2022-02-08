@@ -6,6 +6,11 @@ export interface interpreterStatesInfoType {
     city: null | boolean;
     province: null | boolean;
     postal: null | boolean;
+
+    email: null | boolean;
+    phone: null | boolean;
+    homePhone: null | boolean;
+    businessPhone: null | boolean;
 }
 
 
