@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from typing import List
 
 class RoleSchema(BaseModel):
     
@@ -19,6 +20,8 @@ class RoleSchemaRequest(BaseModel):
 class UserRoleSchemaRequest(BaseModel):
    
     user_id: int
-    role_id: int    
+    roles: List[int]    
     
-    
+
+class RoleRequestAccessSchema(BaseModel):   
+    message: str

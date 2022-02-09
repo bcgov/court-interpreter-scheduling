@@ -1,92 +1,73 @@
 {
-  "name": "bc-courts-interpreter-scheduler",
+  "name": "web",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@babel/runtime": "^7.11.2",
-    "@bcgov/bc-sans": "^1.0.1",
-    "@date-io/date-fns": "^1.3.13",
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "@material-ui/pickers": "^3.2.10",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/lodash": "^4.14.165",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dates": "^21.8.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.1.5",
-    "@types/react-virtualized-auto-sizer": "1.0.0",
-    "@types/react-window": "1.8.3",
-    "@types/store": "^2.0.2",
-    "@types/yup": "^0.29.7",
-    "axios": "^0.21.1",
-    "axios-auth-refresh": "^3.2.1",
-    "axios-hooks": "^2.3.0",
-    "date-fns": "^2.19.0",
-    "faker": "^5.1.0",
-    "formik": "^2.1.5",
-    "lodash": "^4.17.20",
-    "material-table": "^1.69.0",
-    "moment": "^2.29.0",
-    "moment-range": "^4.0.2",
-    "query-string": "^6.13.4",
-    "react": "^16.13.1",
-    "react-dates": "^21.8.0",
-    "react-dom": "^16.13.1",
-    "react-dropzone": "^11.2.0",
-    "react-error-boundary": "^2.2.1",
-    "react-nice-dates": "^3.0.7",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.4",
-    "react-virtualized-auto-sizer": "1.0.5",
-    "react-window": "1.8.6",
-    "react-with-direction": "^1.3.1",
-    "serve": "^11.3.2",
-    "store": "^2.0.12",
-    "typescript": "^3.8.3",
-    "yup": "^0.29.3"
-  },
   "scripts": {
-    "start": "PORT=8081 react-scripts start",
-    "start-dev": "PORT=8081 PUBLIC_URL=court-interpreter-scheduling react-scripts start",
-    "build": "react-scripts build",
-    "build-prod": "react-scripts --max_old_space_size=4096 build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "precommit": "react-scripts precommit"
+    "preinstall": "npx npm-force-resolutions",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "cypress:open": "cd tests && cypress open"
   },
-  "eslintConfig": {
-    "extends": "react-app",
-    "settings": {
-      "import/resolver": {
-        "node": {
-          "moduleDirectory": [
-            "node_modules",
-            "src/"
-          ]
-        }
-      }
-    }
+  "resolutions": {
+    "normalize-url": "^4.5.1",
+    "css-what": "^5.0.1",
+    "trim-newlines": "^3.0.1",
+    "glob-parent": ">=5.1.2"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@bcgov/bootstrap-theme": "https://github.com/bcgov/bootstrap-theme/releases/download/v1.1.3/bcgov-bootstrap-theme-1.1.3.tgz",
+    "@mdi/font": "^6.5.95",
+    "@types/underscore": "^1.10.0",
+    "ace-builds": "^1.4.8",
+    "axios": "^0.21.4",
+    "axios-auth-refresh": "^3.2.1",
+    "bootstrap": "^4.4.1",
+    "bootstrap-vue": "^2.15.0",
+    "core-js": "^3.6.4",
+    "jquery": "^3.6.0",
+    "moment-timezone": "^0.5.32",
+    "node-sass": "^6.0.1",
+    "popper.js": "^1.16.1",
+    "save": "^2.4.0",
+    "showdown": "~1.9.1",
+    "ts-loader": "^6.2.1",
+    "underscore": "^1.10.2",
+    "vue": "^2.6.10",
+    "vue-axios": "^2.1.5",
+    "vue-class-component": "6.3.2",
+    "vue-cookies": "^1.7.4",
+    "vue-fontawesome": "0.0.2",
+    "vue-fontawesome-icon": "^1.3.0",
+    "vue-property-decorator": "^9.0.0",
+    "vue-resource": "^1.5.1",
+    "vue-router": "^3.1.5",
+    "vuetify": "^2.6.3",
+    "vuex": "^3.3.0",
+    "vuex-class": "^0.3.2",
+    "vuex-module-decorators": "^0.17.0",
+    "yorkie": "^2.0.0"
   },
   "devDependencies": {
-    "@types/faker": "^5.1.2"
-  },
-  "proxy": "http://localhost:8080"
+    "@cypress/skip-test": "^2.6.0",
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "@vue/cli-plugin-babel": "^4.5.14",
+    "@vue/cli-plugin-eslint": "^4.5.14",
+    "@vue/cli-plugin-router": "^4.5.14",
+    "@vue/cli-plugin-typescript": "^4.5.14",
+    "@vue/cli-plugin-vuex": "^4.5.14",
+    "@vue/cli-service": "^4.5.14",
+    "@vue/eslint-config-typescript": "^5.0.2",
+    "deepmerge": "^4.2.2",
+    "eslint": "^8.1.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "raw-loader": "^4.0.2",
+    "sass": "^1.32.13",
+    "sass-loader": "^8.0.2",
+    "typescript": "4.3.5",
+    "vue-cli-plugin-vuetify": "~2.0.5",
+    "vue-template-compiler": "^2.6.11"
+  }
 }

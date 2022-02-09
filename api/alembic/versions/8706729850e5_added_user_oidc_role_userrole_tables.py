@@ -71,7 +71,7 @@ def upgrade():
     # ### end Alembic commands ###
 
     # data seed 
-    op.bulk_insert(role_table, [{'role_name':'cis-admin','updated_by':'System'}, {'role_name':'cis-user','updated_by':'System'}])
+    op.bulk_insert(role_table, [{'role_name':'super-admin','updated_by':'System'}, {'role_name':'cis-admin','updated_by':'System'}, {'role_name':'cis-user','updated_by':'System'}])
 
 
 def downgrade():

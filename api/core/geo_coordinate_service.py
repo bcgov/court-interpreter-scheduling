@@ -1,6 +1,6 @@
 import requests
 import re
-
+from fastapi import status, HTTPException
 from core.config import settings
 
 def get_geo(address, google_map):
@@ -101,7 +101,11 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     # address_line
 
     address = f"{address_line}, {city}, {postal_code}, {province}, {country}"
-    found_locations = get_geo(address, google_map)   
+    found_locations = get_geo(address, google_map) 
+
+    if google_map==True and found_locations['status'] == 'REQUEST_DENIED':
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Please review the google map subscription.")
+
     
     if len(found_locations)==0:
         address = f"{address_line}, {city}, {province}, {country}"
