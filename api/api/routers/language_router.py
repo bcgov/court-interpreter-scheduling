@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from api.schemas import LanguageSchema, LanguageSchemaRequest
 from models.language_model import LanguageModel
 from core.auth import admin_user, user_in_role
-from api.repository.language_transactions import create_language_in_db
+from api.repository.language_transactions import create_language_in_db, modify_language_in_db
 
 router = APIRouter(
     prefix="/language",
@@ -42,6 +42,10 @@ def create_Language(request: LanguageSchemaRequest, db: Session = Depends(get_db
     return create_language_in_db(request, db, user['username'])
     
 
+@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
+def edit_Language(id: int, request: LanguageSchemaRequest, db: Session= Depends(get_db_session), user = Depends(admin_user)):
+    
+    return modify_language_in_db(id, request, db, user['username'])
 
 
 

@@ -35,9 +35,10 @@
                         <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
                             <v-date-picker
                                 v-model="dates"
-                                color="success"                                
-                                range
-                                header-color="red"
+                                color="success" 
+                                :allowed-dates="allowedDates"                        
+                                range                                
+                                :picker-date.sync="pickerDateL"
                             ></v-date-picker>                            
                         </v-app>
                     </b-col>
@@ -46,8 +47,9 @@
                             <v-date-picker
                                 v-model="dates"
                                 color="success"
+                                :allowed-dates="allowedDates" 
                                 range
-                                header-color="red"
+                                :picker-date.sync="pickerDateR"                                
                             ></v-date-picker>                            
                         </v-app>
                     </b-col>
@@ -58,7 +60,7 @@
                     <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
                 </b-col>
                 <b-col>
-                    <b-button @click="clearDates" class="border" variant="warning">Remove Date Range</b-button>
+                    <b-button @click="clearDates" class="border" variant="warning">Remove Date Filter</b-button>
                 </b-col>
                 <b-col>
                     <b-button @click="AddDates" class="px-4" variant="success" style="float:right">Add</b-button>
@@ -70,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import moment from 'moment-timezone'
 import {dateRangeInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
@@ -84,7 +86,19 @@ export default class BookingDateRangePicker extends Vue {
     dates = []
 
     pickedDates=""
+    pickerDateL=""
+    pickerDateR=""
 
+    @Watch('pickerDateL')
+    monthChange(newValue){
+        this.pickerDateR = moment(newValue).add(1,'months').format("YYYY-MM")
+    }
+
+    @Watch('pickerDateR')
+    monthChangeR(newValue){
+        this.pickerDateL = moment(newValue).add(-1,'months').format("YYYY-MM")
+    }
+   
 
     mounted(){
         this.initDates()
@@ -102,6 +116,11 @@ export default class BookingDateRangePicker extends Vue {
         this.dates.push(this.bookingRange.startDate?.slice(0,10))
         this.dates.push(this.bookingRange.endDate?.slice(0,10))
         this.getDatesText(_.sortBy(this.dates))
+
+        if(this.bookingRange.startDate?.slice(0,7))
+            this.pickerDateL = this.bookingRange.startDate.slice(0,7)
+        else
+            this.pickerDateL = moment().format("YYYY-MM")
     }
 
 
@@ -133,6 +152,12 @@ export default class BookingDateRangePicker extends Vue {
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
+    }
+
+    public allowedDates(date){
+        const day = moment(date).weekday()
+        if(day==0 || day==6) return false
+        else return true
     }
 }
 </script>

@@ -404,7 +404,7 @@ import * as _ from 'underscore';
 import InterpreterDetails from "./InterpreterDetails.vue";
 
 
-import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
+import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
 import { namespace } from "vuex-class";
@@ -444,43 +444,22 @@ export default class SearchInterpretersTable extends Vue {
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
-    // @commonState.State
-    // public languages!: languagesInfoType[];   
-    
-    
-    // AddNewLanguageForm = false;       
-    // addLanguageFormColor = 'court';
-    // latestEditLanguageData;
-    // isEditLanguageOpen = false;
-
     updatedBookingInfo = 0;
     
     interpreterDataReady = false;
-
-    interpreter = {} as interpreterInfoType;    
-   
-    // updateTable = 0;
     showBookingWindow = false;
-    // showConfirmDeleteInterpreter = false;
-    bookingStates = {} as bookingStatesInfoType;    
-    
-    // dataLoaded = false;  
-    // resultsLoaded = false; 
-    // searching = false;
-    
-    // location = {} as locationsInfoType;
 
-
-    
-    // language = '';    
-    // level: string[] = [];
-    // locationState = true;
-    booking = {} as bookingInfoType;
-    
-
-    
+    interpreter = {} as interpreterInfoType; 
+    bookingStates = {} as bookingStatesInfoType; 
+    booking = {} as bookingInfoType;    
     expandedInterpreter = {} as interpreterInfoType;
 
+    statusOptions
+    requestOptions
+    bookingPeriodOptions
+    bookingMethodOfAppearanceOptions
+    interpreterRequestOptions
+    interpretForOptions
    
     interpreterFields = [
         {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'},
@@ -493,12 +472,6 @@ export default class SearchInterpretersTable extends Vue {
         {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'}
     ]; 
 
-    statusOptions
-    requestOptions
-    bookingPeriodOptions
-    bookingMethodOfAppearanceOptions
-    interpreterRequestOptions
-    interpretForOptions
     created(){
         this.interpretForOptions=interpretForOptions
         this.statusOptions=statusOptions 
@@ -509,8 +482,7 @@ export default class SearchInterpretersTable extends Vue {
     }
    
     mounted() { 
-        this.bookingStates = {} as bookingStatesInfoType;        
-        // this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+        this.bookingStates = {} as bookingStatesInfoType;
     }
 
     public bookInterpreter(interpreterToBook: interpreterInfoType){              
@@ -580,7 +552,7 @@ export default class SearchInterpretersTable extends Vue {
         this.bookingStates.request = !(this.booking.requestedBy)? false : null;
         this.bookingStates.language = !(this.booking.language)? false : null;
         this.bookingStates.reason = !(this.booking.reason)? false : null;
-        this.bookingStates.prosecutor = !(this.booking.prosecutor)? false : null;
+        this.bookingStates.prosecutor = (this.booking.federal && !this.booking.prosecutor)? false : null;
         this.bookingStates.methodOfAppearance = !(this.booking.methodOfAppearance)? false : null;
         this.bookingStates.federal = !(this.booking.federal != null)? false : null;
       

@@ -56,8 +56,8 @@
 		update=0;
 		
 		bothGroup=[
-			{name:'bookings', label:'Bookings', super_admin:false},
-			{name:'create', label:'Search Interpreters', super_admin:false},
+			{name:'bookings', label:'Manage Bookings', super_admin:false},
+			{name:'create', label:'Add Bookings', super_admin:false},
 		]
 		adminGroup=[
 			{name:'directory', label:'Interpreter Directory', super_admin:false},
