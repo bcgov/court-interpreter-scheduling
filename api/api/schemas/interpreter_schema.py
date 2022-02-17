@@ -47,16 +47,23 @@ class PageSchema(BaseModel):
     page: int = 1
     limit: int = 1000
 
+
 class InterpreterResponseSchema(BaseModel):
     data: List[InterpreterSchema]
     pagination: PageSchema
     class Config():
         orm_mode = True
 
+
 class DatesSchema(BaseModel):
     arrivalTime: Optional[str]
     date: Optional[datetime]
     period: Optional[str]
+
+
+class DateRangeSchema(BaseModel):
+    endDate: Optional[str]
+    startDate: Optional[str]
 
 
 class InterpreterSearchRequestSchema(BaseModel):    
@@ -67,7 +74,7 @@ class InterpreterSearchRequestSchema(BaseModel):
     name: Optional[str]
     keywords: Optional[str]
     active: Optional[bool]
-    criminalRecordCheck: Optional[datetime]
+    criminalRecordCheck: Optional[DateRangeSchema]
     courtAddr: Optional[str]
     distanceLimit: Optional[bool]
     location: Optional[LocationSchema]

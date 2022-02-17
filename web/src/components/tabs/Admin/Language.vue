@@ -2,14 +2,14 @@
     <b-card bg-variant="light" border-variant="white">
         <h1>Languages</h1>
 
-        <b-card class="w-50 mx-auto my-4 bg-light border-light">                
+        <b-card class="w-50 mx-auto my-4 py-3 bg-white border-light">                
             <b-row>
-                <b-col cols="6"></b-col>
-                <b-col class="text-primary">
+                
+                <b-col cols="4" class="text-primary">
                     Filter Results By: 
                 </b-col>
                
-                <b-col class="ml-0 pl-0 py-0">
+                <b-col cols="8" class="ml-0 pl-0 py-1">
                     <b-form-input                             
                         style="display:inline"
                         v-model="filterKeyword"
@@ -24,9 +24,9 @@
         <loading-spinner v-if= "!dataLoaded" waitingText="Loading ..."/>
 
         <b-card class="w-50" v-else no-body style="margin: 0 auto">                                        
-            <b-card id="LanguageError" no-body>
+            <b-card v-if="languageError" border-variant="white" id="LanguageError" no-body>
                 <h2 
-                    v-if="languageError" 
+                     
                     class="mx-1 mt-2">
                     <b-badge 
                         v-b-tooltip.hover 
@@ -41,8 +41,8 @@
             </b-card>
 
             <div>
-                <b-card  v-if="!addNewLanguageForm" border-variant="white">                
-                    <b-button size="sm" variant="success" @click="addNewLanguage"> <b-icon icon="plus" /> Add </b-button>
+                <b-card  v-if="!addNewLanguageForm" border-variant="white" class="text-center">                
+                    <b-button size="sm" variant="success" @click="addNewLanguage"> <b-icon icon="plus" /> Add New Language</b-button>
                 </b-card>
 
                 <b-card v-else id="addNewLanguageForm" class="my-3 mx-2" :border-variant="addFormColor" style="border:2px solid" body-class="m-0 px-0 py-1">
@@ -71,7 +71,17 @@
                             </template>                                
 
                             <template v-slot:cell(edit)="data" >
-                                <b-button :disabled="data.item['_rowVariant']?true:false" class="my-0 py-0" size="sm" variant="transparent" @click="editLanguage(data)"><b-icon icon="pencil-square" font-scale="1.25" variant="primary"/></b-button>
+                                <b-button 
+                                    style="float:right"
+                                    :disabled="data.item['_rowVariant']?true:false" 
+                                    class="my-0 py-0 border-0" 
+                                    v-b-tooltip
+                                    :title="'Edit '+ data.item.name "
+                                    size="sm" 
+                                    variant="transparent" 
+                                    @click="editLanguage(data)">
+                                        <b-icon icon="pencil-square" font-scale="1.25" variant="primary"/>
+                                </b-button>
                             </template>
 
                             <template v-slot:row-details="data">
@@ -147,8 +157,7 @@ export default class LanguagePage extends Vue {
     ];  
    
     mounted() { 
-        this.getLanguages();
-       
+        this.getLanguages();       
     }
 
     public getLanguages() { 
@@ -213,18 +222,22 @@ export default class LanguagePage extends Vue {
         const options = { method: method, url:url, data:body}
         
         this.$http(options)
-            .then(response => {
-                if(iscreate) 
-                    this.addLanguageToList(response.data);
-                else
-                    this.modifyLanguageList(response.data);
-                
-                this.closeLanguageForm();
-            }, err=>{
-                const errMsg = err.response.data.error;
-                this.languageErrorMsg = errMsg.slice(0,60) + (errMsg.length>60?' ...':'');
+            .then(response => {                
+                this.getLanguages();
+
+            }, err=>{                
+                let errMsg = err.response.data.detail;
+                if(errMsg.includes('=')){
+                    errMsg = errMsg.split('=')[1]
+                }
+
+                errMsg = err.response?.status == 409 ? (err.response.statusText+': Language with name '+errMsg): errMsg
+
+                this.languageErrorMsg = errMsg.length>30? (errMsg.slice(0,30)+' ...'): errMsg;
                 this.languageErrorMsgDesc = errMsg;
-                this.languageError = true;               
+                this.languageError = true; 
+                this.closeLanguageForm(); 
+                window.scrollTo(0,0);           
             });                
     }
 

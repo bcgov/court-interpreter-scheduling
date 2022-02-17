@@ -2,7 +2,7 @@
     <b-card class="bg-white border-white">                
             
         <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
-        <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
+        <b-card v-else class="w-100 mx-auto my-1 bg-light border-white">                
            
             <b-row>
                 <b-col cols="4">

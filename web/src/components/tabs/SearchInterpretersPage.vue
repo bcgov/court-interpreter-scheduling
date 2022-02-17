@@ -2,7 +2,11 @@
     <b-card class="bg-white border-white">                
             
         <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
-        <b-card v-else class="w-100 mx-auto my-4 bg-light border-white">                
+        <b-card v-else class="w-100 mx-auto my-1 bg-light border-white"> 
+            <b-card body-class="py-2" class="bg-info text-center mt-0 mb-5 mx-auto w-50">
+                <b-icon-info-circle font-scale="1.35" class="mr-3"/>
+                <b>Add Dates, Court Location and Search for interpreters to book.</b>
+            </b-card>               
            
             <b-row>
                 <b-col cols="4">

@@ -5,12 +5,12 @@
                 <b-tr>
                     <b-td>
                         <b-form-group style="margin: 0.25rem 0 0 0.5rem;width: 18rem">
-                            <label class="h6 ml-1 mb-0 pb-0" > Language: </label> 
+                            <label class="h6 ml-1 mb-0 pb-0" > Language Name: </label> 
                             <b-form-input
                                 size = "sm"
                                 v-model="selectedLanguage"
                                 type="text"
-                                :placeholder="'Enter Language'"
+                                :placeholder="'Enter a new language name'"
                                 :state = "languageState?null:false">                                           
                             </b-form-input>
                         </b-form-group>           

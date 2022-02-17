@@ -46,11 +46,17 @@ def apply_active(interpreter, active):
         return interpreter
 
 def apply_crc_date(interpreter, crc_date):
-        
-    if crc_date is not None and isinstance(crc_date, datetime):
-        return interpreter.where(InterpreterModel.crc_check_date >= crc_date)
-    else:
+    
+    if (not crc_date or                
+        not crc_date.startDate or
+        not crc_date.endDate
+    ):
         return interpreter
+    
+    start_date = crc_date.startDate
+    end_date = crc_date.endDate
+    return interpreter.where(InterpreterModel.crc_check_date >= start_date, InterpreterModel.crc_check_date <= end_date)
+    
 
 def apply_keyword(interpreter, keywords):
     if keywords is not None and len(keywords)>0:

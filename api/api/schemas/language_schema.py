@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class LanguageSchemaRequest(BaseModel):
-   
+    id: Optional[int] = None
     name: str   
 
 

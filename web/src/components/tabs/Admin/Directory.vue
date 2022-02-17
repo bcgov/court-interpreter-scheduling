@@ -88,20 +88,8 @@
 
             <b-row>
                 <b-col cols="4">
-                    <b-form-group                        
-                        label="Criminal Record Check Expiry" 
-                        label-for="crcExpiryDate">
-                        <b-form-datepicker                            
-                            id="crcExpiryDate"
-                            v-model="crcExpiryDate"
-                            today-button
-                            reset-button
-                            close-button
-                            @hidden="searchAgain"                                                                                       
-                            :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
-                            locale="en-US">
-                        </b-form-datepicker>                        
-                    </b-form-group>                    
+                    <div class="mb-1">Criminal Record Check Expiry</div>
+                    <booking-date-range-picker :key="updateCrc" :bookingRange="crcExpiryDate" @datesAdded="addCrcExpiryDates"/>                          
                 </b-col>
                 <b-col cols="4">
                      <b-button 
@@ -672,17 +660,21 @@ import Spinner from "@/components/utils/Spinner.vue";
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interpreters/json';
 
+import BookingDateRangePicker from '@/components/tabs/components/BookingDateRangePicker.vue'
+
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
 import { interpreterStatesInfoType } from '@/types/Interpreters';
 import moment from 'moment-timezone';
+import { dateRangeInfoType } from '@/types/Bookings/json';
 const commonState = namespace("Common");
 
 @Component({
     components:{
         Spinner,
         InterpreterDetails,
-        AddLanguageForm
+        AddLanguageForm,
+        BookingDateRangePicker
 
     }
 })
@@ -698,6 +690,8 @@ export default class DirectoryPage extends Vue {
     public userLocation!: locationsInfoType;    
 
     isCreate = false;
+
+    updateCrc = 0;
 
     AddNewLanguageForm = false;       
     addLanguageFormColor = 'court';
@@ -725,7 +719,7 @@ export default class DirectoryPage extends Vue {
     active = true;
     language = '';    
     level: string[] = [];
-    crcExpiryDate = '';
+    crcExpiryDate: dateRangeInfoType = {startDate:null, endDate:null};
 
     interpreters: interpreterInfoType[] = [];
     expandedInterpreter = {} as interpreterInfoType;
@@ -828,7 +822,7 @@ export default class DirectoryPage extends Vue {
             "level":this.level,
             "city":'',//this.userLocation?.city?this.userLocation.city:'',
             "keywords":this.keyword,
-            "criminalRecordCheck":this.crcExpiryDate?moment(this.crcExpiryDate).toISOString():null                
+            "criminalRecordCheck":this.crcExpiryDate                
         }
 
         this.$http.post('/interpreter/search', body)
@@ -1083,6 +1077,12 @@ export default class DirectoryPage extends Vue {
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
+    }
+
+    public addCrcExpiryDates(dateRange){
+        this.crcExpiryDate = dateRange
+        this.updateCrc++;          
+        this.searchAgain()
     }
 }
 </script>
