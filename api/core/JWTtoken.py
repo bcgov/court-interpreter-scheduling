@@ -4,7 +4,7 @@ from typing import Optional
 from jose import jwt, JWTError
 from starlette.requests import Request
 from core.config import settings
-from api.schemas import TokenDataSchema
+from api.schemas.token_schema import TokenDataSchema
 
 SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = "HS256"

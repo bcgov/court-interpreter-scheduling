@@ -7,7 +7,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
-from api.schemas import InterpreterRequestSchema
+from api.schemas.interpreter_schema import InterpreterCreateModifyRequestSchema
 from models.geo_status_model import GeoStatusModel
 
 from core.geo_coordinate_service import get_latitude_longitude_service
@@ -65,7 +65,7 @@ def get_geo_service_name(google_map):
         return "Nominatim"
 
 
-def create_interpreter_in_db(request:InterpreterRequestSchema, db: Session, username):
+def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: Session, username):
 
     interpreter_request = request.dict()
     check_required_fields(interpreter_request, db)
@@ -90,7 +90,7 @@ def create_interpreter_in_db(request:InterpreterRequestSchema, db: Session, user
     return new_interpreter.id
 
 
-def modify_interpreter_in_db(id: int, request:InterpreterRequestSchema, db: Session, username):
+def modify_interpreter_in_db(id: int, request:InterpreterCreateModifyRequestSchema, db: Session, username):
 
     interpreter_request = request.dict()
     check_required_fields(interpreter_request, db)

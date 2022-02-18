@@ -5,7 +5,7 @@ from sqlalchemy import func
 from models.interpreter_model import InterpreterModel
 from models.language_model import InterpreterLanguageModel
 from models.booking_model import BookingDatesModel, BookingModel
-from api.schemas import InterpreterSearchRequestSchema
+from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema
 from datetime import datetime
 from math import sin, cos, sqrt, atan2, radians
 
@@ -24,7 +24,7 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session):
     interpreter = apply_keyword(interpreter, request.keywords)
 
     all_interpreters = interpreter.all()
-    all_interpreters = apply_dates(all_interpreters, request.dates, db)
+    # all_interpreters = apply_dates(all_interpreters, request.dates, db)
 
 
     # distance function

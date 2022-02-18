@@ -2,7 +2,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import InterpreterGeoStatusSchema
+from api.schemas.interpreter_schema import InterpreterGeoStatusSchema
 from models.geo_status_model import GeoStatusModel
 from models.interpreter_model import InterpreterModel
 from core.auth import super_admin

@@ -7,7 +7,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Response, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from core.auth import user_in_role
-from api.schemas import LocationSchema, UserSchema
+from api.schemas.user_schema import LocationSchema, UserSchema
 from models.court_location_model import CourtLocationModel
 
 

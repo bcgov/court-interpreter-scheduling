@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import exc
-from api.schemas import LanguageSchemaRequest
+from api.schemas.language_schema import LanguageSchemaRequest
 from models.language_model import LanguageModel
 
 from api.repository.user_transactions import get_update_by

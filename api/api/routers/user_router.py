@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import UserSchema, UserSchemaRequest, UserAllSchema
+from api.schemas.user_schema import UserSchema, UserSchemaRequest, UserAllSchema
 from typing import List
 from models.user_model import UserModel
 from core.auth import logged_in_user, admin_user, user_in_role, logged_in_user_without_raising_error

@@ -554,7 +554,7 @@ export default class BookingTable extends Vue {
         this.bookingStates.request = !(this.booking.requestedBy)? false : null;
         this.bookingStates.language = !(this.booking.language)? false : null;
         this.bookingStates.reason = !(this.booking.reason)? false : null;
-        this.bookingStates.prosecutor = !(this.booking.prosecutor)? false : null;
+        this.bookingStates.prosecutor = (this.booking.federal && !this.booking.prosecutor)? false : null;
         this.bookingStates.methodOfAppearance = !(this.booking.methodOfAppearance)? false : null;
         this.bookingStates.federal = !(this.booking.federal != null)? false : null;
       

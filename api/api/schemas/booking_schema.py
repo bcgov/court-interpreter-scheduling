@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional, List
 
-from .interpreter_schema import InterpreterBookingResponseSchema
+from api.schemas.interpreter_schema import InterpreterBookingResponseSchema
 from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingMethodOfAppearanceEnum, BookingInterpretForEnum
 
 
@@ -16,7 +16,8 @@ class BookingDateSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
-
+#_______________________________
+#_______________________________
 class BookingBase(BaseModel):
        
     case_name: Optional[str] = Field(alias="caseName")
@@ -38,10 +39,14 @@ class BookingBase(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+#_______________________________
+#_______________________________
+
 
 
 class BookingRequestSchema(BookingBase):
     interpreter_id: Optional[int] = Field(alias="interpreterId")
+
 
 
 class BookingResponseSchema(BookingBase):
@@ -49,31 +54,31 @@ class BookingResponseSchema(BookingBase):
     interpreter: InterpreterBookingResponseSchema
 
 
-class PageSchema(BaseModel):
-    page: int = 1
-    limit: int = 1000
 
-
-class BookingResponsePageSchema(BaseModel):
-    data: List[BookingResponseSchema]
-    pagination: PageSchema
-    
-    class Config():
-        orm_mode = True
-
-
-class DateRangeSchema(BaseModel):
+class BookingDateRangeSchema(BaseModel):
     endDate: Optional[str]
     startDate: Optional[str]
 
 
+
 class BookingSearchRequestSchema(BaseModel):    
 
-    dates: Optional[List[DateRangeSchema]]
+    dates: Optional[List[BookingDateRangeSchema]]
     file: Optional[str]
     interpreter: Optional[str]
     isStartFromToday: Optional[bool]
     locationId: Optional[int]
     
+
     
+class BookingSearchResponseSchema(BaseModel):
+    
+    reason: Optional[str]    
+    file: Optional[str]    
+    location_id: Optional[int] = Field(alias="locationId")    
+    dates: List[BookingDateSchema]
+
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
     

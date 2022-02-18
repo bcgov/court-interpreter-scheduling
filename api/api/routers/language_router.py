@@ -3,7 +3,7 @@ from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 
-from api.schemas import LanguageSchema, LanguageSchemaRequest
+from api.schemas.language_schema import LanguageSchema, LanguageSchemaRequest
 from models.language_model import LanguageModel
 from core.auth import admin_user, user_in_role
 from api.repository.language_transactions import create_language_in_db, modify_language_in_db
