@@ -9,6 +9,12 @@
             <template v-slot:cell(date)="data" >
                 <b>{{data.value|beautify-date-weekday}}</b>
             </template>
+            <template v-slot:cell(location)="data" >
+                <div style="color:#de350b;">{{data.value}}</div>
+            </template>
+            <template v-slot:cell(reason)="data" >
+                <b>{{data.value}}</b>
+            </template>
         </b-table>
     </div>
 </template>
