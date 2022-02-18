@@ -1,0 +1,26 @@
+#=========================================================
+# OpenShift template parameters for:
+# Component: .
+# Template File: ../openshift/templates/web/web-deploy.yaml
+#=========================================================
+# NAME=web
+# APP_NAME=court-interpreter-scheduling
+# ROLE=web
+# NAMESPACE_NAME=1a7b16
+# IMAGE_NAMESPACE=1a7b16-tools
+# REAL_IP_FROM=172.51.0.0/16
+# API_URL=http://api:8080/api
+# API_SERVICE_NAME=api
+# API_PATH=/api
+# PUBLIC_URL=/court-interpreter-scheduling/
+# AdditionalRealIpFromRules=
+# IpFilterRules=
+APPLICATION_DOMAIN=court-interpreter-scheduling-dev.silver.devops.gov.bc.ca
+# ALLOW_LIST=
+TAG_NAME=dev
+# MIN_REPLICAS=3
+# MAX_REPLICAS=6
+# CPU_REQUEST=10m
+# CPU_LIMIT=250m
+# MEMORY_REQUEST=10Mi
+# MEMORY_LIMIT=256Mi
