@@ -212,8 +212,8 @@ export default class SearchInterpretersPage extends Vue {
 
             this.$http.post('/interpreter/search', body)
             .then((response) => {            
-                if(response?.data?.data){
-                    this.extractInterpreterDetails(response.data.data);                    
+                if(response?.data){
+                    this.extractInterpreterDetails(response.data);                    
                 }
                 
             },(err) => {

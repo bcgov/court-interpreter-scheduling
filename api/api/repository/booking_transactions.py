@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, APIRouter, status
-from api.schemas import BookingRequestSchema
+from api.schemas.booking_schema import BookingRequestSchema
 from models.booking_model import BookingModel, BookingDatesModel
 from models.user_model import UserModel
 from models.booking_enums import BookingStatusEnum, BookingPeriodEnum

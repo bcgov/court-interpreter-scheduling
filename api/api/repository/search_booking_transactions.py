@@ -5,7 +5,7 @@ from sqlalchemy import func
 from models.interpreter_model import InterpreterModel
 
 from models.booking_model import BookingDatesModel, BookingModel
-from api.schemas import BookingSearchRequestSchema
+from api.schemas.booking_schema import BookingSearchRequestSchema
 from datetime import datetime
 
 

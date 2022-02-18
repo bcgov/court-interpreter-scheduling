@@ -2,7 +2,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas import UserRoleSchemaRequest, RoleSchemaRequest, RoleSchema, RoleRequestAccessSchema
+from api.schemas.role_schema import UserRoleSchemaRequest, RoleSchemaRequest, RoleSchema, RoleRequestAccessSchema
 from models.role_model import RoleModel, UserRoleModel
 from core.auth import logged_in_user, admin_user
 from typing import List

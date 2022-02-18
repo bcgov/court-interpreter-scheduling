@@ -192,8 +192,8 @@ export default class BookingsPage extends Vue {
 
         this.$http.post('/booking/search', body)
         .then((response) => {            
-            if(response?.data?.data){                     
-                this.bookings = response.data.data;                                      
+            if(response?.data){                     
+                this.bookings = response.data;                                      
             }
             this.searching = false;
             

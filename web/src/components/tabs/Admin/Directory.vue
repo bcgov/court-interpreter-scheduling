@@ -825,11 +825,11 @@ export default class DirectoryPage extends Vue {
             "criminalRecordCheck":this.crcExpiryDate                
         }
 
-        this.$http.post('/interpreter/search', body)
+        this.$http.post('/interpreter/search-full-detail', body)
         .then((response) => {            
-            if(response?.data?.data){ 
+            if(response?.data){ 
                 // console.log(response.data)
-                this.interpreters = _.sortBy(response.data.data,'lastName');
+                this.interpreters = _.sortBy(response.data,'lastName');
             }    
                 this.searching = false; 
                 this.dataReady = true;           

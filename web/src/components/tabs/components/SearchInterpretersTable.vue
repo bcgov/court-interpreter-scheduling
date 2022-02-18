@@ -90,17 +90,28 @@
 
                     <template v-slot:cell(edit)="data" >
                         <div
+                            :id="'popover-button-variant'+data.index"
+                            v-for="conflict,inx in [disableBookingButton(data.item.booking)]"
+                            :key="inx"
                             v-b-tooltip.hover.left.noninteractive.v-danger
                             :title="bookingDates.length==0?'Please, first select the dates':''" 
                         >
                             <b-button style="font-size:12px" 
                                 size="sm" 
-                                :disabled="bookingDates.length==0"
-                                @click="bookInterpreter(data.item);" 
-                                
+                                :disabled="conflict"
+                                @click="bookInterpreter(data.item);"
                                 class="text-primary bg-info border-info mt-0 px-3" 
                                 ><b>Book</b>
                             </b-button>
+                            <b-popover
+                                v-if="conflict && bookingDates.length>0"                                 
+                                :target="'popover-button-variant'+data.index"
+                                triggers="hover"
+                                placement="left"
+                                customClass="conflict-popover"                                              
+                                >
+                                <scheduling-conflict-popup :bookings="data.item.booking" />
+                            </b-popover>
                         </div>
                         
                     </template>
@@ -402,7 +413,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import InterpreterDetails from "./InterpreterDetails.vue";
-
+import SchedulingConflictPopup from "./SchedulingConflictPopup.vue"
 
 import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
@@ -419,6 +430,7 @@ import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions
 @Component({
     components:{       
         InterpreterDetails,
+        SchedulingConflictPopup
     }
 })
 export default class SearchInterpretersTable extends Vue {
@@ -577,6 +589,18 @@ export default class SearchInterpretersTable extends Vue {
             this.bookingStates[field] = null;                
         }                             
     }
+
+    public disableBookingButton(dates){
+        if(this.bookingDates.length==0) return true
+        if(dates.length>0){
+            const bustDates = _.flatten((dates.map(date=>date.dates?.map(d=>d.date?.slice(0,10)))))
+            for(const bookingDate of this.bookingDates)
+                if(bustDates.includes(bookingDate.date.slice(0,10)))
+                    return true
+        }
+        return false
+    }
+
 }
 </script>
 

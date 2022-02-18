@@ -1,37 +1,34 @@
 import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from .role_schema import RoleSchema
+from api.schemas.role_schema import RoleSchema
 from api.schemas.location_schema import LocationSchema, LocationShortSchema
 
-class UserSchema(BaseModel):
-    authorization_id: str = Field(alias="user_id")
+#___________________________
+class UserBase(BaseModel):
+    
     first_name: Optional[str] 
     last_name: Optional[str]
-    display_name: Optional[str]   
-    last_login: datetime.datetime    
+    display_name: Optional[str]
     email: str    
-    role: List[RoleSchema] = []
-    location: Optional[LocationSchema]
+    role: List[RoleSchema] = []    
 
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+#___________________________
+
+
+class UserSchema(UserBase):
+    authorization_id: str = Field(alias="user_id")       
+    last_login: datetime.datetime 
+    location: Optional[LocationSchema]
     
     
-class UserSchemaRequest(BaseModel):
-   
+class UserSchemaRequest(BaseModel):   
     locationId: Optional[int] = None  
 
-class UserAllSchema(BaseModel):
-    id: int
-    first_name: Optional[str] 
-    last_name: Optional[str]
-    display_name: Optional[str]           
-    email: str    
-    role: List[RoleSchema] = []
-    location: Optional[LocationShortSchema]
 
-    class Config():
-        orm_mode = True
-        allow_population_by_field_name = True
+class UserAllSchema(UserBase):
+    id: int    
+    location: Optional[LocationShortSchema]

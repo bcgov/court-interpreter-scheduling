@@ -14,7 +14,7 @@ from oidc.oidc_router import router as oidc_router
 from jc_interface.jc_router import router as jc_router
 
 from core.auth import logged_in_user
-from api.schemas import UserSchema
+from api.schemas.user_schema import UserSchema
 
 from starlette.middleware.sessions import SessionMiddleware
 
