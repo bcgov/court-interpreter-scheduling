@@ -13,7 +13,7 @@
                     responsive="sm"
                 >
                 <template v-slot:cell(description)="data" >
-                    <b>{{data.value}}</b>
+                    <b>{{data.value}}</b>                  
                 </template>
 
                 <template v-slot:cell(updated_at)="data" >
@@ -34,13 +34,9 @@
                     </b-row>                    
                 </template>
 
-                <!-- <template v-slot:cell(update_schedule)="data" >
-                    <b-form-radio-group stacked>
-                        <b-form-radio>Manual</b-form-radio>
-                        <b-form-radio> <b-row style="margin:0rem 0 0 0;"> Every <b-form-input style="width:4.5rem" type="number" /> days at <b-form-input style="width:4rem" type="number" />: <b-form-input style="width:4rem" type="number" /> </b-row></b-form-radio>
-                        <b-form-radio>Monthly</b-form-radio>
-                    </b-form-radio-group>
-                </template> -->
+                <template v-slot:cell(update_schedule)="data" >
+                    <update-schedule :id="data.item.id"  :schedule="data.item.update_schedule" @reload="getUpdatingInfo()" />
+                </template>
                 
                 <template v-slot:cell(progress)="data" >
                     <b-progress  :max="100" show-value height="2rem">
@@ -62,7 +58,7 @@
 
         <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading Results ..." /> 
         <div v-else class="mt-5"> 
-
+            <b-card class="h2 mt-5 mb-0 bg-primary text-white text-center"> List of interpreters that require update:</b-card>
             <b-card no-body border-variant="white" bg-variant="white" v-if="!interpreters.length">
                 <span class="text-muted ml-4 mb-5">No records found.</span>
             </b-card>      
@@ -116,6 +112,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 
 import { locationsInfoType } from "@/types/Common/json";
 import Spinner from '@/components/utils/Spinner.vue'
+import UpdateSchedule from "./components/UpdateSchedule.vue"
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -125,7 +122,8 @@ const commonState = namespace("Common");
 
 @Component({
     components:{
-        Spinner
+        Spinner,
+        UpdateSchedule
     }
 })
 export default class UpdateGeoPage extends Vue {
@@ -148,8 +146,8 @@ export default class UpdateGeoPage extends Vue {
         {key:'description',     label:'Name',              sortable:false, tdClass: 'border-top align-middle', }, 
         {key:'updated_at',      label:'Last Update',       sortable:false, tdClass: 'border-top align-middle',},
         {key:'update_service',  label:'Update Service',    sortable:false, tdClass: 'border-top align-middle',},
-        {key:'manualUpdate',    label:'Manual Update',     sortable:false, tdClass: 'border-top',},
-        {key:'update_schedule', label:'Updating Schedule', sortable:false, tdClass: 'border-top',},
+        {key:'manualUpdate',    label:'Manual Update',     sortable:false, tdClass: 'border-top align-middle',},
+        {key:'update_schedule', label:'Updating Schedule', sortable:false, tdClass: 'border-top align-middle',},
         {key:'progress',        label:'Progress',          sortable:false, tdClass: 'border-top align-middle', thStyle:'width:12rem;' },
     ] 
 
@@ -166,9 +164,9 @@ export default class UpdateGeoPage extends Vue {
         {key:'postal',           label:'Post Code',      sortable:false, tdClass: 'border-top align-middle', thStyle:'width:6%'},
         {key:'province',         label:'Province',       sortable:false, tdClass: 'border-top align-middle', thStyle:'width:6%'},
         {key:'updated_at',       label:'Last Update',    sortable:false, tdClass: 'border-top align-middle', thStyle:'width:8%'}, 
-        {key:'contractExtension',label:'Valid Contract', sortable:true, tdClass: 'border-top align-middle', thStyle:'width:9%'}, 
-        {key:'geo_service',      label:'Update Service', sortable:true, tdClass: 'border-top align-middle', thStyle:'width:9%'}, 
-        {key:'manual_update',    label:'Update',         sortable:false, tdClass: 'border-top align-middle', thStyle:'width:12%'},    
+        {key:'contractExtension',label:'Valid Contract', sortable:true,  tdClass: 'border-top align-middle', thStyle:'width:9%'}, 
+        {key:'geo_service',      label:'Update Service', sortable:true,  tdClass: 'border-top align-middle', thStyle:'width:9%'}, 
+        {key:'manual_update',    label:'Update',         sortable:false, tdClass: 'border-top align-middle', thStyle:'width:12%', thClass:'text-center'},    
     ] 
 
     interpreters = []
@@ -190,7 +188,7 @@ export default class UpdateGeoPage extends Vue {
         this.$http.get('/geo/interpreters')
         .then((response) => { 
             if(response.data){
-                this.interpreters = response.data.filter(interpreter => !interpreter.geo_service)// || !interpreter.geo_service.includes('google') )
+                this.interpreters = response.data.filter(interpreter => !interpreter.geo_service || !interpreter.geo_service.includes('google') )
             }
 
         },(err) => {

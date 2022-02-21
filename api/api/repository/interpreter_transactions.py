@@ -1,4 +1,5 @@
 from starlette import status
+from api.repository.geo_transactions import get_next_update_date
 from models.interpreter_model import InterpreterModel
 from models.user_model import UserModel
 from models.language_model import LanguageModel, InterpreterLanguageModel
@@ -53,8 +54,17 @@ def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
         db.commit()
         
         
+    next_update = None
+    update_schedule = geo_status.first().update_schedule
+    if update_schedule:
+        next_update = get_next_update_date(update_schedule, datetime.now())    
     
-    geo_status.update({"progress":100, "updated_at":datetime.now(), 'update_service': geo_service})          
+    geo_status.update({
+        "progress": 100, 
+        "updated_at": datetime.now(), 
+        "update_service": geo_service,
+        "next_update_at": next_update
+    })          
     db.commit()
 
 
