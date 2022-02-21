@@ -26,6 +26,23 @@ if createOperation; then
   readParameter "EFILING_HUB_KEYCLOAK_SECRET - Please provide the service client secret to use with above id.  The default is a blank string." EFILING_HUB_KEYCLOAK_SECRET "" "false"
   readParameter "EFILING_HUB_API_BASE_URL - Please provide base url for efiling.  The default is a blank string." EFILING_HUB_API_BASE_URL "" "false"
 
+  readParameter "OIDC_RP_CLIENT_ID - Please provide it" OIDC_RP_CLIENT_ID "" "false"
+  readParameter "OIDC_RP_PROVIDER_URL - Please provide it" OIDC_RP_PROVIDER_URL "" "false"
+  readParameter "OIDC_RP_PROVIDER_REALM - Please provide it" OIDC_RP_PROVIDER_REALM "" "false"
+
+  readParameter "JC_INTERFACE_API_LOCATION_URL - Please provide it" JC_INTERFACE_API_LOCATION_URL "" "false"
+  readParameter "JC_INTERFACE_API_USERNAME - Please provide it" JC_INTERFACE_API_USERNAME "" "false"
+  readParameter "JC_INTERFACE_API_PASSWORD - Please provide it" JC_INTERFACE_API_PASSWORD "" "false"
+
+  readParameter "GOOGLE_MAP_URL - Please provide it" GOOGLE_MAP_URL "" "false"
+  readParameter "OPENROAD_MAP_URL - Please provide it" OPENROAD_MAP_URL "" "false"
+
+  readParameter "CHES_AUTH_URL - Please provide it" CHES_AUTH_URL "" "false"
+  readParameter "CHES_EMAIL_URL - Please provide it" CHES_EMAIL_URL "" "false"
+  readParameter "EMAIL_SERVICE_CLIENT_ID - Please provide it" EMAIL_SERVICE_CLIENT_ID "" "false"
+  readParameter "EMAIL_SERVICE_CLIENT_SECRET - Please provide it" EMAIL_SERVICE_CLIENT_SECRET "" "false"
+  readParameter "RECIPIENT_EMAILS - Please provide it" RECIPIENT_EMAILS "" "false"
+
   readParameter "SITEMINDER_LOGOFF_URL - Please provide the SiteMinder Logoff URL for the application environment.  The default is a blank string." SITEMINDER_LOGOFF_URL "" "false"
 else
   # Secrets are removed from the configurations during update operations ...
@@ -39,6 +56,23 @@ else
   writeParameter "EFILING_HUB_KEYCLOAK_CLIENT_ID" "prompt_skipped" "false"
   writeParameter "EFILING_HUB_KEYCLOAK_SECRET" "prompt_skipped" "false"
   writeParameter "EFILING_HUB_API_BASE_URL" "prompt_skipped" "false"
+
+  writeParameter "OIDC_RP_CLIENT_ID" "prompt_skipped" "false"
+  writeParameter "OIDC_RP_PROVIDER_URL" "prompt_skipped" "false"
+  writeParameter "OIDC_RP_PROVIDER_REALM" "prompt_skipped" "false"
+
+  writeParameter "JC_INTERFACE_API_LOCATION_URL" "prompt_skipped" "false"
+  writeParameter "JC_INTERFACE_API_USERNAME" "prompt_skipped" "false"
+  writeParameter "JC_INTERFACE_API_PASSWORD" "prompt_skipped" "false"
+
+  writeParameter "GOOGLE_MAP_URL" "prompt_skipped" "false"
+  writeParameter "OPENROAD_MAP_URL" "prompt_skipped" "false"
+
+  writeParameter "CHES_AUTH_URL" "prompt_skipped" "false"
+  writeParameter "CHES_EMAIL_URL" "prompt_skipped" "false"
+  writeParameter "EMAIL_SERVICE_CLIENT_ID" "prompt_skipped" "false"
+  writeParameter "EMAIL_SERVICE_CLIENT_SECRET" "prompt_skipped" "false"
+  writeParameter "RECIPIENT_EMAILS" "prompt_skipped" "false"
 
   writeParameter "SITEMINDER_LOGOFF_URL" "prompt_skipped" "false"
 
