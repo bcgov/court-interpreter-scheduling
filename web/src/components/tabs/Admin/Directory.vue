@@ -145,7 +145,7 @@
 
             <b-card v-else class="home-content border-white p-0">
                 <b-table
-                    :items="interpreters"
+                    :items="currentPageInterpreters"
                     :fields="interpreterFields"
                     class="border-info" 
                     sort-icon-left                                   
@@ -244,6 +244,35 @@
                     </template>
                     
                 </b-table>
+
+                <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
+                    <b-dropdown 
+                        style="height: 30% !important;"
+                        class="mr-3 py-0"      
+                        variant="primary">
+                        <template #button-content >
+                            <div style="display:inline; font-size: 0.75rem; line-height: 0.75rem !important; height: 40% !important;">
+                                Items Per Page: {{itemsPerPage}}
+                            </div>
+                        </template>
+                        <b-dropdown-item @click="switchNumberOfItems(10)">10</b-dropdown-item>
+                        <b-dropdown-item @click="switchNumberOfItems(20)">20</b-dropdown-item>
+                        <b-dropdown-item @click="switchNumberOfItems(30)">30</b-dropdown-item>
+                    </b-dropdown>
+
+                    <b-pagination                           
+                        v-model="currentPage"
+                        :total-rows="totalRows"
+                        :per-page="itemsPerPage" 
+                        first-number
+                        last-number                               
+                        first-text="First"
+                        prev-text="Prev"
+                        next-text="Next"
+                        last-text="Last">
+                    </b-pagination>
+                
+                </b-row>
             
             </b-card>
         </div>
@@ -794,7 +823,10 @@ export default class DirectoryPage extends Vue {
             thClass: 'text-white bg-court',           
             sortable:false            
         }        
-    ]    
+    ] 
+    
+    currentPage = 1;
+    itemsPerPage = 10;// Default
    
     mounted() {  
         this.dataLoaded = false;
@@ -808,6 +840,14 @@ export default class DirectoryPage extends Vue {
     public extractInfo(){
         this.languageNames = this.languages.map( language => {return language.name});
         this.find()
+    }
+
+    public switchNumberOfItems(numberOfItemsPerPage){         
+        this.itemsPerPage = numberOfItemsPerPage;
+    }
+
+    get totalRows() {
+        return this.interpreters.length
     }
 
     public find(){
@@ -839,6 +879,10 @@ export default class DirectoryPage extends Vue {
             this.dataReady = true;           
         });
         
+    }
+
+    get currentPageInterpreters(){
+        return this.interpreters.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
     }
 
     public editInterpreter(interpreterToEdit: interpreterInfoType){              

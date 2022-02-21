@@ -80,9 +80,43 @@
                     </b-button>
                 </b-col>                
             </b-row>
+            
         </b-card>
         
-        <booking-table v-if="dataLoaded" :bookings="bookings" @find="find" :searching="searching" />
+        <booking-table 
+            v-if="dataLoaded" 
+            :bookings="currentPageBookings" 
+            @find="find" 
+            :searching="searching" />
+        
+        <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4 mr-5">
+            <b-dropdown 
+                style="height: 30% !important;"
+                class="mr-3 py-0"      
+                variant="primary">
+                <template #button-content >
+                    <div style="display:inline; font-size: 0.75rem; line-height: 0.75rem !important; height: 40% !important;">
+                        Items Per Page: {{itemsPerPage}}
+                    </div>
+                </template>
+                <b-dropdown-item @click="switchNumberOfItems(10)">10</b-dropdown-item>
+                <b-dropdown-item @click="switchNumberOfItems(20)">20</b-dropdown-item>
+                <b-dropdown-item @click="switchNumberOfItems(30)">30</b-dropdown-item>
+            </b-dropdown>
+
+            <b-pagination                           
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="itemsPerPage" 
+                first-number
+                last-number                               
+                first-text="First"
+                prev-text="Prev"
+                next-text="Next"
+                last-text="Last">
+            </b-pagination>
+           
+        </b-row>
     
     </b-card>
 </template>
@@ -162,6 +196,9 @@ export default class BookingsPage extends Vue {
    
     interpreter = {} as interpreterInfoType;
     bookings: bookingSearchInfoType[] = [];  
+
+    currentPage = 1;
+    itemsPerPage = 10;// Default
     
     @Watch('userLocation')
     defaultLocationChanged(){
@@ -176,6 +213,14 @@ export default class BookingsPage extends Vue {
 
     public extractInfo(){      
         this.loadCourtLocations();        
+    }
+
+    public switchNumberOfItems(numberOfItemsPerPage){         
+        this.itemsPerPage = numberOfItemsPerPage;
+    }
+
+    get totalRows() {
+        return this.bookings.length
     }
 
     public find(){
@@ -201,7 +246,11 @@ export default class BookingsPage extends Vue {
             this.searching = false;
         });        
         
-    }    
+    }  
+    
+    get currentPageBookings(){
+        return this.bookings.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
+    }
 
     public loadCourtLocations(){
         this.$http.get('/location')
