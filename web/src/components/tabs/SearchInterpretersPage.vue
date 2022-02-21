@@ -95,16 +95,45 @@
                     @bookingChanged="ChangeBookingDate" 
                     v-for="bookingDate,inx in bookingDates" :key="inx" 
                     :bookingDate="bookingDate"/>
-            </b-row>
+            </b-row>            
         </b-card>        
    
         <search-interpreters-table 
             v-if="dataLoaded"
-            :interpreters="interpreters" 
+            :interpreters="currentPageInterpreters" 
             :searching="searching" 
             :searchLocation="location"
             :language="language" 
             :bookingDates="bookingDates" />
+
+        <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
+            <b-dropdown 
+                style="height: 30% !important;"
+                class="mr-3 py-0"      
+                variant="primary">
+                <template #button-content >
+                    <div style="display:inline; font-size: 0.75rem; line-height: 0.75rem !important; height: 40% !important;">
+                        Items Per Page: {{itemsPerPage}}
+                    </div>
+                </template>
+                <b-dropdown-item @click="switchNumberOfItems(10)">10</b-dropdown-item>
+                <b-dropdown-item @click="switchNumberOfItems(20)">20</b-dropdown-item>
+                <b-dropdown-item @click="switchNumberOfItems(30)">30</b-dropdown-item>
+            </b-dropdown>
+
+            <b-pagination                           
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="itemsPerPage" 
+                first-number
+                last-number                               
+                first-text="First"
+                prev-text="Prev"
+                next-text="Next"
+                last-text="Last">
+            </b-pagination>
+           
+        </b-row>
 
     </b-card>
 </template>
@@ -127,8 +156,6 @@ import "@/store/modules/common";
 import { bookingDateInfoType } from '@/types/Bookings/json';
 
 const commonState = namespace("Common");
-
-
 
 @Component({
     components:{
@@ -169,6 +196,9 @@ export default class SearchInterpretersPage extends Vue {
 
     bookingDates: bookingDateInfoType[]=[];
     update = 0; 
+    
+    currentPage = 1;
+    itemsPerPage = 10;// Default
 
     @Watch('userLocation')
     defaultLocationChanged(){
@@ -189,6 +219,14 @@ export default class SearchInterpretersPage extends Vue {
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
 
         this.dataReady = true;
+    }
+
+    public switchNumberOfItems(numberOfItemsPerPage){         
+        this.itemsPerPage = numberOfItemsPerPage;
+    }
+
+    get totalRows() {
+        return this.interpreters.length
     }
 
     public find(){
@@ -215,6 +253,7 @@ export default class SearchInterpretersPage extends Vue {
                 if(response?.data){
                     this.extractInterpreterDetails(response.data);                    
                 }
+                this.searching = false;
                 
             },(err) => {
                 this.searching = false;           
@@ -238,9 +277,12 @@ export default class SearchInterpretersPage extends Vue {
             interpreterInfo.push(interpreter);
         }
 
-        this.interpreters = _.sortBy(interpreterInfo,'lastName');
+        this.interpreters = _.sortBy(interpreterInfo,'lastName')       
         
-        this.searching = false;
+    }
+
+    get currentPageInterpreters(){
+        return this.interpreters.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
     }
 
     public searchAgain(){
