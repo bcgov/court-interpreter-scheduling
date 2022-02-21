@@ -31,9 +31,9 @@ objects:
           kind: ImageStreamTag
           namespace: ${SOURCE_IMAGE_NAMESPACE}
           name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
-        # env:
-        # - name: WEB_BASE_HREF
-        #   value: ${WEB_BASE_HREF}
+        env:
+        - name: WEB_BASE_HREF
+          value: ${WEB_BASE_HREF}
     output:
       to:
         kind: ImageStreamTag
@@ -86,7 +86,7 @@ parameters:
   description: The tag of the source image.
   required: true
   value: latest
-- name: PUBLIC_URL
+- name: WEB_BASE_HREF
   displayName: Web Base Href
   description: The application host path (Web Base Href).
   required: true

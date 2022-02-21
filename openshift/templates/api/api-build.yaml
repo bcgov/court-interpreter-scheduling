@@ -95,7 +95,7 @@ parameters:
     displayName: Source Image Tag
     required: true
     description: The tag of the source image.
-    value: "3.6"
+    value: "3.8"
   - name: SOURCE_IMAGE_NAMESPACE
     displayName: Namespace
     required: true
