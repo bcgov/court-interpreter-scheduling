@@ -6,7 +6,7 @@
 NAME=web-artifacts
 OUTPUT_IMAGE_TAG=latest
 GIT_REPO_URL=https://github.com/bcgov/court-interpreter-scheduling.git
-GIT_REF=dev
+GIT_REF=main
 SOURCE_CONTEXT_DIR=web
 SOURCE_IMAGE_NAMESPACE=1a7b16-tools
 SOURCE_IMAGE_NAME=web-builder

@@ -5,7 +5,7 @@
 #=========================================================
 NAME=web-runtime
 GIT_REPO_URL=https://github.com/bcgov/court-interpreter-scheduling.git
-GIT_REF=dev
+GIT_REF=main
 SOURCE_CONTEXT_DIR=docker/nginx-runtime/
 SOURCE_IMAGE_KIND=DockerImage
 SOURCE_IMAGE_NAME=docker-remote.artifacts.developer.gov.bc.ca/nginx
