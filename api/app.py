@@ -1,11 +1,13 @@
-from typing import Dict, Optional
+
 from fastapi import FastAPI, HTTPException, Depends, Response, status, Request, Cookie
-from fastapi.security import HTTPBearer
+
 import uvicorn
 import os
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_sqlalchemy import DBSessionMiddleware
+from api.repository.geo_update_schedule_transactions import check_geo_update_schedule
+
 from core.config import settings
 from core.multi_database_middleware import DATABASE_URL
 
@@ -13,8 +15,8 @@ from api.api import router as api_router
 from oidc.oidc_router import router as oidc_router
 from jc_interface.jc_router import router as jc_router
 
-from core.auth import logged_in_user
-from api.schemas.user_schema import UserSchema
+from core.multi_database_middleware import DBSession
+from core.repeat_task import repeat_every
 
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -53,10 +55,22 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
+
+
 @app.get('/api/v1/health')
 def openshift_Health_Check():
     #______Health check for OpenShift______
     return "Healthy"
+
+
+@app.on_event("startup")
+@repeat_every(seconds= 60*60)  # for 1hour  ==>  60*60
+async def geo_update_schedule_task() -> None:
+    print("_________CHECK___GEO_Update_Schedule________")
+    with DBSession() as db:
+        await check_geo_update_schedule(db)
+
+      
 
 def start_main():
 

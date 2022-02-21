@@ -1,4 +1,5 @@
 from datetime import datetime
+from api.repository.geo_transactions import get_next_update_date
 from jc_interface.jc_calls import JcInterfaceCalls
 from models.court_location_model import CourtLocationModel
 from sqlalchemy.orm import Session
@@ -83,7 +84,18 @@ def update_courts_info_in_db(db: Session, google_map: bool):
                     "geo_service": geo_service
                 })
 
-    geo_status.update({"progress":100, "updated_at":datetime.now(), 'update_service': geo_service})          
+
+    next_update = None
+    update_schedule = geo_status.first().update_schedule
+    if update_schedule:
+        next_update = get_next_update_date(update_schedule, datetime.now())
+
+    geo_status.update({
+        "progress":100, 
+        "updated_at":datetime.now(), 
+        "update_service": geo_service, 
+        "next_update_at":next_update
+    })          
     db.commit()
 
 
