@@ -55,15 +55,31 @@
                     </b-col>
                 </b-row>
             </div>
+
             <b-row style="margin-top:-2.25rem;">
                 <b-col>
-                    <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
+                    <b-button @click="setDatesToday" style="width:8rem;" variant="primary">Today</b-button>
+                </b-col>
+                <b-col>
+                    <b-button @click="setDatesOneWeek" style="width:8rem;" variant="primary">One Week</b-button>
+                </b-col>
+                <b-col>
+                    <b-button @click="setDatesTwoWeeks" style="width:8rem;" variant="primary">Two Weeks</b-button>
+                </b-col>
+                <b-col>
+                    <b-button @click="setDatesOneMonth" style="width:8rem;" variant="primary" >One Month</b-button>
+                </b-col>
+            </b-row>
+
+            <b-row class="border rounded mx-0" style="margin-top:1rem; box-shadow: 0px 0px 6px 3px #DDD;">
+                <b-col>
+                    <b-button @click="focusSearchButton();onShow=false" class="border" variant="white" style="width:7rem;" >Cancel</b-button>
                 </b-col>
                 <b-col>
                     <b-button @click="clearDates" class="border" variant="warning">Remove Date Filter</b-button>
                 </b-col>
                 <b-col>
-                    <b-button @click="AddDates" class="px-4" variant="success" style="float:right">Add</b-button>
+                    <b-button @click="AddDates" class="px-4" variant="success" style="float:right; width:7rem;">Add</b-button>
                 </b-col>
             </b-row>
         </b-popover>
@@ -107,7 +123,7 @@ export default class BookingDateRangePicker extends Vue {
 
     public clearDates(){ 
         this.dates=[null,null]
-        this.AddDates()
+        // this.AddDates()
     }
 
     public initDates(){
@@ -159,6 +175,33 @@ export default class BookingDateRangePicker extends Vue {
         if(day==0 || day==6) return false
         else return true
     }
+
+
+    public setDatesToday(){
+        const today = moment().format("YYYY-MM-DD")        
+        this.dates=[today, today]
+        this.pickerDateL = moment().format("YYYY-MM")
+    }
+
+    public setDatesOneWeek(){
+        const today = moment().format("YYYY-MM-DD")
+        const nextWeek = moment().add(6,'days').format("YYYY-MM-DD")        
+        this.dates=[today, nextWeek]
+        this.pickerDateL = moment().format("YYYY-MM")
+    }
+
+    public setDatesTwoWeeks(){
+        const today = moment().format("YYYY-MM-DD")
+        const twoWeek = moment().add(13,'days').format("YYYY-MM-DD")
+        this.dates=[today, twoWeek]
+        this.pickerDateL = moment().format("YYYY-MM")
+    }
+
+    public setDatesOneMonth(){
+        const today = moment().format("YYYY-MM-DD")
+        const oneMonth = moment(today).add(1,'month').format("YYYY-MM-DD")       
+        this.dates=[today, oneMonth]
+    }
 }
 </script>
 
@@ -166,11 +209,11 @@ export default class BookingDateRangePicker extends Vue {
     .popover{
         border-radius: 10px;
         border:1px solid #EEE;
-        height: 28rem;
+        height: 33rem;
         width: 40rem;
         max-width: 40rem;
         margin:0 -.5rem;
         padding: 0;
-        box-shadow: 3px 5px 6px #DDD;
+        box-shadow: 3px 3px 6px 6px #DDD;
     }
 </style>
