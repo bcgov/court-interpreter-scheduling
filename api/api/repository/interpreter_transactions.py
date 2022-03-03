@@ -1,3 +1,7 @@
+import csv
+import datetime
+import os
+
 from starlette import status
 from api.repository.geo_transactions import get_next_update_date
 from models.interpreter_model import InterpreterModel
@@ -293,3 +297,25 @@ def apply_address_changes(old_interpreter, interpreter_request):
         interpreter_request = add_geo_coordinates(interpreter_request)
     
     return  interpreter_request
+
+
+def get_filepath_of_excel_sheet_have_interpreters_data(db: Session):
+    parent_dir_path = os.path.dirname(os.path.realpath(__file__))
+    interpreters = db.query(InterpreterModel).filter(InterpreterModel.disabled==False).all()
+    keys_to_remove = ['created_at', 'updated_at', 'updated_by']
+    filename = f'{parent_dir_path}/Interpreter Data.csv'
+
+    with open(filename, 'w') as csv_file:
+        column_names = InterpreterModel.__table__.columns.keys()
+        for key in keys_to_remove:
+            column_names.remove(key)
+
+        file_obj = csv.DictWriter(csv_file, column_names)
+        file_obj.writeheader()
+        for interpreter in interpreters:
+            interpreter_in_dict = interpreter.__dict__
+            for key in keys_to_remove + ['_sa_instance_state']:
+                interpreter_in_dict.pop(key, None)
+            file_obj.writerow(interpreter_in_dict)
+
+    return filename
