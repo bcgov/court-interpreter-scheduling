@@ -2,8 +2,10 @@ import csv
 import datetime
 import os
 
+from typing import List
 from starlette import status
 from api.repository.geo_transactions import get_next_update_date
+from api.repository.constants import KEYS_TO_REMOVE
 from models.interpreter_model import InterpreterModel
 from models.user_model import UserModel
 from models.language_model import LanguageModel, InterpreterLanguageModel
@@ -299,23 +301,34 @@ def apply_address_changes(old_interpreter, interpreter_request):
     return  interpreter_request
 
 
-def get_filepath_of_excel_sheet_have_interpreters_data(db: Session):
+def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_ids: List[int], db: Session):
     parent_dir_path = os.path.dirname(os.path.realpath(__file__))
-    interpreters = db.query(InterpreterModel).filter(InterpreterModel.disabled==False).all()
-    keys_to_remove = ['created_at', 'updated_at', 'updated_by']
+    interpreters = db.query(InterpreterModel).filter(
+        InterpreterModel.disabled==False,
+        InterpreterModel.id.in_(interpreter_ids)
+    ).all()
     filename = f'{parent_dir_path}/Interpreter Data.csv'
 
     with open(filename, 'w') as csv_file:
         column_names = InterpreterModel.__table__.columns.keys()
-        for key in keys_to_remove:
+        for key in KEYS_TO_REMOVE:
             column_names.remove(key)
 
         file_obj = csv.DictWriter(csv_file, column_names)
         file_obj.writeheader()
         for interpreter in interpreters:
-            interpreter_in_dict = interpreter.__dict__
-            for key in keys_to_remove + ['_sa_instance_state']:
-                interpreter_in_dict.pop(key, None)
+            interpreter_in_dict = get_beautify_interpreter_data(interpreter.__dict__)
             file_obj.writerow(interpreter_in_dict)
 
     return filename
+
+
+def get_beautify_interpreter_data(interpreter_in_dict: dict):
+    for key in KEYS_TO_REMOVE + ['_sa_instance_state']:
+        interpreter_in_dict.pop(key, None)
+
+    interpreter_in_dict['contract_valid'] = "Yes" if interpreter_in_dict['contract_valid'] else "No"
+    interpreter_in_dict['completed_training'] = "Yes" if interpreter_in_dict['completed_training'] else "No"
+    interpreter_in_dict['crc_check_date'] = interpreter_in_dict['crc_check_date'].strftime('%d-%b-%Y') if interpreter_in_dict['crc_check_date'] else ''
+
+    return interpreter_in_dict
