@@ -301,11 +301,11 @@ def apply_address_changes(old_interpreter, interpreter_request):
     return  interpreter_request
 
 
-def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_ids: List[int], db: Session):
+def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: Session):
     parent_dir_path = os.path.dirname(os.path.realpath(__file__))
     interpreters = db.query(InterpreterModel).filter(
         InterpreterModel.disabled==False,
-        InterpreterModel.id.in_(interpreter_ids)
+        InterpreterModel.id.in_(interpreter_request.ids)
     ).all()
     filename = f'{parent_dir_path}/Interpreter Data.csv'
 
