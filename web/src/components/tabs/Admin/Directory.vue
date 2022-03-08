@@ -52,8 +52,10 @@
                         </b-form-select> 
                     </b-form-group>
                 </b-col>
-                <b-col cols="4">
-                    <b-form-group                       
+                <b-col cols="1" />
+                <b-col cols="2">
+                    <b-form-group
+                        style="width:20rem;"                       
                         label="Level" 
                         label-for="level">
                         <b-form-checkbox-group
@@ -67,8 +69,8 @@
                         ></b-form-checkbox-group>
                     
                     </b-form-group>
-
                 </b-col>
+                <b-col cols="1" />
                 <b-col cols="4">
                     <b-form-group                        
                         label="Active/Inactive" 
@@ -91,49 +93,44 @@
                     <div class="mb-1">Criminal Record Check Expiry</div>
                     <booking-date-range-picker :key="updateCrc" :bookingRange="crcExpiryDate" @datesAdded="addCrcExpiryDates"/>                          
                 </b-col>
-                <b-col cols="4">
+                <b-col cols="1" />
+                <b-col cols="2">
                      <b-button 
                         name="search"
                         @keyup.enter="find()"
-                        style="margin: 2rem 6rem; padding: 0.25rem 2rem;" 
+                        style="margin: 2rem 3rem; padding: 0.25rem 2rem;" 
                         :disabled="searching"
                         variant="primary"
                         @click="find()"
                         ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; height:2rem; transform:translate(0px,-24px);"/>
                         <span style="font-size: 20px;" v-else>Search</span>
                     </b-button>
-
                 </b-col>
-                <b-col cols="4"></b-col>
+                <b-col cols="1" />
+                <b-col cols="4">
+                    <div class="text-right mt-4" style="">
+                        <b-button 
+                            class="ml-0 bg-transparent border border-success"
+                            size="lg"
+                            @click="createInterpreter"
+                            v-b-tooltip.hover.noninteractive.v-success
+                            title="create new interpreter">
+                            <b-icon-plus scale="1.5" variant="success"/>
+                        </b-button>
+
+                        <b-button 
+                            class="ml-2 bg-transparent border border-primary"
+                            size="lg"
+                            @click="downloadArchive"
+                            v-b-tooltip.hover.noninteractive.v-primary
+                            title="download archive">
+                            <b-icon-download variant="primary"/>
+                        </b-button>
+                    </div>
+                </b-col>
                 
             </b-row>
         </b-card>
-
-        <b-row class="mb-2" v-if="dataReady">
-
-            <b-col cols="10"></b-col>
-            
-            <b-col cols="2">                
-                <b-button 
-                    class="ml-5 bg-transparent border border-success"
-                    size="lg"
-                    @click="createInterpreter"
-                    v-b-tooltip.hover.noninteractive.v-success
-                    title="create new interpreter">
-                    <b-icon-plus scale="1.5" variant="success"/>
-                </b-button>
-
-                <!-- <b-button 
-                    class="ml-2 bg-transparent border border-primary"
-                    size="lg"
-                    @click="downloadArchive"
-                    v-b-tooltip.hover.noninteractive.v-primary
-                    title="download archive">
-                    <b-icon-download variant="primary"/>
-                </b-button> -->
-            </b-col>
-
-        </b-row>
 
         <loading-spinner color="#000" v-if="searching" waitingText="Loading Results ..." /> 
 
@@ -915,8 +912,31 @@ export default class DirectoryPage extends Vue {
     }
 
     public downloadArchive(){
-        console.log('copying');
 
+        console.log(this.interpreters)
+        const options = {
+            responseType: "blob",
+            headers: {
+            "Content-Type": "text/csv",
+            }
+        }
+        const body = {ids:[1,2]}
+        
+        this.$http.post('/interpreter/download-data-in-excel',body, options)
+        .then((response) => {            
+            if(response?.data){                 
+                const blob = response.data;
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                document.body.appendChild(link);
+                link.download = "interpreters.csv";
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(link.href), 1000);                
+            }   
+            
+        },(err) => {
+            
+        });
     }
 
     public openDetails(newExpandedInterpreter: interpreterInfoType){
