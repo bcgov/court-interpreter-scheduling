@@ -2,7 +2,7 @@
 from models.geo_status_model import GeoStatusModel
 from sqlalchemy.orm.session import Session
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 from core.repeat_task import repeat_every
 from core.multi_database_middleware import DBSession
@@ -18,7 +18,7 @@ async def check_geo_update_schedule(db: Session):
         days_diff, minutes_diff, updating_name, progress= get_time_diff(id,db)
 
         if days_diff<0:
-            print("Update_Late")
+            # print("Update_Late")
             update_geo(updating_name, progress, db)
 
         if days_diff==0 and minutes_diff<60:
@@ -34,14 +34,14 @@ async def check_geo_update_schedule(db: Session):
 def check_geo_update_schedule_every_5mins(id, db: Session):
     days_diff, minutes_diff, updating_name, progress= get_time_diff(id, db)
     if days_diff<0:       
-        print("Update_OnTime_ID_"+str(id))
+        # print("Update_OnTime_ID_"+str(id))
         update_geo(updating_name, progress, db)
  
 
 
 @repeat_every(seconds=300, max_repetitions=13) # second= 60*5=300 => every 5mins
 def check_id_1_update_schedule_task() -> None:
-    print("________SECOND__LOOP_____ID_1_____________________________")
+    # print("________SECOND__LOOP_____ID_1_____________________________")
     id = 1
     with DBSession() as db:
         check_geo_update_schedule_every_5mins(id, db)
@@ -49,7 +49,7 @@ def check_id_1_update_schedule_task() -> None:
 
 @repeat_every(seconds=300, max_repetitions=13) # second= 60*5=300 => every 5mins
 def check_id_2_update_schedule_task() -> None:
-    print("________SECOND__LOOP_____ID_2_____________________________")
+    # print("________SECOND__LOOP_____ID_2_____________________________")
     id = 2
     with DBSession() as db:
         check_geo_update_schedule_every_5mins(id, db)
@@ -73,13 +73,13 @@ def get_time_diff(id, db:Session):
         days_diff = 1000
         minutes_diff = 1000
     
-    print("_______________________")
-    print("Update For "+str(updating_name))
-    print("")
-    print("Next Update at: "+str(next_update))    
-    print("Current Time:   "+str(current_time))
-    print("Days diff: "+str(days_diff))
-    print("Minutes diff: "+str(minutes_diff))
+    # print("_______________________")
+    # print("Update For "+str(updating_name))
+    # print("")
+    # print("Next Update at: "+str(next_update))    
+    # print("Current Time:   "+str(current_time))
+    # print("Days diff: "+str(days_diff))
+    # print("Minutes diff: "+str(minutes_diff))
         
     return days_diff, minutes_diff, updating_name, progress
 
@@ -89,9 +89,9 @@ def get_time_diff(id, db:Session):
 def update_geo(updating_name, progress, db):
     
     if progress==100:
-        print("__________________________Updating____________________________>>>______"+str(updating_name))
+        # print("__________________________Updating____________________________>>>______"+str(updating_name))
         
-        google_map=False #TODO
+        google_map=True
         
         if updating_name=='interpreters':
             update_interpreter_geo_coordinates_in_db(db, google_map)

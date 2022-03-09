@@ -6,8 +6,8 @@ FROM cis-runtime:latest
 # to the distribution folder on the runtime image.
 # ==> For Vue
 # COPY --from=builder /opt/app-root/src/dist/. /tmp/app/dist/   
-# ==> For React
-COPY --from=builder /opt/app-root/src/build/. /tmp/app/dist/
+# ==> For Vue
+COPY --from=builder /opt/app-root/src/dist/. /tmp/app/dist/
 
 # Since the runtime image is itself an s2i image we need to
 # short circuit the s2i lifecycle.
