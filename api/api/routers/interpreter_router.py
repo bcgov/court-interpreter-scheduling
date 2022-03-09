@@ -1,4 +1,7 @@
+from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends, Request
+from fastapi.responses import FileResponse
+from starlette.background import BackgroundTasks
 from threading import Thread
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
@@ -10,7 +13,11 @@ from models.interpreter_model import InterpreterModel
 from core.auth import admin_user, user_in_role
 from typing import List
 
-from api.repository.interpreter_transactions import create_interpreter_in_db, modify_interpreter_in_db
+from api.repository.interpreter_transactions import (
+    create_interpreter_in_db, modify_interpreter_in_db,
+    get_filepath_of_excel_sheet_have_interpreters_data
+)
+from api.repository.utils import remove_file
 from api.repository.user_transactions import get_update_by
 
 
@@ -37,6 +44,13 @@ def get_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(ad
     interpreter = db.query(InterpreterModel).filter(InterpreterModel.disabled==False).all()
     return interpreter
 
+
+@router.post('/download-data-in-excel/{List[ids]}', status_code=status.HTTP_200_OK, response_class=FileResponse)
+def get_All_Interpreters_In_Excel(ids: List[int], background_task: BackgroundTasks, db: Session= Depends(get_db_session), user=Depends(admin_user)):
+    file_path = get_filepath_of_excel_sheet_have_interpreters_data(ids, db)
+    background_task.add_task(remove_file, file_path)
+
+    return FileResponse(file_path)
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=InterpreterGetAdminResponseSchema)

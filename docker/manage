@@ -66,7 +66,7 @@ build-web() {
   # web
   #
   # The cis-runtime image is used for the final runtime image.
-  # The cis-web-artifacts image is used to build the artifacts for the react distribution.
+  # The cis-web-artifacts image is used to build the artifacts for the vue distribution.
   # The cis-web image is copy of the cis-runtime image complete with a copy of the build artifacts.
   #
   echo -e "\n\n===================================================================================================="
@@ -93,7 +93,7 @@ build-web() {
   echo -e "----------------------------------------------------------------------------------------------------"
   docker build \
     -t ${COMPOSE_PROJECT_NAME}'-web' \
-    -f './react-on-nginx/Dockerfile' './react-on-nginx/'
+    -f './vue-on-nginx/Dockerfile' './vue-on-nginx/'
   echo -e "===================================================================================================="
 }
 
@@ -144,7 +144,7 @@ configureEnvironment () {
   export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD-db_password}
 
   # api
-  export API_HTTP_PORT=${API_HTTP_PORT-8081}
+  export API_HTTP_PORT=${API_HTTP_PORT-8080}
   export PDF_SERVICE_URL=${PDF_SERVICE_URL-http://pdf:5001}
   export DATABASE_SERVICE_NAME="db"
   export DATABASE_ENGINE="postgresql"
@@ -169,8 +169,14 @@ configureEnvironment () {
   export EMAIL_SERVICE_CLIENT_SECRET=${EMAIL_SERVICE_CLIENT_SECRET}
   export RECIPIENT_EMAILS=${RECIPIENT_EMAILS}
 
+  export EFILING_HUB_API_BASE_URL=${EFILING_HUB_API_BASE_URL}
+  export EFILING_HUB_KEYCLOAK_CLIENT_ID=${EFILING_HUB_KEYCLOAK_CLIENT_ID}
+  export EFILING_HUB_KEYCLOAK_BASE_URL=${EFILING_HUB_KEYCLOAK_BASE_URL}
+  export EFILING_HUB_KEYCLOAK_SECRET=${EFILING_HUB_KEYCLOAK_SECRET}
+  export EFILING_HUB_KEYCLOAK_REALM=${EFILING_HUB_KEYCLOAK_REALM}
+
   # web
-  export WEB_HTTP_PORT=${WEB_HTTP_PORT-8080}
+  export WEB_HTTP_PORT=${WEB_HTTP_PORT-8081}
   export API_URL=${API_URL-http://api:8080/api}
   export WEB_BASE_HREF=${DEFAULT_BASE_URL}
   export PUBLIC_URL=${DEFAULT_BASE_URL}

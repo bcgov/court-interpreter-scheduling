@@ -7,11 +7,15 @@ def get_geo(address, google_map):
 
     if google_map == True:
         url = settings.GOOGLE_MAP_URL.format(address)
+        response = requests.get(url)
+        result = response.json()
+        return result['results'], result['status']
     else:   
         url = settings.OPENROAD_MAP_URL.format(address)
+        response = requests.get(url)
+        return response.json(), None
     
-    response = requests.get(url)
-    return response.json()
+    
 
 def get_name_of_province(abvr):
     states={
@@ -39,14 +43,6 @@ def get_name_of_province(abvr):
 
 def get_latitude_longitude_service(address_line1, address_line2, city, postal_code, province, google_map):
     
-    # google_map = True
-    # address = "BC, Canada"
-    
-    # response = get_geo(address, google_map)
-    # # print(response)
-    # if response['status'] == 'REQUEST_DENIED':
-    #     google_map = False
-
 
     if address_line1 is None: address_line1 = ""
     if address_line2 is None: address_line2 = ""
@@ -78,8 +74,6 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     address_line2 = address_line2.replace("#", "no ")
     
     address_line = address_line1.lower() + ", " + address_line2.lower()    
-    # print("____")
-    # print(address_line) 
 
     # Remove Bag 123 or Box 123  
     address_line = re.sub( "bag [0-9]+,", "", address_line)
@@ -95,21 +89,17 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     address_line = re.sub( "yellowhwad", "yellowhead", address_line)
     address_line = re.sub( "mirtle", "Murtle", address_line)
     
-    # print(address_line)
-
-
-    # address_line
 
     address = f"{address_line}, {city}, {postal_code}, {province}, {country}"
-    found_locations = get_geo(address, google_map) 
+    found_locations, google_map_status = get_geo(address, google_map) 
 
-    if google_map==True and found_locations['status'] == 'REQUEST_DENIED':
+    if google_map==True and google_map_status == 'REQUEST_DENIED':
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Please review the google map subscription.")
 
     
     if len(found_locations)==0:
         address = f"{address_line}, {city}, {province}, {country}"
-        found_locations = get_geo(address, google_map)
+        found_locations, google_map_status = get_geo(address, google_map)
 
     if len(found_locations)==0:
         if "ave." in address_line or "avenue" in address_line:
@@ -120,34 +110,37 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
             address_line_tmp = re.sub( "street", "avenue", address_line_tmp)
 
         address = f"{address_line_tmp}, {city}, {province}, {country}"
-        found_locations = get_geo(address, google_map)
+        found_locations, google_map_status = get_geo(address, google_map)
     
     if len(found_locations)==0:
         address_line = re.sub( "(?<!\S)\d+(?!\S)", "", address_line)
         address_line = re.sub( "[0-9]+-[0-9]+", "", address_line)
-        # print("+++++++++++++++")
-        # print(address_line)
         address = f"{address_line}, {city}, {province}, {country}"
-        found_locations = get_geo(address, google_map)
+        found_locations, google_map_status = get_geo(address, google_map)
     
-    if len(found_locations)==0:
-        # print("======================")
-        # print(city)
-        address = f"{city}, {province}, {country}"
-        # print(address)
-        found_locations = get_geo(address, google_map)
+    if len(found_locations)==0:        
+        address = f"{city}, {province}, {country}"        
+        found_locations, google_map_status = get_geo(address, google_map)
     
-    # print(len(found_locations))
-    # print(found_locations)
 
-    # return len(found_locations)
 
-    if len(found_locations)==1:
-        return found_locations[0]["lat"], found_locations[0]["lon"]
+    if google_map == True:
+        if len(found_locations)==1:
+            return found_locations[0]["geometry"]["location"]["lat"], found_locations[0]["geometry"]["location"]["lng"]
+        else:
+            for found_location in found_locations:
+                if "courthouse" in found_location['types'] :
+                    return found_location["geometry"]["location"]["lat"], found_location["geometry"]["location"]["lng"]
+
+            return found_locations[0]["geometry"]["location"]["lat"], found_locations[0]["geometry"]["location"]["lng"]
+
     else:
-        for found_location in found_locations:
-            if found_location['type'] == "administrative":
-                return found_location["lat"], found_location["lon"]
+        if len(found_locations)==1:
+            return found_locations[0]["lat"], found_locations[0]["lon"]
+        else:
+            for found_location in found_locations:
+                if found_location['type'] == "administrative":
+                    return found_location["lat"], found_location["lon"]
 
-        return found_locations[0]["lat"], found_locations[0]["lon"]
+            return found_locations[0]["lat"], found_locations[0]["lon"]
 
