@@ -51,20 +51,24 @@
 
                     <template v-slot:cell(edit)="data">
                         <b-row  style="float: right;" class="mr-1">
-                            <!-- <b-button style="font-size:12px;" 
-                                size="sm"       
-                                @click="downloadAdm(data.item);" 
-                                class="text-primary bg-info border-info mt-1 " 
+                            <b-button style="font-size:11px;" 
+                                size="sm" 
+                                v-b-tooltip.hover.top.noninteractive
+                                title="Adm322 Forms"      
+                                @click="openAdm(data.item);" 
+                                class="text bg-select border-info my-1 px-1 " 
                                 ><img 
                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHaADAAQAAAABAAAAHAAAAADjGz/hAAAC2klEQVRIDe1Wy0uUURQ/9442PTaJLWqaiiCjqP6AwEAhwgja6cCMizaWIwW1aqM0QS1aGjRDERWlU1kpvWmjFhG0aBMFolCUj15ibULS8Z5+99Mr1++bme4IbaJvMfe87u93zrmvIfr//cUOCD/22nj6EpM4QMQBnz/WrwtBN6uqtjb2p2pzfp+tS1vR8mIJvblMsaGhges1qb4yP66tB6qJxNM8F3BGCPHcDi4mM/P9eb8QPWtWyNirC4em522WUJAUjobRbMstK7aoaCXrxSHheyurKuvfphqm/BMD7fUH5NN1+7alupagukDSJh6+/T+Gxrs3HXkUNjYzLop0cHAg831w/Ne6xkydAco3MtO+yYkPPX5f0QX3BxtdCpIKK68ElRsb2vnJyN7IvBQhFah47wI7lJJIo4nzOxSpc4p5lwek6E4kke4NUVnrcOfBiA2Oo1cPvcu2Gdm5vevj6QrFqpdAiIWcFCQmiEQIQLtnhNpuAF1GZ9KcJFTHqzxQKXeOZpOVMhSqRadjYx3Nl13ITIxze0NCvJvB1aE/ZnUXR+QGiZnu0c7kbQNmj3PHLe/udq50+FryDRDa0FLNvQEEx1WOX2JNn0SPdS2zCf8kO5NqIGR/isLhjVLKo0jgqQfOtIe/jiMZ98+5vRoymkjH5fTUt48dze1Q21HlY1Rdh7dhs58y2pipUYr7tF1KUTvSkew3Mc6kADmsFJ3FDhaReGYAL8pnnMFqDcRSPDSALqN7e2XZMxL0YhaUt4CwRsu4FE6XunudSUeuNr0e60xWh5eXr0aVXmUSxwW7t3U2EfdfZ1ID+f5i0xfIw7gcpkSIfxp7KWPgHJknCo6SnjZNinVPYfOcKJYANtXJkistBogdmtKghWK0T8cUrBQTS/rngLV9YMjyVWwIdUwe0ozCIQjYDWChcSzbsmCOTWwT6vmB9griK8hl9pItxOBgN632EzpM/YdCfgOczgLVckVGfAAAAABJRU5ErkJggg==" 
                                     alt="">                                                                                  
-                            </b-button> -->
+                            </b-button>
                             <b-button 
                                 style="font-size:11px;" 
-                                size="lg"       
+                                size="lg"
+                                v-b-tooltip.hover.top.noninteractive
+                                title="Edit Booking"        
                                 @click="editBooking(data.item);" 
                                 class="text-primary bg-info border-info my-1 px-2 ml-2" >
-                                <b-icon-pencil-fill scale="1.25"/>                                                       
+                                <b-icon-pencil-fill class="mx-1" scale="1.35"/>                                                       
                             </b-button>
                         </b-row> 
                     </template>                   
@@ -388,7 +392,26 @@
                  <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary closeButton" @click="$bvModal.hide('bv-modal-interpreter-details')"
                  >&times;</b-button>
             </template>
-        </b-modal>  
+        </b-modal>
+
+        <b-modal size="xl xxl" v-model="showAdmWindow" header-class="none" >
+            <template v-slot:modal-title>
+                <b-row class="ml-1">
+                    <img class="img-fluid d-none d-md-block"
+                        src="@/images/bcid-logo-text-en.svg"
+                        width="60"
+                        height="60"                    
+                        alt="B.C. Government Logo"/>
+                    <div style="font-size:16pt; margin:1rem 0 0 1rem;" >ADM-322</div>
+                </b-row>
+            </template>
+            <adm-forms :booking="booking"/>
+            <template v-slot:modal-footer>                
+                <b-button class="mr-auto" variant="dark" @click="showAdmWindow=false">Cancel</b-button>
+            </template>
+        </b-modal> 
+
+        
     
     </b-card>
 </template>
@@ -401,6 +424,7 @@ import { max } from 'underscore';
 import InterpreterDetails from "./InterpreterDetails.vue";
 import DateCard from "./DateCard.vue"
 import BookingDatePicker from "./BookingDatePicker.vue"
+import AdmForms from "./AdmForms.vue"
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -416,7 +440,8 @@ import { locationsInfoType } from '@/types/Common/json';
     components:{
         InterpreterDetails,
         DateCard,
-        BookingDatePicker
+        BookingDatePicker,
+        AdmForms
     }
 })
 export default class BookingTable extends Vue {
@@ -439,6 +464,8 @@ export default class BookingTable extends Vue {
     showBookingWindow = false;
     showInterpreterDetailsWindow = false;
 
+    showAdmWindow = false;
+
     interpreterDetails = {} as bookingInterpreterInfoType;
     bookingStates = {} as bookingStatesInfoType;  
     booking = {} as bookingSearchInfoType;
@@ -459,14 +486,14 @@ export default class BookingTable extends Vue {
     }
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:18%'},
+        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:17%'},
         {key:'file',           label:'Court File Number', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:10%'},
         {key:'caseName',       label:'Case Name',         sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:12.5%'},
         {key:'language',       label:'Language',          sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:9%'},
         {key:'interpreter',    label:'Interpreter',       sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:20%'},
         {key:'status',         label:'Status',            sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:6%'},
-        {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:12%'},
-        {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:5%'}
+        {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
+        {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:7%'}
     ];
 
 
@@ -516,8 +543,20 @@ export default class BookingTable extends Vue {
         
     }
 
-    public downloadAdm(bookingInfo: bookingSearchInfoType){
-        console.log('downloading');
+    public openAdm(bookingInfo: bookingSearchInfoType){
+        console.log(bookingInfo);
+        this.booking = JSON.parse(JSON.stringify((bookingInfo)));
+        const interp = this.booking.interpreter
+        this.booking.interpreter.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
+        this.booking.interpreter.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
+        const bookingLanguage = interp.languages.filter(lan =>lan.languageName == this.booking.language)
+        this.booking.level = bookingLanguage.length>0? bookingLanguage[0].level:null;
+        this.booking.federalYN = this.booking.federal? 'Yes':'No' ;
+        this.booking.multipleLanguages = "No"
+        const bookingCourt = this.courtLocations.filter(court => court.id == this.booking.locationId)
+        this.booking.registry = bookingCourt.length>0?  bookingCourt[0].name : ''
+        this.booking.created_at = Vue.filter('iso-date')(bookingInfo.created_at)
+        this.showAdmWindow = true;
     }
 
     public sortByDate(data){
@@ -593,6 +632,12 @@ export default class BookingTable extends Vue {
     }
 }
 </script>
+<style lang="scss">
+    .modal-dialog.modal-xl.xxl .modal-content{
+        width: 150% !important;
+        margin-left:-25%;
+    }
+</style>
 
 <style scoped lang="scss">
     .labels {

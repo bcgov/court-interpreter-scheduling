@@ -39,3 +39,7 @@ class InterpreterSearchResponseSchema(InterpreterBase):
     booking: Optional[List[BookingSearchResponseSchema]] = []
     created_at: Optional[datetime]
 
+
+class InterpreterDataInExcelRequestSchema(BaseModel):
+    ids: List[int]
+
