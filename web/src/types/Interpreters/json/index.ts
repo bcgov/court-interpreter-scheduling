@@ -3,6 +3,7 @@ export interface interpreterInfoType {
     lastName: string;
     firstName: string;
     fullAddress?:string;
+    fullName?:string;
     address: string;
     city: string;
     province: string;

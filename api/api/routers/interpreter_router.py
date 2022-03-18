@@ -6,7 +6,7 @@ from threading import Thread
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from api.schemas.interpreter_schema import  InterpreterGetAdminResponseSchema , InterpreterCreateModifyRequestSchema
-from api.schemas.interpreter_search_schema import  InterpreterSearchResponseSchema, InterpreterSearchRequestSchema
+from api.schemas.interpreter_search_schema import  InterpreterSearchResponseSchema, InterpreterSearchRequestSchema, InterpreterDataInExcelRequestSchema
 
 from api.repository.search_interpreter_transactions import search_Interpreter
 from models.interpreter_model import InterpreterModel
@@ -17,7 +17,7 @@ from api.repository.interpreter_transactions import (
     create_interpreter_in_db, modify_interpreter_in_db,
     get_filepath_of_excel_sheet_have_interpreters_data
 )
-from api.repository.utils import remove_file
+
 from api.repository.user_transactions import get_update_by
 
 
@@ -45,12 +45,10 @@ def get_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(ad
     return interpreter
 
 
-@router.post('/download-data-in-excel/{List[ids]}', status_code=status.HTTP_200_OK, response_class=FileResponse)
-def get_All_Interpreters_In_Excel(ids: List[int], background_task: BackgroundTasks, db: Session= Depends(get_db_session), user=Depends(admin_user)):
-    file_path = get_filepath_of_excel_sheet_have_interpreters_data(ids, db)
-    background_task.add_task(remove_file, file_path)
+@router.post('/download-data-in-excel', status_code=status.HTTP_200_OK, response_class=FileResponse)
+def get_All_Interpreters_In_Excel(request: InterpreterDataInExcelRequestSchema, background_task: BackgroundTasks, db: Session = Depends(get_db_session), user = Depends(admin_user)):
+    return get_filepath_of_excel_sheet_have_interpreters_data(request, db) 
 
-    return FileResponse(file_path)
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=InterpreterGetAdminResponseSchema)

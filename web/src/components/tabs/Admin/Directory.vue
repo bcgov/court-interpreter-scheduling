@@ -913,14 +913,16 @@ export default class DirectoryPage extends Vue {
 
     public downloadArchive(){
 
-        console.log(this.interpreters)
         const options = {
             responseType: "blob",
             headers: {
-            "Content-Type": "text/csv",
+            "Content-Type": "application/json",
             }
         }
-        const body = {ids:[1,2]}
+
+        const body = {            
+            "ids":this.interpreters.map(interpreter=>interpreter.id)
+        }
         
         this.$http.post('/interpreter/download-data-in-excel',body, options)
         .then((response) => {            

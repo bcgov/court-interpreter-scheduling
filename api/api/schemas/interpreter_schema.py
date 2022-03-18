@@ -68,6 +68,11 @@ class InterpreterBookingResponseSchema(BaseModel):
     email: Optional[str]
     languages: Optional[List[InterpreterLanguageSchema]] = []
 
+    address: Optional[str]
+    city: Optional[str]
+    province: Optional[str] = "BC"
+    postal_code: Optional[str] = Field(alias="postal")
+
     class Config():
         orm_mode = True
         allow_population_by_field_name = True

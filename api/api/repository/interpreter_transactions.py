@@ -1,6 +1,7 @@
 import csv
 import datetime
-import os
+import io
+from fastapi.responses import StreamingResponse
 
 from typing import List
 from starlette import status
@@ -301,26 +302,32 @@ def apply_address_changes(old_interpreter, interpreter_request):
     return  interpreter_request
 
 
-def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_ids: List[int], db: Session):
-    parent_dir_path = os.path.dirname(os.path.realpath(__file__))
+
+def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: Session):
+
     interpreters = db.query(InterpreterModel).filter(
         InterpreterModel.disabled==False,
-        InterpreterModel.id.in_(interpreter_ids)
+        InterpreterModel.id.in_(interpreter_request.ids)
     ).all()
-    filename = f'{parent_dir_path}/Interpreter Data.csv'
+    
 
-    with open(filename, 'w') as csv_file:
-        column_names = InterpreterModel.__table__.columns.keys()
-        for key in KEYS_TO_REMOVE:
-            column_names.remove(key)
+    csv_file = io.StringIO()
+    column_names = InterpreterModel.__table__.columns.keys()
+    for key in KEYS_TO_REMOVE:
+        column_names.remove(key)
 
-        file_obj = csv.DictWriter(csv_file, column_names)
-        file_obj.writeheader()
-        for interpreter in interpreters:
-            interpreter_in_dict = get_beautify_interpreter_data(interpreter.__dict__)
-            file_obj.writerow(interpreter_in_dict)
+    file_obj = csv.DictWriter(csv_file, column_names)
+    file_obj.writeheader()
+    for interpreter in interpreters:
 
-    return filename
+        interpreter_in_dict = get_beautify_interpreter_data(interpreter.__dict__)
+        file_obj.writerow(interpreter_in_dict)
+    
+    csv_file.seek(0)
+    response = StreamingResponse(csv_file, media_type="text/csv")
+    response.headers["Content-Disposition"] =  'filename=interpreters.csv'
+    return  response
+
 
 
 def get_beautify_interpreter_data(interpreter_in_dict: dict):

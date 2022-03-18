@@ -14,6 +14,13 @@ Vue.filter('truncate-text', function (text: string, stop: number) {
 		return ''
 })
 
+Vue.filter('iso-date', function(date){
+	if(date)
+		return	moment(date).format('YYYY-MM-DD');
+	else
+		return ''
+})
+
 Vue.filter('beautify-date-mm-dd-yyyy', function(date){
 	enum MonthList {'Jan' = 1, 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'}
 	if(date)
@@ -134,6 +141,25 @@ Vue.filter('getFullName',function(nameObject){
 	}
 })
 
+Vue.filter('fullName',function(first,last){
+	if (first || last) {
+		return (
+			(first? first+' ': '') +
+			(last? last: ''));
+	} else{
+		return " "
+	}
+})
+
+Vue.filter('fullAddress',function(address,city,state,postcode){	
+	return 	(
+		(address?(address +", "):'') +
+		(city?(city +", "):'') +
+		(state?(state +", "):'') +		
+		(postcode?(postcode ):' ')
+	);	
+})
+
 Vue.filter('getFullAddress',function(nameObject){
 
 	if (nameObject && Object.keys(nameObject).length) {
@@ -184,6 +210,21 @@ Vue.filter('capitalizefirst', function(str: string){
 		return ''
 	
 })
+
+Vue.filter('initials', function(str: string){	
+	if(str){
+		const parts = str.split(' ');
+		let init = ''
+		for(const part of parts){
+			init = init + part.trim().charAt(0).toUpperCase() +'.'
+		}
+		return init
+	}
+	else
+		return ''
+	
+})
+
 
 
 
