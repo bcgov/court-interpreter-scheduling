@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from typing import List
 from starlette import status
 from api.repository.geo_transactions import get_next_update_date
-from api.repository.constants import KEYS_TO_REMOVE
+from api.repository.constants import EXCEL_KEYS_TO_REMOVE, EXCEL_KEYS_TO_ADD
 from models.interpreter_model import InterpreterModel
 from models.user_model import UserModel
 from models.language_model import LanguageModel, InterpreterLanguageModel
@@ -310,19 +310,27 @@ def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: 
         InterpreterModel.id.in_(interpreter_request.ids)
     ).all()
     
-
     csv_file = io.StringIO()
     column_names = InterpreterModel.__table__.columns.keys()
-    for key in KEYS_TO_REMOVE:
+    
+    
+    for key in EXCEL_KEYS_TO_REMOVE:
         column_names.remove(key)
 
-    file_obj = csv.DictWriter(csv_file, column_names)
-    file_obj.writeheader()
-    for interpreter in interpreters:
+    for key in EXCEL_KEYS_TO_ADD:
+        column_names.insert(0,key)
 
+    file_obj = csv.DictWriter(csv_file, column_names)
+    # file_obj.writeheader()
+    file_obj.writerow(beautify_header(column_names))
+    for interpreter in interpreters:
+        
+        languages = interpreter.languages
         interpreter_in_dict = get_beautify_interpreter_data(interpreter.__dict__)
-        file_obj.writerow(interpreter_in_dict)
-    
+        for language in languages:    
+            interpreter_in_dict = add_language_to_interpreter_data(interpreter_in_dict, language.__dict__)
+            file_obj.writerow(interpreter_in_dict)
+
     csv_file.seek(0)
     response = StreamingResponse(csv_file, media_type="text/csv")
     response.headers["Content-Disposition"] =  'filename=interpreters.csv'
@@ -331,7 +339,7 @@ def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: 
 
 
 def get_beautify_interpreter_data(interpreter_in_dict: dict):
-    for key in KEYS_TO_REMOVE + ['_sa_instance_state']:
+    for key in EXCEL_KEYS_TO_REMOVE + ['_sa_instance_state']+['languages']:
         interpreter_in_dict.pop(key, None)
 
     interpreter_in_dict['contract_valid'] = "Yes" if interpreter_in_dict['contract_valid'] else "No"
@@ -339,3 +347,17 @@ def get_beautify_interpreter_data(interpreter_in_dict: dict):
     interpreter_in_dict['crc_check_date'] = interpreter_in_dict['crc_check_date'].strftime('%d-%b-%Y') if interpreter_in_dict['crc_check_date'] else ''
 
     return interpreter_in_dict
+
+
+def add_language_to_interpreter_data(interpreter_in_dict: dict, interpreter_language: dict):
+    for key in EXCEL_KEYS_TO_ADD:
+        interpreter_in_dict[key] = interpreter_language[key]
+
+    return interpreter_in_dict
+
+
+def beautify_header(columns):
+    new_columns = {}
+    for column in columns:
+        new_columns[column] = (column.replace('_', ' ').upper())
+    return new_columns
