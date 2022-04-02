@@ -342,9 +342,9 @@ def get_beautify_interpreter_data(interpreter_in_dict: dict):
     for key in EXCEL_KEYS_TO_REMOVE + ['_sa_instance_state']+['languages']:
         interpreter_in_dict.pop(key, None)
 
-    interpreter_in_dict['contract_valid'] = "Yes" if interpreter_in_dict['contract_valid'] else "No"
-    interpreter_in_dict['completed_training'] = "Yes" if interpreter_in_dict['completed_training'] else "No"
-    interpreter_in_dict['crc_check_date'] = interpreter_in_dict['crc_check_date'].strftime('%d-%b-%Y') if interpreter_in_dict['crc_check_date'] else ''
+    # interpreter_in_dict['contract_valid'] = "Yes" if interpreter_in_dict['contract_valid'] else "No"
+    # interpreter_in_dict['completed_training'] = "Yes" if interpreter_in_dict['completed_training'] else "No"
+    # interpreter_in_dict['crc_check_date'] = interpreter_in_dict['crc_check_date'].strftime('%d-%b-%Y') if interpreter_in_dict['crc_check_date'] else ''
 
     return interpreter_in_dict
 
@@ -359,5 +359,14 @@ def add_language_to_interpreter_data(interpreter_in_dict: dict, interpreter_lang
 def beautify_header(columns):
     new_columns = {}
     for column in columns:
-        new_columns[column] = (column.replace('_', ' ').upper())
+        if column=='email':
+            new_columns[column] = 'EMAIL ADDRESS'
+        elif column=='supplier_no':
+            new_columns[column] = 'SUPPLIER #'
+        elif column=='gst_no':
+            new_columns[column] = 'GST'
+        elif column=='province':
+            new_columns[column] = ' '
+        else:
+            new_columns[column] = (column.replace('_', ' ').upper())
     return new_columns

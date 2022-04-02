@@ -1,7 +1,7 @@
 <template>
     <b-card body-class="p-0" id="booking-date-container"> 
         <b-button 
-            @click="clearDates();onShow=true;"
+            @click="openDatePickerWindow();"
             id="popover-button-variant" 
             variant="transparent" 
             class="border-0" 
@@ -32,47 +32,32 @@
                             ></v-date-picker>                            
                         </v-app>
                     </b-col>
-                    <b-col cols="4">
+                    <b-col cols="5">
                         <b-row class="mt-3" style="line-height:2rem; font-size:14pt; color:#AAA">
-                            <b-col cols="12" class="my-1">
-                                <b>Arrival Time</b>
+                            <b-col cols="12" class="my-0 ml-n2">
+                                <b>Booking Times</b>                                
                             </b-col>
+                            <time-picker style="width:12rem;" v-if="showTimePicker"  :pickedTimes="pickedTimes" @addTime="addTime"/>
+                            <div style="display:inline-block" v-else v-for="pickedtime in pickedTimes" :key="pickedtime">
+                                <b-button style="margin:0.2rem; padding:0.2rem;" :variant="pickedtime=='Add Time'?'primary':'time'" size="sm" @click="removeTime(pickedtime)">
+                                    <span class="text-white"> {{pickedtime}} </span>
+                                    <b-icon-plus-square-fill scale="0.75" variant="white" v-if="pickedtime=='Add Time'" />
+                                    <b-icon-x-square-fill scale="0.75" variant="white" v-else />
+                                </b-button>
+                            </div>
                         </b-row>
-
-                        <b-row class="mt-0">
-                            <b-col cols="12 ml-1 pl-2 pr-2">
-                            <b-form-timepicker v-model="arrivalTime" placeholder="time" locale="en"></b-form-timepicker>
-                            </b-col>
-                        </b-row>
-
-                        <b-row class="mt-3 pb-0" style="line-height:2rem; font-size:14pt; color:#AAA">
-                            <b-col cols="12" class="my-1">
-                                <b>Time Options</b>
-                            </b-col>
-                        </b-row>
-
-                        <b-row class="py-0">
-                            <b-col cols="12" class="py-0">
-                                <b-form-radio-group
-                                    v-model="period"                        
-                                    size="lg"
-                                >
-                                <b-form-radio v-for="option,inx in bookingPeriodOptions" :key="inx" :value="option['value']" class="mt-3">
-                                    {{option['text']}}
-                                </b-form-radio>
-                                </b-form-radio-group>
-                            
-                            </b-col>
-                        </b-row>
+                        
+                        
+                        
                     </b-col>
                 </b-row>
             </div>
-            <b-row class="mt-0">
+            <b-row v-if="!showTimePicker" class="mt-0">
                 <b-col>
                     <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
                 </b-col>
                 <b-col>
-                    <b-button @click="AddDates" class="px-4" variant="success" style="float:right">Add</b-button>
+                    <b-button @click="AddDates" :disabled="(dates.length<1)||(pickedTimes.length<2)" class="px-4" variant="success" style="float:right">Add</b-button>                    
                 </b-col>
             </b-row>
         </b-popover>
@@ -82,15 +67,20 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import {bookingPeriodOptions, bookingPeriod} from './BookingEnums'
 import moment from 'moment-timezone'
-import { bookingDateInfoType } from '@/types/Bookings/json';
+import { bookingDateInfoType, bookingDateTimesInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
 
-@Component
+import TimePicker from "./TimePicker.vue"
+
+@Component({
+    components:{
+        TimePicker
+    }
+})
 export default class BookingDatePicker extends Vue {
     @Prop({required: true})
-    bookingDates!: bookingDateInfoType[];
+    bookingDates!: bookingDateTimesInfoType[];
 
     @Prop({required: false})
     blockedDates!: string[];
@@ -98,15 +88,10 @@ export default class BookingDatePicker extends Vue {
     onShow= false
     dates = []
     arrayEvents = []
-    period=bookingPeriod.Morning
-    arrivalTime="09:00"
-    pickedDates=""
 
-    
-    bookingPeriodOptions 
-    created(){
-        this.bookingPeriodOptions=bookingPeriodOptions
-    }
+    pickedDates=""
+    pickedTimes=['Add Time']
+    showTimePicker = false
 
 
     mounted(){
@@ -123,8 +108,7 @@ export default class BookingDatePicker extends Vue {
     }
 
 
-    public clearDates(){ 
-            
+    public clearDates(){           
         this.dates = []
         this.arrayEvents = []
 
@@ -138,14 +122,16 @@ export default class BookingDatePicker extends Vue {
 
 
     public getDatesText(bookingDates){
-        let datesText="  "
-        for(const bookingDate of bookingDates){           
-            datesText+= moment(bookingDate.date).format("MMM DD, ")
+        let datesText=""
+        if(bookingDates.length==1){  
+            datesText =  moment(bookingDates[0].date).format("MMM DD YYYY")
+        }else if(bookingDates.length>0){  
+            datesText = 
+                moment(bookingDates[0].date).format("MMM DD, YYYY . . . ") +
+                moment(bookingDates[bookingDates.length-1].date).format("MMM DD, YYYY")
         }
-        this.pickedDates = datesText.slice(0,-2)
-        if(this.pickedDates.length>50){
-            this.pickedDates =this.pickedDates.slice(0,50)+'...'
-        }
+        this.pickedDates = datesText
+       
         if(this.pickedDates.length<1){
             this.pickedDates ='Add dates'
         }
@@ -153,7 +139,7 @@ export default class BookingDatePicker extends Vue {
 
 
     public AddDates(){
-        let newBookingDates: bookingDateInfoType[] = []
+        let newBookingDates: bookingDateTimesInfoType[] = []
         
         for(const bookingDate of this.bookingDates){
             const date = bookingDate.date.slice(0,10)
@@ -162,11 +148,9 @@ export default class BookingDatePicker extends Vue {
         }
 
         for(const selectedDate of this.dates){
-            newBookingDates.push({
-                period:this.period,
-                arrivalTime:this.arrivalTime.substring(0,5),
-                date:moment(selectedDate).toISOString(),
-                id:null
+            newBookingDates.push({                
+                date: moment(selectedDate).toISOString(),
+                bookingTimes: this.pickedTimes
             })
         }
 
@@ -178,11 +162,43 @@ export default class BookingDatePicker extends Vue {
     }
 
     public focusSearchButton(){
+        this.$emit('change', false)
         Vue.nextTick(()=>{
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
     }
+
+    public addTime(time){ 
+        if(time){       
+            this.pickedTimes.push(time)           
+        }
+        this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
+            if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
+            return tim.slice(6,8)+tim.slice(0,5)
+        })
+        this.showTimePicker = false;
+        this.$emit('change', false);
+    }
+
+    public removeTime(pickedtime){
+        if(pickedtime == 'Add Time')
+            this.showTimePicker = true;
+        else{
+            this.pickedTimes = this.pickedTimes.filter(tim => tim!=pickedtime);
+            this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
+                if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
+                return tim.slice(6,8)+tim.slice(0,5)
+            })
+        }
+    }
+
+    public openDatePickerWindow(){
+        this.$emit('change', true);
+        this.clearDates();
+        this.onShow=true;
+    }
+
 }
 </script>
 
@@ -191,8 +207,8 @@ export default class BookingDatePicker extends Vue {
         border-radius: 10px;
         border:1px solid #EEE;
         height: 28rem;
-        width: 36.5rem;
-        max-width: 37rem;
+        width: 40rem;
+        max-width: 40rem;
         margin:0 -.5rem;
         padding: 0;
         box-shadow: 3px 5px 6px #DDD;

@@ -9,14 +9,23 @@ export interface bookingInfoType {
     registry: string;
     requestedBy: string;
     room: string;
-    file: string;
-    interpretFor: string;
+    file: string;    
     status: string;
     federal: boolean;
-    language: string;
+    languages: bookingLanguageInfoType[];
     locationId: number;
-    dates: bookingDateInfoType[];
-    interpreterId: number;      
+    interpreterId: number;
+    date: string;
+    arrivalTime: string;
+    actualStartTime?: string;
+    finishTime?: string;
+    approversInitials?: string;
+}
+
+export interface bookingLanguageInfoType{
+    language:string;
+    level:number;
+    interpretFor: string;
 }
 
 export interface bookingDateInfoType {
@@ -27,6 +36,11 @@ export interface bookingDateInfoType {
     actualStartTime?: string;
     finishTime?: string;
     approversInitials?: string;
+}
+
+export interface bookingDateTimesInfoType {    
+    date: string;    
+    bookingTimes: string[];    
 }
 
 export interface bookingSearchInfoType {    

@@ -47,6 +47,7 @@ $jail:    #A22BB9 !default;
 $escort:  #ffb007 !default;
 $other:   #7a4528 !default;
 $select:  #e6d9e2 !default;
+$time:    #607894 !default;
 $inactive:  #cccccc !default;
 
 
@@ -100,7 +101,8 @@ $theme-colors: map-merge(
     "escort":     $escort,
     "other":      $other,
     "select":     $select,
-    "orange":     $orange
+    "orange":     $orange,
+    "time":       $time,
   ),
   $theme-colors
 );

@@ -1,5 +1,6 @@
 <template>
-    <b-card class="date-card mb-2 mx-2" body-class="py-2">                
+    <b-card class="date-card mb-2 mx-2" :body-class="!showTimePicker? 'py-2' :'p-0'"> 
+        <div v-if="!showTimePicker">               
             <b-row style="line-height:1rem; font-size:14pt; ">
                 <b-col cols="9">
                     <div class="mt-1"> 
@@ -23,32 +24,23 @@
                 </b-col>
             </b-row>
 
-            <b-row style="line-height:1rem; font-size:14pt; color:#AAA; margin:.5rem -1rem; 0rem 0">
-                <b-col cols="12" class="my-0 pt-1 pb-0">
-                    <b>Arrival Time</b>
+            <b-row style="line-height:1rem; font-size:14pt; color:#AAA; margin:1rem -1rem; 0rem 0;">
+                <b-col cols="12" class="mx-1 my-0 p-0">
+                    <div class="mb-2 ml-2"><b>Booking Times</b></div>
+                        
+                    <div style="display:inline-block" v-for="pickedtime in pickedTimes" :key="pickedtime">
+                        <b-button style="font-size:10pt; margin:0.15rem; padding:0.15rem;" :variant="pickedtime=='Add Time'?'primary':'time'" size="sm" @click="removeTime(pickedtime)">
+                            <span class="text-white"> {{pickedtime}} </span>
+                            <b-icon-plus-square-fill scale="0.75" variant="white" v-if="pickedtime=='Add Time'" />
+                            <b-icon-x-square-fill scale="0.75" variant="white" v-else />
+                        </b-button>
+                    </div>
+                        
+                        
                 </b-col>
             </b-row>
-
-            <b-row class="py-1">
-                <b-col cols="12 m-0 px-2 py-0" >
-                   <b-form-timepicker v-model="arrivalTime" placeholder="time" @hidden="timeContext()" locale="en"></b-form-timepicker>
-                </b-col>
-            </b-row>
-
-            <b-row class="py-0">
-                <b-col cols="12" class="">
-                    <b-form-radio-group
-                        v-model="period"                        
-                        size="lg"
-                        @change="ChangeBookingDate"
-                    >
-                    <b-form-radio v-for="option,inx in bookingPeriodOptions" :key="inx" :value="option['value']" class="mt-1">
-                        {{option['text']}}
-                    </b-form-radio>
-                    </b-form-radio-group>
-                   
-                </b-col>
-            </b-row>
+        </div>
+        <time-picker v-else  :pickedTimes="pickedTimes" @addTime="addTime"/>
        
 
     </b-card>
@@ -59,17 +51,19 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {bookingPeriodOptions} from './BookingEnums'
 import moment from 'moment-timezone'
-import { bookingDateInfoType } from '@/types/Bookings/json';
+import { bookingDateTimesInfoType } from '@/types/Bookings/json';
+import TimePicker from "./TimePicker.vue"
+import * as _ from 'underscore';
 
 @Component({
     components:{
-
+        TimePicker
     }
 })
 export default class SearchInterpretersPage extends Vue {
     
     @Prop({required: true})
-    bookingDate!: bookingDateInfoType;
+    bookingDate!: bookingDateTimesInfoType;
 
     bookingPeriodOptions 
     created(){
@@ -80,8 +74,10 @@ export default class SearchInterpretersPage extends Vue {
     day=""
     month=""
     year=""
-    arrivalTime=""
-    period=""
+    
+
+    pickedTimes=['Add Time']
+    showTimePicker=false
      
 
     mounted(){
@@ -89,8 +85,7 @@ export default class SearchInterpretersPage extends Vue {
        this.day = moment(this.bookingDate.date).format('DD')
        this.month = moment(this.bookingDate.date).format('MMM')
        this.year = moment(this.bookingDate.date).format('YYYY')
-       this.arrivalTime = this.bookingDate.arrivalTime
-       this.period = this.bookingDate.period
+       this.pickedTimes = this.bookingDate.bookingTimes
 
     }
 
@@ -98,22 +93,37 @@ export default class SearchInterpretersPage extends Vue {
         this.$emit('remove', this.bookingDate.date)
     }
 
-    public timeContext(){
-        // console.log("Change")
-        // console.log(this.bookingDate.arrivalTime)
-        // console.log(this.arrivalTime.substring(0,5))
-        if(this.bookingDate.arrivalTime.substring(0,5)!=this.arrivalTime.substring(0,5)){
+    public removeTime(pickedtime){
+        if(pickedtime == 'Add Time'){
+            this.showTimePicker = true;
+        }
+        else{
+            this.pickedTimes = this.pickedTimes.filter(tim => tim!=pickedtime);
+            this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
+                if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
+                return tim.slice(6,8)+tim.slice(0,5)
+            })
             this.ChangeBookingDate()
         }
     }
 
+    public addTime(time){ 
+        if(time){       
+            this.pickedTimes.push(time)
+        }
+        this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
+            if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
+            return tim.slice(6,8)+tim.slice(0,5)
+        })
+        this.showTimePicker = false;
+        if(time) this.ChangeBookingDate()
+    }
+
     public ChangeBookingDate(){
         // console.log("Change")
-        const newBookingDate: bookingDateInfoType = {
+        const newBookingDate: bookingDateTimesInfoType = {
             date:this.bookingDate.date,
-            id:this.bookingDate.id,
-            period: this.period,
-            arrivalTime: this.arrivalTime.substring(0,5)
+            bookingTimes: this.pickedTimes
         }
         this.$emit('bookingChanged', newBookingDate)
     }
@@ -126,7 +136,7 @@ export default class SearchInterpretersPage extends Vue {
     .date-card{
         border-radius: 10px;
         border:1px solid #EEE;
-        height: 20rem;
+        min-height: 21.5rem;
         width: 12rem;
         box-shadow: 2px 5px 5px 2px #DDD;
         margin:0 1rem;
