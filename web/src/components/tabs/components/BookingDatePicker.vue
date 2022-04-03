@@ -6,7 +6,7 @@
             variant="transparent" 
             class="border-0" 
             style="width:100%; margin:0; padding:0.5rem 1rem;">
-            {{pickedDates}} <b-icon-calendar style="float:right"/>
+            <span :style="pickedDates == 'Add dates'?'float: left;':''">{{pickedDates}}</span> <b-icon-calendar style="float:right"/>
         </b-button>
         <b-popover 
             customClass="pop"
