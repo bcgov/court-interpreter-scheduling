@@ -42,14 +42,19 @@
                     <b-form-group                        
                         label="Language" 
                         label-for="language">
-                        <b-form-select 
-                            id="language"
-                            @change="searchAgain"                      
+                        <b-form-input 
+                            list="language-list"
                             style="display:inline"
+                            placeholder="Select Language"
                             v-model="language"
-                            :options="languageNames"
-                        >
-                        </b-form-select> 
+                            @change="searchAgain"
+                            id="language">
+                        </b-form-input>
+                        <b-form-datalist
+                            id="language-list" 
+                            @change="searchAgain"
+                            :options="languageNames">
+                        </b-form-datalist>
                     </b-form-group>
                 </b-col>
                 <b-col cols="1" />
