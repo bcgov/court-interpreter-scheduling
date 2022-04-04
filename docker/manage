@@ -50,13 +50,14 @@ exit 1
 # -----------------------------------------------------------------------------------------------------------------
 # Default Settings: 
 # -----------------------------------------------------------------------------------------------------------------
-DEFAULT_CONTAINERS="db api web"
+DEFAULT_CONTAINERS="db api schema-spy web"
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
 build-all() {
   build-web
-  build-db  
+  build-db 
+  build-schema-spy 
   build-api
   build-pdf
 }
@@ -105,6 +106,19 @@ build-db() {
   echo
 }
 
+build-schema-spy() {
+  #
+  # schema-spy
+  #
+  echo -e "\n\n===================================================================================================="
+  echo -e "Building schema-spy image ..."
+  echo -e "----------------------------------------------------------------------------------------------------"
+  docker build \
+    https://github.com/bcgov/SchemaSpy.git \
+    -t 'schema-spy'
+  echo -e "===================================================================================================="
+}
+
 build-api() {
   #
   # api
@@ -142,6 +156,12 @@ configureEnvironment () {
   export POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE-court_interpreter}
   export POSTGRESQL_USER=${POSTGRESQL_USER-db_user_cis}
   export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD-db_password}
+
+  # schema-spy
+  export DATABASE_SERVICE_NAME="db"
+  export POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+  export POSTGRESQL_USER=${POSTGRESQL_USER}
+  export POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
 
   # api
   export API_HTTP_PORT=${API_HTTP_PORT-8080}

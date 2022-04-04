@@ -29,7 +29,16 @@ objects:
               namespaceSelector:
                 matchLabels:
                   name: ${NAMESPACE_NAME}
-                  environment: ${TAG_NAME}            
+                  environment: ${TAG_NAME}
+            - podSelector:
+                matchLabels:
+                  role: schema-spy
+                  app: ${APP_NAME}
+                  env: ${TAG_NAME}
+              namespaceSelector:
+                matchLabels:
+                  name: ${NAMESPACE_NAME}
+                  environment: ${TAG_NAME}                  
             - podSelector:
                 matchLabels:
                   role: backup
