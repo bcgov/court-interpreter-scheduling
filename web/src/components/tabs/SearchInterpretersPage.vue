@@ -64,7 +64,7 @@
                             class="mt-0 labels"
                             :disabled="!(location && location.id)"
                             @change="searchAgain"                                                                                                             
-                            v-model="limitDistance">Limit Search to 32Km
+                            v-model="limitDistance">Limit Search to 32 km
                         </b-form-checkbox> 
                     </b-form-group>
                 </b-col>
