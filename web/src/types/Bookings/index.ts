@@ -12,6 +12,9 @@ export interface bookingStatesInfoType {
     reason: null | boolean;
     methodOfAppearance: null | boolean;
     dates: null | boolean;
+    start: null | boolean;
+    end: null | boolean;
+    conflict: null | boolean;
 }
 
 export interface paymentDetailsInfoType{

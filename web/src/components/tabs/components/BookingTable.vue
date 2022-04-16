@@ -28,29 +28,65 @@
 
                     </template>
 
-                    <template v-slot:cell(name)="data" >                    
-                        <b>{{data.item.lastName | capitalizefirst}}</b>, {{data.item.firstName | capitalizefirst}}                    
+                    <template v-slot:cell(dates)="data" >                        
+                        <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'date'+inx"
+                            > 
+                            <b style="font-size:11pt;">{{dateInfo.date | beautify-date-weekday}}</b> 
+                            <span style="margin-left:0.5rem; font-size:11pt;">{{dateInfo.startTime}}-{{dateInfo.finishTime}}</span>                                                    
+                        </div>
+                    </template> 
+
+                    <template v-slot:cell(file)="data" >                    
+                        <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'file'+inx"
+                            > 
+                            {{dateInfo.file}}
+                        </div>
                     </template>
 
-                    <template v-slot:cell(dates)="data" >
-                        <span 
-                            v-for="dateInfo,inx in sortByDate(data.value)" 
-                            :key="inx"
-                            style="display: block;">                            
-                            <b style="font-size:11pt;">{{dateInfo['date'] | beautify-date-weekday}}</b> - {{dateInfo['arrivalTime'] | convert-time24to12}}
-                            <span> ({{getBookingPeriod(dateInfo['period'])}})</span>
-                        </span>
+                    <template v-slot:cell(caseName)="data" >                    
+                        <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'case'+inx"
+                            > 
+                            {{dateInfo.caseName}}
+                        </div>
+                    </template>
 
-                    </template>                   
+                    <template v-slot:cell(language)="data" >                    
+                        <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'language'+inx"
+                            > 
+                            {{getLanguages(dateInfo.languages)}}
+                        </div>
+                    </template>                                     
 
-                    <template v-slot:cell(status)="data" >    
-                        <b-badge v-if="data.value == 'Booked'" class="p-3" variant="success">Booked</b-badge> 
-                        <b-badge v-else-if="data.value == 'Cancelled'" class="p-3" variant="danger">Cancelled</b-badge>
-                        <b-badge v-if="data.value == 'Pending'" class="p-3" variant="warning">Pending</b-badge>                                       
-                    </template>                    
+                    <template v-slot:cell(status)="data" >
+                         <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'status'+inx"
+                            >                             
+                            <b-badge v-if="dateInfo.status == 'Booked'" class="p-1" variant="success">Booked</b-badge> 
+                            <b-badge v-else-if="dateInfo.status == 'Cancelled'" class="p-1" variant="danger">Cancelled</b-badge>
+                            <b-badge v-if="dateInfo.status == 'Pending'" class="p-1" variant="warning">Pending</b-badge>                                       
+                        </div> 
+                   </template> 
 
-                    <template v-slot:cell(edit)="data">
-                        <b-row  style="float: right;" class="mr-1">
+                    <template v-slot:cell(comment)="data" >                    
+                        <div
+                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            :key="'comment'+inx"
+                            > 
+                            {{dateInfo.comment}}
+                        </div>
+                    </template>                  
+
+                    <template v-slot:cell(edit)="data">                        
+                        <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
                             <b-button style="font-size:11px;" 
                                 size="sm" 
                                 v-b-tooltip.hover.top.noninteractive
@@ -79,295 +115,23 @@
             </b-card>
         </div>
 
-        <b-modal size="xl" v-model="showBookingWindow" header-class="bg-primary text-white" >
+        <b-modal size="xl" footer-class="d-none" v-model="showBookingWindow" header-class="bg-primary text-white" >
             <template v-slot:modal-title>
                 <h1 class="my-2 ml-2">Update Court Interpreter Request</h1> 
             </template>
 
-            <b-card class="bg-white border-white text-dark"> 
-              
-                <b-card no-body v-if="bookingDataReady" class="border-white" :key="updatedBookingInfo">
-
-                    <b-row class="mt-1 mb-4 ml-2 h2">
-                        {{booking.interpreter.firstName}} {{booking.interpreter.lastName}} (Level {{booking.interpreter.highestLevel}})                        
-                    </b-row>
-
-                    
-
-                    <b-row class="mx-3 mt-0 mb-4">
-                        <b-button size="sm" class="mr-1 mt-1 " style="height:2rem"  @click="enableEditDates= !enableEditDates;" :variant="enableEditDates?'warning':'primary'"> <span v-if="enableEditDates">Hide </span> <span v-else> Edit </span> Dates </b-button>
-                        <b-card v-if="bookingStates.dates==false" class="h4 border-0 text-danger mx-2 my-2 py-1" no-body> Booking Date(s) required! </b-card>
-                        <b-card
-                            bg-variant="light"
-                            class="input-line mx-1 my-1"
-                            body-class="m-0 py-1 px-2"
-                            style="width:11rem; margin:0; padding:0;"
-                            id="dates"
-                            :key="inx"
-                            v-for="date,inx in booking.dates">
-                            <b-icon-calendar variant="primary"/> {{date.date | beautify-date-weekday-month-day}} <b-icon-clock variant="primary"/> {{date.arrivalTime}}
-                        </b-card>                        
-                    </b-row>
-                    
-                    <div v-if="enableEditDates" class="mb-5" :key="updateEditDates">
-                        <b-row class="mx-0" >
-                            <b-col cols="6">
-                                <booking-date-picker  :bookingDates="booking.dates" :blockedDates="blockDates" @datesAdded="addBookingDates"/>
-                            </b-col>
-                        </b-row>    
-                        <b-row class="ml-2">
-                            <date-card 
-                                @remove="RemoveBookingDate" 
-                                @bookingChanged="ChangeBookingDate" 
-                                v-for="bookingDate,inx in booking.dates" :key="inx" 
-                                :bookingDate="bookingDate"/>
-                        </b-row>
-                    </div>
-
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">                    
-                            <b-form-group
-                                class="labels"                
-                                label="Status" 
-                                label-for="status">
-                                <b-form-select 
-                                    class="input-line"
-                                    id="status"                                       
-                                    :options="statusOptions"                                 
-                                    :state="bookingStates.status"                  
-                                    v-model="booking.status">
-                                </b-form-select>
-                            </b-form-group>
-                        </b-col>   
-                        <b-col cols="6">
-                              
-                        </b-col>         
-                    </b-row>
-
-                   
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Court Room" 
-                                label-for="room">
-                                <b-form-input 
-                                    :state="bookingStates.room"
-                                    class="input-line"
-                                    id="room"                                         
-                                    v-model="booking.room">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Court Location" 
-                                class="labels"
-                                label-for="location">
-                                <b-form-select 
-                                    id="location" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :state="bookingStates.location"
-                                    v-model="booking.locationId"> 
-                                    <b-form-select-option
-                                        v-for="courtLocation in courtLocations" 
-                                        :key="courtLocation.id"
-                                        :value="courtLocation.id">
-                                            {{courtLocation.name}}
-                                    </b-form-select-option>
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Court File Number" 
-                                label-for="file-number">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="file-number" 
-                                    :state="bookingStates.file"                                        
-                                    v-model="booking.file">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Interpret For" 
-                                class="labels"
-                                label-for="interpret-for">
-                                <b-form-select 
-                                    id="interpret-for" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :options="interpreterRequestOptions"
-                                    :state="bookingStates.interpretFor"
-                                    v-model="booking.interpretFor">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Case Name" 
-                                label-for="case-name">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="case-name" 
-                                    :state="bookingStates.caseName"                                        
-                                    v-model="booking.caseName">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Requested By" 
-                                class="labels"
-                                label-for="requested-by">
-                                <b-form-select 
-                                    id="requested-by" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :options="requestOptions"
-                                    :state="bookingStates.request"
-                                    v-model="booking.requestedBy">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Language" 
-                                class="labels"
-                                label-for="language">
-                                <b-form-select 
-                                    id="language" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    :state="bookingStates.language"
-                                    v-model="booking.language"> 
-                                    <b-form-select-option
-                                        v-for="language in booking.interpreter.languages" 
-                                        :key="language.languageName"
-                                        :value="language.languageName">
-                                            {{language.languageName}}
-                                    </b-form-select-option>
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Federal" 
-                                class="labels"
-                                label-for="federal">
-                                <b-form-radio-group 
-                                    id="requested-by" 
-                                    :class="bookingStates.federal==false? 'border border-danger pt-1 pb-2':'input-line'"                           
-                                    style="display:inline"                                    
-                                    :state="bookingStates.federal"
-                                    v-model="booking.federal"> 
-                                    <b-form-radio :value="true">Yes</b-form-radio> 
-                                    <b-form-radio :value="false">No</b-form-radio>                                  
-                                </b-form-radio-group> 
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                  
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Reason Code" 
-                                label-for="reason-code">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="reason-code"  
-                                    placeholder="FA, HR"  
-                                    :state="bookingStates.reason"                                    
-                                    v-model="booking.reason">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Federal Prosecutor Name" 
-                                label-for="prosecutor-name">
-                                <b-form-input 
-                                    class="input-line"
-                                    id="prosecutor-name" 
-                                    :state="bookingStates.prosecutor"                                                 
-                                    v-model="booking.prosecutor">
-                                </b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>                                
-
-                    <b-row class="ml-1">
-                        <b-col cols="6">
-                            <b-form-group                        
-                                label="Method Of Appearance" 
-                                class="labels"
-                                label-for="appearance-method">
-                                <b-form-select 
-                                    id="appearance-method" 
-                                    class="input-line"                           
-                                    style="display:inline"
-                                    
-                                    :options="bookingMethodOfAppearanceOptions"
-                                    :state="bookingStates.methodOfAppearance"
-                                    v-model="booking.methodOfAppearance">                                    
-                                </b-form-select> 
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="6">
-                            <b-form-group
-                                class="labels"                
-                                label="Comment" 
-                                label-for="comment">
-                                <b-form-textarea 
-                                    class="input-line"
-                                    id="comment"                                                   
-                                    v-model="booking.comment">
-                                </b-form-textarea>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                                                
-                </b-card>
-            </b-card>   
-
-           
-            <b-alert class="mt-3" variant="danger" :show="errorMsg.length>0" >            
-                <b class="mr-2">Error: </b> {{errorMsg}} <b-icon-exclamation-circle-fill/>
-            </b-alert>  
-                 
-
-            <template v-slot:modal-footer>
-                
-                <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
-                <b-button
-                    variant="success" 
-                    @click="saveBooking">
-                    <b-icon-check-square class="mr-2"/>Save
-                </b-button>
-                
-            </template>
+            <edit-booking-modal
+                :interpreter="currentInterpreter"
+                :bookingDates="currentBooking"
+                :bookingId="currentBookingId"
+                :searchLocation="searchLocation"
+                @close="closeBookingWindow"
+                />
 
             <template v-slot:modal-header-close>
                 <b-button
                     variant="outline-dark"
-                    class="closeButton"
+                    class="close-button"
                     @click="closeBookingWindow"
                     >&times;</b-button
                 >
@@ -389,7 +153,7 @@
             </b-row>            
                        
             <template v-slot:modal-header-close>                 
-                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary closeButton" @click="$bvModal.hide('bv-modal-interpreter-details')"
+                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="$bvModal.hide('bv-modal-interpreter-details')"
                  >&times;</b-button>
             </template>
         </b-modal>
@@ -405,7 +169,7 @@
                     <div style="font-size:16pt; margin:1rem 0 0 1rem;" >ADM-322</div>
                 </b-row>
             </template>
-            <adm-forms :booking="booking"/>
+            <adm-forms :booking="currentAdm"/>
             <template v-slot:modal-footer>                
                 <b-button class="mr-auto" variant="dark" @click="showAdmWindow=false">Cancel</b-button>
             </template>
@@ -419,47 +183,42 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
-import { max } from 'underscore';
+
+import EditBookingModal from "./EditBookingModal/EditBookingModal.vue"
 
 import InterpreterDetails from "./InterpreterDetails.vue";
-import DateCard from "./DateCard.vue"
-import BookingDatePicker from "./BookingDatePicker.vue"
-import AdmForms from "./AdmForms.vue"
+
+import AdmForms from "./AdmForms/AdmForms.vue"
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
 const commonState = namespace("Common");
 
-import {statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from './BookingEnums'
 
-import {bookingInterpreterInfoType, bookingSearchInfoType} from '@/types/Bookings/json';
-import { bookingStatesInfoType } from '@/types/Bookings';
+import {bookingInfoType, bookingInterpreterInfoType, bookingSearchInfoType, bookingSearchResultInfoType} from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
 
 @Component({
     components:{
-        InterpreterDetails,
-        DateCard,
-        BookingDatePicker,
+        EditBookingModal,
+        InterpreterDetails,        
         AdmForms
     }
 })
 export default class BookingTable extends Vue {
 
     @Prop({required: true})
-    bookings!: bookingSearchInfoType[];
+    bookings!: bookingSearchResultInfoType[];
     
     @Prop({required: true})
     searching!: boolean;
 
+    @Prop({required: true})
+    public searchLocation!: locationsInfoType;
+
     @commonState.State
     public courtLocations!: locationsInfoType[];
  
-    bookingDataReady = false;
-    updatedBookingInfo = 0;
-
-    enableEditDates = false;
-    updateEditDates=0;
 
     showBookingWindow = false;
     showInterpreterDetailsWindow = false;
@@ -467,40 +226,27 @@ export default class BookingTable extends Vue {
     showAdmWindow = false;
 
     interpreterDetails = {} as bookingInterpreterInfoType;
-    bookingStates = {} as bookingStatesInfoType;  
-    booking = {} as bookingSearchInfoType;
-    blockDates = []
-    errorMsg=''
+
+    currentBooking = {} as bookingInfoType;
+    currentInterpreter = {} as bookingInterpreterInfoType
+    currentBookingId = 0
+
+    currentAdm = {} as bookingSearchResultInfoType
     
-    statusOptions
-    requestOptions
-    bookingPeriodOptions
-    bookingMethodOfAppearanceOptions
-    interpreterRequestOptions
-    created(){
-        this.statusOptions=statusOptions 
-        this.requestOptions=requestOptions 
-        this.bookingPeriodOptions=bookingPeriodOptions 
-        this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions 
-        this.interpreterRequestOptions=interpreterRequestOptions
-    }
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:17%'},
-        {key:'file',           label:'Court File Number', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:10%'},
-        {key:'caseName',       label:'Case Name',         sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:12.5%'},
-        {key:'language',       label:'Language',          sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:9%'},
-        {key:'interpreter',    label:'Interpreter',       sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:20%'},
-        {key:'status',         label:'Status',            sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:6%'},
+        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
+        {key:'file',           label:'Court File #',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
+        {key:'caseName',       label:'Case Name',         sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:15%'},
+        {key:'language',       label:'Language',          sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:22%'},
+        {key:'interpreter',    label:'Interpreter',       sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
+        {key:'status',         label:'Status',            sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:4%'},
         {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
         {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:7%'}
     ];
 
 
     mounted() { 
-        this.errorMsg=''
-        this.enableEditDates = false;
-        this.bookingStates = {} as bookingStatesInfoType;
     }
     
     public displayInterpreterInfo(interpreterInfo: bookingInterpreterInfoType){
@@ -509,127 +255,49 @@ export default class BookingTable extends Vue {
     }    
     
     public closeBookingWindow(){
-        this.showBookingWindow = false; 
-        this.clearStates();
-    }
+        this.showBookingWindow = false;
+        this.$emit('find');
+    }    
     
-    public clearStates(){
-
-        for(const field of Object.keys(this.bookingStates)){
-            this.bookingStates[field] = null;                
-        }                             
-    }
-    
-    public editBooking(bookingToEdit: bookingSearchInfoType){
-        this.blockDates = []
-        this.errorMsg=''
-        this.booking = JSON.parse(JSON.stringify(bookingToEdit));
-        const levels = this.booking.interpreter.languages.map(language => {return language.level})
-        this.booking.interpreter.highestLevel = max(levels); 
-        this.enableEditDates = false;
-        this.showBookingWindow = true;
-        
-        this.$http.get('/booking/interpreter/' + this.booking.interpreter.id)
-        .then((response) => {            
-            if(response?.data){
-                this.blockDates = response.data
-                    .filter(bookingdate=> bookingdate.booking_id != this.booking.id)
-                    .map(bookingdate=> bookingdate.date.slice(0,10))
-            }  
-            this.bookingDataReady = true;             
-        },(err) => {
-            this.bookingDataReady = true;         
-        });       
-        
+    public editBooking(bookingToEdit: bookingSearchResultInfoType){
+        console.log(bookingToEdit)       
+        this.currentBooking = JSON.parse(JSON.stringify(bookingToEdit.dates));
+        this.currentInterpreter = bookingToEdit.interpreter
+        this.currentBookingId = bookingToEdit.id
+        this.showBookingWindow = true;        
     }
 
-    public openAdm(bookingInfo: bookingSearchInfoType){
-        console.log(bookingInfo);
-        this.booking = JSON.parse(JSON.stringify((bookingInfo)));
-        const interp = this.booking.interpreter
-        this.booking.interpreter.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
-        this.booking.interpreter.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
-        const bookingLanguage = interp.languages.filter(lan =>lan.languageName == this.booking.language)
-        this.booking.level = bookingLanguage.length>0? bookingLanguage[0].level:null;
-        this.booking.federalYN = this.booking.federal? 'Yes':'No' ;
-        this.booking.multipleLanguages = "No"
-        const bookingCourt = this.courtLocations.filter(court => court.id == this.booking.locationId)
-        this.booking.registry = bookingCourt.length>0?  bookingCourt[0].name : ''
-        this.booking.created_at = Vue.filter('iso-date')(bookingInfo.created_at)
+    public openAdm(bookingToADM: bookingSearchResultInfoType){
+        console.log(bookingToADM);
+        
+        bookingToADM.createdDate = Vue.filter('iso-date')(bookingToADM.created_at)
+        
+        const interp = bookingToADM.interpreter
+        interp.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
+        interp.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
+        
+        this.currentAdm = JSON.parse(JSON.stringify(bookingToADM));
+        // const bookingLanguage = interp.languages.filter(lan =>lan.languageName == this.booking.language)
+        // this.booking.level = bookingLanguage.length>0? bookingLanguage[0].level:null;
+        // this.booking.federalYN = this.booking.federal? 'Yes':'No' ;
+        // this.booking.multipleLanguages = "No"
+        // const bookingCourt = this.courtLocations.filter(court => court.id == this.booking.locationId)
+        //this.booking.registry = bookingCourt.length>0?  bookingCourt[0].name : ''
+
         this.showAdmWindow = true;
     }
 
     public sortByDate(data){
-        return _.sortBy(data, 'date')
+        return _.sortBy(data, function(data){            
+            const startTime = data.startTime
+            return (data.date + startTime.slice(6,8)+ startTime.slice(0,5))
+        })
     }
-
-    public saveBooking(){
-        if (this.checkBookingStates()){ 
-            
-            this.$http.put('/booking/' + this.booking.id, this.booking)
-            .then((response) => {            
-                if(response?.data){
-                    this.closeBookingWindow();
-                    this.$emit('find');                
-                }                
-            },(err) => {
-                // console.log(err.response.data.detail)
-                this.errorMsg=err.response.data.detail
-            });
-        }        
-    }  
-
-    public checkBookingStates(){
-
-        let stateCheck = true;
     
-        this.bookingStates.status = !(this.booking.status)? false : null;
-        this.bookingStates.room = !(this.booking.room)? false : null;        
-      
-        this.bookingStates.location = !(this.booking.locationId)? false : null;
-        this.bookingStates.file = !(this.booking.file)? false : null;
-        this.bookingStates.interpretFor = !(this.booking.interpretFor)? false : null;
-        this.bookingStates.caseName = !(this.booking.caseName)? false : null;
-        this.bookingStates.request = !(this.booking.requestedBy)? false : null;
-        this.bookingStates.language = !(this.booking.language)? false : null;
-        this.bookingStates.reason = !(this.booking.reason)? false : null;
-        this.bookingStates.prosecutor = (this.booking.federal && !this.booking.prosecutor)? false : null;
-        this.bookingStates.methodOfAppearance = !(this.booking.methodOfAppearance)? false : null;
-        this.bookingStates.federal = !(this.booking.federal != null)? false : null;
-      
-        this.bookingStates.dates = !(this.booking.dates.length>0)? false : null;
-
-        this.updatedBookingInfo ++;
-
-        for(const field of Object.keys(this.bookingStates)){
-            if(this.bookingStates[field]==false)
-                stateCheck = false;
-        }
-
-        return stateCheck;            
+    public getLanguages(data){
+        return data.map(i=>(i.language)).join(',')
     }
 
-    public getBookingPeriod(period){
-        return this.bookingPeriodOptions.filter(opt => opt.value == period)[0]?.text
-    }
-
-    public addBookingDates(bookingDates){
-        this.booking.dates = bookingDates
-        this.updateEditDates++;       
-        
-    }
-
-    public RemoveBookingDate(date){
-        this.booking.dates = this.booking.dates.filter(booking => booking.date!=date)
-        this.updateEditDates++;
-    }
-
-    public ChangeBookingDate(bookingDate){
-        const changedBookingDate = this.booking.dates.filter(booking => booking.date==bookingDate.date)[0]
-        changedBookingDate.period = bookingDate.period
-        changedBookingDate.arrivalTime = bookingDate.arrivalTime
-        this.updateEditDates++;
-    }
 }
 </script>
 <style lang="scss">
@@ -647,7 +315,7 @@ export default class BookingTable extends Vue {
     .input-line {
         font-size: 14px; font-weight:600;
     }
-    .closeButton {
+    .close-button {
         background-color: transparent !important;
         color: white;
         border: white;

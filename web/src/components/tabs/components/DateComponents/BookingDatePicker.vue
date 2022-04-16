@@ -1,19 +1,19 @@
 <template>
-    <b-card body-class="p-0" id="booking-date-container"> 
+    <b-card body-class="p-0" id="booking-date-container-picker"> 
         <b-button 
             @click="openDatePickerWindow();"
-            id="popover-button-variant" 
+            id="popover-button-variant-picker" 
             variant="transparent" 
             class="border-0" 
             style="width:100%; margin:0; padding:0.5rem 1rem;">
             <span :style="pickedDates == 'Add dates'?'float: left;':''">{{pickedDates}}</span> <b-icon-calendar style="float:right"/>
         </b-button>
         <b-popover 
-            customClass="pop"
-            target="popover-button-variant"  
+            :customClass="editDateMode? 'pop-edit':''"
+            target="popover-button-variant-picker"  
             triggers="manual"
-            placement="bottomleft"
-            container="booking-date-container"
+            :placement="editDateMode?'bottomcenter':'bottomleft'"
+            container="booking-date-container-picker"
             ref="popover"
             :show.sync="onShow"           
             >
@@ -37,17 +37,30 @@
                             <b-col cols="12" class="my-0 ml-n2">
                                 <b>Booking Times</b>                                
                             </b-col>
-                            <time-picker style="width:12rem;" v-if="showTimePicker"  :pickedTimes="pickedTimes" @addTime="addTime"/>
-                            <div style="display:inline-block" v-else v-for="pickedtime in pickedTimes" :key="pickedtime">
-                                <b-button style="margin:0.2rem; padding:0.2rem;" :variant="pickedtime=='Add Time'?'primary':'time'" size="sm" @click="removeTime(pickedtime)">
-                                    <span class="text-white"> {{pickedtime}} </span>
-                                    <b-icon-plus-square-fill scale="0.75" variant="white" v-if="pickedtime=='Add Time'" />
-                                    <b-icon-x-square-fill scale="0.75" variant="white" v-else />
-                                </b-button>
+                            <time-picker style="width:13rem; height:22.5rem;" v-if="showTimePicker"  :pickedTimes="pickedTimes" @addTime="addTime"/>
+                            <div v-else>
+                                <default-time-selector 
+                                    style="margin:-0.5rem 0 0 0; width:12rem;"
+                                    :key="updateTime"  
+                                    :pickedTimes="pickedTimes" 
+                                    @addTime="addTime"/>
+                                <div style="display:inline-block"                                 
+                                    v-for="pickedtime,inx in pickedTimes" :key="'picked'+inx">
+                                        <b-button 
+                                            style="margin:0.2rem; padding:0.2rem;" 
+                                            :variant="pickedtime.start==''?'primary':'time'" 
+                                            size="sm" 
+                                            :disabled="pickedtime.start=='' && pickedTimes.length>6"
+                                            @click="removeTime(pickedtime)">
+                                                <span v-if="pickedtime.start==''" class="text-white"> Add Time </span>
+                                                <span v-else class="text-white"> {{pickedtime.start}} </span>                                            
+                                                <b-icon-plus-square-fill scale="0.75" variant="white" v-if="pickedtime.start==''" />
+                                                <b-icon-x-square-fill scale="0.75" variant="white" v-else />
+                                                <div style="margin-left:-1.3rem;color:yellow;"> {{pickedtime.end}} </div>
+                                        </b-button>
+                                </div>
                             </div>
                         </b-row>
-                        
-                        
                         
                     </b-col>
                 </b-row>
@@ -71,11 +84,13 @@ import moment from 'moment-timezone'
 import { bookingDateInfoType, bookingDateTimesInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
 
-import TimePicker from "./TimePicker.vue"
+import TimePicker from "./TimePicker/TimePicker.vue"
+import DefaultTimeSelector from "./TimePicker/DefaultTimeSelector.vue"
 
 @Component({
     components:{
-        TimePicker
+        TimePicker,
+        DefaultTimeSelector
     }
 })
 export default class BookingDatePicker extends Vue {
@@ -85,13 +100,18 @@ export default class BookingDatePicker extends Vue {
     @Prop({required: false})
     blockedDates!: string[];
 
+    @Prop({required: false, default: false})
+    editDateMode!: boolean;
+
     onShow= false
     dates = []
     arrayEvents = []
 
     pickedDates=""
-    pickedTimes=['Add Time']
+    pickedTimes=[{start:'',end:''}]
     showTimePicker = false
+
+    updateTime=0;
 
 
     mounted(){
@@ -150,7 +170,7 @@ export default class BookingDatePicker extends Vue {
         for(const selectedDate of this.dates){
             newBookingDates.push({                
                 date: moment(selectedDate).toISOString(),
-                bookingTimes: this.pickedTimes
+                bookingTimes: JSON.parse(JSON.stringify(this.pickedTimes))
             })
         }
 
@@ -170,27 +190,31 @@ export default class BookingDatePicker extends Vue {
     }
 
     public addTime(time){ 
-        if(time){       
+        if(time.start && time.end){       
             this.pickedTimes.push(time)           
         }
-        this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
-            if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
-            return tim.slice(6,8)+tim.slice(0,5)
-        })
+        this.pickedTimes = this.sortPickedTimes()
         this.showTimePicker = false;
         this.$emit('change', false);
     }
 
     public removeTime(pickedtime){
-        if(pickedtime == 'Add Time')
+        if(pickedtime.start == '')
             this.showTimePicker = true;
         else{
             this.pickedTimes = this.pickedTimes.filter(tim => tim!=pickedtime);
-            this.pickedTimes = _.sortBy(this.pickedTimes,function(tim){
-                if(tim.slice(0,2)=='12') tim ='00'+ tim.slice(2);
-                return tim.slice(6,8)+tim.slice(0,5)
-            })
+            this.pickedTimes = this.sortPickedTimes() 
+            this.updateTime++;
         }
+    }
+
+    public sortPickedTimes(){
+        return _.sortBy(this.pickedTimes, function(time){
+            const tim = JSON.parse(JSON.stringify(time))
+            if(tim.start=='') return 'Z'
+            if(tim.start.slice(0,2)=='12') tim.start ='00'+ tim.start.slice(2);
+            return tim.start.slice(6,8)+tim.start.slice(0,5)
+        })
     }
 
     public openDatePickerWindow(){
@@ -212,5 +236,8 @@ export default class BookingDatePicker extends Vue {
         margin:0 -.5rem;
         padding: 0;
         box-shadow: 3px 5px 6px #DDD;
+        &.pop-edit{
+            margin:0 0 0 2rem ;
+        }
     }
 </style>

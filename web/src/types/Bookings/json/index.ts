@@ -1,6 +1,7 @@
 import { interpreterLanguageInfoType } from "@/types/Interpreters/json";
 
-export interface bookingInfoType {   
+export interface bookingInfoType { 
+    id?: number;  
     caseName: string;
     comment: string;
     methodOfAppearance: string;
@@ -16,10 +17,27 @@ export interface bookingInfoType {
     locationId: number;
     interpreterId: number;
     date: string;
-    arrivalTime: string;
+    startTime: string;
+    finishTime: string;
     actualStartTime?: string;
-    finishTime?: string;
+    actualFinishTime?: string;
     approversInitials?: string;
+    cancellationComment?: string;
+    cancellationDate?: string;
+    cancellationFee?: string;
+    cancellationReason?: string;
+    cancellationTime?: string;
+}
+
+export interface bookingSearchResultInfoType{
+    id?: number;
+    clerkPhone:string;
+    schedulingClerk:string;
+    created_at:string;
+    createdDate?:string;
+    updated_by:string;
+    interpreter: bookingInterpreterInfoType;
+    dates: bookingInfoType[];
 }
 
 export interface bookingLanguageInfoType{
@@ -40,7 +58,13 @@ export interface bookingDateInfoType {
 
 export interface bookingDateTimesInfoType {    
     date: string;    
-    bookingTimes: string[];    
+    bookingTimes: bookingTimeInfoType[];    
+}
+
+export interface bookingTimeInfoType{
+    start: string;
+    end: string;
+    original?: boolean;
 }
 
 export interface bookingSearchInfoType {    

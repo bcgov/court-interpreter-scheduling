@@ -9,7 +9,7 @@ class UserModel(Base):
 
     id = Column(Integer, primary_key=True, index=True) 
     last_login =   Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
-    username =     Column(String, unique=False, index=True,  nullable=False)
+    username =     Column(String, unique=False, index=False,  nullable=False)
     first_name =   Column(String, unique=False, index=False, nullable=True)
     last_name =    Column(String, unique=False, index=False, nullable=True)
     email =        Column(String, unique=False, index=False, nullable=True)

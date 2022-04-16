@@ -685,13 +685,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import InterpreterDetails from "../components/InterpreterDetails.vue";
-import AddLanguageForm from "../components/AddLanguageForm.vue";
+import AddLanguageForm from "./components/AddLanguageForm.vue";
 import Spinner from "@/components/utils/Spinner.vue";
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interpreters/json';
 
-import BookingDateRangePicker from '@/components/tabs/components/BookingDateRangePicker.vue'
+import BookingDateRangePicker from '@/components/tabs/components/DateComponents/BookingDateRangePicker.vue'
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";

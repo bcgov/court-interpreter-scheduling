@@ -148,12 +148,11 @@
             <b-col cols="2" >
                 <b-form-group                        
                     label="Federal" 
-                    class="labels"
-                    label-for="federal">
-                    <b-form-radio-group 
-                        id="requested-by" 
+                    class="labels">
+                    <b-form-radio-group                         
                         :class="bookingStates.federal==false?'border rounded border-danger pb-3 pt-1 px-2':'input-line' "                           
-                        style="display:inline"                                    
+                        style="display:inline"
+                        @change="bookingStates.federal=null"                                
                         :state="bookingStates.federal"
                         v-model="booking.federal"> 
                         <b-form-radio :value="true">Yes</b-form-radio> 
@@ -293,7 +292,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import {bookingInfoType } from '@/types/Bookings/json';
 import {interpreterLanguageInfoType } from '@/types/Interpreters/json';
 
-import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from './BookingEnums'
+import {interpretForOptions, statusOptions, requestOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from '../BookingEnums'
 import { bookingStatesInfoType } from '@/types/Bookings';
 
 import { namespace } from "vuex-class";
@@ -311,6 +310,9 @@ export default class InterpreterBookingFields extends Vue {
 
     @Prop({required: true})
     totalTabs!: number;
+
+    @Prop({required: true})
+    language!: string;
 
     @Prop({required: true})
     booking!: bookingInfoType
@@ -354,7 +356,7 @@ export default class InterpreterBookingFields extends Vue {
         this.dataReady = false
         this.addNewLanguageForm = false  
         this.selectedInterpretFor = this.interpretForOptions[0].value;
-        this.selectedLanguage = this.languages[0].languageName
+        this.selectedLanguage = this.language? this.language: this.languages[0].languageName
         this.dataReady = true
     }
 

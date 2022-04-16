@@ -366,7 +366,7 @@ def beautify_header(columns):
         elif column=='gst_no':
             new_columns[column] = 'GST'
         elif column=='province':
-            new_columns[column] = ' '
+            new_columns[column] = 'PROVINCE/STATE'
         else:
             new_columns[column] = (column.replace('_', ' ').upper())
     return new_columns

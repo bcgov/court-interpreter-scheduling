@@ -150,6 +150,7 @@
             
             <interpreter-booking-modal
                 @close="closeBookingWindow"
+                :language="language"
                 :interpreter="interpreter"
                 :bookingDates="bookingDates"
                 :searchLocation="searchLocation"/>
@@ -175,7 +176,7 @@ import * as _ from 'underscore';
 
 import InterpreterDetails from "./InterpreterDetails.vue";
 import SchedulingConflictPopup from "./SchedulingConflictPopup.vue"
-import InterpreterBookingModal from "./InterpreterBookingModal.vue"
+import InterpreterBookingModal from "./CreateBookingModal/InterpreterBookingModal.vue"
 
 import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';

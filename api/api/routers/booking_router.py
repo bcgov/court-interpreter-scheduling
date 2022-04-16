@@ -26,7 +26,7 @@ def search_Bookings(request: BookingSearchRequestSchema, db: Session= Depends(ge
 def get_All_Active_Bookings_For_Interpreter(id: int, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
     
     if id>0:
-        return db.query(BookingDatesModel).join(BookingModel).filter(BookingModel.status!=BookingStatusEnum.CANCELLED,BookingDatesModel.interpreter_id==id).all()
+        return db.query(BookingDatesModel).filter(BookingDatesModel.status!=BookingStatusEnum.CANCELLED,BookingDatesModel.interpreter_id==id).all()
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking date does not exist.")
 
@@ -35,10 +35,10 @@ def get_All_Active_Bookings_For_Interpreter(id: int, db: Session= Depends(get_db
 @router.get('', status_code=status.HTTP_200_OK, response_model=List[BookingResponseSchema])
 def get_All_Bookings(locationId: int = 0, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
     
-    bookings = db.query(BookingModel)
+    bookings = db.query(BookingModel).join(BookingDatesModel)
 
     if locationId>0:
-        bookings = bookings.filter(BookingModel.location_id==locationId)
+        bookings = bookings.filter(BookingDatesModel.location_id==locationId)
   
     return bookings.all()
 

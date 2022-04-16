@@ -1,3 +1,4 @@
+import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, APIRouter, status
 from api.schemas.booking_schema import BookingRequestSchema
@@ -7,7 +8,7 @@ from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
 
 def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
-        
+    
     booking_request = request.dict()
     booking_request = add_update_by(booking_request, db, username)
     
@@ -43,7 +44,7 @@ def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, use
     if not booking:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking does not exist.")
 
-    check_conflict_dates(db, booking, booking_request, booking_dates)
+    # check_conflict_dates(db, booking, booking_request, booking_dates)
 
     booking_query.update(booking_request)    
     db.commit()
@@ -102,7 +103,10 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
             # print(req_booking_date)
             if len(req_booking_date)>0:
                 #modify
-                db_booking_date.update(req_booking_date[0])
+                req_booking_date[0]['languages'] = json.dumps(req_booking_date[0]['languages'])
+                req_booking_date[0]['interpreter_id'] = interpreter_id
+                req_booking_date[0]['booking_id'] = booking_id
+                db_booking_date.update(req_booking_date[0])                
                 req_booking_date[0]['processed']=True
             else:
                 #delete
@@ -115,14 +119,15 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
 
         if ('processed' in booking_date) and (booking_date['processed']==True ) :
             continue
+        
+        del booking_date['id']
+        booking_date['languages']= json.dumps(booking_date['languages'])
+        booking_date['interpreter_id'] = interpreter_id
+        booking_date['booking_id'] = booking_id
 
-        new_booking_date = BookingDatesModel(
-            date = booking_date['date'],
-            period = booking_date['period'],
-            arrivalTime = booking_date['arrivalTime'],            
-            interpreter_id = interpreter_id,
-            booking_id = booking_id
-        )
+        new_booking_date = BookingDatesModel(**booking_date)
+        print(new_booking_date.__dict__)
+        
         db.add(new_booking_date)
     
     db.commit()

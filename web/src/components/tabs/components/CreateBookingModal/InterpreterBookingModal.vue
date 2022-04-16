@@ -7,15 +7,19 @@
             </b-col>                                       
         </b-row>
 
-        <b-tabs v-model="tabIndex" pills card>
-            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" :title="tab.name" title-link-class="text-center tab-class">
+        <b-tabs :key="updateTabs" v-model="tabIndex" pills card>
+            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" title-link-class="text-center tab-class">
                 <template #title>
-                    <b-icon-calendar scale="0.85" /> {{tab.beautyDate}} <b><b-icon-clock /> {{tab.time}}</b>
+                    <div><b-icon-calendar scale="0.85" /> {{tab.beautyDate}} </div>
+                    <div style="margin-left:-1.2rem;"><b><b-icon-clock /> {{tab.time.start}}</b></div>
+                    <div style="margin-left:0.1rem; color:#ABD  ;"><b> {{tab.time.end}}</b></div>
                 </template> 
                 <interpreter-booking-fields
+                    :id="'tab-'+inx"
                     @copy="openCopyWindow"
                     :totalTabs="allBookingDatesTimes.length"
                     :tabName="tab.name"
+                    :language="language"
                     :booking="tab.booking" 
                     :bookingStates="tab.bookingStates" 
                     :languages="interpreter.languages"/>               
@@ -60,7 +64,7 @@ import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingStatesInfoType } from '@/types/Bookings';
 
 import InterpreterBookingFields from "./InterpreterBookingFields.vue"
-import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from './BookingEnums'
+import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
 
@@ -80,7 +84,8 @@ export default class InterpreterBookingModal extends Vue {
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
 
-      
+    @Prop({required: true})
+    language!: string;
      
 
     updatedBookingInfo = 0;
@@ -91,6 +96,7 @@ export default class InterpreterBookingModal extends Vue {
     showCopyWindow = false
     targetTab=''
     sourceBookingDatesTimes = []
+    updateTabs=0;
 
     statusOptions
     requestOptions
@@ -119,14 +125,14 @@ export default class InterpreterBookingModal extends Vue {
         for(const bookingDate of this.bookingDates){
             for(const time of bookingDate.bookingTimes){
                 
-                if(time=='Add Time') continue;
+                if(time.start=='') continue;
                 
                 const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
                 this.allBookingDatesTimes.push({
                     date:bookingDate.date,
                     time:time,
                     beautyDate:beautyDate,
-                    name:beautyDate+time.replace(' ',''),
+                    name:beautyDate+time.start.replace(' ',''),
                     booking:this.prepopulateDefaultValues(bookingDate.date, time),
                     bookingStates:this.prepopulateDefaultStates()
                 })
@@ -154,9 +160,10 @@ export default class InterpreterBookingModal extends Vue {
         booking.locationId = this.searchLocation.id;
         booking.interpreterId = this.interpreter.id;
         booking.date = date;
-        booking.arrivalTime = time;
+        booking.startTime = time.start;
+        booking.finishTime = time.end;
         booking.actualStartTime = null;
-        booking.finishTime = null;
+        booking.actualFinishTime = null;
         booking.approversInitials = null;
         return booking
     }
@@ -182,17 +189,23 @@ export default class InterpreterBookingModal extends Vue {
     public saveNewBooking(){
         if (this.checkBookingStates(true)){ 
             console.log(this.allBookingDatesTimes)
-            this.closeBookingWindow()
-    //         this.$http.post('/booking', this.booking)
-    //         .then((response) => {            
-    //             if(response?.data){
-    //                 this.closeBookingWindow();
-    //                 this.$router.push({ name: "bookings" });                
-    //             }
+            const body = {
+                interpreter_id: this.interpreter.id,
+                dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
+
+                        return  bookingDatesTimes.booking
+                    })
+            }
+            this.$http.post('/booking', body)
+            .then((response) => {            
+                if(response?.data){
+                    this.closeBookingWindow();
+                    this.$router.push({ name: "bookings" });                
+                }
                 
-    //         },(err) => {
+            },(err) => {
                             
-    //         });
+            });
         }        
     }
     
@@ -242,12 +255,29 @@ export default class InterpreterBookingModal extends Vue {
     }
 
     public copyTab(tab){
-        console.log(tab)
+        //console.log(tab)
         this.showCopyWindow = false
         const source =  this.allBookingDatesTimes.filter(booking =>booking.name==tab.name)
         const target =  this.allBookingDatesTimes.filter(booking =>booking.name==this.targetTab)
-        if(source.length==1 && target.length==1)
-            target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
+        if(source.length==1 && target.length==1){
+           
+            // target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
+            target[0].booking.caseName = source[0].booking.caseName;
+            target[0].booking.comment = source[0].booking.comment;
+            target[0].booking.methodOfAppearance = source[0].booking.methodOfAppearance;
+            target[0].booking.prosecutor = source[0].booking.prosecutor;        
+            target[0].booking.reason = source[0].booking.reason;
+            target[0].booking.registry = source[0].booking.registry;
+            target[0].booking.requestedBy = source[0].booking.requestedBy;
+            target[0].booking.room = source[0].booking.room;
+            target[0].booking.file = source[0].booking.file;
+            target[0].booking.status = source[0].booking.status;
+            target[0].booking.federal = source[0].booking.federal;
+            target[0].booking.languages = source[0].booking.languages;
+            target[0].booking.locationId = source[0].booking.locationId;
+            
+            this.updateTabs++;
+        }
         
         this.checkBookingStates(false)
 

@@ -20,7 +20,8 @@
                         <b-form-datalist 
                             id="language-list" 
                             @change="searchAgain"
-                            :options="languageNames">
+                            >
+                                <option v-for="langName,inx in languageNames" :key="'lang'+inx" :value="langName" />
                         </b-form-datalist>                        
                     </b-form-group>
                 </b-col>
@@ -152,8 +153,8 @@ import moment from 'moment-timezone'
 
 import Spinner from '@/components/utils/Spinner.vue'
 import SearchInterpretersTable from "./components/SearchInterpretersTable.vue";
-import DateCard from "./components/DateCard.vue"
-import BookingDatePicker from "./components/BookingDatePicker.vue"
+import DateCard from "./components/DateComponents/DateCard.vue"
+import BookingDatePicker from "./components/DateComponents/BookingDatePicker.vue"
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
@@ -244,14 +245,15 @@ export default class SearchInterpretersPage extends Vue {
         this.locationState = this.location?.id?true:false;
 
         if (this.locationState){ 
-             this.dataLoaded = true
+            this.dataLoaded = true
             this.searching = true;
             this.interpreters = [];
+            
+            const language = this.languages.filter(lang => lang.name==this.language);
 
             const body = {
-                // "courtAddr":this.location?.addressLine1?this.location.addressLine1:'',
                 "distanceLimit":this.limitDistance,
-                "language":this.language,
+                "languageId":language.length==1? language[0].id :null,
                 "level":this.level,
                 "city":'',
                 "dates":this.bookingDates,

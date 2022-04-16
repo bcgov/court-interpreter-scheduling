@@ -1,8 +1,8 @@
 <template>
-    <b-card body-class="p-0" id="booking-date-container"> 
+    <b-card body-class="p-0" id="booking-date-container-range"> 
         <b-button 
             @click="initDates();onShow=true;"
-            id="popover-button-variant" 
+            id="popover-range-button-variant" 
             variant="transparent" 
             class="border-0" 
             style="width:100%; margin:0; padding:0.5rem 1rem;"
@@ -10,11 +10,11 @@
             <span v-html="pickedDates">{{pickedDates}}</span> <b-icon-calendar style="float:right"/>
         </b-button>
         <b-popover 
-            customClass="pop"
-            target="popover-button-variant"  
+            customClass="pop-range"
+            target="popover-range-button-variant"  
             triggers="manual"
             placement="bottomleft"
-            container="booking-date-container"
+            container="booking-date-container-range"
             ref="popover"
             :show.sync="onShow"           
             >

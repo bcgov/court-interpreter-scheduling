@@ -98,7 +98,7 @@
                         <b-form-input 
                             size="sm"
                             disabled  
-                            v-model="booking.created_at">
+                            v-model="booking.createdDate">
                         </b-form-input>
                     </b-form-group>
                 </b-col>
