@@ -131,7 +131,7 @@ node {
   def namespace = config.NAME_SPACE
   def destination = config.DEV_ENV
   def appSuffix = config.SUFFIX
-  // def schemaSpy = config.SCHEMA_SPY_APP_NAME
+  //def schemaSpy = config.SCHEMA_SPY_APP_NAME
 
   if( triggerBuild(contextDirectory) ) {
     stage("Cancel previous builds") {

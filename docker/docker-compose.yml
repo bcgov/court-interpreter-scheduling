@@ -74,6 +74,35 @@ services:
         /usr/libexec/s2i/run;"
 
   #
+  # schema-spy
+  #-------------------------------------------------
+  # Needs to wait for the schema to be created/migrated
+  # by the API server; it's not enough to wait for the
+  # database to be available.
+  #
+  # We are using a simple sleep command to do this
+  # for the moment; refer to the `command` section
+  # of the configuration for details.  It would be
+  # nice to implement a more deterministic solution.
+  #
+  schema-spy:
+    image: schema-spy
+    environment:
+      - DATABASE_SERVICE_NAME=${DATABASE_SERVICE_NAME}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    ports:
+      - 8082:8080
+    depends_on:
+      - db
+    command: >
+      /bin/sh -c "
+        echo sleeping ...;
+        sleep 20;
+        ./start.sh;"
+
+  #
   # db
   #
   db:

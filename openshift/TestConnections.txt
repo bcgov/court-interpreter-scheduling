@@ -8,3 +8,4 @@ web:8080
 api:8080
 backup:5432
 db:5432
+schema-spy:8080
