@@ -29,7 +29,7 @@
 
 
         <b-row class="ml-1">
-            <b-col cols="4">
+            <b-col cols="3">
                 <b-form-group
                     class="labels"                
                     label="Court File Number" 
@@ -42,7 +42,20 @@
                     </b-form-input>
                 </b-form-group>
             </b-col>
-            <b-col cols="3">
+            <b-col cols="2">
+                <b-form-group
+                    class="labels"                
+                    label="Court Class" 
+                    label-for="court-class">
+                    <b-form-input 
+                        :state="bookingStates.courtClass"
+                        class="input-line"
+                        id="court-class"                                         
+                        v-model="booking.courtClass">
+                    </b-form-input>
+                </b-form-group>
+            </b-col>
+            <b-col cols="2">
                 <b-form-group
                     class="labels"                
                     label="Court Room" 

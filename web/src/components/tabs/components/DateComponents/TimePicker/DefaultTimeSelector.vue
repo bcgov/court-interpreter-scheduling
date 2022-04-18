@@ -45,9 +45,9 @@ export default class DefaultTimeSelector extends Vue {
     selectedTime = {} as bookingTimeInfoType
 
     bookingPeriodOptions=[
-        {text:'Morning', value:{start:'09:00 AM',end:'12:00 PM'}},
-        {text:'Afternoon', value:{start:'01:00 PM',end:'04:00 PM'}},
-        {text:'Full Day', value:{start:'09:00 AM',end:'04:00 PM'}}
+        {text:'Morning', value:{start:'09:30 AM',end:'12:30 PM'}},
+        {text:'Afternoon', value:{start:'01:30 PM',end:'04:00 PM'}},
+        {text:'Full Day', value:{start:'09:30 AM',end:'04:00 PM'}}
     ]
 
 

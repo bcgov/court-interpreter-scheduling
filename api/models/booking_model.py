@@ -53,7 +53,9 @@ class BookingDatesModel(Base):
     file = Column(String, unique=False, index=False, nullable=True)
         
     federal = Column(Boolean, nullable=False, default=False)    
-    languages = Column(String, unique=False, index=False, nullable=True)     
+    languages = Column(String, unique=False, index=False, nullable=True)
+
+    court_class = Column(String, unique=False, index=False, nullable=True)     
 
     location_id = Column(Integer, unique=False)
     

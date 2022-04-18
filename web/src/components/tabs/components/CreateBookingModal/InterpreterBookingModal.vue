@@ -145,6 +145,7 @@ export default class InterpreterBookingModal extends Vue {
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
         
+        booking.courtClass = null;
         booking.caseName = null;
         booking.comment = null;
         booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
@@ -176,6 +177,7 @@ export default class InterpreterBookingModal extends Vue {
         bookingStates.file = null;
         bookingStates.interpretFor = null;
         bookingStates.caseName = null;
+        bookingStates.courtClass = null;
         bookingStates.request = null;
         bookingStates.language = null;
         bookingStates.reason = null;
@@ -226,6 +228,7 @@ export default class InterpreterBookingModal extends Vue {
             bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
+            bookingStates.courtClass = !(booking.courtClass)? false : null;
             bookingStates.request = !(booking.requestedBy)? false : null;
             bookingStates.language = !(booking.languages.length>0 )? false : null;
             bookingStates.reason = !(booking.reason)? false : null;
@@ -263,6 +266,7 @@ export default class InterpreterBookingModal extends Vue {
            
             // target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
             target[0].booking.caseName = source[0].booking.caseName;
+            target[0].booking.courtClass = source[0].booking.courtClass;
             target[0].booking.comment = source[0].booking.comment;
             target[0].booking.methodOfAppearance = source[0].booking.methodOfAppearance;
             target[0].booking.prosecutor = source[0].booking.prosecutor;        

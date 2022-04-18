@@ -13,7 +13,7 @@
                 <b-row class="mx-0 mt-2 mb-4">                    
                     <b-col cols="6">
                         <booking-date-picker 
-                            v-if="editDateReady"
+                            v-if="editDateReady"                            
                             :editDateMode="true"  
                             :bookingDates="bookingCardsDates" 
                             :blockedDates="blockDates" 
@@ -21,7 +21,13 @@
                         <loading-spinner color="#000" v-else waitingText="Loading ..." />
                     </b-col>
                 </b-row>    
-                <b-row class="date-card-container" :key="updateCards" >                    
+                <b-row class="date-card-container" :key="updateCards"> 
+<!-- <div v-for="bookingCardDate,inx in bookingCardsDates" :key="inx">
+    {{bookingCardDate.date.slice(0,10)}}
+    <div  v-for="i,j in bookingCardDate.bookingTimes" :key="j" >
+        {{i}}
+    </div>              
+</div> -->
                     <date-card 
                         @remove="RemoveBookingDate" 
                         @bookingChanged="ChangeBookingDate" 
@@ -38,14 +44,17 @@
                     <div style="margin-left:0.1rem; color:#ABD  ;">
                         <b> {{tab.time.end}}</b>
                         <b-icon-x-octagon-fill v-if="tab.booking.status==statusOptions[2].value" class="text-danger ml-2"  />
+                        <b-icon-exclamation-triangle-fill v-if="tab.booking.locationId != searchLocation.id" variant="warning" class="ml-2"/>
                     </div>
                 </template> 
 
                 <edit-booking-fields
                     @cancel="cancelStatus"
                     @timeChanged="bookingTimeChanged"
-                    :id="'tab-'+inx"                    
-                    :totalTabs="allBookingDatesTimes.length"                   
+                    :id="'tab-'+inx"
+                    :tabIndex="tabIndex"                  
+                    :tabNumber="inx+1"
+                    :searchLocation="searchLocation"
                     :booking="tab.booking" 
                     :bookingStates="tab.bookingStates"
                     :allBookings="allBookingDatesTimes" 
@@ -66,7 +75,7 @@
             </b-button>                
         </b-row>
 
-        <b-modal size="lg" body-class="py-0"  v-model="showReasonWindow" header-class="bg-warning">
+        <b-modal size="lg" body-class="py-0"  v-model="showCancelReasonWindow" no-close-on-backdrop header-class="bg-warning">
             <template v-slot:modal-title>
                 <h2 class="my-2">Reason For Cancellation</h2>
             </template>
@@ -136,7 +145,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import moment from 'moment-timezone'
 import * as _ from 'underscore';
 
@@ -177,7 +186,7 @@ export default class EditBookingModal extends Vue {
 
     allBookingDatesTimes = []
     tabIndex = 1;
-    showReasonWindow = false
+    showCancelReasonWindow = false
     targetTab=''
     sourceBookingDatesTimes = []
     updateTabs=0;
@@ -213,11 +222,17 @@ export default class EditBookingModal extends Vue {
         this.interpreterRequestOptions=interpreterRequestOptions
     }
 
+    @Watch('tabIndex')
+    tabChanged(value){
+        if(value==0){            
+            this.updateCards++;
+        }
+    }
    
     mounted() { 
         this.errorMsg=''
-        console.log(this.interpreter)
-        console.log(this.bookingDates)
+        //console.log(this.interpreter)
+        //console.log(this.bookingDates)
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -225,7 +240,7 @@ export default class EditBookingModal extends Vue {
     public extractBookingDates(){
 
         this.allBookingDatesTimes = []
-        this.bookingCardsDates = []
+        // this.bookingCardsDates = []
         this.blockDates = []
         this.editDateReady = false
 
@@ -240,30 +255,47 @@ export default class EditBookingModal extends Vue {
                 beautyDate:beautyDate,
                 name:beautyDate+bookingDate.startTime.replace(' ',''),
                 booking: bookingDate,
-                bookingStates:this.prepopulateDefaultStates()
+                bookingStates:this.prepopulateDefaultStates(),
+                original:true
             })
-
+                        
             this.blockDates.push(bookingDate.date.slice(0,10));
-
-            const index = this.bookingCardsDates.findIndex(booking => booking.date==bookingDate.date)
-            if(index>-1){
-                this.bookingCardsDates[index].bookingTimes.push({start:bookingDate.startTime, end:bookingDate.finishTime, original:true})
-            }else
-                this.bookingCardsDates.push({
-                    date: bookingDate.date,    
-                    bookingTimes:[{start:bookingDate.startTime, end:bookingDate.finishTime, original:true}]
-                })            
+                  
         }
 
-        for(const booking of this.bookingCardsDates)
-        {
-            booking.bookingTimes.push({start:'', end:''})
-        }
+        this.extractBookingCards()        
 
         this.sortAllBookingDatesTimes()
         // console.log(this.allBookingDatesTimes)
         //console.log(this.blockDates)
         
+    }
+
+    public extractBookingCards(){
+        this.bookingCardsDates = []
+        for(const eachBookingDate of this.allBookingDatesTimes){              
+                
+            const bookingDate = eachBookingDate.booking
+
+            const bookingCancelled = (bookingDate.status==this.statusOptions[2].value)
+
+            if(!bookingCancelled){
+                const index = this.bookingCardsDates.findIndex(booking => booking.date==bookingDate.date)
+                
+                if(index>-1){
+                    this.bookingCardsDates[index].bookingTimes.push({start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original})
+                }else
+                    this.bookingCardsDates.push({
+                        date: bookingDate.date,    
+                        bookingTimes:[{start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original}]
+                    }) 
+            } 
+                  
+        }
+        
+        for(const booking of this.bookingCardsDates){
+            booking.bookingTimes.push({start:'', end:''})
+        }
     }
 
     public extractBlockDates(){
@@ -286,6 +318,7 @@ export default class EditBookingModal extends Vue {
         bookingStates.file = null;
         bookingStates.interpretFor = null;
         bookingStates.caseName = null;
+        bookingStates.courtClass = null;
         bookingStates.request = null;
         bookingStates.language = null;
         bookingStates.reason = null;
@@ -300,7 +333,7 @@ export default class EditBookingModal extends Vue {
 
     public saveBooking(){
         if (this.checkBookingStates(true)){ 
-            console.log(this.allBookingDatesTimes)
+            //console.log(this.allBookingDatesTimes)
             const body = {
                 interpreter_id: this.interpreter.id,
                 dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
@@ -338,6 +371,7 @@ export default class EditBookingModal extends Vue {
             bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
+            bookingStates.courtClass = !(booking.courtClass)? false : null;
             bookingStates.request = !(booking.requestedBy)? false : null;
             bookingStates.language = !(booking.languages.length>0 )? false : null;
             bookingStates.reason = !(booking.reason)? false : null;
@@ -369,7 +403,7 @@ export default class EditBookingModal extends Vue {
     public cancelStatus(booking, previousStatus){
         this.cancellationBooking = booking
         this.cancellationBookingPreviousStatus = previousStatus
-        this.showReasonWindow = true;
+        this.showCancelReasonWindow = true;
     }
 
     public confirmCancel(confirm){
@@ -383,11 +417,12 @@ export default class EditBookingModal extends Vue {
             this.cancellationBooking.cancellationComment = this.cancellationComment
             this.cancellationBooking.cancellationDate = moment().format()
             this.cancellationBooking.cancellationTime = moment().format("hh:mm A")
-            this.showReasonWindow = false;
+            this.showCancelReasonWindow = false;
+            this.extractBookingCards()
             
         }else{
             this.cancellationBooking.status = this.cancellationBookingPreviousStatus;
-            this.showReasonWindow = false;
+            this.showCancelReasonWindow = false;
         }
         
     }
@@ -399,6 +434,7 @@ export default class EditBookingModal extends Vue {
             this.allBookingDatesTimes[index].name = this.allBookingDatesTimes[index].beautyDate+newBookingDate.startTime.replace(' ','');
             this.allBookingDatesTimes[index].booking =  newBookingDate;
         }
+        this.extractBookingCards()
     }
 
     public RemoveBookingDate(newDate){
@@ -413,17 +449,22 @@ export default class EditBookingModal extends Vue {
     }
 
     public ChangeBookingDate(changedBookingDate, removedTime ){
-        console.log(changedBookingDate)
+        // console.log(changedBookingDate)
+        // console.log(removedTime)
         
         if(!removedTime){
             for(const time of changedBookingDate.bookingTimes){
                 
                 if(time.original || time.start=='') continue;
                 
-                const indexOfExisting = this.allBookingDatesTimes.findIndex(booking =>{                
+                const indexOfExisting = this.allBookingDatesTimes.findIndex(booking =>{ 
+                    
                     return ((booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
                             (booking.time.start == time.start) &&
-                            (booking.time.end == time.end))               
+                            (booking.time.end == time.end) && 
+                            (booking.booking.status != this.statusOptions[2].value)
+                            
+                    )               
                 })
                 
                 if(indexOfExisting>-1) continue;
@@ -435,7 +476,7 @@ export default class EditBookingModal extends Vue {
                     beautyDate:beautyDate,
                     name:beautyDate+time.start.replace(' ',''),
                     booking:this.prepopulateDefaultValues(changedBookingDate.date, time),
-                    bookingStates:this.prepopulateDefaultStates()
+                    bookingStates:this.prepopulateDefaultStates()                    
                 })
             
             // this.updateEditDates++;
@@ -445,11 +486,15 @@ export default class EditBookingModal extends Vue {
             const indexOfRemoving = this.allBookingDatesTimes.findIndex(booking =>{                
                 return ((booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
                         (booking.time.start == removedTime.start) &&
-                        (booking.time.end == removedTime.end))                                      
+                        (booking.time.end == removedTime.end) &&
+                        (booking.booking.status != this.statusOptions[2].value)
+                )                                      
             })
             if(indexOfRemoving>-1) this.allBookingDatesTimes.splice(indexOfRemoving,1);
         }
-
+        
+        //console.log(this.allBookingDatesTimes)
+        this.extractBookingCards()
         this.sortAllBookingDatesTimes()
     }
 
@@ -463,6 +508,7 @@ export default class EditBookingModal extends Vue {
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
         
+        booking.courtClass = null;
         booking.caseName = null;
         booking.comment = null;
         booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;

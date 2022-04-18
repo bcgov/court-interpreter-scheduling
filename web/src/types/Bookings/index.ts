@@ -5,6 +5,7 @@ export interface bookingStatesInfoType {
     file: null | boolean;
     interpretFor: null | boolean;
     caseName: null | boolean;
+    courtClass: null | boolean;
     request: null | boolean;
     language: null | boolean;
     federal: null | boolean;    

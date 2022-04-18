@@ -109,8 +109,8 @@
                                 triggers="hover"
                                 placement="left"
                                 customClass="conflict-popover"                                              
-                                >
-                                <scheduling-conflict-popup :bookings="data.item.booking" />
+                                >                                
+                                    <scheduling-conflict-popup :bookings="data.item.booking" :bookingDates="bookingDates"/>
                             </b-popover>
                         </div>
                         
@@ -181,6 +181,7 @@ import InterpreterBookingModal from "./CreateBookingModal/InterpreterBookingModa
 import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingDateTimesInfoType} from '@/types/Bookings/json';
+import {statusOptions} from './BookingEnums'
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -268,12 +269,15 @@ export default class SearchInterpretersTable extends Vue {
     }
 
 
-    public disableBookingButton(dates){
+    public disableBookingButton(booking){
         if(this.bookingDates.length==0) return true
-        if(dates.length>0){
-            const bustDates = _.flatten((dates.map(date=>date.dates?.map(d=>d.date?.slice(0,10)))))
+        if(booking.length>0){
+            const busyDates = _.flatten((booking.map(item=>item.dates?.map(bookedDate=>{
+                if(bookedDate.status == statusOptions[2].value) return
+                return bookedDate.date?.slice(0,10) 
+            }))))
             for(const bookingDate of this.bookingDates)
-                if(bustDates.includes(bookingDate.date.slice(0,10)))
+                if(busyDates.includes(bookingDate.date.slice(0,10)))
                     return true
         }
         return false

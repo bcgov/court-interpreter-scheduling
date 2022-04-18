@@ -85,7 +85,7 @@ export default class TimePicker extends Vue {
 
     selectedStartTime = { 
         hour:'09', focusHour:false,
-        minute:'00',focusMinute:false,
+        minute:'30',focusMinute:false,
         ampm:'AM', focusAmPm:false,
     } 
     selectedEndTime = { 

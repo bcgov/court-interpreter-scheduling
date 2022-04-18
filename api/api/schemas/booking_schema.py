@@ -32,6 +32,8 @@ class BookingDateSchema(BaseModel):
     
     room: Optional[str]
     file: Optional[str]
+
+    court_class: Optional[str] = Field(alias="courtClass")
         
     federal: bool = False
     # languages: Optional[List[Dict]]

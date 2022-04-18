@@ -23,16 +23,21 @@
                     </b-form-select>
                 </b-form-group>
             </b-col> 
-            <b-col cols="3">
-                <div 
-                    v-if="booking.status.includes('Cancel')" 
-                    style="margin:1.35rem 0 0 0;"
-                    class="rounded bg-danger h4 text-center text-white py-1" >
-                        Cancelled by: {{cancellationBy}} <br/> {{cancellationReason}}
+            <b-col cols="5">                              
+                <div v-if="booking.status.includes('Cancel')"  
+                    style="margin:1.35rem 0 0 0; height:2.5rem; padding:0.65rem;" 
+                    class="rounded h4 text-center text-white bg-danger" >
+                        Cancelled by: {{cancellationBy}} {{cancellationReason}}
                 </div>
+                <div v-else-if="booking.locationId!=searchLocation.id"  
+                    style="margin:1.35rem 0 0 0; height:2.5rem; padding:0.65rem 0 0 0;" 
+                    class="rounded h4 text-center text-white bg-warning" >
+                        <b-icon-exclamation-triangle-fill/> This Booking corresponds to a different location.
+                        
+                </div>                
             </b-col>
-            <b-col cols="2" /> 
-            <b-col cols="2"> 
+
+            <b-col cols="2" :key="'start-update-'+updateTime"> 
                 <b-form-group
                     class="labels"                
                     label="Start Time" 
@@ -47,7 +52,7 @@
                     </b-form-input>
                 </b-form-group>                        
             </b-col>
-            <b-col cols="2"> 
+            <b-col cols="2" :key="'end-update-'+updateTime"> 
                 <b-form-group
                     class="labels"                
                     label="Finish Time" 
@@ -67,7 +72,7 @@
 
 
         <b-row class="ml-1">
-            <b-col cols="4">
+            <b-col cols="3">
                 <b-form-group
                     class="labels"                
                     label="Court File Number" 
@@ -81,7 +86,21 @@
                     </b-form-input>
                 </b-form-group>
             </b-col>
-            <b-col cols="3">
+            <b-col cols="2">
+                <b-form-group
+                    class="labels"                
+                    label="Court Class" 
+                    label-for="court-class">
+                    <b-form-input 
+                        :state="bookingStates.courtClass"
+                        :disabled="disableEdit"
+                        class="input-line"
+                        id="court-class"                                         
+                        v-model="booking.courtClass">
+                    </b-form-input>
+                </b-form-group>
+            </b-col>
+            <b-col cols="2">
                 <b-form-group
                     class="labels"                
                     label="Court Room" 
@@ -354,14 +373,22 @@ const commonState = namespace("Common");
 
 
 @Component
-export default class InterpreterBookingFields extends Vue {
+export default class EditBookingFields extends Vue {
     
+    @Prop({required: true})
+    tabIndex!: number
+    
+    @Prop({required: true})
+    tabNumber!: number
 
     @Prop({required: true})
     booking!: bookingInfoType
 
     @Prop({required: true})
     bookingStates!: bookingStatesInfoType;
+
+    @Prop({required: true})
+    public searchLocation!: locationsInfoType;
     
     @Prop({required: true})
     languages: interpreterLanguageInfoType[]
@@ -391,6 +418,8 @@ export default class InterpreterBookingFields extends Vue {
     disableEdit = false
 
     errorMsg=''
+
+    updateTime = 0
     
 
     statusOptions
@@ -426,6 +455,12 @@ export default class InterpreterBookingFields extends Vue {
         }
     }
 
+    @Watch('tabIndex')
+    tabEnter(value){
+        if(value==this.tabNumber && this.booking.status!=this.statusOptions[2].value)
+            this.timeConflict()
+    }
+
     mounted() { 
         this.dataReady = false
         this.addNewLanguageForm = false  
@@ -433,7 +468,7 @@ export default class InterpreterBookingFields extends Vue {
         this.selectedLanguage = this.languages[0].languageName
         this.previousStatus =  JSON.parse(JSON.stringify(this.booking.status))
         this.watchStatusChanged(this.booking.status)
-        this.dataReady = true
+        this.dataReady = true        
     }
 
     public addLanguage(){
@@ -469,44 +504,46 @@ export default class InterpreterBookingFields extends Vue {
     }
 
     public startTimeFormatter(time){ 
-        time = this.modifyTime(time)
+        time = time.toUpperCase()
         this.bookingStates.start = this.timeValid(time)
         this.timeConflict()
         return time
     }
 
     public endTimeFormatter(time){
-        time = this.modifyTime(time)
+        time = time.toUpperCase()
         this.bookingStates.end = this.timeValid(time)
         this.timeConflict()
         return time
     }
 
-    public modifyTime(time){
-        time = time.toUpperCase()
-        if(time.length>5 && time.slice(5,6)!=' '){
+    public modifyTime(time){     
+        if(time.slice(5,6)!=' '){
             time = time.slice(0,5)+' '+ time.slice(5)
         }
         return time
     }
 
-    public timeValid(time){
+    public timeValid(time){        
         const timeFormat =/^(1[0-2]|[0][0-9]):([0-5][0-9])([ ]?)([AP]M|[ap]m)$/; 
         
-        if(time && !timeFormat.test(time)){ 
-            this.errorMsg='Invalid Time Format!  Valid format is \"nn:nn AM/PM\".  e.g. 12:00 PM'
-            return false        
-        }
-        else{
+        if(time && timeFormat.test(time)){ 
             this.errorMsg=''
             return null
+        }else{            
+            this.errorMsg='Invalid Time Format!  Valid format is \"nn:nn AM/PM\".  e.g. 12:00 PM'
+            return false        
         }
     }
 
     public timeConflict(){
         Vue.nextTick(()=>{
             if(this.bookingStates.start==null && this.bookingStates.end==null){
-                
+
+                this.booking.startTime =  this.modifyTime(this.booking.startTime)
+                this.booking.finishTime=  this.modifyTime(this.booking.finishTime)
+                this.updateTime++;
+
                 const start = moment(this.booking.startTime, "hh:mm A").format()   
                 const end = moment(this.booking.finishTime, "hh:mm A").format()
                 if(start >= end){
@@ -532,6 +569,7 @@ export default class InterpreterBookingFields extends Vue {
                         }
                     }
                 }
+                this.errorMsg=''
                 this.bookingStates.conflict=null
                 this.$emit('timeChanged', this.booking)
             }

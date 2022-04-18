@@ -1,7 +1,7 @@
 <template>
     <b-card class="bg-white border-white">                
             
-        <loading-spinner color="#000" v-if="searching" waitingText="Loading Results ..." /> 
+        <loading-spinner color="#000" v-if="searching || !dataReady" waitingText="Loading Results ..." /> 
         <div v-else> 
 
             <b-card no-body border-variant="white" bg-variant="white" v-if="!bookings.length">
@@ -10,9 +10,10 @@
 
             <b-card v-else class="home-content border-white p-0">
                 <b-table
-                    :items="bookings"
+                    :items="bookingItems"
                     :fields="bookingFields"
-                    class="border-info"                                    
+                    class="border-info" 
+                    sort-by="interpreter"                                   
                     small
                     sort-icon-left
                     responsive="sm">
@@ -81,7 +82,8 @@
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'comment'+inx"
                             > 
-                            {{dateInfo.comment}}
+                            <span v-if="dateInfo.comment" >{{dateInfo.comment}}</span>
+                            <span v-else class="text-white">-</span>
                         </div>
                     </template>                  
 
@@ -115,7 +117,7 @@
             </b-card>
         </div>
 
-        <b-modal size="xl" footer-class="d-none" v-model="showBookingWindow" header-class="bg-primary text-white" >
+        <b-modal size="xl" footer-class="d-none" v-model="showBookingWindow" no-close-on-backdrop header-class="bg-primary text-white" >
             <template v-slot:modal-title>
                 <h1 class="my-2 ml-2">Update Court Interpreter Request</h1> 
             </template>
@@ -181,7 +183,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch} from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import EditBookingModal from "./EditBookingModal/EditBookingModal.vue"
@@ -233,6 +235,8 @@ export default class BookingTable extends Vue {
 
     currentAdm = {} as bookingSearchResultInfoType
     
+    bookingItems = []
+    dataReady=false
 
     bookingFields = [        
         {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
@@ -240,14 +244,30 @@ export default class BookingTable extends Vue {
         {key:'caseName',       label:'Case Name',         sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:15%'},
         {key:'language',       label:'Language',          sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:22%'},
         {key:'interpreter',    label:'Interpreter',       sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
-        {key:'status',         label:'Status',            sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:4%'},
+        {key:'status',         label:'Status',            sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:4%'},
         {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
         {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:7%'}
     ];
 
-
-    mounted() { 
+    @Watch('searching')
+    public getBookingItems(){
+        this.dataReady = false;
+        this.bookingItems = []
+        for(const booking of this.bookings){
+            const dates = this.sortByDate(booking.dates)
+            booking['file'] = dates[0].file
+            booking['caseName'] = dates[0].caseName
+            booking['language'] = this.getLanguages(dates[0].languages)
+            this.bookingItems.push(booking)
+        }
+        this.dataReady = true;        
     }
+
+    mounted() {         
+        this.getBookingItems()        
+    }
+
+    
     
     public displayInterpreterInfo(interpreterInfo: bookingInterpreterInfoType){
         this.interpreterDetails = interpreterInfo;
@@ -290,7 +310,7 @@ export default class BookingTable extends Vue {
     public sortByDate(data){
         return _.sortBy(data, function(data){            
             const startTime = data.startTime
-            return (data.date + startTime.slice(6,8)+ startTime.slice(0,5))
+            return (data.date + startTime.slice(6,8)+ startTime.slice(0,5))+data.status
         })
     }
     
