@@ -6,7 +6,7 @@ class OidcUserModel(Base):
     __tablename__ = "oidcuser"
 
     id = Column(Integer, primary_key=True, index=True)
-    sub =  Column(String, unique=True, index=True)    
+    sub =  Column(String, unique=True, index=False)    
     userinfo = Column(JSON)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship ("UserModel", back_populates="oidcuser")

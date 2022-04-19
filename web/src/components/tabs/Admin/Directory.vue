@@ -42,14 +42,19 @@
                     <b-form-group                        
                         label="Language" 
                         label-for="language">
-                        <b-form-select 
-                            id="language"
-                            @change="searchAgain"                      
+                        <b-form-input 
+                            list="language-list"
                             style="display:inline"
+                            placeholder="Select Language"
                             v-model="language"
-                            :options="languageNames"
-                        >
-                        </b-form-select> 
+                            @change="searchAgain"
+                            id="language">
+                        </b-form-input>
+                        <b-form-datalist
+                            id="language-list" 
+                            @change="searchAgain"
+                            :options="languageNames">
+                        </b-form-datalist>
                     </b-form-group>
                 </b-col>
                 <b-col cols="1" />
@@ -680,13 +685,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import InterpreterDetails from "../components/InterpreterDetails.vue";
-import AddLanguageForm from "../components/AddLanguageForm.vue";
+import AddLanguageForm from "./components/AddLanguageForm.vue";
 import Spinner from "@/components/utils/Spinner.vue";
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interpreters/json';
 
-import BookingDateRangePicker from '@/components/tabs/components/BookingDateRangePicker.vue'
+import BookingDateRangePicker from '@/components/tabs/components/DateComponents/BookingDateRangePicker.vue'
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";

@@ -132,6 +132,9 @@ export default class LanguagePage extends Vue {
     @commonState.State
     public languages!: languagesInfoType[];
 
+    @commonState.Action
+    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void 
+
     dataLoaded = false;  
     isEditOpen = false;
     latestEditData;
@@ -168,7 +171,8 @@ export default class LanguagePage extends Vue {
             this.$http.get('/language')
                 .then(response => {
                     if(response.data){
-                        this.languageList = _.sortBy(response.data,'name')                        
+                        this.languageList = _.sortBy(response.data,'name') 
+                        this.UpdateLanguages(this.languageList);                       
                     }
                     this.dataLoaded = true;
                 },err => {
@@ -216,7 +220,7 @@ export default class LanguagePage extends Vue {
 
     public saveLanguage(body, iscreate){
         this.languageError = false;       
-        body['name'] = body.name;
+        body['name'] = body.name.replace(/\s\s+/g, ' ');
         const method = iscreate? 'post' :'put';            
         const url = iscreate?'/language':'/language/' + body.id 
         const options = { method: method, url:url, data:body}

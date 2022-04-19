@@ -15,7 +15,7 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session):
 
     interpreter = db.query(InterpreterModel).join(InterpreterLanguageModel).where(InterpreterModel.disabled==False)
 
-    interpreter = apply_language(interpreter, request.language)
+    interpreter = apply_language(interpreter, request.languageId)
     interpreter = apply_level(interpreter, request.level)
     interpreter = apply_name(interpreter, request.name)
     interpreter = apply_city(interpreter, request.city)
@@ -100,11 +100,10 @@ def apply_name(interpreter, name):
     else:
         return interpreter
 
-def apply_language(interpreter, language):
+def apply_language(interpreter, language_id):
 
-    if language is not None and len(language)>0:
-        language = language.lower().strip()         
-        return interpreter.filter(func.lower(InterpreterLanguageModel.language)==language)
+    if language_id is not None:       
+        return interpreter.filter(InterpreterLanguageModel.language_id==language_id)
     else:
         return interpreter
 

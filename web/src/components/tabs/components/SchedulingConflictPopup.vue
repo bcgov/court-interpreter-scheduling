@@ -23,10 +23,12 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { locationsInfoType } from '@/types/Common/json';
-import {bookingPeriodOptions, bookingPeriod} from './BookingEnums'
+import {statusOptions} from './BookingEnums'
+import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
+import { bookingDateTimesInfoType } from '@/types/Bookings/json';
 const commonState = namespace("Common");
 
 @Component
@@ -34,6 +36,9 @@ export default class SchedulingConflictPopup extends Vue {
 
     @Prop({required: true})
     bookings!: any;
+
+    @Prop({required: true})
+    bookingDates!: bookingDateTimesInfoType[]
     
     @commonState.State
     public courtLocations!: locationsInfoType[];
@@ -42,12 +47,12 @@ export default class SchedulingConflictPopup extends Vue {
 
     conflictDates=[]
     conflictDateFields=[
-        {key:'date',    label:'Date',            sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:18%'},
-        {key:'time',    label:'Time',            sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:7%'},
-        {key:'period',  label:'Period',          sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:12%'},
-        {key:'file',    label:'File Number',     sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:20%'},
-        {key:'reason',  label:'Matter',          sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:10%'},
-        {key:'location',label:'Court Location',  sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:33%'},    
+        {key:'date',      label:'Date',            sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:18%'},
+        {key:'startTime', label:'Start', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
+        {key:'finishTime',label:'Finish', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
+        {key:'file',      label:'File Number',     sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:20%'},
+        {key:'reason',    label:'Matter',          sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:10%'},
+        {key:'location',  label:'Court Location',  sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:34%'},    
     ]
     
     
@@ -60,18 +65,23 @@ export default class SchedulingConflictPopup extends Vue {
     public extractInfo(){
         this.conflictDates=[]
         console.log(this.bookings)
+        const sortedBookingDate = _.sortBy(this.bookingDates, 'date')
+        const minBookingDate = sortedBookingDate.length>0? sortedBookingDate[0].date.slice(0,10): ''
+        console.log(minBookingDate)
         for(const booking of this.bookings){
-            for(const date of booking.dates){                
-                this.conflictDates.push({
-                    date:date.date,
-                    time:date.arrivalTime,
-                    period:bookingPeriodOptions.filter(period => period.value ==date.period)[0].text,
-                    file:booking.file,
-                    reason:booking.reason,
-                    location:this.courtLocations.filter(loc => loc.id == booking.locationId)[0].name
-                })
+            for(const bookingdate of booking.dates){ 
+                if(bookingdate.status != statusOptions[2].value && bookingdate.date.slice(0,10) >= minBookingDate)               
+                    this.conflictDates.push({
+                        date: bookingdate.date,
+                        startTime: bookingdate.startTime,
+                        finishTime: bookingdate.finishTime,
+                        file: bookingdate.file,
+                        reason: bookingdate.reason,
+                        location: bookingdate.registry
+                    })
             }
         }
+        this.conflictDates = _.sortBy(this.conflictDates, 'date')
     }
 
 }

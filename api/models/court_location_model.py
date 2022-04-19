@@ -7,9 +7,9 @@ class CourtLocationModel(Base):
     __tablename__ = "court_location"
 
     id = Column(Integer, primary_key=True, index=True)
-    name =  Column(String, unique=True, index=True)    
-    created_at =   Column(DateTime(timezone=True), server_default=func.now(), nullable=False)      
-    updated_at =  Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    name = Column(String, unique=True, index=False)    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)      
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     short_description = Column(String, unique=False, index=False, nullable=True)
     location_code = Column(String, unique=False, index=False, nullable=True)
     city = Column(String, unique=False, index=False, nullable=True)

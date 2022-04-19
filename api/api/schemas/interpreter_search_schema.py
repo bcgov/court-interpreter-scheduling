@@ -20,7 +20,7 @@ class CrcDateRangeSchema(BaseModel):
 
 
 class InterpreterSearchRequestSchema(BaseModel):    
-    language:  Optional[str]
+    languageId:  Optional[int]
     level: Optional[List[str]]
     city: Optional[str]
     dates: Optional[List[DatesSchema]]

@@ -1,7 +1,9 @@
 import { interpreterLanguageInfoType } from "@/types/Interpreters/json";
 
-export interface bookingInfoType {   
+export interface bookingInfoType { 
+    id?: number;  
     caseName: string;
+    courtClass: string;
     comment: string;
     methodOfAppearance: string;
     prosecutor: string;
@@ -9,14 +11,40 @@ export interface bookingInfoType {
     registry: string;
     requestedBy: string;
     room: string;
-    file: string;
-    interpretFor: string;
+    file: string;    
     status: string;
     federal: boolean;
-    language: string;
+    languages: bookingLanguageInfoType[];
     locationId: number;
-    dates: bookingDateInfoType[];
-    interpreterId: number;      
+    interpreterId: number;
+    date: string;
+    startTime: string;
+    finishTime: string;
+    actualStartTime?: string;
+    actualFinishTime?: string;
+    approversInitials?: string;
+    cancellationComment?: string;
+    cancellationDate?: string;
+    cancellationFee?: string;
+    cancellationReason?: string;
+    cancellationTime?: string;
+}
+
+export interface bookingSearchResultInfoType{
+    id?: number;
+    clerkPhone:string;
+    schedulingClerk:string;
+    created_at:string;
+    createdDate?:string;
+    updated_by:string;
+    interpreter: bookingInterpreterInfoType;
+    dates: bookingInfoType[];
+}
+
+export interface bookingLanguageInfoType{
+    language:string;
+    level:number;
+    interpretFor: string;
 }
 
 export interface bookingDateInfoType {
@@ -27,6 +55,17 @@ export interface bookingDateInfoType {
     actualStartTime?: string;
     finishTime?: string;
     approversInitials?: string;
+}
+
+export interface bookingDateTimesInfoType {    
+    date: string;    
+    bookingTimes: bookingTimeInfoType[];    
+}
+
+export interface bookingTimeInfoType{
+    start: string;
+    end: string;
+    original?: boolean;
 }
 
 export interface bookingSearchInfoType {    

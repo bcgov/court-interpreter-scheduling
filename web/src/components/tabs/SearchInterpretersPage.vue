@@ -3,24 +3,26 @@
             
         <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         <b-card v-else class="w-100 mx-auto my-1 bg-light border-white"> 
-            <b-card body-class="py-2" class="bg-info text-center mt-0 mb-5 mx-auto w-50">
-                <b-icon-info-circle font-scale="1.35" class="mr-3"/>
-                <b>Add Dates, Court Location and Search for interpreters to book.</b>
-            </b-card>               
-           
+
             <b-row>
                 <b-col cols="4">
                     <b-form-group                        
                         label="Language" 
                         label-for="language">
-                        <b-form-select 
-                            id="language"
-                            @change="searchAgain"                            
+                        <b-form-input 
+                            list="language-list"
                             style="display:inline"
+                            placeholder="Select Language"
                             v-model="language"
-                            :options="languageNames"
-                        >
-                        </b-form-select> 
+                            @change="searchAgain"
+                            id="language">
+                        </b-form-input>
+                        <b-form-datalist 
+                            id="language-list" 
+                            @change="searchAgain"
+                            >
+                                <option v-for="langName,inx in languageNames" :key="'lang'+inx" :value="langName" />
+                        </b-form-datalist>                        
                     </b-form-group>
                 </b-col>
                 <b-col cols="4">
@@ -61,8 +63,9 @@
                     <b-form-group>                           
                         <b-form-checkbox 
                             class="mt-0 labels"
+                            :disabled="!(location && location.id)"
                             @change="searchAgain"                                                                                                             
-                            v-model="limitDistance">Limit Search to 32KM
+                            v-model="limitDistance">Limit Search to 32 km
                         </b-form-checkbox> 
                     </b-form-group>
                 </b-col>
@@ -72,7 +75,7 @@
             <b-row>
                 <b-col cols="4" style="margin-top:-1rem"> 
                     <div> Dates</div>                 
-                    <booking-date-picker :key="update" :bookingDates="bookingDates" @datesAdded="addBookingDates"/>
+                    <booking-date-picker :key="update" :bookingDates="bookingDates" @datesAdded="addBookingDates" @change="datePickerWindowChanged"/>
                 </b-col>
                 <b-col cols="4">
                 </b-col>
@@ -80,7 +83,7 @@
                     <b-button
                         name="search"
                         style="margin-top: 0rem; padding: 0.25rem 2rem; width: 100%;" 
-                        :disabled="searching"
+                        :disabled="searching||disableSearch"
                         v-on:keyup.enter="find()"
                         variant="primary"
                         @click="find()"
@@ -89,13 +92,18 @@
                     </b-button>
                 </b-col>                
             </b-row>
-            <b-row :key="update">
+            <div>
+                
+            <b-row class="date-card-container" :key="update">
                 <date-card 
+                    class="date-card"
                     @remove="RemoveBookingDate" 
                     @bookingChanged="ChangeBookingDate" 
                     v-for="bookingDate,inx in bookingDates" :key="inx" 
                     :bookingDate="bookingDate"/>
-            </b-row>            
+            </b-row> 
+                
+            </div>         
         </b-card>        
    
         <search-interpreters-table 
@@ -145,15 +153,15 @@ import moment from 'moment-timezone'
 
 import Spinner from '@/components/utils/Spinner.vue'
 import SearchInterpretersTable from "./components/SearchInterpretersTable.vue";
-import DateCard from "./components/DateCard.vue"
-import BookingDatePicker from "./components/BookingDatePicker.vue"
+import DateCard from "./components/DateComponents/DateCard.vue"
+import BookingDatePicker from "./components/DateComponents/BookingDatePicker.vue"
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
-import { bookingDateInfoType } from '@/types/Bookings/json';
+import { bookingDateTimesInfoType } from '@/types/Bookings/json';
 
 const commonState = namespace("Common");
 
@@ -194,8 +202,10 @@ export default class SearchInterpretersPage extends Vue {
 
     levelOptions = ['1', '2', '3', '4'];
 
-    bookingDates: bookingDateInfoType[]=[];
+    bookingDates: bookingDateTimesInfoType[]=[];
     update = 0; 
+
+    disableSearch = false;
     
     currentPage = 1;
     itemsPerPage = 10;// Default
@@ -205,7 +215,8 @@ export default class SearchInterpretersPage extends Vue {
         this.extractInfo();
     }
 
-    mounted() {  
+    mounted() { 
+        this.disableSearch = false;
         this.dataLoaded = false;
         this.dataReady = false;   
         this.locationState = true;
@@ -234,14 +245,15 @@ export default class SearchInterpretersPage extends Vue {
         this.locationState = this.location?.id?true:false;
 
         if (this.locationState){ 
-             this.dataLoaded = true
+            this.dataLoaded = true
             this.searching = true;
             this.interpreters = [];
+            
+            const language = this.languages.filter(lang => lang.name==this.language);
 
             const body = {
-                // "courtAddr":this.location?.addressLine1?this.location.addressLine1:'',
                 "distanceLimit":this.limitDistance,
-                "language":this.language,
+                "languageId":language.length==1? language[0].id :null,
                 "level":this.level,
                 "city":'',
                 "dates":this.bookingDates,
@@ -300,6 +312,7 @@ export default class SearchInterpretersPage extends Vue {
 
     public addBookingDates(bookingDates){
         this.bookingDates = bookingDates
+        console.log(this.bookingDates)
         this.update++;        
         this.searchAgain()
     }
@@ -312,10 +325,15 @@ export default class SearchInterpretersPage extends Vue {
 
     public ChangeBookingDate(bookingDate){
         const changedBookingDate = this.bookingDates.filter(booking => booking.date==bookingDate.date)[0]
-        changedBookingDate.period = bookingDate.period
-        changedBookingDate.arrivalTime = bookingDate.arrivalTime
+        changedBookingDate.bookingTimes = bookingDate.bookingTimes
+     
         this.update++;
         this.searchAgain()
+        console.log(this.bookingDates)
+    }
+
+    public datePickerWindowChanged(open){
+        this.disableSearch = open
     }
 
 }
@@ -340,5 +358,19 @@ export default class SearchInterpretersPage extends Vue {
         padding-top: 0;
         margin-top: 0;
     }
+
+    .date-card-container{
+        margin: 1rem 0 0 0;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;        
+        overflow-y: hidden;        
+
+        .date-card {
+            flex: 0 0 auto;
+        }  
+    }
+
+
 
 </style>

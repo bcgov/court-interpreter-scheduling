@@ -86,6 +86,7 @@
         <booking-table 
             v-if="dataLoaded" 
             :bookings="currentPageBookings" 
+            :searchLocation="location"
             @find="find" 
             :searching="searching" />
         
@@ -131,20 +132,18 @@ import { namespace } from "vuex-class";
 import "@/store/modules/common";
 const commonState = namespace("Common");
 
-import InterpreterDetails from "./components/InterpreterDetails.vue";
 import BookingTable from './components/BookingTable.vue'
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
-import { bookingSearchInfoType, dateRangeInfoType } from '@/types/Bookings/json';
+import { bookingSearchInfoType, bookingSearchResultInfoType, dateRangeInfoType } from '@/types/Bookings/json';
 import Spinner from '@/components/utils/Spinner.vue'
 
-import BookingDateRangePicker from './components/BookingDateRangePicker.vue'
+import BookingDateRangePicker from './components/DateComponents/BookingDateRangePicker.vue'
 
 @Component({
     components:{
-        InterpreterDetails,
         BookingTable,
         Spinner,
         BookingDateRangePicker
@@ -195,7 +194,7 @@ export default class BookingsPage extends Vue {
     interpreterName = '';
    
     interpreter = {} as interpreterInfoType;
-    bookings: bookingSearchInfoType[] = [];  
+    bookings: bookingSearchResultInfoType[] = [];  
 
     currentPage = 1;
     itemsPerPage = 10;// Default

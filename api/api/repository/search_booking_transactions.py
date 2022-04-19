@@ -31,7 +31,7 @@ def apply_file_number(bookings, file_number):
 
 def apply_location(bookings, location_id):
     if location_id and location_id>0:
-        return bookings.where(BookingModel.location_id==location_id)
+        return bookings.where(BookingDatesModel.location_id==location_id)
     else:
         return bookings
 
