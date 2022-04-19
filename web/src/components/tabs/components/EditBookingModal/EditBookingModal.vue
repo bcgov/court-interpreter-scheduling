@@ -46,7 +46,7 @@
                         <b-icon-x-octagon-fill v-if="tab.booking.status==statusOptions[2].value" class="text-danger ml-2"  />
                         <b-icon-exclamation-triangle-fill v-if="tab.booking.locationId != searchLocation.id" variant="warning" class="ml-2"/>
                     </div>
-                </template> 
+                </template>
 
                 <edit-booking-fields
                     @cancel="cancelStatus"
@@ -56,6 +56,7 @@
                     :tabNumber="inx+1"
                     :searchLocation="searchLocation"
                     :booking="tab.booking" 
+                    :original="tab.original"
                     :bookingStates="tab.bookingStates"
                     :allBookings="allBookingDatesTimes" 
                     :languages="interpreter.languages"/>         
@@ -249,12 +250,13 @@ export default class EditBookingModal extends Vue {
         for(const bookingDate of this.bookingDates){              
                 
             const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
+            const booking: bookingInfoType = JSON.parse(JSON.stringify(bookingDate))
             this.allBookingDatesTimes.push({
                 date:bookingDate.date,
                 time:{start:bookingDate.startTime, end:bookingDate.finishTime},
                 beautyDate:beautyDate,
                 name:beautyDate+bookingDate.startTime.replace(' ',''),
-                booking: bookingDate,
+                booking: booking,
                 bookingStates:this.prepopulateDefaultStates(),
                 original:true
             })
@@ -289,6 +291,14 @@ export default class EditBookingModal extends Vue {
                         date: bookingDate.date,    
                         bookingTimes:[{start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original}]
                     }) 
+            }else if(eachBookingDate.original){
+                const index = this.bookingCardsDates.findIndex(booking => booking.date==bookingDate.date)
+                if(index<0)
+                    this.bookingCardsDates.push({
+                        date: bookingDate.date,    
+                        bookingTimes:[]
+                    })
+                //console.log(eachBookingDate)
             } 
                   
         }
@@ -362,8 +372,32 @@ export default class EditBookingModal extends Vue {
 
         for(const eachBookingDateInx in this.allBookingDatesTimes){
             const eachBookingDate = this.allBookingDatesTimes[eachBookingDateInx]
-            const booking = eachBookingDate.booking
+            let booking = eachBookingDate.booking
             const bookingStates = eachBookingDate.bookingStates
+
+            if(booking.status==statusOptions[2].value){                
+                const originalBookingDate = this.bookingDates.filter(bookingdate =>bookingdate.id==booking.id)
+                if(originalBookingDate.length>0){
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.caseName = JSON.parse(JSON.stringify(originalBookingDate[0].caseName));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.courtClass = JSON.parse(JSON.stringify(originalBookingDate[0].courtClass));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.comment = JSON.parse(JSON.stringify(originalBookingDate[0].comment));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.methodOfAppearance = JSON.parse(JSON.stringify(originalBookingDate[0].methodOfAppearance));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.prosecutor = JSON.parse(JSON.stringify(originalBookingDate[0].prosecutor));        
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.reason = JSON.parse(JSON.stringify(originalBookingDate[0].reason));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.registry = JSON.parse(JSON.stringify(originalBookingDate[0].registry));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.requestedBy = JSON.parse(JSON.stringify(originalBookingDate[0].requestedBy));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.room = JSON.parse(JSON.stringify(originalBookingDate[0].room));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.file = JSON.parse(JSON.stringify(originalBookingDate[0].file));
+                    
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.federal = JSON.parse(JSON.stringify(originalBookingDate[0].federal));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.languages = JSON.parse(JSON.stringify(originalBookingDate[0].languages));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.locationId = JSON.parse(JSON.stringify(originalBookingDate[0].locationId));
+
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.startTime = JSON.parse(JSON.stringify(originalBookingDate[0].startTime));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.finishTime = JSON.parse(JSON.stringify(originalBookingDate[0].finishTime));
+                }
+                continue
+            }
     
             bookingStates.status = !(booking.status)? false : null;
             // bookingStates.room = !(booking.room)? false : null;        

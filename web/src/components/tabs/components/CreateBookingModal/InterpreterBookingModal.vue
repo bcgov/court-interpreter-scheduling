@@ -265,20 +265,20 @@ export default class InterpreterBookingModal extends Vue {
         if(source.length==1 && target.length==1){
            
             // target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
-            target[0].booking.caseName = source[0].booking.caseName;
-            target[0].booking.courtClass = source[0].booking.courtClass;
-            target[0].booking.comment = source[0].booking.comment;
-            target[0].booking.methodOfAppearance = source[0].booking.methodOfAppearance;
-            target[0].booking.prosecutor = source[0].booking.prosecutor;        
-            target[0].booking.reason = source[0].booking.reason;
-            target[0].booking.registry = source[0].booking.registry;
-            target[0].booking.requestedBy = source[0].booking.requestedBy;
-            target[0].booking.room = source[0].booking.room;
-            target[0].booking.file = source[0].booking.file;
-            target[0].booking.status = source[0].booking.status;
-            target[0].booking.federal = source[0].booking.federal;
-            target[0].booking.languages = source[0].booking.languages;
-            target[0].booking.locationId = source[0].booking.locationId;
+            target[0].booking.caseName = JSON.parse(JSON.stringify(source[0].booking.caseName));
+            target[0].booking.courtClass = JSON.parse(JSON.stringify(source[0].booking.courtClass));
+            target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
+            target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));
+            target[0].booking.prosecutor = JSON.parse(JSON.stringify(source[0].booking.prosecutor));        
+            target[0].booking.reason = JSON.parse(JSON.stringify(source[0].booking.reason));
+            target[0].booking.registry = JSON.parse(JSON.stringify(source[0].booking.registry));
+            target[0].booking.requestedBy = JSON.parse(JSON.stringify(source[0].booking.requestedBy));
+            target[0].booking.room = JSON.parse(JSON.stringify(source[0].booking.room));
+            target[0].booking.file = JSON.parse(JSON.stringify(source[0].booking.file));
+            target[0].booking.status = JSON.parse(JSON.stringify(source[0].booking.status));
+            target[0].booking.federal = JSON.parse(JSON.stringify(source[0].booking.federal));
+            target[0].booking.languages = JSON.parse(JSON.stringify(source[0].booking.languages));
+            target[0].booking.locationId = JSON.parse(JSON.stringify(source[0].booking.locationId));
             
             this.updateTabs++;
         }

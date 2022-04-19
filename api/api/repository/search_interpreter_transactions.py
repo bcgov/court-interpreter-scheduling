@@ -165,7 +165,7 @@ def apply_dates(interpreters, booking_dates, db):
         return interpreters
 
     interpreters_list = [inter.id for inter in interpreters]
-    booked_dates = db.query(BookingDatesModel).join(BookingModel).filter(BookingModel.status!=BookingStatusEnum.CANCELLED, BookingDatesModel.interpreter_id.in_(interpreters_list)).all()
+    booked_dates = db.query(BookingDatesModel).join(BookingModel).filter(BookingDatesModel.status!=BookingStatusEnum.CANCELLED, BookingDatesModel.interpreter_id.in_(interpreters_list)).all()
 
     whole_day_asked_dates = list()
     morning_asked_dates = list()

@@ -56,7 +56,7 @@ def modify_Booking(id: int, request: BookingRequestSchema, db: Session= Depends(
 
 
 @router.delete('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def delete_Booking(id: int, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
+def delete_Booking(id: int, db: Session= Depends(get_db_session), user = Depends(admin_user)):
     
     booking = db.query(BookingModel).filter(BookingModel.id==id)    
     booking.delete(synchronize_session=False)

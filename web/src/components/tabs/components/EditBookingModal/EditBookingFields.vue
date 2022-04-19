@@ -1,6 +1,6 @@
 <template>
     <div v-if="dataReady">
-        
+
         <b-alert class="mt-3" variant="danger" :show="errorMsg.length>0" >            
             <b class="mr-2">Error: </b> {{errorMsg}} <b-icon-exclamation-circle-fill/>
         </b-alert>
@@ -385,6 +385,9 @@ export default class EditBookingFields extends Vue {
     booking!: bookingInfoType
 
     @Prop({required: true})
+    original!: boolean|null
+
+    @Prop({required: true})
     bookingStates!: bookingStatesInfoType;
 
     @Prop({required: true})
@@ -430,7 +433,7 @@ export default class EditBookingFields extends Vue {
 
     created(){
         this.interpretForOptions=interpretForOptions
-        this.statusOptions=statusOptions        
+        this.statusOptions=this.original? statusOptions : statusOptions.filter(stat =>  !stat.text.toLowerCase().includes("cancel"))        
         this.requestOptions=requestOptions 
         this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions 
         this.interpreterRequestOptions=interpreterRequestOptions
@@ -439,7 +442,7 @@ export default class EditBookingFields extends Vue {
     @Watch('booking.status')
     watchStatusChanged(value){
 
-        if(value==this.statusOptions[2].value){
+        if(value==statusOptions[2].value){
             this.disableEdit = true
             this.extractCancellation()
         }else
@@ -457,7 +460,7 @@ export default class EditBookingFields extends Vue {
 
     @Watch('tabIndex')
     tabEnter(value){
-        if(value==this.tabNumber && this.booking.status!=this.statusOptions[2].value)
+        if(value==this.tabNumber && this.booking.status!=statusOptions[2].value)
             this.timeConflict()
     }
 
@@ -499,7 +502,7 @@ export default class EditBookingFields extends Vue {
     }
 
     public statusChanged(value){
-        if(value==this.statusOptions[2].value)
+        if(value==statusOptions[2].value)
             this.$emit('cancel', this.booking, this.previousStatus)
     }
 
@@ -553,7 +556,7 @@ export default class EditBookingFields extends Vue {
 
                 for(const eachBooking of this.allBookings){
                     
-                    if( eachBooking.booking.status != this.statusOptions[2].value && 
+                    if( eachBooking.booking.status != statusOptions[2].value && 
                         eachBooking.date.slice(0,10)==this.booking.date.slice(0,10) &&
                         this.booking.id != eachBooking.booking.id
                     ){  
