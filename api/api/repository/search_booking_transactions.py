@@ -24,7 +24,7 @@ def search_Booking(request: BookingSearchRequestSchema, db: Session):
 
 def apply_file_number(bookings, file_number):
     if file_number is not None and len(file_number)>0:
-        return bookings.where(func.lower(BookingModel.file) == func.lower(file_number.strip()))
+        return bookings.where(func.lower(BookingDatesModel.file) == func.lower(file_number.strip()))
     else:
         return bookings
 
