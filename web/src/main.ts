@@ -48,6 +48,7 @@ if(
     location.pathname.includes('/directory') ||
     location.pathname.includes('/language') ||
     location.pathname.includes('/user-role') ||
+    location.pathname.includes('/rates') ||
     location.pathname.includes('/update-geo')
 ){
     console.log(location.pathname)

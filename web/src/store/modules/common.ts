@@ -1,3 +1,4 @@
+import { ratesInfoType } from '@/types/Common';
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
@@ -16,6 +17,7 @@ class Common extends VuexModule {
     public userLocation: locationsInfoType|null = null;
     public courtLocations: locationsInfoType[] = [];
     public languages: languagesInfoType[] = [];
+    public rates = {} as ratesInfoType;
 
     // public accountInfo = {} as accountInfoType;
 
@@ -80,8 +82,6 @@ class Common extends VuexModule {
     public UpdateUserEmail(newUserEmail: string) {
         this.context.commit("setUserEmail", newUserEmail);
     }
-    
-
 
     @Mutation
     public setCourtLocations(courtLocations: locationsInfoType[]): void {   
@@ -101,6 +101,14 @@ class Common extends VuexModule {
         this.context.commit('setLanguages', newLanguages)
     }
 
+    @Mutation
+    public setRates(rates: ratesInfoType): void {   
+        this.rates = rates
+    }
+    @Action
+    public UpdateRates(newRates: ratesInfoType): void {
+        this.context.commit('setRates', newRates)
+    }
 
     // @Mutation
     // public setLocationsInfo(locationsInfo: locationsInfoType[]): void {   

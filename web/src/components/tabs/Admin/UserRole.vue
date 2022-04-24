@@ -104,12 +104,7 @@ import "@/store/modules/common";
 const commonState = namespace("Common");
 
 
-
-@Component({
-    components:{
-        // MyDocumentsTable,
-    }
-})
+@Component
 export default class UserRolePage extends Vue {
 
     @commonState.State
