@@ -3,7 +3,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from api.schemas.language_schema import InterpreterLanguageSchema
-
+from api.schemas.custom_type import JsonBase
 #__________________________________________
 #__________________________________________
 class InterpreterBase(BaseModel):
@@ -67,6 +67,7 @@ class InterpreterBookingResponseSchema(BaseModel):
     cell_phone: Optional[str] = Field(alias="phone")
     email: Optional[str]
     languages: Optional[List[InterpreterLanguageSchema]] = []
+    language_history: Optional[JsonBase] = Field(alias="languageHistory")
 
     address: Optional[str]
     city: Optional[str]

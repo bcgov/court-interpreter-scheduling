@@ -1,6 +1,7 @@
 import csv
 import datetime
 import io
+import json
 from fastapi.responses import StreamingResponse
 
 from typing import List
@@ -102,7 +103,11 @@ def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: S
     db.commit()
     db.refresh(new_interpreter)
 
-    add_language(interpreter_languages, db, new_interpreter.id)
+    new_language_history = add_language(interpreter_languages, db, new_interpreter.id)
+    if len(new_language_history)>0:
+        interpreter_query = db.query(InterpreterModel).filter(InterpreterModel.id==new_interpreter.id)
+        interpreter_query.update({'language_history': json.dumps(new_language_history)})
+        db.commit()
     
     return new_interpreter.id
 
@@ -129,7 +134,16 @@ def modify_interpreter_in_db(id: int, request:InterpreterCreateModifyRequestSche
     interpreter_query.update(interpreter_request)    
     db.commit()
 
-    add_language(interpreter_languages, db, id)
+    new_language_history = add_language(interpreter_languages, db, id)
+
+    if len(new_language_history)>0:
+        previous_language_history =  interpreter.language_history
+
+        if previous_language_history : 
+            new_language_history = json.loads(previous_language_history)+new_language_history
+
+        interpreter_query.update({'language_history': json.dumps(new_language_history)})
+        db.commit()
 
     return interpreter.id
 
@@ -162,15 +176,20 @@ def add_geo_coordinates(interpreter_request):
 
 def add_language(interpreter_languages, db: Session, interpreter_id):
     
-    new_interpreter_languages=list()
+    new_interpreter_languages_ids = list()
+    language_history = list()
 
     for interpreter_language in interpreter_languages:
+        
         interpreter_language_name = interpreter_language['language'].lower()
-        new_interpreter_languages.append(interpreter_language_name)
+                
         language = db.query(LanguageModel).filter(func.lower(LanguageModel.name)==interpreter_language_name).first()
+        if not language: continue
         
-        inter_lang_relation = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.language_id==language.id, InterpreterLanguageModel.interpreter_id==interpreter_id).first()
-        
+        new_interpreter_languages_ids.append(language.id)
+
+        inter_lang_relation_query = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.language_id==language.id, InterpreterLanguageModel.interpreter_id==interpreter_id)
+        inter_lang_relation = inter_lang_relation_query.first()
         if not inter_lang_relation:
             # print(language.id," -> ",interpreter_id," no relation")
             new_inter_lang = InterpreterLanguageModel(
@@ -181,17 +200,38 @@ def add_language(interpreter_languages, db: Session, interpreter_id):
                 comment_on_level = interpreter_language['comment_on_level']
             )
             db.add(new_inter_lang)
+            language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
+        else:
+            if inter_lang_relation.level != interpreter_language['level']:
+                language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
+    
+            inter_lang_relation_query.update({
+                'language': language.name,
+                'level': interpreter_language['level'],
+                'comment_on_level': interpreter_language['comment_on_level']
+            })           
+    
 
-    # print(new_interpreter_languages)
 
     previous_interpreter_languages = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.interpreter_id==interpreter_id).all()
     for previous_interpreter_language in previous_interpreter_languages:
         # print(previous_interpreter_language.language)
-        if(previous_interpreter_language.language).lower() not in new_interpreter_languages :
+        if previous_interpreter_language.language_id not in new_interpreter_languages_ids :
+            language_history.append({
+                'language_id':previous_interpreter_language.language_id, 
+                'language':previous_interpreter_language.language, 
+                'level':previous_interpreter_language.level, 
+                'effective_date':datetime.now().strftime("%Y-%m-%d"),
+                'disabled':True
+            })
             inter_lang_relation_query = db.query(InterpreterLanguageModel).filter(InterpreterLanguageModel.id==previous_interpreter_language.id)
             inter_lang_relation_query.delete(synchronize_session=False)
+            
     
     db.commit()
+    # print("__________________")
+    # print(language_history)
+    return language_history
 
 def province_abvr(province):
    

@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { locationsInfoType } from '@/types/Common/json';
-import {statusOptions} from './BookingEnums'
+import {bookingMethodOfAppearance, statusOptions} from './BookingEnums'
 import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";
@@ -47,12 +47,13 @@ export default class SchedulingConflictPopup extends Vue {
 
     conflictDates=[]
     conflictDateFields=[
-        {key:'date',      label:'Date',            sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:18%'},
-        {key:'startTime', label:'Start', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
-        {key:'finishTime',label:'Finish', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
-        {key:'file',      label:'File Number',     sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:20%'},
-        {key:'reason',    label:'Matter',          sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:10%'},
-        {key:'location',  label:'Court Location',  sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:34%'},    
+        {key:'date',      label:'Date',            sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:17%'},
+        {key:'startTime', label:'Start', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:8%'},
+        {key:'finishTime',label:'Finish', sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:8%'},
+        {key:'file',      label:'File Number',     sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle,', tdClass:'align-middle', thStyle:' width:16%'},
+        {key:'reason',    label:'Matter',          sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:7%'},
+        {key:'location',  label:'Court Location',  sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:27%'},
+        {key:'appearance',  label:'Appearance Type',  sortable:false, cellStyle:'', thClass:'bg-secondary text-white align-middle', tdClass:'align-middle', thStyle:' width:17%'},        
     ]
     
     
@@ -64,10 +65,10 @@ export default class SchedulingConflictPopup extends Vue {
 
     public extractInfo(){
         this.conflictDates=[]
-        console.log(this.bookings)
+        //console.log(this.bookings)
         const sortedBookingDate = _.sortBy(this.bookingDates, 'date')
         const minBookingDate = sortedBookingDate.length>0? sortedBookingDate[0].date.slice(0,10): ''
-        console.log(minBookingDate)
+        //console.log(minBookingDate)
         for(const booking of this.bookings){
             for(const bookingdate of booking.dates){ 
                 if(bookingdate.status != statusOptions[2].value && bookingdate.date.slice(0,10) >= minBookingDate)               
@@ -77,7 +78,8 @@ export default class SchedulingConflictPopup extends Vue {
                         finishTime: bookingdate.finishTime,
                         file: bookingdate.file,
                         reason: bookingdate.reason,
-                        location: bookingdate.registry
+                        location: bookingdate.registry,
+                        appearance: bookingdate.methodOfAppearance
                     })
             }
         }
