@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func, Float, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, func, Float, Boolean, JSON
 from core.multi_database_middleware import DeclarativeBase as Base
 from sqlalchemy.orm import relationship
 
@@ -39,6 +39,8 @@ class InterpreterModel(Base):
     geo_service = Column(String, unique=False, index=False, nullable=True)
 
     disabled = Column(Boolean, nullable=False, default=False)
+
+    language_history = Column(JSON)
 
     # languages = relationship('LanguageModel', cascade = 'all,delete', secondary='interpreter_language', backref='interpreter')
     languages = relationship("InterpreterLanguageModel",overlaps="interpreters, language", back_populates="interpreter_relation")

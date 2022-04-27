@@ -118,7 +118,7 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
         booking_date['booking_id'] = booking_id
 
         new_booking_date = BookingDatesModel(**booking_date)
-        print(new_booking_date.__dict__)
+        # print(new_booking_date.__dict__)
         
         db.add(new_booking_date)
     

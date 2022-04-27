@@ -11,23 +11,24 @@
 					:class="bgClass[item.name]" >
 					<div class="booking-tab">{{item.label}}</div>
 				</b-nav-item>
-				
+			</b-navbar-nav>
+			<b-navbar-nav class="ml-auto mr-5">	
 				<div v-if="userRole.includes('super-admin')||userRole.includes('cis-admin')">
-					<b-dropdown :variant="adminTab?'cyan':'primary'">
+					<b-dropdown right  :variant="adminTab?'cyan':'primary'">
 						<template #button-content >
 							<div style="display:inline; font-size:14pt;">
 								<i class="fa fa-user-circle"></i> Admin
 							</div>
 						</template>
-					<b-dropdown-item 
-						v-for="item,inx in adminGroup" 
-						:key="inx"
-						:disabled="!userRole.includes('super-admin') && item.super_admin"
-						@click="ChangeClass(item.name);adminTab = true;" 
-						:to="'/'+item.name"
-						:class="bgClass[item.name]" >
-						<div class="booking-tab">{{item.label}}</div>
-					</b-dropdown-item>
+						<b-dropdown-item 
+							v-for="item,inx in adminGroup" 
+							:key="inx"
+							:disabled="!userRole.includes('super-admin') && item.super_admin"
+							@click="ChangeClass(item.name); adminTab = true;" 
+							:to="'/'+item.name"
+							:class="bgClass[item.name]" >
+							<div class="booking-tab">{{item.label}}</div>
+						</b-dropdown-item>
 					</b-dropdown>
 
 				</div>

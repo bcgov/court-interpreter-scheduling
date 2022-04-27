@@ -6,27 +6,27 @@ export interface locationShortInfoType {
 }
 
 export interface ratesInfoType {
-    meals: mealAllowanceInfoType;
-    spokenLanguage: spokenLanguageInfoType;
-    aslLanguage: aslInfoType;
-    mileage: string;
-    lounge: string;
+
+    mileage: number;
+    lodge: number;
+   
+    breakfast: number;
+    lunch: number;
+    dinner: number;
+  
+    spkl1: number;
+    spkl2: number;
+    spkl3: number;
+    spkl4: number;  
+    asl1: number;
+    asl2: number;
+    cart: number;
 }
 
-export interface mealAllowanceInfoType {    
-    breakfast: string;
-    lunch: string;
-    dinner: string;
-}
-
-export interface spokenLanguageInfoType {    
-    level1: string;
-    level2: string;
-    level3: string;
-    level4: string;
-}
-
-export interface aslInfoType {    
-    level1: string;
-    level2: string;
+export interface rateJsonInfoType {
+    id: number;
+    name: string;
+    value: number;
+    previousValue: number;
+    valueChangedDate: string;
 }

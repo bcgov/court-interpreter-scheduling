@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, DateTime, func, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, func, ForeignKey, Boolean, Float
 from sqlalchemy.dialects.postgresql import ENUM
 from core.multi_database_middleware import DeclarativeBase as Base
 from sqlalchemy.orm import relationship
-from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingInterpretForEnum, BookingMethodOfAppearanceEnum
+from models.booking_enums import BookingStatusEnum, BookingRequestedByEnum, BookingInterpretForEnum, BookingMethodOfAppearanceEnum
 
 
 class BookingModel(Base):
@@ -16,6 +16,16 @@ class BookingModel(Base):
 
     scheduling_clerk = Column(String, unique=False, index=False, nullable=True)
     clerk_phone = Column(String, unique=False, index=False, nullable=True)
+
+    spkl1_rate = Column(Float, unique=False, index=False, nullable=True)
+    spkl2_rate = Column(Float, unique=False, index=False, nullable=True)
+    spkl3_rate = Column(Float, unique=False, index=False, nullable=True)
+    spkl4_rate = Column(Float, unique=False, index=False, nullable=True)
+
+    asl1_rate = Column(Float, unique=False, index=False, nullable=True)
+    asl2_rate = Column(Float, unique=False, index=False, nullable=True)
+
+    cart_rate = Column(Float, unique=False, index=False, nullable=True)
 
     interpreter_id = Column(Integer, ForeignKey('interpreter.id'))
     interpreter = relationship("InterpreterModel", back_populates="booking")

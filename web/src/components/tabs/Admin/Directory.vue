@@ -1076,6 +1076,7 @@ export default class DirectoryPage extends Vue {
             this.interpreter.languages[index].commentOnLevel = newLanguage.commentOnLevel;       
             this.closeLanguageForm();
         }
+        this.interpreterStates.languages = null
         this.updated ++;
         
     }
