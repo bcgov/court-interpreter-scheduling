@@ -33,6 +33,8 @@ class BookingDateSchema(BaseModel):
     room: Optional[str]
     file: Optional[str]
 
+    case_type: Optional[str] = Field(alias="caseType")
+    court_level: Optional[str] = Field(alias="courtLevel")
     court_class: Optional[str] = Field(alias="courtClass")
         
     federal: bool = False

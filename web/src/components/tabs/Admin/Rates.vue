@@ -228,7 +228,7 @@
                             Other Rates:
                         </b-card-header>
                         <b-card-body>
-                            <b-row class="p-0">
+                            <!-- <b-row class="p-0">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Lodge: 
                                 </b-col>
@@ -243,7 +243,7 @@
                                 <b-col cols="3" class="h4 my-auto">
                                     $ /day
                                 </b-col>
-                            </b-row>
+                            </b-row> -->
 
                             <b-row class="p-0">
                                 <b-col cols="3" class="text-primary h4 my-auto">

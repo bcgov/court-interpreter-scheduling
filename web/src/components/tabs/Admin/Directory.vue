@@ -675,7 +675,17 @@
             </template>
         </b-modal>
 
-        
+        <b-modal v-model="showConfirmDeleteInterpreter" header-class="bg-warning" title-class="h2 " title="Confirm Delete Interpreter" >
+            Are you sure you want to delete <b>{{interpreter.firstName}} {{interpreter.lastName}} </b>?
+            <template v-slot:modal-footer>                
+                <b-button variant="dark" @click="cancelInterpreterDeletion">Cancel</b-button>                
+                <b-button                     
+                    variant="danger" 
+                    @click="deleteInterpreter">
+                    <b-icon-person-x-fill class="mr-1" />Confirm
+                </b-button>
+            </template>            
+        </b-modal>
     
     </b-card>
 </template>
@@ -1116,13 +1126,19 @@ export default class DirectoryPage extends Vue {
     public deleteInterpreter(){
         
         this.showConfirmDeleteInterpreter = false;
-        //TODO: add api call
-        const index = this.interpreters.findIndex(originalInterpreter => originalInterpreter.id == this.interpreter.id) //may not need this                        
-        this.interpreters.splice(index, 1);      //may not need this 
-               
-        this.closeInterpreterWindow();
-        //TODO call the find() method
-        this.updateTable ++; //may not need this
+        this.closeInterpreterWindow();        
+
+        this.$http.delete('/interpreter/'+this.interpreter.id)
+            .then((response) => {            
+                if(response?.data){                    
+                    this.find();                
+                }
+                
+            },(err) => {
+                            
+            });              
+                
+        
     }
 
     public closeInterpreterWindow(){

@@ -3,6 +3,8 @@ import { interpreterLanguageInfoType } from "@/types/Interpreters/json";
 export interface bookingInfoType { 
     id?: number;  
     caseName: string;
+    caseType: string;
+    courtLevel: string;
     courtClass: string;
     comment: string;
     methodOfAppearance: string;
