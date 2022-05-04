@@ -157,7 +157,7 @@ import { bookingStatesInfoType } from '@/types/Bookings';
 import DateCard from "../DateComponents/DateCard.vue"
 import BookingDatePicker from "../DateComponents/BookingDatePicker.vue"
 import EditBookingFields from "./EditBookingFields.vue"
-import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from '../BookingEnums'
+import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
 
@@ -212,15 +212,11 @@ export default class EditBookingModal extends Vue {
     statusOptions
     requestOptions
     bookingMethodOfAppearanceOptions
-    interpreterRequestOptions
-    interpretForOptions
 
     created(){
-        this.interpretForOptions=interpretForOptions
         this.statusOptions=statusOptions 
         this.requestOptions=requestOptions
         this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions 
-        this.interpreterRequestOptions=interpreterRequestOptions
     }
 
     @Watch('tabIndex')
@@ -328,6 +324,8 @@ export default class EditBookingModal extends Vue {
         bookingStates.file = null;
         bookingStates.interpretFor = null;
         bookingStates.caseName = null;
+        bookingStates.caseType = null;
+        bookingStates.courtLevel = null;
         bookingStates.courtClass = null;
         bookingStates.request = null;
         bookingStates.language = null;
@@ -379,6 +377,8 @@ export default class EditBookingModal extends Vue {
                 const originalBookingDate = this.bookingDates.filter(bookingdate =>bookingdate.id==booking.id)
                 if(originalBookingDate.length>0){
                     this.allBookingDatesTimes[eachBookingDateInx].booking.caseName = JSON.parse(JSON.stringify(originalBookingDate[0].caseName));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.caseType = JSON.parse(JSON.stringify(originalBookingDate[0].caseType));
+                    this.allBookingDatesTimes[eachBookingDateInx].booking.courtLevel = JSON.parse(JSON.stringify(originalBookingDate[0].courtLevel));
                     this.allBookingDatesTimes[eachBookingDateInx].booking.courtClass = JSON.parse(JSON.stringify(originalBookingDate[0].courtClass));
                     this.allBookingDatesTimes[eachBookingDateInx].booking.comment = JSON.parse(JSON.stringify(originalBookingDate[0].comment));
                     this.allBookingDatesTimes[eachBookingDateInx].booking.methodOfAppearance = JSON.parse(JSON.stringify(originalBookingDate[0].methodOfAppearance));
@@ -405,6 +405,8 @@ export default class EditBookingModal extends Vue {
             bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
+            bookingStates.caseType = !(booking.caseType)? false : null;
+            bookingStates.courtLevel = !(booking.courtLevel)? false : null;
             bookingStates.courtClass = !(booking.courtClass)? false : null;
             bookingStates.request = !(booking.requestedBy)? false : null;
             bookingStates.language = !(booking.languages.length>0 )? false : null;
@@ -542,6 +544,8 @@ export default class EditBookingModal extends Vue {
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
         
+        booking.caseType = null;
+        booking.courtLevel = null;
         booking.courtClass = null;
         booking.caseName = null;
         booking.comment = null;

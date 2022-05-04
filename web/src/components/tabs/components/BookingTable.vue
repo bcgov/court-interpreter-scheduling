@@ -13,7 +13,7 @@
                     :items="bookingItems"
                     :fields="bookingFields"
                     class="border-info" 
-                    sort-by="interpreter"                                   
+                    sort-by="date"                                   
                     small
                     sort-icon-left
                     responsive="sm">
@@ -82,7 +82,7 @@
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'comment'+inx"
                             > 
-                            <span v-if="dateInfo.comment" >{{dateInfo.comment}}</span>
+                            <span v-if="dateInfo.comment" v-b-tooltip.hover :title="dateInfo.comment" >{{dateInfo.comment|truncate-text(commentLength)}}</span>
                             <span v-else class="text-white">-</span>
                         </div>
                     </template>                  
@@ -93,6 +93,7 @@
                                 size="sm" 
                                 v-b-tooltip.hover.top.noninteractive
                                 title="Adm322 Forms"      
+                                disabled
                                 @click="openAdm(data.item);" 
                                 class="text bg-select border-info my-1 px-1 " 
                                 ><img 
@@ -237,6 +238,7 @@ export default class BookingTable extends Vue {
     
     bookingItems = []
     dataReady=false
+    commentLength =5;
 
     bookingFields = [        
         {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
@@ -257,17 +259,23 @@ export default class BookingTable extends Vue {
             const dates = this.sortByDate(booking.dates)
             booking['file'] = dates[0].file
             booking['caseName'] = dates[0].caseName
-            booking['language'] = this.getLanguages(dates[0].languages)
+            booking['language'] = this.getLanguages(dates[0].languages)           
+            booking['date'] = dates[0].date 
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        
     }
 
     mounted() {         
-        this.getBookingItems()        
+        this.getBookingItems()
+        window.addEventListener('resize', this.getWindowWidth);
+        this.getWindowWidth()
     }
 
-    
+    public getWindowWidth(){
+        const windowWidth = document.documentElement.clientWidth
+        this.commentLength = (-6.92932859e-9*Math.pow(windowWidth,3))+(3.4768992747e-5*Math.pow(windowWidth,2))-(0.03922*windowWidth)+16.528
+    }    
     
     public displayInterpreterInfo(interpreterInfo: bookingInterpreterInfoType){
         this.interpreterDetails = interpreterInfo;

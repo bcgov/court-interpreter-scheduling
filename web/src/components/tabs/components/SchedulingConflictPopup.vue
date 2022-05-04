@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { locationsInfoType } from '@/types/Common/json';
-import {bookingMethodOfAppearance, statusOptions} from './BookingEnums'
+import {statusOptions} from './BookingEnums'
 import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";

@@ -64,7 +64,7 @@ import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingStatesInfoType } from '@/types/Bookings';
 
 import InterpreterBookingFields from "./InterpreterBookingFields.vue"
-import {interpretForOptions, statusOptions, requestOptions, bookingPeriodOptions, bookingMethodOfAppearanceOptions, interpreterRequestOptions} from '../BookingEnums'
+import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
 
@@ -101,15 +101,11 @@ export default class InterpreterBookingModal extends Vue {
     statusOptions
     requestOptions
     bookingMethodOfAppearanceOptions
-    interpreterRequestOptions
-    interpretForOptions
 
     created(){
-        this.interpretForOptions=interpretForOptions
         this.statusOptions=statusOptions 
         this.requestOptions=requestOptions
-        this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions 
-        this.interpreterRequestOptions=interpreterRequestOptions
+        this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions
     }
 
    
@@ -145,6 +141,8 @@ export default class InterpreterBookingModal extends Vue {
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
         
+        booking.caseType = null;
+        booking.courtLevel = null;
         booking.courtClass = null;
         booking.caseName = null;
         booking.comment = null;
@@ -177,6 +175,8 @@ export default class InterpreterBookingModal extends Vue {
         bookingStates.file = null;
         bookingStates.interpretFor = null;
         bookingStates.caseName = null;
+        bookingStates.caseType = null;
+        bookingStates.courtLevel = null;
         bookingStates.courtClass = null;
         bookingStates.request = null;
         bookingStates.language = null;
@@ -228,6 +228,8 @@ export default class InterpreterBookingModal extends Vue {
             bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
+            bookingStates.caseType = !(booking.caseType)? false : null;
+            bookingStates.courtLevel = !(booking.courtLevel)? false : null;
             bookingStates.courtClass = !(booking.courtClass)? false : null;
             bookingStates.request = !(booking.requestedBy)? false : null;
             bookingStates.language = !(booking.languages.length>0 )? false : null;
@@ -266,6 +268,8 @@ export default class InterpreterBookingModal extends Vue {
            
             // target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
             target[0].booking.caseName = JSON.parse(JSON.stringify(source[0].booking.caseName));
+            target[0].booking.caseType = JSON.parse(JSON.stringify(source[0].booking.caseType));
+            target[0].booking.courtLevel = JSON.parse(JSON.stringify(source[0].booking.courtLevel));
             target[0].booking.courtClass = JSON.parse(JSON.stringify(source[0].booking.courtClass));
             target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
             target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));

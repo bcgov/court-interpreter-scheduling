@@ -65,6 +65,8 @@ class BookingDatesModel(Base):
     federal = Column(Boolean, nullable=False, default=False)    
     languages = Column(String, unique=False, index=False, nullable=True)
 
+    case_type = Column(String, unique=False, index=False, nullable=True)
+    court_level = Column(String, unique=False, index=False, nullable=True)
     court_class = Column(String, unique=False, index=False, nullable=True)     
 
     location_id = Column(Integer, unique=False)
