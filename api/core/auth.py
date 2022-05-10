@@ -27,7 +27,7 @@ def admin_user(request: Request, db: Session= Depends(get_db_session), token: HT
     
     require_roles = ['super-admin', 'cis-admin']
     user_info = verify_user(request, token)
-    check_user_roles(require_roles, user_info, db)
+    check_user_roles(require_roles, user_info['username'], db)
 
     return user_info
 
@@ -37,7 +37,7 @@ def super_admin(request: Request, db: Session= Depends(get_db_session), token: H
     
     require_roles = ['super-admin']
     user_info = verify_user(request, token)
-    check_user_roles(require_roles, user_info, db)
+    check_user_roles(require_roles, user_info['username'], db)
 
     return user_info
 
@@ -47,15 +47,15 @@ def user_in_role(request: Request, db: Session= Depends(get_db_session), token: 
     
     require_roles = ['super-admin', 'cis-admin', 'cis-user']
     user_info = verify_user(request, token)
-    check_user_roles(require_roles, user_info, db)
+    check_user_roles(require_roles, user_info['username'], db)
 
     return user_info
 
 
 
 
-def check_user_roles(require_roles, user_info, db: Session):    
-    user = db.query(UserModel).filter( UserModel.username==user_info['username']).first()
+def check_user_roles(require_roles, username, db: Session):    
+    user = db.query(UserModel).filter( UserModel.username==username).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User is not available.")
 

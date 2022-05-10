@@ -12,8 +12,7 @@
                     class="labels"                
                     label="Status"
                     label-for="status">
-                    <b-form-select 
-                        class="input-line"
+                    <b-form-select
                         id="status"
                         :disabled="disableEdit"
                         @change="statusChanged"                                       
@@ -25,28 +24,27 @@
             </b-col> 
             <b-col cols="5">                              
                 <div v-if="booking.status.includes('Cancel')"  
-                    style="margin:1.35rem 0 0 0; height:2.5rem; padding:0.65rem;" 
+                    style="margin:2.45rem 0 0 0; height:2.5rem; padding:0.65rem;" 
                     class="rounded h4 text-center text-white bg-danger" >
-                        Cancelled by: {{cancellationBy}} {{cancellationReason}}
+                        Cancelled by: {{cancellationBy}}
                 </div>
                 <div v-else-if="booking.locationId!=searchLocation.id"  
-                    style="margin:1.35rem 0 0 0; height:2.5rem; padding:0.65rem 0 0 0;" 
+                    style="margin:2.45rem 0 0 0; height:2.5rem; padding:0.65rem 0 0 0;" 
                     class="rounded h4 text-center text-white bg-warning" >
                         <b-icon-exclamation-triangle-fill/> This Booking corresponds to a different location.
                         
                 </div>                
             </b-col>
-
+            
             <b-col cols="2" :key="'start-update-'+updateTime"> 
                 <b-form-group
                     class="labels"                
                     label="Start Time" 
                     label-for="start-time">
                     <b-form-input 
-                        class="input-line"
                         id="start-time"
                         :formatter="startTimeFormatter"
-                        :disabled="disableEdit" 
+                        :disabled="disableEdit || !booking.id" 
                         :state="bookingStates.start"                                        
                         v-model="booking.startTime">
                     </b-form-input>
@@ -57,11 +55,10 @@
                     class="labels"                
                     label="Finish Time" 
                     label-for="finish-time">
-                    <b-form-input 
-                        class="input-line"
+                    <b-form-input
                         id="finish-time"
                         :formatter="endTimeFormatter"
-                        :disabled="disableEdit" 
+                        :disabled="disableEdit || !booking.id" 
                         :state="bookingStates.end"                                        
                         v-model="booking.finishTime">
                     </b-form-input>
@@ -77,8 +74,7 @@
                     class="labels"                
                     label="Court File Number" 
                     label-for="file-number">
-                    <b-form-input 
-                        class="input-line"
+                    <b-form-input
                         id="file-number"
                         :disabled="disableEdit" 
                         :state="bookingStates.file"                                        
@@ -91,8 +87,7 @@
                     class="labels"                
                     label="Case Name" 
                     label-for="case-name">
-                    <b-form-input 
-                        class="input-line"
+                    <b-form-input
                         id="case-name" 
                         :disabled="disableEdit" 
                         :state="bookingStates.caseName"                                        
@@ -107,8 +102,7 @@
                     label-for="room">
                     <b-form-input 
                         :state="bookingStates.room"
-                        :disabled="disableEdit" 
-                        class="input-line"
+                        :disabled="disableEdit"
                         id="room"                                         
                         v-model="booking.room">
                     </b-form-input>
@@ -120,8 +114,7 @@
                     class="labels"
                     label-for="location">
                     <b-form-select 
-                        id="location" 
-                        class="input-line"                           
+                        id="location"                           
                         style="display:inline"
                         @change="changeLocation"
                         disabled
@@ -147,10 +140,10 @@
                     label="Case Type" 
                     label-for="case-type">
                     <b-form-select 
-                        :options="caseTypeOptions"                    
+                        :options="caseTypeOptions"
+                        :disabled="disableEdit"                    
                         :state="bookingStates.caseType"
-                        class="input-line"
-                        @change="booking.courtClass='';"
+                        @change="booking.courtClass='';extractCourtClass()"
                         id="case-type"                                         
                         v-model="booking.caseType">
                     </b-form-select>
@@ -163,8 +156,8 @@
                     label-for="court-level">
                     <b-form-select 
                         :options="courtLevelOptions"
+                        :disabled="disableEdit"
                         :state="bookingStates.courtLevel"
-                        class="input-line"
                         id="court-level"                                         
                         v-model="booking.courtLevel">
                     </b-form-select>
@@ -177,15 +170,29 @@
                     label-for="court-class">
                     <b-form-select 
                         :options="booking.caseType=='Civil'? civilCourtClassOptions: criminalCourtClassOptions"
+                        :disabled="disableEdit"
                         :state="bookingStates.courtClass"
-                        class="input-line"
+                        @change="courtClassChanged"
                         id="court-class"                                         
-                        v-model="booking.courtClass">
+                        v-model="courtClass">
                     </b-form-select>
                 </b-form-group>
             </b-col>
-                      
-            
+            <b-col cols="3">
+                <b-form-group v-if="courtClass=='OTHER'"
+                    class="labels"                
+                    label="Other Court Class" 
+                    label-for="other-court-class">
+                    <b-form-input
+                        id="other-court-class" 
+                        :disabled="disableEdit"                                                                         
+                        :state="bookingStates.courtClassOther"
+                        @change="courtClassChanged"                                    
+                        v-model="courtClassOther">
+                    </b-form-input>
+                </b-form-group>
+            </b-col>
+
             <b-col cols="2">
                 <b-form-group                        
                     label="Requested By" 
@@ -193,26 +200,54 @@
                     label-for="requested-by">
                     <b-form-select 
                         id="requested-by"
-                        :disabled="disableEdit"  
-                        class="input-line"                           
+                        :disabled="disableEdit"                      
                         style="display:inline"
                         :options="requestOptions"
                         :state="bookingStates.request"
                         v-model="booking.requestedBy">                                    
                     </b-form-select> 
                 </b-form-group>
+            </b-col> 
+        </b-row>
+        
+<!-- <ROW - 4> -->
+        <b-row class="ml-1">
+            <b-col cols="4">
+                <b-form-group                
+                    class="labels"                
+                    label="Reason Code" 
+                    label-for="reason-code">
+                    <b-form-select
+                        id="reason-code"
+                        :disabled="disableEdit"
+                        :options="reasonCodeClassOptions"                          
+                        :state="bookingStates.reason" 
+                        @change="reasonCodeChanged"                                   
+                        v-model="reasonCode">
+                    </b-form-select>
+                </b-form-group>
             </b-col>
-
-            
-
+            <b-col cols="3">
+                <b-form-group v-if="reasonCode=='OTHER'"
+                    class="labels"                
+                    label="Other Reason Code " 
+                    label-for="other-reason-code">
+                    <b-form-input
+                        id="reason-code"
+                        :disabled="disableEdit"                                                                          
+                        :state="bookingStates.reasonOther"
+                        @change="reasonCodeChanged"                                    
+                        v-model="reasonCodeOther">
+                    </b-form-input>
+                </b-form-group>
+            </b-col>
             <b-col cols="3">
                 <b-form-group                        
                     label="Method Of Appearance" 
                     class="labels"
                     label-for="appearance-method">
                     <b-form-select 
-                        id="appearance-method" 
-                        class="input-line"
+                        id="appearance-method"
                         :disabled="disableEdit"                           
                         style="display:inline"                                
                         :options="bookingMethodOfAppearanceOptions"
@@ -221,30 +256,29 @@
                     </b-form-select> 
                 </b-form-group>
             </b-col>
-        </b-row>
-        
-<!-- <ROW - 4> -->
-        <b-row class="ml-1">
-            <b-col cols="2">
-                <b-form-group
-                    class="labels"                
-                    label="Reason Code" 
-                    label-for="reason-code">
-                    <b-form-input 
-                        class="input-line"
-                        id="reason-code"  
-                        :disabled="disableEdit" 
-                        placeholder="FA, HR"  
-                        :state="bookingStates.reason"                                    
-                        v-model="booking.reason">
-                    </b-form-input>
+            <b-col cols="2" >
+                <b-form-group>
+                    <label class="labels mb-1" style="display:block;" >Bilingual (EN, FR)</label>
+                    <b-form-radio-group                                                
+                        :class="bookingStates.bilingual==false?'border rounded border-danger pb-3 pt-1 px-2':'' "                           
+                        style="display:inline"
+                        @change="bookingStates.bilingual=null"
+                        :disabled="disableEdit"                                     
+                        :state="bookingStates.bilingual"
+                        v-model="booking.bilingual"> 
+                        <b-form-radio :value="true">Yes</b-form-radio> 
+                        <b-form-radio :value="false">No</b-form-radio>                                  
+                    </b-form-radio-group> 
                 </b-form-group>
             </b-col>
+        </b-row>
+        
+<!-- <ROW - 5> -->
+        <b-row class="ml-1">
             <b-col cols="2" >
-                <b-form-group                        
-                    label="Federal" 
-                    class="labels mt-n1">
-                    <b-form-radio-group                         
+                <b-form-group>
+                    <label class="labels mb-1" style="display:block;" >Federal</label>
+                    <b-form-radio-group                                                
                         :class="bookingStates.federal==false?'border rounded border-danger pb-3 pt-1 px-2':'' "                           
                         style="display:inline"
                         @change="bookingStates.federal=null"
@@ -256,14 +290,13 @@
                     </b-form-radio-group> 
                 </b-form-group>
             </b-col>
-            <b-col cols="3" >
+            <b-col cols="5" >
                 <b-form-group
                     v-if="booking.federal"
                     class="labels"                
                     label="Federal Prosecutor Name" 
                     label-for="prosecutor-name">
-                    <b-form-input 
-                        class="input-line"
+                    <b-form-input
                         :disabled="disableEdit" 
                         id="prosecutor-name" 
                         :state="bookingStates.prosecutor"                                                 
@@ -278,8 +311,7 @@
                     class="labels"                
                     label="Comment" 
                     label-for="comment">
-                    <b-form-textarea 
-                        class="input-line"
+                    <b-form-textarea
                         rows="3"
                         :disabled="disableEdit" 
                         id="comment"                                                   
@@ -289,24 +321,24 @@
             </b-col>
         </b-row>
 
-<!-- <ROW - 5> -->
-        <b-row class="ml-1"> 
+<!-- <ROW - 6> -->
+        <b-row class="ml-1 mt-2"> 
             <b-col cols="6 ">
                 <b-row >
                     <b-button                     
-                        style="margin:1rem 0; height: 2.25rem;"
+                        style="margin:0rem 0 0 0.9rem; height: 2.25rem;"
                         v-if="!addNewLanguageForm"
                         :disabled="disableEdit"  
                         size="sm" 
                         :variant="bookingStates.language==false?'danger':'info'" 
                         @click="bookingStates.language=true;addNewLanguageForm = true"><b-icon-plus class="mr-1"/>Add Language
                     </b-button>
-                    <div v-if="!addNewLanguageForm && booking.languages.length == 0" class="mt-4 ml-3 text-danger"> 
+                    <div v-if="!addNewLanguageForm && booking.languages.length == 0" class="mt-2 ml-3 text-danger"> 
                         No languages have been added.
                     </div> 
                 </b-row>
 
-                <b-card class="mx-auto mt-4 bg-light" body-class="p-2" v-if="addNewLanguageForm">
+                <b-card class="mx-auto mt-1 bg-light" body-class="p-2" v-if="addNewLanguageForm">
                     <b-row class="ml-1">
                         <b-col cols="5">
                             <b-form-group                        
@@ -314,8 +346,7 @@
                                 class="labels"
                                 label-for="language">
                                 <b-form-select 
-                                    id="language" 
-                                    class="input-line"                           
+                                    id="language"                           
                                     style="display:inline"                                    
                                     v-model="selectedLanguage"> 
                                     <b-form-select-option
@@ -333,16 +364,15 @@
                                 class="labels"
                                 label-for="interpret-for">
                                 <b-form-select 
-                                    id="interpret-for" 
-                                    class="input-line"                           
+                                    id="interpret-for"                           
                                     style="display:inline"
                                     :options="interpretForOptions"
                                     v-model="selectedInterpretFor">                                    
                                 </b-form-select> 
                             </b-form-group>
                         </b-col>
-                        <b-col cols="2 mt-4">
-                            <b-button @click="addLanguage" variant="success" >
+                        <b-col cols="2">
+                            <b-button style="margin-top:2.5rem;" @click="addLanguage" variant="success" >
                                 Add
                             </b-button>
                         </b-col>                  
@@ -394,7 +424,7 @@ import moment from 'moment';
 import {bookingInfoType } from '@/types/Bookings/json';
 import {interpreterLanguageInfoType } from '@/types/Interpreters/json';
 
-import {interpretForOptions, statusOptions, requestOptions, bookingMethodOfAppearanceOptions, caseTypeOptions, courtLevelOptions, civilCourtClassOptions, criminalCourtClassOptions} from '../BookingEnums'
+import {interpretForOptions, statusOptions, requestOptions, bookingMethodOfAppearanceOptions, caseTypeOptions, courtLevelOptions, civilCourtClassOptions, criminalCourtClassOptions, reasonCodeClassOptions} from '../BookingEnums'
 import { bookingStatesInfoType } from '@/types/Bookings';
 
 import { namespace } from "vuex-class";
@@ -455,7 +485,12 @@ export default class EditBookingFields extends Vue {
     errorMsg=''
 
     updateTime = 0
-    
+
+    reasonCode=''
+    reasonCodeOther=''
+
+    courtClass=''
+    courtClassOther=''
 
     statusOptions
     requestOptions
@@ -465,6 +500,7 @@ export default class EditBookingFields extends Vue {
     courtLevelOptions 
     civilCourtClassOptions
     criminalCourtClassOptions
+    reasonCodeClassOptions
 
     created(){
         this.interpretForOptions=interpretForOptions
@@ -475,6 +511,7 @@ export default class EditBookingFields extends Vue {
         this.courtLevelOptions=courtLevelOptions
         this.civilCourtClassOptions=civilCourtClassOptions
         this.criminalCourtClassOptions=criminalCourtClassOptions
+        this.reasonCodeClassOptions=reasonCodeClassOptions
     }
 
     @Watch('booking.status')
@@ -509,15 +546,18 @@ export default class EditBookingFields extends Vue {
         this.selectedLanguage = this.languages[0].languageName
         this.previousStatus =  JSON.parse(JSON.stringify(this.booking.status))
         this.watchStatusChanged(this.booking.status)
+        this.extractReasonCode()
+        this.extractCourtClass()
         this.dataReady = true        
     }
 
     public addLanguage(){
-        const level = this.languages.filter(lang=>lang.languageName==this.selectedLanguage)
-        
+        const selectedLanguageQuery = this.languages.filter(lang=>lang.languageName==this.selectedLanguage)
+                
         this.booking.languages.push({
+            languageId:(selectedLanguageQuery.length==1? selectedLanguageQuery[0].languageId : null),
             language:this.selectedLanguage,
-            level: (level.length==1? level[0].level : null),
+            level: (selectedLanguageQuery.length==1? selectedLanguageQuery[0].level : null),            
             interpretFor:this.selectedInterpretFor
         })
         this.addNewLanguageForm = false;
@@ -616,8 +656,59 @@ export default class EditBookingFields extends Vue {
             }
         })
     }
-    
 
+    public reasonCodeChanged(){
+        if(this.reasonCode !='OTHER'){
+            this.booking.reason=this.reasonCode            
+        }else{
+            if(this.reasonCodeOther){
+                this.booking.reason=this.reasonCode+'__'+this.reasonCodeOther 
+            }else{
+                this.booking.reason=''
+                this.bookingStates.reasonOther = false
+            }
+        }
+        // console.log(this.reasonCode)
+        // console.log(this.reasonCodeOther)
+        // console.log(this.booking.reason)
+    }
+
+    public extractReasonCode(){
+        if(this.booking.reason?.includes('OTHER__')){
+            this.reasonCode='OTHER'
+            this.reasonCodeOther=this.booking.reason.slice(7)
+        }else{
+            this.reasonCode=this.booking.reason
+            this.reasonCodeOther=''
+        }
+    }
+    
+    public courtClassChanged(){
+        if(this.courtClass !='OTHER'){
+            this.booking.courtClass=this.courtClass            
+        }else{
+            if(this.courtClassOther){
+                this.booking.courtClass=this.courtClass+'__'+this.courtClassOther 
+            }else{
+                this.booking.courtClass=''
+                this.bookingStates.courtClassOther = false
+            }
+        }
+        // console.log(this.courtClass)
+        // console.log(this.courtClassOther)
+        // console.log(this.booking.courtClass)        
+    }
+
+    public extractCourtClass(){
+        if(this.booking.courtClass?.includes('OTHER__')){
+            this.courtClass='OTHER'
+            this.courtClassOther=this.booking.courtClass.slice(7)
+        }else{
+            this.courtClass=this.booking.courtClass
+            this.courtClassOther=''
+        }
+    }
+    
 }
 
 </script>
@@ -625,7 +716,7 @@ export default class EditBookingFields extends Vue {
 
 <style lang="scss" scoped>
     .labels {        
-        margin:0 0 0rem 0;        
+        margin:1rem 0 0rem 0;        
         line-height: 1rem;
     }
     ::v-deep label{        

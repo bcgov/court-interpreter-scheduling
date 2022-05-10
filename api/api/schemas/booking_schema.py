@@ -37,7 +37,9 @@ class BookingDateSchema(BaseModel):
     court_level: Optional[str] = Field(alias="courtLevel")
     court_class: Optional[str] = Field(alias="courtClass")
         
-    federal: bool = False
+    federal: Optional[bool] = False
+
+    bilingual: Optional[bool] = False
     # languages: Optional[List[Dict]]
     # languages: Optional[JsonBase]
 

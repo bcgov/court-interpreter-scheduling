@@ -2,7 +2,7 @@
                         
     <b-card border-variant="white" body-class="mx-1 px-2 py-0">        
 
-        <div class="my-0 pb-0" style="line-height:1rem; font-size:14pt; color:#AB0">
+        <div class="my-1 pb-0" style="line-height:1rem; font-size:14pt; color:#AB0">
             <b>Time Options</b>           
         </div>
 

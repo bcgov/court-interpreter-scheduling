@@ -8,13 +8,20 @@
                 <span class="text-muted ml-4 mb-5">No records found.</span>
             </b-card>      
 
-            <b-card v-else class="home-content border-white p-0">
+            <b-card v-else class="home-content border-white p-0" body-class="pt-0">
+                <custom-pagination                                         
+                    :pages="[10,20,30]"
+                    :totalRows="interpreters.length"
+                    @paginationChanged="paginationChanged"/> 
+                    
                 <b-table
                     :items="interpreters"
                     :fields="interpreterFields"
                     class="border-info"
                     sort-icon-left                                    
                     small
+                    :currentPage="currentPage"
+                    :perPage="itemsPerPage"
                     responsive="sm">
 
                     <template v-slot:head(email)="data" >                    
@@ -39,7 +46,7 @@
                             v-for="lan,inx in data.item.languages.map(language => {return {name: language.languageName, level:language.level}})" 
                             :key="inx"
                             style="display: block;">
-                            <b v-if="lan['name'] == language">{{lan['name']}} {{lan['level']}}</b>
+                            <b v-if="isSameLanguage(lan['name'],language)">{{lan['name']}} {{lan['level']}}</b>
                             <span v-else>{{lan['name']}} {{lan['level']}}</span>
                         </span>
 
@@ -93,14 +100,14 @@
                             :id="'popover-button-variant'+data.index"
                             v-for="conflict,inx in [disableBookingButton(data.item.booking)]"
                             :key="inx"
-                            v-b-tooltip.hover.left.noninteractive.v-danger
-                            :title="bookingDates.length==0?'Please, first select the dates':''" 
+                            v-b-tooltip.hover.left.noninteractive.v-warning
+                            :title="data.item.contractExtension==false?'Contract Expired!':(bookingDates.length==0?'Please, first select the dates':'')" 
                         >
                             <b-button style="font-size:12px" 
                                 size="sm" 
-                                :disabled="conflict"
+                                :disabled="conflict || (!userRole.includes('cis-admin')&& data.item.contractExtension==false)"
                                 @click="bookInterpreter(data.item);"
-                                class="text-primary bg-info border-info mt-0 px-3" 
+                                :class="data.item.contractExtension?'text-primary bg-info border-info mt-0 px-3':'bg-danger px-3'" 
                                 ><b>Book</b>
                             </b-button>
                             <b-popover
@@ -136,6 +143,10 @@
                     
                 </b-table>
 
+                <custom-pagination                                           
+                    :pages="[10,20,30]"
+                    :totalRows="interpreters.length"
+                    @paginationChanged="paginationChanged"/>                
             
             </b-card>
         </div>
@@ -146,16 +157,13 @@
             <template v-slot:modal-title>
                 <h1 class="my-2 ml-2">Court Interpreter Request</h1> 
             </template>
-
             
             <interpreter-booking-modal
                 @close="closeBookingWindow"
                 :language="language"
                 :interpreter="interpreter"
                 :bookingDates="bookingDates"
-                :searchLocation="searchLocation"/>
-
-           
+                :searchLocation="searchLocation"/>           
 
             <template v-slot:modal-header-close>
                 <b-button
@@ -178,6 +186,8 @@ import InterpreterDetails from "./InterpreterDetails.vue";
 import SchedulingConflictPopup from "./SchedulingConflictPopup.vue"
 import InterpreterBookingModal from "./CreateBookingModal/InterpreterBookingModal.vue"
 
+import CustomPagination from "./CustomComponents/CustomPagination.vue"
+
 import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingDateTimesInfoType} from '@/types/Bookings/json';
@@ -191,7 +201,8 @@ const commonState = namespace("Common");
     components:{       
         InterpreterDetails,
         SchedulingConflictPopup,
-        InterpreterBookingModal
+        InterpreterBookingModal,
+        CustomPagination
     }
 })
 export default class SearchInterpretersTable extends Vue {
@@ -214,7 +225,8 @@ export default class SearchInterpretersTable extends Vue {
     @commonState.State
     public userLocation!: locationsInfoType;
 
-    
+    @commonState.State
+    public userRole!: string[];
 
     updatedBookingInfo = 0;
     
@@ -224,7 +236,9 @@ export default class SearchInterpretersTable extends Vue {
     interpreter = {} as interpreterInfoType; 
       
     expandedInterpreter = {} as interpreterInfoType;
-
+    
+    currentPage = 1;
+    itemsPerPage = 10;// Default
     
    
     interpreterFields = [
@@ -246,7 +260,6 @@ export default class SearchInterpretersTable extends Vue {
         this.showBookingWindow = true;
                 
     }
-    
 
     public copyEmails(){        
         const emailList = this.interpreters.map( interpreter => {if (interpreter.email && interpreter.email.length)return interpreter.email});      
@@ -268,6 +281,12 @@ export default class SearchInterpretersTable extends Vue {
         this.showBookingWindow = false; 
     }
 
+    public isSameLanguage(l1, l2){
+        l1 = l1.replace(/\s\s+/g, ' ');
+        l2 = l2.replace(/\s\s+/g, ' ');        
+        return l1== l2
+    }
+
 
     public disableBookingButton(booking){
         if(this.bookingDates.length==0) return true
@@ -281,6 +300,11 @@ export default class SearchInterpretersTable extends Vue {
                     return true
         }
         return false
+    }
+
+    public paginationChanged(currentPage, itemsPerPage){
+        this.currentPage = currentPage
+        this.itemsPerPage = itemsPerPage
     }
 
 }

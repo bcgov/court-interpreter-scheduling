@@ -19,7 +19,7 @@
             >
             <div>
                 <b-row class="py-0" >
-                    <b-col cols="7">
+                    <b-col cols="7" class="vuetify">
                         <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
                             <v-date-picker
                                 v-model="dates"
@@ -34,13 +34,13 @@
                     </b-col>
                     <b-col cols="5">
                         <b-row class="mt-3" style="line-height:2rem; font-size:14pt; color:#AAA">
-                            <b-col cols="12" class="my-0 ml-n2">
+                            <b-col cols="12" class="mt-2 ml-n2">
                                 <b>Booking Times</b>                                
                             </b-col>
                             <time-picker style="width:13rem; height:22.5rem;" v-if="showTimePicker"  :pickedTimes="pickedTimes" @addTime="addTime"/>
                             <div v-else>
                                 <default-time-selector 
-                                    style="margin:-0.5rem 0 0 0; width:12rem;"
+                                    style="margin:0.2rem 0; width:12rem;"
                                     :key="updateTime"  
                                     :pickedTimes="pickedTimes" 
                                     @addTime="addTime"/>
@@ -65,7 +65,7 @@
                     </b-col>
                 </b-row>
             </div>
-            <b-row v-if="!showTimePicker" class="mt-0">
+            <b-row v-if="!showTimePicker" class="mt-3">
                 <b-col>
                     <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
                 </b-col>
@@ -226,7 +226,13 @@ export default class BookingDatePicker extends Vue {
 }
 </script>
 
-<style scoped lang="scss" >    
+<style scoped lang="scss" > 
+
+    ::v-deep .vuetify{
+        @import "@/styles/vuetify.scss";
+        @import "@/styles/_custom_vuetify.scss";
+    }
+
     .popover{
         border-radius: 10px;
         border:1px solid #EEE;

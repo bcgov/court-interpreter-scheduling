@@ -94,7 +94,8 @@ export enum criminalCourtClass {
 export const criminalCourtClassOptions = [
     {text: 'Adult',                   value: criminalCourtClass.Adult},
     {text: 'Ticket (Traffic/Bylaw)',  value: criminalCourtClass['Ticket (Traffic/Bylaw)']},
-    {text: 'Youth',                   value: criminalCourtClass.Youth}
+    {text: 'Youth',                   value: criminalCourtClass.Youth},
+    {text: 'Other',                   value: 'OTHER'}
 ]
 
 
@@ -126,5 +127,31 @@ export const civilCourtClassOptions = [
     {text: 'Probate and Administration',  value: civilCourtClass["Probate and Administration"]},
     {text: 'Appeal Criminal',             value: civilCourtClass["Appeal Criminal"]}, 
     {text: 'Supreme Civil (General)',     value: civilCourtClass["Supreme Civil (General)"]},
-    {text: 'Caveat',                      value: civilCourtClass.Caveat}
+    {text: 'Caveat',                      value: civilCourtClass.Caveat},
+    {text: 'Other',                       value: 'OTHER'}
+]
+
+export enum reasonCodeClass {
+    'CLC'='Consult legal counsel',    
+    'FA'='First Appearance',
+    'FXD'='Fix date',
+    'HR'='Hearing',
+    'IAR'='Initial appearance',
+    'JIR'='Judicial interim release',
+    'DA'='Divorce Act',
+    'FSC'='Family settlement conference',
+    'JSL'='Jury selection',
+    'OTHER'='Other'   
+}
+export const reasonCodeClassOptions = [
+    {text: 'CLC-Consult legal counsel',    value: "CLC"},
+    {text: 'FA-First Appearance',          value: "FA"},
+    {text: 'FXD-Fix date',                 value: "FXD"},
+    {text: 'HR-Hearing',                   value: "HR"},
+    {text: 'IAR-Initial appearance',       value: "IAR"},
+    {text: 'JIR-Judicial interim release', value: "JIR"},
+    {text: 'DA-Divorce Act',               value: "DA"},
+    {text: 'FSC-Family settlement conference', value: "FSC"},
+    {text: 'JSL-Jury selection',           value: "JSL"},
+    {text: 'Other',                        value: "OTHER"}    
 ]

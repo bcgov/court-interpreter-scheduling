@@ -1,11 +1,12 @@
 import json
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, APIRouter, status
+from fastapi import HTTPException, status
 from api.schemas.booking_schema import BookingRequestSchema
 from models.booking_model import BookingModel, BookingDatesModel
 from models.user_model import UserModel
-from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
-
+from models.interpreter_model import InterpreterModel
+from models.booking_enums import BookingStatusEnum
+from core.auth import check_user_roles
 
 def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     
@@ -14,6 +15,8 @@ def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     
     if (('interpreter_id' not in booking_request) or not booking_request['interpreter_id']):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"'interpreter_id' is required.")
+
+    check_interpreter_contract_rules(booking_request['interpreter_id'], db, username)
     
     booking_dates = booking_request['dates']
     del booking_request['dates']
@@ -26,6 +29,16 @@ def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     add_dates(booking_dates, db, new_booking.id, new_booking.interpreter_id)
     
     return new_booking.id
+
+
+def check_interpreter_contract_rules(id, db: Session, username):
+    interpreter = db.query(InterpreterModel).filter(InterpreterModel.id==id).first()   
+    if not interpreter:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Interpreter does not exist.")
+
+    if interpreter.contract_valid == False:
+        require_roles=['cis-admin']
+        check_user_roles(require_roles, username, db)
 
 
 

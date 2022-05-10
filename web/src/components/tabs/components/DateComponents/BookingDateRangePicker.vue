@@ -20,18 +20,18 @@
             >
             <div>
                 <b-row class="mt-1 py-0" >
-                    <b-col cols="5 text-center bg-select h4 border ml-4">
+                    <b-col cols="5 text-center bg-select h4 border ml-4 py-2">
                         <span v-if="dates[1]<dates[0]"><b class="text-danger">From: </b>{{dates[1]|beautify-date-weekday}}</span>
                         <span v-else><b class="text-danger">From: </b>{{dates[0]|beautify-date-weekday}}</span>
                     </b-col>
                     <b-col cols="1" />
-                    <b-col cols="5 text-center bg-select h4 border ml-2">
+                    <b-col cols="5 text-center bg-select h4 border ml-2 py-2">
                         <span v-if="dates[0]>dates[1]"><b class="text-danger">To: </b>{{dates[0]|beautify-date-weekday}}</span>
                         <span v-else ><b class="text-danger">To: </b>{{dates[1]|beautify-date-weekday}}</span>
                     </b-col>
                 </b-row>
-                <b-row class="py-0" style="margin-top:-3rem;">
-                    <b-col cols="6">
+                <b-row class="py-0 mt-n4 mb-4" >
+                    <b-col cols="6" class="vuetify">
                         <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
                             <v-date-picker
                                 v-model="dates"
@@ -42,7 +42,7 @@
                             ></v-date-picker>                            
                         </v-app>
                     </b-col>
-                    <b-col cols="4">
+                    <b-col cols="4" class="vuetify">
                         <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
                             <v-date-picker
                                 v-model="dates"
@@ -56,7 +56,7 @@
                 </b-row>
             </div>
 
-            <b-row style="margin-top:-2.25rem;">
+            <b-row style="margin-top:-1rem;">
                 <b-col>
                     <b-button @click="setDatesToday" style="width:8rem;" variant="primary">Today</b-button>
                 </b-col>
@@ -71,7 +71,7 @@
                 </b-col>
             </b-row>
 
-            <b-row class="border rounded mx-0" style="margin-top:1rem; box-shadow: 0px 0px 6px 3px #DDD;">
+            <b-row class="border rounded mx-0" style="padding:0.1rem 0rem; margin-top:1rem; box-shadow: 0px 0px 6px 3px #DDD;">
                 <b-col>
                     <b-button @click="focusSearchButton();onShow=false" class="border" variant="white" style="width:7rem;" >Cancel</b-button>
                 </b-col>
@@ -205,7 +205,13 @@ export default class BookingDateRangePicker extends Vue {
 }
 </script>
 
-<style scoped lang="scss" >    
+<style scoped lang="scss" >
+
+    ::v-deep .vuetify{
+        @import "@/styles/vuetify.scss";
+        @import "@/styles/_custom_vuetify.scss";
+    }
+
     .popover{
         border-radius: 10px;
         border:1px solid #EEE;
