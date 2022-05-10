@@ -18,13 +18,13 @@
                 </b-col>               
             </b-row>
 
-            <b-row class="py-0 my-0" style="line-height:1rem; font-weight:600; font-size:16pt; margin:0rem -1rem; 0rem 0">
+            <b-row class="py-1 mt-2" style="line-height:1rem; font-weight:600; font-size:16pt; margin:0rem -1rem; 0rem 0">
                 <b-col cols="12" class="py-0 mb-2 text-info text-left">
                     {{year}}
                 </b-col>
             </b-row>
 
-            <b-row style="line-height:1rem; font-size:14pt; color:#AAA; margin:1rem -1rem; 0rem 0;">
+            <b-row style="line-height:1rem; font-size:14pt; color:#AAA; margin:0rem -1rem; 0rem 0;">
                 <b-col cols="12" class="mx-1 my-0 p-0">
                     <div class="mb-2 ml-2"><b>Booking Times</b></div>                        
                     

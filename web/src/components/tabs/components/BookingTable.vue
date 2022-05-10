@@ -8,13 +8,21 @@
                 <span class="text-muted ml-4 mb-5">No records found.</span>
             </b-card>      
 
-            <b-card v-else class="home-content border-white p-0">
+            <b-card v-else class="home-content border-white p-0" body-class="pt-0">
+                <custom-pagination 
+                    v-if="bookings.length>5"                                        
+                    :pages="[10,20,30]"
+                    :totalRows="bookings.length"
+                    @paginationChanged="paginationChanged"/>
+
                 <b-table
                     :items="bookingItems"
                     :fields="bookingFields"
                     class="border-info" 
                     sort-by="date"                                   
                     small
+                    :currentPage="currentPage"
+                    :perPage="itemsPerPage"                    
                     sort-icon-left
                     responsive="sm">
 
@@ -114,6 +122,10 @@
                     
                 </b-table>
 
+                <custom-pagination                                         
+                    :pages="[10,20,30]"
+                    :totalRows="bookings.length"
+                    @paginationChanged="paginationChanged"/>
             
             </b-card>
         </div>
@@ -190,7 +202,7 @@ import * as _ from 'underscore';
 import EditBookingModal from "./EditBookingModal/EditBookingModal.vue"
 
 import InterpreterDetails from "./InterpreterDetails.vue";
-
+import CustomPagination from "./CustomComponents/CustomPagination.vue"
 import AdmForms from "./AdmForms/AdmForms.vue"
 
 import { namespace } from "vuex-class";
@@ -205,7 +217,8 @@ import { locationsInfoType } from '@/types/Common/json';
     components:{
         EditBookingModal,
         InterpreterDetails,        
-        AdmForms
+        AdmForms,
+        CustomPagination
     }
 })
 export default class BookingTable extends Vue {
@@ -239,6 +252,9 @@ export default class BookingTable extends Vue {
     bookingItems = []
     dataReady=false
     commentLength =5;
+
+    currentPage = 1;
+    itemsPerPage = 10;// Default
 
     bookingFields = [        
         {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
@@ -324,6 +340,11 @@ export default class BookingTable extends Vue {
     
     public getLanguages(data){
         return data.map(i=>(i.language)).join(',')
+    }
+
+    public paginationChanged(currentPage, itemsPerPage){
+        this.currentPage = currentPage
+        this.itemsPerPage = itemsPerPage
     }
 
 }

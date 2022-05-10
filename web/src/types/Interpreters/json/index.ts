@@ -22,11 +22,12 @@ export interface interpreterInfoType {
     languages: interpreterLanguageInfoType[]
     highestLevel?: number;
     events: [];
-    bookings: [];
+    booking: [];
     adminComments: string;
 }
 
 export interface interpreterLanguageInfoType {
+    languageId: number;
     level: number;
     languageName: string;
     commentOnLevel: null | string;

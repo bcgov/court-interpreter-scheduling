@@ -162,6 +162,11 @@
             
             if (this.languageNameState && this.languageLevelState){        
                 const language = {} as interpreterLanguageInfoType;
+                
+                const selectedLanguage = this.languages.filter(lang=>lang.name==this.selectedLanguageName)
+                if(selectedLanguage.length==1) 
+                    language.languageId = selectedLanguage[0].id
+                
                 language.languageName = this.selectedLanguageName;
                 language.level = this.selectedLanguageLevel;
                 language.commentOnLevel = this.comment?this.comment:'';       

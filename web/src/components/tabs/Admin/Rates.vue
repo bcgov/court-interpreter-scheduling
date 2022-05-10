@@ -19,7 +19,7 @@
                             Spoken Language:
                         </b-card-header>
                         <b-card-body>
-                            <b-row class="p-0">
+                            <b-row class="p-0 my-1">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Level 1: 
                                 </b-col>
@@ -36,7 +36,7 @@
                                 </b-col>
                             </b-row>
 
-                            <b-row class="p-0">
+                            <b-row class="p-0 my-1">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Level 2: 
                                 </b-col>
@@ -53,7 +53,7 @@
                                 </b-col>
                             </b-row>
 
-                            <b-row class="p-0">
+                            <b-row class="p-0 my-1">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Level 3: 
                                 </b-col>
@@ -101,7 +101,7 @@
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Level 1: 
                                 </b-col>
-                                <b-col cols="6" class="p-0">
+                                <b-col cols="6" class="p-0 my-1">
                                     <b-form-input                             
                                         style="display:inline"
                                         :formatter="rateFormatter"
@@ -168,7 +168,7 @@
                             Meal Allowance: 
                         </b-card-header>
                         <b-card-body>
-                            <b-row class="p-0">
+                            <b-row class="p-0 my-1">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Breakfast: 
                                 </b-col>
@@ -184,7 +184,7 @@
                                     $ /day
                                 </b-col>
                             </b-row>
-                            <b-row class="p-0">
+                            <b-row class="p-0 my-1">
                                 <b-col cols="3" class="text-primary h4 my-auto">
                                     Lunch: 
                                 </b-col>

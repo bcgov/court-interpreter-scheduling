@@ -86,7 +86,7 @@ def get_geo_service_name(google_map):
 def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: Session, username):
 
     interpreter_request = request.dict()
-    check_required_fields(interpreter_request, db)
+    # check_required_fields(interpreter_request, db)
 
     interpreter_languages = interpreter_request['languages']
     del interpreter_request['languages']
@@ -115,7 +115,7 @@ def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: S
 def modify_interpreter_in_db(id: int, request:InterpreterCreateModifyRequestSchema, db: Session, username):
 
     interpreter_request = request.dict()
-    check_required_fields(interpreter_request, db)
+    # check_required_fields(interpreter_request, db)
 
     interpreter_languages = interpreter_request['languages']
     del interpreter_request['languages']
@@ -181,9 +181,9 @@ def add_language(interpreter_languages, db: Session, interpreter_id):
 
     for interpreter_language in interpreter_languages:
         
-        interpreter_language_name = interpreter_language['language'].lower()
+        interpreter_language_id = interpreter_language['language_id']
                 
-        language = db.query(LanguageModel).filter(func.lower(LanguageModel.name)==interpreter_language_name).first()
+        language = db.query(LanguageModel).filter(LanguageModel.id==interpreter_language_id).first()
         if not language: continue
         
         new_interpreter_languages_ids.append(language.id)
@@ -296,7 +296,7 @@ def duplicate_recoerd_check(interpreter_request, db: Session):
 
 
 def check_required_fields(interpreter_request, db: Session):
-
+    
     # Language is required.
     db_languages = db.query(LanguageModel).all()
     language_names = ([(language.name).lower() for language in db_languages])

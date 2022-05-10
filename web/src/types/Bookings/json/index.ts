@@ -16,6 +16,7 @@ export interface bookingInfoType {
     file: string;    
     status: string;
     federal: boolean;
+    bilingual: boolean;
     languages: bookingLanguageInfoType[];
     locationId: number;
     interpreterId: number;
@@ -44,6 +45,7 @@ export interface bookingSearchResultInfoType{
 }
 
 export interface bookingLanguageInfoType{
+    languageId: number;
     language:string;
     level:number;
     interpretFor: string;

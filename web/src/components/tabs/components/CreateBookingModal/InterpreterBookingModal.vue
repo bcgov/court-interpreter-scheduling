@@ -110,8 +110,8 @@ export default class InterpreterBookingModal extends Vue {
 
    
     mounted() { 
-        console.log(this.interpreter)
-        console.log(this.bookingDates)
+        //console.log(this.interpreter)
+        //console.log(this.bookingDates)
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -134,7 +134,7 @@ export default class InterpreterBookingModal extends Vue {
                 })
             }
         }
-        console.log(this.allBookingDatesTimes)
+        //console.log(this.allBookingDatesTimes)
     }
 
 
@@ -155,6 +155,7 @@ export default class InterpreterBookingModal extends Vue {
         booking.file = null;
         booking.status = this.statusOptions[0].value;
         booking.federal = null;
+        booking.bilingual = null;
         booking.languages = [];
         booking.locationId = this.searchLocation.id;
         booking.interpreterId = this.interpreter.id;
@@ -178,19 +179,22 @@ export default class InterpreterBookingModal extends Vue {
         bookingStates.caseType = null;
         bookingStates.courtLevel = null;
         bookingStates.courtClass = null;
+        bookingStates.courtClassOther = null;
         bookingStates.request = null;
         bookingStates.language = null;
         bookingStates.reason = null;
+        bookingStates.reasonOther = null;
         bookingStates.prosecutor = null;
         bookingStates.methodOfAppearance = null;
         bookingStates.federal = null;
+        bookingStates.bilingual = null;
         return bookingStates
     }  
 
 
     public saveNewBooking(){
         if (this.checkBookingStates(true)){ 
-            console.log(this.allBookingDatesTimes)
+            //console.log(this.allBookingDatesTimes)
             const body = {
                 interpreter_id: this.interpreter.id,
                 dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
@@ -231,12 +235,15 @@ export default class InterpreterBookingModal extends Vue {
             bookingStates.caseType = !(booking.caseType)? false : null;
             bookingStates.courtLevel = !(booking.courtLevel)? false : null;
             bookingStates.courtClass = !(booking.courtClass)? false : null;
+            bookingStates.courtClassOther = !(booking.courtClass)? false : null;
             bookingStates.request = !(booking.requestedBy)? false : null;
             bookingStates.language = !(booking.languages.length>0 )? false : null;
             bookingStates.reason = !(booking.reason)? false : null;
+            bookingStates.reasonOther = !(booking.reason)? false : null;
             bookingStates.prosecutor = (booking.federal && !booking.prosecutor)? false : null;
             bookingStates.methodOfAppearance = !(booking.methodOfAppearance)? false : null;
             bookingStates.federal = !(booking.federal != null)? false : null;
+            bookingStates.bilingual = !(booking.bilingual != null)? false : null;
 
             for(const field of Object.keys(bookingStates)){
                 if(bookingStates[field]==false){
@@ -283,6 +290,7 @@ export default class InterpreterBookingModal extends Vue {
             target[0].booking.federal = JSON.parse(JSON.stringify(source[0].booking.federal));
             target[0].booking.languages = JSON.parse(JSON.stringify(source[0].booking.languages));
             target[0].booking.locationId = JSON.parse(JSON.stringify(source[0].booking.locationId));
+            target[0].booking.bilingual = JSON.parse(JSON.stringify(source[0].booking.bilingual));
             
             this.updateTabs++;
         }
@@ -294,7 +302,7 @@ export default class InterpreterBookingModal extends Vue {
         this.targetTab = tabName;
         this.sourceBookingDatesTimes = JSON.parse(JSON.stringify(this.allBookingDatesTimes.filter(booking =>booking.name!=tabName)))
         this.showCopyWindow = true
-        console.log(this.allBookingDatesTimes)
+        //console.log(this.allBookingDatesTimes)
     }
 }
 

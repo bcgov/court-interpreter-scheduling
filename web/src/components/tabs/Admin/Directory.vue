@@ -145,13 +145,20 @@
                 <span class="text-muted ml-4 mb-5">No records found.</span>
             </b-card>      
 
-            <b-card v-else class="home-content border-white p-0">
+            <b-card v-else class="home-content border-white p-0" body-class="pt-0">
+                <custom-pagination                                         
+                    :pages="[10,20,30]"
+                    :totalRows="interpreters.length"
+                    @paginationChanged="paginationChanged"/>
+
                 <b-table
-                    :items="currentPageInterpreters"
+                    :items="interpreters"
                     :fields="interpreterFields"
                     class="border-info" 
                     sort-icon-left                                   
                     small
+                    :currentPage="currentPage"
+                    :perPage="itemsPerPage"
                     responsive="sm">
 
                     <template v-slot:head(email)="data" >                    
@@ -175,28 +182,28 @@
                         {{data.value | beautify-phone-no}}
                     </template>
 
-                    <template v-slot:cell(languages)="data" >    
+                    <template v-slot:cell(languages)="data" >                                                   
                         <span 
-                            v-for="lan,inx in data.item.languages.map(language => {return language.languageName})" 
+                            v-for="lan,inx in data.item.languages" 
                             :key="inx"
                             style="display: block;">
-                            <b v-if="lan == language">{{lan}}</b>
-                            <span v-else>{{lan}}</span>
+                            <b v-if="lan['languageId']==languageId">{{lan['languageName']}}</b>
+                            <span v-else>{{lan['languageName']}}</span>
                         </span>                                        
                     </template>
 
                     <template v-slot:cell(level)="data" >    
                         <span 
-                            v-for="level,inx in data.item.languages.map(language => {return language.level})" 
+                            v-for="lan,inx in data.item.languages" 
                             :key="inx"
                             style="display: block; margin-left:0.25rem;">
-                            {{level}}
+                            {{lan['level']}}
                         </span>                                        
                     </template>
 
-                    <template v-slot:cell(new)="data" >    
+                    <template v-slot:cell(new)="data" >                            
                         <b-badge 
-                            v-if="!data.item.new"
+                            v-if="data.item.created_at > lastMonth"
                             class="mt-0 text-success border py-2"                            
                             variant="white"
                             style="float: left;"
@@ -247,34 +254,10 @@
                     
                 </b-table>
 
-                <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
-                    <b-dropdown 
-                        style="height: 30% !important;"
-                        class="mr-3 py-0"      
-                        variant="primary">
-                        <template #button-content >
-                            <div style="display:inline; font-size: 0.75rem; line-height: 0.75rem !important; height: 40% !important;">
-                                Items Per Page: {{itemsPerPage}}
-                            </div>
-                        </template>
-                        <b-dropdown-item @click="switchNumberOfItems(10)">10</b-dropdown-item>
-                        <b-dropdown-item @click="switchNumberOfItems(20)">20</b-dropdown-item>
-                        <b-dropdown-item @click="switchNumberOfItems(30)">30</b-dropdown-item>
-                    </b-dropdown>
-
-                    <b-pagination                           
-                        v-model="currentPage"
-                        :total-rows="totalRows"
-                        :per-page="itemsPerPage" 
-                        first-number
-                        last-number                               
-                        first-text="First"
-                        prev-text="Prev"
-                        next-text="Next"
-                        last-text="Last">
-                    </b-pagination>
-                
-                </b-row>
+                <custom-pagination                                         
+                    :pages="[10,20,30]"
+                    :totalRows="interpreters.length"
+                    @paginationChanged="paginationChanged"/>
             
             </b-card>
         </div>
@@ -319,7 +302,7 @@
                             </b-form-group>       
                         </b-col>         
                     </b-row>
-                    <h1 class="ml-3 pl-1 mt-3 mb-0 pb-0 labels text-primary">Languages</h1>
+                    <h1 class="ml-3 pl-1 mt-2 mb-2 pb-0 labels text-primary">Languages</h1>
                     <b-row v-if="interpreterDataReady" class="border-white ml-1 mt-1">                           
                         <b-col cols="10">
                             <b-form-group
@@ -697,6 +680,7 @@ import * as _ from 'underscore';
 import InterpreterDetails from "../components/InterpreterDetails.vue";
 import AddLanguageForm from "./components/AddLanguageForm.vue";
 import Spinner from "@/components/utils/Spinner.vue";
+import CustomPagination from "../components/CustomComponents/CustomPagination.vue"
 
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType, interpreterLanguageInfoType } from '@/types/Interpreters/json';
@@ -715,8 +699,8 @@ const commonState = namespace("Common");
         Spinner,
         InterpreterDetails,
         AddLanguageForm,
-        BookingDateRangePicker
-
+        BookingDateRangePicker,
+        CustomPagination
     }
 })
 export default class DirectoryPage extends Vue {
@@ -758,14 +742,17 @@ export default class DirectoryPage extends Vue {
     name = '';
     keyword = '';
     active = true;
-    language = '';    
+    language = '';  
+    languageId = -1;  
     level: string[] = [];
     crcExpiryDate: dateRangeInfoType = {startDate:null, endDate:null};
 
     interpreters: interpreterInfoType[] = [];
     expandedInterpreter = {} as interpreterInfoType;
 
-    languageNames: string[] = [];    
+    languageNames: string[] = [];
+    
+    lastMonth=''
 
     activeOptions = [
         {text: 'Active', value: true}, 
@@ -844,6 +831,7 @@ export default class DirectoryPage extends Vue {
         this.dataLoaded = false;
         this.dataReady = false; 
         this.searching = false;
+        this.lastMonth = moment().add(-1, 'month').format()
         this.interpreterStates = {} as interpreterStatesInfoType;
         this.extractInfo()
         this.focusSearchButton()       
@@ -854,23 +842,16 @@ export default class DirectoryPage extends Vue {
         this.find()
     }
 
-    public switchNumberOfItems(numberOfItemsPerPage){         
-        this.itemsPerPage = numberOfItemsPerPage;
-    }
-
-    get totalRows() {
-        return this.interpreters.length
-    }
-
     public find(){
         this.dataLoaded = true;
         this.searching = true;
         this.interpreters = [];
+        const language = this.languages.filter(lang => lang.name==this.language);
 
         const body = {
             "name":this.name,
             "active":this.active,
-            "language":this.language,
+            "languageId":language.length==1? language[0].id :null,
             "level":this.level,
             "city":'',//this.userLocation?.city?this.userLocation.city:'',
             "keywords":this.keyword,
@@ -891,10 +872,6 @@ export default class DirectoryPage extends Vue {
             this.dataReady = true;           
         });
         
-    }
-
-    get currentPageInterpreters(){
-        return this.interpreters.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
     }
 
     public editInterpreter(interpreterToEdit: interpreterInfoType){              
@@ -949,10 +926,8 @@ export default class DirectoryPage extends Vue {
                 link.download = "interpreters.csv";
                 link.click();
                 setTimeout(() => URL.revokeObjectURL(link.href), 1000);                
-            }   
-            
-        },(err) => {
-            
+            }            
+        },(err) => {            
         });
     }
 
@@ -1080,7 +1055,8 @@ export default class DirectoryPage extends Vue {
         if (isCreateLanguage){           
             this.interpreter.languages.push(newLanguage)
             this.closeLanguageForm();
-        } else {           
+        } else {       
+            this.interpreter.languages[index].languageId = newLanguage.languageId;    
             this.interpreter.languages[index].languageName = newLanguage.languageName;
             this.interpreter.languages[index].level = newLanguage.level;     
             this.interpreter.languages[index].commentOnLevel = newLanguage.commentOnLevel;       
@@ -1132,13 +1108,9 @@ export default class DirectoryPage extends Vue {
             .then((response) => {            
                 if(response?.data){                    
                     this.find();                
-                }
-                
-            },(err) => {
-                            
-            });              
-                
-        
+                }                
+            },(err) => {                            
+            });
     }
 
     public closeInterpreterWindow(){
@@ -1154,7 +1126,10 @@ export default class DirectoryPage extends Vue {
         }                             
     }
 
-    public searchAgain(){
+    public searchAgain(){ 
+        const language = this.languages.filter(lang=>lang.name==this.language)
+        if(language.length==1) this.languageId = language[0].id
+
         this.interpreters =[]
         this.dataLoaded = false;
         this.focusSearchButton();
@@ -1171,6 +1146,11 @@ export default class DirectoryPage extends Vue {
         this.crcExpiryDate = dateRange
         this.updateCrc++;          
         this.searchAgain()
+    }
+
+    public paginationChanged(currentPage, itemsPerPage){
+        this.currentPage = currentPage
+        this.itemsPerPage = itemsPerPage
     }
 }
 </script>

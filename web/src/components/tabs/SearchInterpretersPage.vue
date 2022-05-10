@@ -26,20 +26,23 @@
                     </b-form-group>
                 </b-col>
                 <b-col cols="4">
-                    <b-form-group                       
-                        label="Level" 
-                        label-for="level">
-                        <b-form-checkbox-group
-                            id="level"
-                            @change="searchAgain"
-                            class="mt-3"                            
-                            style="max-width:100%;"
-                            size="lg"                   
-                            v-model="level"
-                            :options="levelOptions"                
-                        ></b-form-checkbox-group>
-                    
-                    </b-form-group>
+                    <div class="mx-auto" style="width:15rem;">
+                        <b-form-group
+                            class="ml-3 mr-n2"                       
+                            label="Level" 
+                            label-for="level">
+                            <b-form-checkbox-group
+                                id="level"
+                                @change="searchAgain"
+                                class="mt-3"                            
+                                style="max-width:100%;"
+                                size="lg"                   
+                                v-model="level"
+                                :options="levelOptions"                
+                            ></b-form-checkbox-group>
+                        
+                        </b-form-group>
+                    </div>
 
                 </b-col>
                 <b-col cols="4">
@@ -68,8 +71,7 @@
                             v-model="limitDistance">Limit Search to 32 km
                         </b-form-checkbox> 
                     </b-form-group>
-                </b-col>
-                
+                </b-col>                
             </b-row>
 
             <b-row>
@@ -78,11 +80,24 @@
                     <booking-date-picker :key="update" :bookingDates="bookingDates" @datesAdded="addBookingDates" @change="datePickerWindowChanged"/>
                 </b-col>
                 <b-col cols="4">
+                    <b-card style="width: 13rem; margin:0.5rem auto 0 auto;" body-class="py-2">
+                        <b-row>
+                            <div class="h4 mx-2 mt-2 mb-0">
+                                View Type
+                            </div>
+                            <b-button size="sm" class="mx-1" :variant="calendarView?'info':'primary'" @click="calendarView=false">
+                                <b-icon-list-ul font-scale="1.5" />
+                            </b-button>
+                            <b-button size="sm" class="mx-1" :variant="calendarView?'primary':'info'" @click="calendarView=true">
+                                <b-icon-calendar font-scale="1.5" />
+                            </b-button>
+                        </b-row>
+                    </b-card> 
                 </b-col>
                 <b-col cols="4">
                     <b-button
                         name="search"
-                        style="margin-top: 0rem; padding: 0.25rem 2rem; width: 100%;" 
+                        style="margin-top: 0.75rem; padding: 0.25rem 2rem; width: 100%;" 
                         :disabled="searching||disableSearch"
                         v-on:keyup.enter="find()"
                         variant="primary"
@@ -104,44 +119,25 @@
             </b-row> 
                 
             </div>         
-        </b-card>        
-   
+        </b-card>
+
         <search-interpreters-table 
-            v-if="dataLoaded"
-            :interpreters="currentPageInterpreters" 
+            v-if="dataLoaded && !calendarView"
+            :interpreters="interpreters" 
             :searching="searching" 
             :searchLocation="location"
             :language="language" 
             :bookingDates="bookingDates" />
 
-        <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
-            <b-dropdown 
-                style="height: 30% !important;"
-                class="mr-3 py-0"      
-                variant="primary">
-                <template #button-content >
-                    <div style="display:inline; font-size: 0.75rem; line-height: 0.75rem !important; height: 40% !important;">
-                        Items Per Page: {{itemsPerPage}}
-                    </div>
-                </template>
-                <b-dropdown-item @click="switchNumberOfItems(10)">10</b-dropdown-item>
-                <b-dropdown-item @click="switchNumberOfItems(20)">20</b-dropdown-item>
-                <b-dropdown-item @click="switchNumberOfItems(30)">30</b-dropdown-item>
-            </b-dropdown>
+        <search-interpreters-calendar-table
+            v-if="dataLoaded && calendarView" 
+            :interpreters="interpreters" 
+            :searching="searching" 
+            :searchLocation="location"
+            :language="language" 
+            :bookingDates="bookingDates" />
 
-            <b-pagination                           
-                v-model="currentPage"
-                :total-rows="totalRows"
-                :per-page="itemsPerPage" 
-                first-number
-                last-number                               
-                first-text="First"
-                prev-text="Prev"
-                next-text="Next"
-                last-text="Last">
-            </b-pagination>
-           
-        </b-row>
+        
 
     </b-card>
 </template>
@@ -156,6 +152,8 @@ import SearchInterpretersTable from "./components/SearchInterpretersTable.vue";
 import DateCard from "./components/DateComponents/DateCard.vue"
 import BookingDatePicker from "./components/DateComponents/BookingDatePicker.vue"
 
+import SearchInterpretersCalendarTable from "./components/SearchInterpretersCalendarTable.vue"
+
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
@@ -167,6 +165,7 @@ const commonState = namespace("Common");
 
 @Component({
     components:{
+        SearchInterpretersCalendarTable,
         SearchInterpretersTable,
         Spinner,
         DateCard,
@@ -190,7 +189,7 @@ export default class SearchInterpretersPage extends Vue {
     dataLoaded = false
     
     location = {} as locationsInfoType;
-    limitDistance = false;
+    limitDistance = true;
     
     language = '';    
     level: string[] = [];
@@ -206,9 +205,9 @@ export default class SearchInterpretersPage extends Vue {
     update = 0; 
 
     disableSearch = false;
+
+    calendarView = false;
     
-    currentPage = 1;
-    itemsPerPage = 10;// Default
 
     @Watch('userLocation')
     defaultLocationChanged(){
@@ -225,20 +224,11 @@ export default class SearchInterpretersPage extends Vue {
     }
 
     public extractInfo(){
-
         this.languageNames = this.languages.map( language => {return language.name});
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
-
         this.dataReady = true;
     }
 
-    public switchNumberOfItems(numberOfItemsPerPage){         
-        this.itemsPerPage = numberOfItemsPerPage;
-    }
-
-    get totalRows() {
-        return this.interpreters.length
-    }
 
     public find(){
        
@@ -293,9 +283,7 @@ export default class SearchInterpretersPage extends Vue {
         
     }
 
-    get currentPageInterpreters(){
-        return this.interpreters.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
-    }
+
 
     public searchAgain(){
         this.interpreters =[]
@@ -312,7 +300,7 @@ export default class SearchInterpretersPage extends Vue {
 
     public addBookingDates(bookingDates){
         this.bookingDates = bookingDates
-        console.log(this.bookingDates)
+        //console.log(this.bookingDates)
         this.update++;        
         this.searchAgain()
     }

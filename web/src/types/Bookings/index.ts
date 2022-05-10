@@ -8,16 +8,19 @@ export interface bookingStatesInfoType {
     caseType: null | boolean;
     courtLevel: null | boolean;
     courtClass: null | boolean;
+    courtClassOther: null | boolean;
     request: null | boolean;
     language: null | boolean;
     federal: null | boolean;    
     prosecutor: null | boolean;
     reason: null | boolean;
+    reasonOther: null | boolean;
     methodOfAppearance: null | boolean;
     dates: null | boolean;
     start: null | boolean;
     end: null | boolean;
     conflict: null | boolean;
+    bilingual: null | boolean;
 }
 
 export interface paymentDetailsInfoType{
