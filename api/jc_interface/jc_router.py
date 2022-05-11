@@ -1,9 +1,5 @@
-# import json
 from typing import List
-from fastapi import APIRouter, status, HTTPException, Depends, Response, Request
-# from fastapi.encoders import jsonable_encoder
-# from threading import Thread
-
+from fastapi import APIRouter, Depends
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from core.auth import user_in_role

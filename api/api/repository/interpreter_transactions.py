@@ -21,6 +21,8 @@ from models.geo_status_model import GeoStatusModel
 
 from core.geo_coordinate_service import get_latitude_longitude_service
 
+import logging
+logger = logging.getLogger(__name__)
 
 def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session, google_map: bool):
 
@@ -56,7 +58,7 @@ def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
         count = count+1
         progress = int(100*count/total_interpreters)+1
         if progress>99: progress=99
-        print("Interpreter Update Progress => "+str(progress)+" %")
+        logger.info("Interpreter Update Progress => "+str(progress)+" %")
         geo_status.update({"progress":progress})
 
         db.commit()

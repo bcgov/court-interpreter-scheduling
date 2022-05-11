@@ -18,6 +18,9 @@ class JcInterfaceCalls:
         session = Session()
         session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_USERNAME, settings.JC_INTERFACE_API_PASSWORD) 
         response = session.get(settings.JC_INTERFACE_API_LOCATION_URL, timeout=5)
+        if(response.status_code != 200):
+            logger.error("JC Interface Endpoint doesn't respond.")
+            raise  HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="JC Interface Endpoint doesn't respond.")
         return response.json()
 
 

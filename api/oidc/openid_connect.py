@@ -55,7 +55,7 @@ class OpenIDConnect:
         try:
             alg = jwt.get_unverified_header(id_token).get("alg")
         except DecodeError:
-            logging.warning("Error getting unverified header in jwt.")
+            logger.warning("Error getting unverified header in jwt.")
             raise OpenIDConnectException
     
         validated_token = self.obtain_validated_token(alg, id_token)
