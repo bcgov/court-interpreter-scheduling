@@ -19,6 +19,9 @@ client_secret = settings.OIDC_RP_CLIENT_SECRET
 
 oidc = OpenIDConnect(hint, host, realm, client_id, client_secret)
 
+import logging
+logger = logging.getLogger(__name__)
+
 # # _____________________________
 # print("==================")
 # print(oidc.issuer)
@@ -44,7 +47,7 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     code = request.query_params.get("code")
    
     if ("oidc_auth_state" not in request.session or request.session["oidc_auth_state"] != request.query_params.get("state")):        
-        print("______Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value._____________")
+        logger.error("______Please remove/clear cookies for this webpage and try again. It's best to open an Incognito/private tab. Error: Invalid OpenID Connect callback state value._____________")
         logout=getLogoutUrl(request)
         return RedirectResponse(logout)
             
@@ -76,7 +79,7 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
 
 @router.get('/login')
 def web_login_callback(request: Request):
-    
+
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/session"
 
     # _____________________________

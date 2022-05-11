@@ -4,8 +4,12 @@ from jc_interface.jc_calls import JcInterfaceCalls
 from models.court_location_model import CourtLocationModel
 from sqlalchemy.orm import Session
 from models.geo_status_model import GeoStatusModel
+from sqlalchemy import exc
 
 from core.geo_coordinate_service import get_latitude_longitude_service
+
+import logging
+logger = logging.getLogger(__name__)
 
 def update_courts_info_in_db(db: Session, google_map: bool):
     
@@ -25,7 +29,7 @@ def update_courts_info_in_db(db: Session, google_map: bool):
     for inx, location in enumerate(jc_locations):        
         
         if location["shortDesc"].isnumeric() and len(location["shortDesc"]):        
-            # print(location["longDesc"])            
+            # logger.info(location)            
        
             court_address = {'address_line1':"", 'address_line2':"", 'postal_code':"", 'city':"", 'province':""} 
 
@@ -38,16 +42,18 @@ def update_courts_info_in_db(db: Session, google_map: bool):
                 court_address['province'] = efiling_location[0]['province']                
             else:
                 court_address = other_courts_addresses(location["code"], location["shortDesc"])
-                
+            # print(court_address)
+            if not court_address:
+                continue
+             
             latitude, longitude = get_latitude_longitude_service(court_address['address_line1'], court_address['address_line2'], court_address['city'], court_address['postal_code'], court_address['province'], google_map=google_map)
 
             location_query = db.query(CourtLocationModel).filter(
-                CourtLocationModel.short_description==location["shortDesc"],
-                CourtLocationModel.location_code==location["code"]
+                CourtLocationModel.short_description==location["shortDesc"]
             )
             progress = int(100*inx/len(jc_locations))+1
             if progress>99: progress=99
-            print("Location Update Progress => "+str(progress)+" %")
+            logger.info("Location Update Progress => "+str(progress)+" %")
             # print(location_query)
             # print(court_address)
             geo_status.update({"progress":progress})
@@ -69,6 +75,13 @@ def update_courts_info_in_db(db: Session, google_map: bool):
                     geo_service = geo_service
                 )
                 db.add(adding_location)                
+                try:
+                    db.commit()
+                except exc.SQLAlchemyError as e:                                        
+                    error_msg = str(e.__dict__['orig'])
+                    logger.error(error_msg)
+                    logger.error(f"Could not add location ({location['longDesc']}) to db!")
+
             else:
                 location_query.update({ 
                     "name": location["longDesc"],
@@ -112,7 +125,7 @@ def other_courts_addresses(code, shortDesc):
         {'code': '9066.0001',  'shortDesc': '2010', 'longDesc': 'Delta Provincial Court', 'address_line1':'','address_line2':'','postal_code':'','city':'Delta','province':'British Columbia'},
     ]
 
-    address = [address for address in other_courts if address['code']==code and address['shortDesc']== shortDesc ]
+    address = [address for address in other_courts if address['shortDesc']== shortDesc ]
     
     if len(address)==1:
         return {
@@ -123,4 +136,4 @@ def other_courts_addresses(code, shortDesc):
             'province':address[0]['province']
         }
     else:
-        return {'address_line1':"", 'address_line2':"", 'postal_code':"", 'city':"", 'province':""}
+        return None

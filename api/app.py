@@ -20,6 +20,10 @@ from core.repeat_task import repeat_every
 
 from starlette.middleware.sessions import SessionMiddleware
 
+# setup loggers
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+
+logger = logging.getLogger(__name__)
 
 # app = FastAPI()
 
@@ -32,8 +36,8 @@ def get_application() -> FastAPI:
         description=settings.API_DESCRIPTION, 
         version=settings.API_VERSION
     )
-    print("====CORES=====")
-    print(settings.CORS_ORIGIN)
+
+    logger.info("CORES are: "+" ".join(settings.CORS_ORIGIN))
     new_app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGIN,
@@ -66,14 +70,14 @@ def openshift_Health_Check():
 @app.on_event("startup")
 @repeat_every(seconds= 60*60)  # for 1hour  ==>  60*60
 async def geo_update_schedule_task() -> None:
-    print("_________CHECK___GEO_Update_Schedule________")
+    logger.info("_________CHECK___GEO_Update_Schedule________")
     with DBSession() as db:
         await check_geo_update_schedule(db)
 
       
 
 def start_main():
-
+        
     print("____FAST_API____")
     print("API_HTTP_PORT is: ",os.getenv('API_HTTP_PORT', ''))
     uvicorn.run(app, host="0.0.0.0", port=8080)

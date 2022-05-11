@@ -10,6 +10,8 @@ from api.repository.role_transactions import modify_user_role, create_new_role
 
 from api.repository.access_request_transactions import EmailRequestAccess
 
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/role",
@@ -73,7 +75,7 @@ def unassign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(g
 
 @router.post('/request-access', status_code=status.HTTP_200_OK)
 def request_Access(request: RoleRequestAccessSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
-    print("__________REQUEST_ACCESS___________")
+    logger.info("__________REQUEST_ACCESS___________")
     EmailRequestAccess().request_access(db, user['username'], request.message)
     return "sent"
 
