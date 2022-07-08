@@ -11,7 +11,17 @@
 					:class="bgClass[item.name]" >
 					<div class="booking-tab">{{item.label}}</div>
 				</b-nav-item>
+				<b-dropdown variant="primary" >
+					<template #button-content >
+						<div style="display:inline; font-size:14pt;"> <span class="mr-1"> Forms</span></div>
+					</template>					
+					<b-dropdown-item
+						@click="DownloadADM322FillableFile()">
+						Fillable ADM322
+					</b-dropdown-item>
+				</b-dropdown>
 			</b-navbar-nav>
+			
 			<b-navbar-nav class="ml-auto mr-5">	
 				<div v-if="userRole.includes('super-admin')||userRole.includes('cis-admin')">
 					<b-dropdown right  :variant="adminTab?'cyan':'primary'">
@@ -86,6 +96,32 @@
         		this.bgClass[item.name]=""
 			
 			this.bgClass[type]="bg-cyan"
+		}
+
+		public DownloadADM322FillableFile() {
+
+    		const url = '/adm/fillable-pdf'
+			const options = {
+				responseType: "blob",
+				headers: {
+					"Content-Type": "application/json",
+				}
+			}
+    		this.$http.get(url, options)
+			.then(res => {
+				const blob = res.data;
+				const link = document.createElement("a");
+				link.href = URL.createObjectURL(blob);
+				document.body.appendChild(link);
+				link.download = "Adm322_auto fill_Mar2022-1.pdf";
+				link.click();
+				setTimeout(() => URL.revokeObjectURL(link.href), 1000);  
+				return true;           
+
+			},err => {
+				console.error(err);
+				return false;
+			});
 		}
 
 	}

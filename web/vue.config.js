@@ -1,4 +1,4 @@
-const webBaseHref = process.env.WEB_BASE_HREF || '/court-interpreter-scheduling';
+const webBaseHref = process.env.VUE_APP_RUN_IN_DOCKER? process.env.WEB_BASE_HREF : (process.env.WEB_BASE_HREF || '/court-interpreter-scheduling');
 module.exports = {
   publicPath: webBaseHref,
   devServer: {
