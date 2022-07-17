@@ -239,7 +239,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 		`<style>`+
 			`@page {
 				size: 8.5in 11in !important;
-				margin: .7in 0.7in 0.9in 0.7in !important;
+				margin: .7in 0.4in 0.9in 0.4in !important;
 				font-size: 10pt !important;			
 				@bottom-left {
 					content:`+ pageFooterLeft +
@@ -270,8 +270,8 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 				padding: 0 !important; 
 				margin: 0 !important;				
 				width: 100% !important;
-				max-width: 680px !important;
-				min-width: 680px !important;			
+				max-width: 740px !important;
+				min-width: 740px !important;			
 				font-size: 10pt !important;
 				font-family: BCSans !important;
 				color: #313132 !important;
@@ -279,20 +279,30 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 			`+
 			`td.border-dark {border: 1px solid #313132 !important;}`+
 			`th.border-dark {border: 1px solid #313132 !important;}`+
+			`th.bg-light {background-color: #EEE !important;}`+
 			`td.border-top-0{border-top: 0px solid #FFF !important;border-bottom: 1px solid #313132 !important;border-left: 1px solid #313132 !important; border-right: 1px solid #313132 !important;}`+
 			`th.border-bottom-0{border-top: 1px solid #313132 !important;border-bottom: 0px solid #FFF !important;border-left: 1px solid #313132 !important; border-right: 1px solid #313132 !important;}`+
 			`tr{height: 1.5rem;}`+
 			`table.fullsize {table-layout: fixed; width: 100%; margin-top:0.5rem;}`+
-			`table.fullsize tr{border:1px solid #313132;}`+
+			`table.fullsize tr{border:1px solid #313132; height: 1.0rem;}`+
 			`table.fullsize td{padding:0 0 0 .5rem; color: #313132;}`+
 
 			`table.compactfullsize {table-layout: fixed; width: 100%; margin-top:0rem;}`+
 			`table.compactfullsize tr{border:1px solid #313132;}`+
 			`table.compactfullsize td{padding:0 0 0 .5rem; color: #313132;}`+
 
-			`.answer{color: #000; display:inline; font-size:11pt;}`+
+			`table.flexsize {table-layout:unset; width: 100%; margin-top:1rem;}`+
+			`table.flexsize tr{height: 1.0rem;}`+
+			`table.flexsize tr.spacer{height: 0.25rem !important;}`+
+			`table.flexsize th{color: #313132;}`+
+			`table.flexsize td{color: #313132;}`+		
+
+			`.answer{color: #000; display:inline; font-size:10pt;}`+
 			`.answerbox{color: #000; font-size:11pt; display:block; text-indent:0px; margin:0.5rem 0 0.5rem 0 !important;}`+
-    		`.uline{text-decoration: underline; display: inline;}`+
+    		`.answer-record{color: #000; display:inline; font-size:8.5pt;}`+
+			`.answer-record-sm{color: #000; display:inline; font-size:7.5pt;}`+
+			`.answer-payment{color: #000; font-size:8.5pt; text-align:center!important;}`+
+			`.uline{text-decoration: underline; display: inline;}`+
 			`.form-header{display:block; margin:0 0 5rem 0;}`+
 			`.form-header-po{display:block; margin:0 0 3.25rem 0;}`+
 			`.form-header-ppm{display:block; margin:0 0 5.25rem 0;}`+

@@ -3,12 +3,18 @@
 .table >>> tr{height:1.5rem;}
 
 table.fullsize {table-layout: fixed; width: 100%; margin-top:1rem;}
-table.fullsize >>> tr{border:1px solid #313132;}
+table.fullsize >>> tr{border:1px solid #313132; height: 1.0rem;}
 table.fullsize >>> td{padding:0 0 0 .5rem; color: #313132;}
 
 table.compactfullsize {table-layout: fixed; width: 100%; margin-top:0rem;}
 table.compactfullsize >>> tr{border:1px solid #313132;}
 table.compactfullsize >>> td{padding:0 0 0 .5rem; color: #313132;}
+
+table.flexsize {table-layout:unset; width: 100%; margin-top:1rem;}
+table.flexsize > tr{height: 1.0rem; }
+table.flexsize > tr.spacer{height: 0.25rem !important;}
+table.flexsize > td{color: #313132;}
+table.flexsize > th{color: #313132;}
 
 .new-page{margin-top:7rem;}
 .marginleft{margin-left:-1rem;}
@@ -17,11 +23,15 @@ table.compactfullsize >>> td{padding:0 0 0 .5rem; color: #313132;}
 .marginleft2p5vue{margin-left:2.5rem !important;}
 .marginleft-1vue{margin-left:-1rem !important;}
 .marginleft0p25vue{margin-left:0.25rem !important;}
+.margintop0p5{margin-top:0.5rem;}
 
 .margintop1vue{margin-top:1rem !important;}
 
-.answer{color: #000; display:inline; font-size:11pt;}
+.answer{color: #000; display:inline; font-size:10pt;}
 .answerbox{color: #000; font-size:11pt; display:block;text-indent:0px; margin:0.5rem 0 0.5rem 0.1rem;}
+.answer-record{color: #000; display:inline; font-size:8.5pt;}
+.answer-record-sm{color: #000; display:inline; font-size:7.5pt; text-align:center!important;}
+.answer-payment{color: #000; font-size:8.5pt; text-align:center!important;}
 .uline{text-decoration: underline; display: inline;}
 .form-header{display:block; margin:0 0 4rem 0;}
 .form-header-po{display:block; margin:0 0 4rem 0;}
@@ -115,12 +125,12 @@ ol li.listnumber:before {
 }
 
 .container {
-    padding: 40px !important; 
+    padding: 40px 36px !important; 
     margin-right: auto !important;
     margin-left: auto !important;
     width: 100% !important;
-    max-width: 760px !important;
-    min-width: 760px !important;   
+    max-width: 815px !important;
+    min-width: 815px !important;   
     font-size: 10pt !important;
     font-family: BCSans;
     color: #313132 !important;

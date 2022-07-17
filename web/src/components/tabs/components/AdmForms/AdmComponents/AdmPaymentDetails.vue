@@ -34,7 +34,43 @@
                         <b-th colspan="2" class="text-center">Fees Payable</b-th>                                                 
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="3" class="">Court Hours</b-th>
+                        <b-th colspan="3" class="">Court Hours (Level1)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level2)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level3)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level4)</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
@@ -46,13 +82,13 @@
                         <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
                     </b-tr>
 <!-- <Travel Hours> -->
-                    <b-tr>
+                    <!-- <b-tr>
                         <b-th colspan="4" class=""></b-th>
                         <b-th colspan="2" class="text-center">Rate</b-th>
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="text-center">Total Hours</b-th>
                         <b-th colspan="7" class=""></b-th>                                                 
-                    </b-tr>
+                    </b-tr> -->
                     <b-tr>
                         <b-th colspan="3" class="">Travel Hours</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>

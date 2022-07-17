@@ -100,6 +100,7 @@ export interface bookingSearchInfoType {
 }
 
 export interface bookingAdmInfoType extends bookingSearchInfoType{    
+    time: string;
     date: string;
     dateId: number;
     actualStartTime: string;

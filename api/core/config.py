@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY','5e094faa6ca25ahc81816')
     DATA_SECURITY_KEY = os.getenv('DATA_SECURITY_KEY','1tjhb7a9563je93f7099')
+
+    PDF_SERVICE_URL = os.getenv('PDF_SERVICE_URL') 
     
     # # JC Interface
     JC_INTERFACE_API_LOCATION_URL = os.getenv('JC_INTERFACE_API_LOCATION_URL')

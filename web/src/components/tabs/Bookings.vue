@@ -15,9 +15,9 @@
                             @change="searchAgain"                           
                             style="display:inline"                            
                             v-model="location">
-                            <b-form-select-option :value="alllocations">
+                            <!-- <b-form-select-option :value="alllocations">
                                 --- All Locations ---
-                            </b-form-select-option> 
+                            </b-form-select-option>  -->
                             <b-form-select-option
                                 v-for="courtLocation in courtLocations" 
                                 :key="courtLocation.id"
@@ -171,6 +171,7 @@ export default class BookingsPage extends Vue {
     @Watch('userLocation')
     defaultLocationChanged(){
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+        this.find()
     }
    
     mounted() {  
@@ -231,7 +232,7 @@ export default class BookingsPage extends Vue {
                 const languages = _.sortBy(response.data,'name')               
                 this.UpdateLanguages(languages);                
             }
-            this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+            this.location = this.userLocation?.name? this.userLocation : this.courtLocations[0]//({} as locationsInfoType);
             this.dataReady = true;
             this.find()
         },(err) => {

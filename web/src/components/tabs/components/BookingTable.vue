@@ -100,8 +100,7 @@
                             <b-button style="font-size:11px;" 
                                 size="sm" 
                                 v-b-tooltip.hover.top.noninteractive
-                                title="Adm322 Forms"      
-                                disabled
+                                title="Adm322 Forms"                                      
                                 @click="openAdm(data.item);" 
                                 class="text bg-select border-info my-1 px-1 " 
                                 ><img 
@@ -184,7 +183,7 @@
                     <div style="font-size:16pt; margin:1rem 0 0 1rem;" >ADM-322</div>
                 </b-row>
             </template>
-            <adm-forms :booking="currentAdm"/>
+            <adm-forms :booking="currentAdm" :searchLocation="searchLocation"/>
             <template v-slot:modal-footer>                
                 <b-button class="mr-auto" variant="dark" @click="showAdmWindow=false">Cancel</b-button>
             </template>
@@ -351,8 +350,8 @@ export default class BookingTable extends Vue {
 </script>
 <style lang="scss">
     .modal-dialog.modal-xl.xxl .modal-content{
-        width: 150% !important;
-        margin-left:-25%;
+        width: 125% !important;
+        margin-left:-12%;
     }
 </style>
 
