@@ -4,19 +4,19 @@
             <h3 class="text-dark p-0 mt-n2 mb-n3">OfficeUseOnly</h3>
             <b-table-simple class="bg-white" borderless>
                 <b-thead>
-                    <b-tr  style="color:rgb(182, 210, 221); background:rgb(182, 210, 221);">
-                        <b-th>Country1</b-th>
-                        <b-th>Country2</b-th>
-                        <b-th>Country3</b-th>
-                        <b-th>Country4</b-th>
-                        <b-th>Country5</b-th>
-                        <b-th>Country6</b-th>
-                        <b-th>Country7</b-th>
-                        <b-th>Country8</b-th>
-                        <b-th>Country9</b-th>
-                        <b-th>Country0</b-th>
-                        <b-th>Country1</b-th>
-                        <b-th>Country2</b-th>
+                    <b-tr  style="background:rgb(182, 210, 221);">
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:9%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:10%;"></b-th>
+                        <b-th style="width:8%;"></b-th>
+                        <b-th style="width:8%;"></b-th>                        
                     </b-tr>
                 </b-thead>                               
                 <b-tbody>

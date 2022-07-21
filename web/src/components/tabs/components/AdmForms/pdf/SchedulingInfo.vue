@@ -15,9 +15,9 @@
                         <td style="width:13%;"><b class="">Date of booking</b></td>
                     </tr>
                     <tr style="height:1.5rem;" >
-                        <td><div class="answer ml-1">100 Mile House Law Courts100 Mile House Law</div> </td>
+                        <td><div class="answer ml-1">100 Mile House Law Courts</div> </td>
                         <td />
-                        <td><div class="answer">Clerk NameClerk Name</div> </td>
+                        <td><div class="answer">Clerk Name</div> </td>
                         <td />
                         <td><div class="answer">800 123 4568</div> </td>
                         <td />

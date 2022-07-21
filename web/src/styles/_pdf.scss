@@ -31,7 +31,7 @@ table.flexsize > th{color: #313132;}
 .answerbox{color: #000; font-size:11pt; display:block;text-indent:0px; margin:0.5rem 0 0.5rem 0.1rem;}
 .answer-record{color: #000; display:inline; font-size:8.5pt;}
 .answer-record-sm{color: #000; display:inline; font-size:7.5pt; text-align:center!important;}
-.answer-payment{color: #000; font-size:8.5pt; text-align:center!important;}
+.answer-payment{color: #000; font-size:9.5pt; text-align:center!important;}
 .uline{text-decoration: underline; display: inline;}
 .form-header{display:block; margin:0 0 4rem 0;}
 .form-header-po{display:block; margin:0 0 4rem 0;}
@@ -122,6 +122,25 @@ ol li.listnumber{
 ol li.listnumber:before {
     content:counter(list-counter) ". ";
     font-weight: bold;
+}
+
+.radio-circle {
+    height: 0.75rem;
+    width: 0.75rem;
+    display: inline-block;
+    border: 1px solid #BBB;    
+    border-radius: 50%;
+    transform:translate(1px,3px);
+    line-height: 1rem;    
+}
+
+.radio-circle-fill {
+    height: 0.6rem;
+    width: 0.6rem;
+    display: inline-block;
+    border: 1px solid #FFF;    
+    border-radius: 50%;
+    transform:translate(0.5px,-2.5px);
 }
 
 .container {

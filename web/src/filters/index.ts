@@ -239,7 +239,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 		`<style>`+
 			`@page {
 				size: 8.5in 11in !important;
-				margin: .7in 0.4in 0.9in 0.4in !important;
+				margin: 1.1in 0.4in 0.9in 0.4in !important;
 				font-size: 10pt !important;			
 				@bottom-left {
 					content:`+ pageFooterLeft +
@@ -254,6 +254,12 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 				}
 			}`+
 			`@media print{
+				div.court-header {
+					position: fixed;
+					top: -0.7in;
+					width:100%; 
+					display:inline-block;
+				}
 				.new-page{
 					page-break-before: always;
 					position: relative; top: 8em;
@@ -301,7 +307,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 			`.answerbox{color: #000; font-size:11pt; display:block; text-indent:0px; margin:0.5rem 0 0.5rem 0 !important;}`+
     		`.answer-record{color: #000; display:inline; font-size:8.5pt;}`+
 			`.answer-record-sm{color: #000; display:inline; font-size:7.5pt;}`+
-			`.answer-payment{color: #000; font-size:8.5pt; text-align:center!important;}`+
+			`.answer-payment{color: #000; font-size:9.5pt; text-align:center!important;}`+
 			`.uline{text-decoration: underline; display: inline;}`+
 			`.form-header{display:block; margin:0 0 5rem 0;}`+
 			`.form-header-po{display:block; margin:0 0 3.25rem 0;}`+
@@ -317,6 +323,8 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 			`.marginleftplus{margin:0 0 0 1rem !important;}`+
 			`.margintopminus{margin-top:-0.5rem !important;}`+
 
+			`.radio-circle {height:0.73rem; width:0.73rem; display: inline-block; border: 1px solid #BBB;border-radius: 50%;transform:translate(1px,3px);line-height:1rem;}`+			
+			`.radio-circle-fill {height: 0.6rem;width: 0.6rem;display: inline-block;border: 1px solid #FFF;border-radius: 50%; transform:translate(0px,-2.5px);}`+
 			`section{ counter-increment: question-counter; text-indent: -17px; text-align: justify; text-justify: inter-word; margin: 0.5rem 0.5rem 0.5rem 1rem;}`+ 
 			`section:before {font-weight: bolder; content:counter(question-counter) ".";}`+
 			`section.resetquestion{counter-reset: question-counter;}`+

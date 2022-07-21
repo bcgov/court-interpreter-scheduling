@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-2">       
+    <div class="margintop0p5">       
         <b-row class="m-0 p0">
                 <table class="flexsize border border-dark m-0 p-0">
                     <tr style="font-size:9pt; " class="m-0 p-0">
@@ -15,7 +15,7 @@
                         <td style="width:17%;"><b class="">Telephone Number</b></td>
                     </tr>
                     <tr style="height:1.5rem;" >
-                        <td class="border-bottom"><div class="answer ml-1">ABBAS, SOLEYMAN SALEH</div> </td>
+                        <td class="border-bottom"><div class="answer ml-1">Name of the Court Interpreter</div> </td>
                         <td />
                         <td class="border-bottom"><div class="answer">2</div> </td>
                         <td />
@@ -34,11 +34,11 @@
                     </tr>
 
                     <tr style="height:1.0rem;" >
-                        <td ><div class="answer ml-1">5780 BLUNDELL RD, RICHMOND, BC, V7C1H5</div> </td>
+                        <td ><div class="answer ml-1">800 hornby st, Vancouver BC, V6Z 2C5</div> </td>
                         <td />
                         <td />
                         <td />
-                        <td colspan="3" ><div class="answer">abbass.soleyman@tlus.ca</div> </td>                        
+                        <td colspan="3" ><div class="answer">email@mailserver.ca</div> </td>                        
                     </tr>
                 </table>
         </b-row>           

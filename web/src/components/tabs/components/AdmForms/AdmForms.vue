@@ -5,8 +5,8 @@
         <adm-record :booking="booking" :searchLocation="searchLocation" @approved="recordsReadyForApproval=true;"/>
         <adm-cancellation-information v-if="!booking.recordsApproved" :booking="booking" :searchLocation="searchLocation"/>
         <adm-payment-details v-if="!booking.recordsApproved" :booking="booking"/>
-        <adm-authorizations v-if="booking.recordsApproved" :booking="booking"/>
-        <adm-office-use-only v-if="booking.recordsApproved"  :booking="booking"/>
+        <adm-authorizations v-if="!booking.recordsApproved" :booking="booking"/>
+        <adm-office-use-only v-if="!booking.recordsApproved"  :booking="booking"/>
         
         <div v-if="!booking.recordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
             <b-button @click="recordsApproved" variant="warning">
@@ -29,12 +29,14 @@
             <hr/>
 
             <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
-                <adm-header />
+                <adm-header class="court-header"/>
                 <interpreter-info />
                 <scheduling-info />
                 <record />
                 <cancellation-info />
                 <payment-details />
+                <authorizations />
+                <office-use-only />
             </b-card>
         </b-modal> 
 
@@ -61,6 +63,8 @@ import SchedulingInfo from './pdf/SchedulingInfo.vue'
 import Record from './pdf/Record.vue'
 import CancellationInfo from './pdf/CancellationInfo.vue'
 import PaymentDetails from './pdf/PaymentDetails.vue'
+import Authorizations from './pdf/Authorizations.vue'
+import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
 
 @Component({
     components:{
@@ -78,6 +82,8 @@ import PaymentDetails from './pdf/PaymentDetails.vue'
         Record,
         CancellationInfo,
         PaymentDetails,
+        Authorizations,
+        OfficeUseOnly
     }
 })
 export default class AdmForms extends Vue {

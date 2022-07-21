@@ -39,7 +39,7 @@
                     <tr>
                         <td />
                         <td><b class="ml-1">ReasonCd: </b><div class="answer-record">Other</div></td>
-                        <td colspan="4"><b>Comment: </b><div class="answer-record-sm"></div> </td>
+                        <td colspan="4"><b>Comment: </b><div class="answer-record-sm">Some comment here</div> </td>
                         <td />
                     </tr>
                     <tr><td class="text-white">.</td></tr>

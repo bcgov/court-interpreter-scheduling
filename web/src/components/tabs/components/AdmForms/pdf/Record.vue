@@ -28,7 +28,7 @@
                     <td /> 
                 </tr>
                 
-                <tbody v-for="i in [1]" :key="i">
+                <tbody v-for="i in [1,2,3]" :key="i">
                     <tr><td class="text-white">.</td></tr>                        
                     <tr class="spacer">
                         <td />
@@ -69,7 +69,7 @@
                                             <td style="width:30%;"><b>Court Level: </b><div class="answer-record-sm">Court of Appeal</div></td>
                                         </tr>
                                         <tr>
-                                            <td><b class="ml-1">Prosecutor: </b><div class="answer-record-sm"></div> </td>
+                                            <td><b class="ml-1">Prosecutor: </b><div class="answer-record-sm">{{'Prosecutor Name'|truncate-text(25)}}</div> </td>
                                             <td><b>Reason Code: </b><div class="answer-record-sm">Other</div> </td>
                                             <td colspan="2"><b>Reason Desc: </b><div class="answer-record-sm">{{'Family Law Proceeding(Divorce Act and Family Law Act)'|truncate-text(25)}}</div> </td>
                                         </tr>    
@@ -80,7 +80,7 @@
                                         </tr>
                                         
                                         <tr>
-                                            <td colspan="4"><b class="ml-1">Comment: </b><div class="answer-record-sm"></div> </td>
+                                            <td colspan="4"><b class="ml-1">Comment: </b><div class="answer-record-sm"> Some comments.</div> </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -125,9 +125,9 @@ export default class Record extends Vue {
     ];
 
     languages =[
-        {language:"ArabicArabicArabicArabic",level:1, interpretFor:'Party'},
-        {language:"Arabic",level:1, interpretFor:'Witness'},
-        {language:"Arabic",level:1, interpretFor:'Accused'}
+        {language:"Language1",level:2, interpretFor:'Party'},
+        {language:"Language2",level:1, interpretFor:'Witness'},
+        {language:"Language3",level:3, interpretFor:'Accused'}
     ]
 
     mounted(){        
