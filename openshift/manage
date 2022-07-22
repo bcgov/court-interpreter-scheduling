@@ -237,7 +237,7 @@ function tag()
       exit 1
     fi
 
-    images="db schema-spy api web"
+    images="db pdf schema-spy api web"
     for image in ${images}; do
       # Tag images ...
       echo -e "\nTagging ${image}:${_sourceTag} as ${image}:${_destTag} ..."

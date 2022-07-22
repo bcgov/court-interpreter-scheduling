@@ -81,7 +81,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import moment from 'moment-timezone'
-import { bookingDateInfoType, bookingDateTimesInfoType } from '@/types/Bookings/json';
+import { bookingDateTimesInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
 
 import TimePicker from "./TimePicker/TimePicker.vue"

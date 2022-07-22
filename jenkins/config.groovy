@@ -19,8 +19,8 @@ class config {
 
   // Apps - Listed in the order they should be tagged
   // Do not deploy schema-spy into prod
-  public static final String[] APPS = ['db', 'api', 'schema-spy', 'web', 'backup']
-  public static final String[] PROD_APPS = ['db', 'api', 'web', 'backup']
+  public static final String[] APPS = ['db', 'api', 'schema-spy', 'web', 'pdf', 'backup']
+  public static final String[] PROD_APPS = ['db', 'api', 'web', 'pdf', 'backup']
   public static final String SCHEMA_SPY_APP_NAME = "schema-spy"
   
   // Build configuration

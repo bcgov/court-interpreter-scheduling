@@ -1,0 +1,18 @@
+#=========================================================
+# OpenShift template parameters for:
+# Component: .
+# Template File: ../openshift/templates/pdf/pdf-deploy.yaml
+#=========================================================
+# NAME=pdf
+# APP_NAME=court-interpreter-scheduling
+# ROLE=pdf
+# NAMESPACE_NAME=1a7b16
+# SOURCE_IMAGE_NAME=pdf
+# IMAGE_NAMESPACE=1a7b16-tools
+TAG_NAME=test
+# MIN_REPLICAS=3
+# MAX_REPLICAS=6
+# CPU_REQUEST=100m
+# CPU_LIMIT=1000m
+# MEMORY_REQUEST=10Mi
+# MEMORY_LIMIT=1Gi

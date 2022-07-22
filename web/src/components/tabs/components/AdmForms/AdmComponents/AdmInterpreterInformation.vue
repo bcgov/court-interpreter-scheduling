@@ -1,7 +1,7 @@
 <template>
     <b-card>
         <h3 class="text-dark p-0 mt-n2 mb-4">Interpreter Information</h3>
-        <b-row class="my-n2">
+        <b-row class="my-n3">
             <b-col cols="3">                    
                 <b-form-group
                     class="labels"                
@@ -53,7 +53,7 @@
 
         </b-row>
         <b-row class="my-n3">
-            <b-col cols="2">                    
+            <b-col cols="5">                    
                 <b-form-group
                     class="labels"                
                     label="Language">
@@ -93,13 +93,13 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingSearchResultInfoType} from '@/types/Bookings/json';
 
 @Component
 export default class AdmInterpreterInformation extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
    
     mounted(){
     }
@@ -114,7 +114,11 @@ export default class AdmInterpreterInformation extends Vue {
     }
 
     .labels {
-        font-size: 12px; font-weight:600; line-height: 0.025rem; color: rgb(50, 50, 50);
+        font-size: 12px; 
+        font-weight:600; 
+        line-height: 0.025rem; 
+        color: rgb(50, 50, 50);
+        margin-top: 1rem;
     }
 
 </style>

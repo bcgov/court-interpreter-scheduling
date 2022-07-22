@@ -4,23 +4,23 @@
             <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
             <b-table-simple small borderless>
                 <b-thead head-variant="" >
-                    <b-tr style="color:rgb(182, 210, 221)">
-                        <b-th>Country1</b-th>
-                        <b-th>Co2</b-th>
-                        <b-th>C3</b-th>
-                        <b-th>CountryCo4</b-th>
-                        <b-th>C5</b-th>
-                        <b-th>CountryCountry6</b-th>
-                        <b-th>C7</b-th>
-                        <b-th>CountryCount8</b-th>
-                        <b-th>C9</b-th>
-                        <b-th>CountryCount0</b-th>
-                        <b-th>Co1</b-th>
-                        <b-th>Country2</b-th>
-                        <b-th>Country3</b-th>
-                        <b-th>C4</b-th>
-                        <b-th>Country5</b-th>
-                        <b-th>Country6</b-th>                        
+                    <b-tr style="color:rgb(182, 210, 221); height:2rem;">
+                        <b-th style="width:7%;"></b-th>
+                        <b-th style="width:3%;"></b-th>
+                        <b-th style="width:2%;"></b-th>
+                        <b-th style="width:9%;"></b-th>
+                        <b-th style="width:2%;"></b-th>
+                        <b-th style="width:12%;"></b-th>                        
+                        <b-th style="width:2%;"></b-th>
+                        <b-th style="width:12%;"></b-th>
+                        <b-th style="width:2%;"></b-th>
+                        <b-th style="width:11%;"></b-th>
+                        <b-th style="width:3%;"></b-th>
+                        <b-th style="width:7%;"></b-th>
+                        <b-th style="width:7%;"></b-th>
+                        <b-th style="width:2%;"></b-th>
+                        <b-th style="width:7%;"></b-th>
+                        <b-th style="width:7%;"></b-th>                        
                     </b-tr>
                 </b-thead>                               
                 <b-tbody>
@@ -34,7 +34,43 @@
                         <b-th colspan="2" class="text-center">Fees Payable</b-th>                                                 
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="3" class="">Court Hours</b-th>
+                        <b-th colspan="3" class="">Court Hours (Level1)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level2)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level3)</b-th>
+                        <b-th colspan="1" class="text-right">$</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
+                        <b-th colspan="1" class="text-center">x</b-th>
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="3" class="">Court Hours (Level4)</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
@@ -337,7 +373,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
 import { paymentDetailsInfoType } from '@/types/Bookings';
 
@@ -350,7 +386,7 @@ import { paymentDetailsInfoType } from '@/types/Bookings';
 export default class AdmPaymentDetails extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
     form = {} as paymentDetailsInfoType
   
