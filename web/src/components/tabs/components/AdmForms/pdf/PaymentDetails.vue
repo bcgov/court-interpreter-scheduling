@@ -32,7 +32,7 @@ import PaymentExpenses from './PaymentTables/PaymentExpenses.vue'
 export default class PaymentDetails extends Vue {
 
     // @Prop({required: true})
-    // booking!: bookingSearchInfoType;
+    // booking!: bookingSearchResultInfoType;
     // update = 0
 
 

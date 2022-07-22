@@ -24,12 +24,21 @@
                     <td class="m-1 py-0 pl-1" colspan="2">
                         <b-row class="m-0 p-0">
                             <b>Cancellation Fee Applicable:</b>
-                            <b-form-input                                
+                            <b-form-input
+                                :disabled="recordDetails.feeDisabled"
+                                type="number"                                
                                 class="ml-3"
                                 style="width:6rem;"
+                                @input="recordDetails.feeChanged=true"
                                 size="sm"                        
                                 v-model="recordDetails.cancellationFee" />
                             <div class="ml-3" style="font-size:13pt;" > $</div>
+                            <b-button size="sm"
+                                v-if="recordDetails.feeChanged" 
+                                @click="feeChanged(recordDetails)"                                 
+                                variant="success" 
+                                class="ml-2"> Save 
+                            </b-button>
                         </b-row>
                         
                     </td>                    
@@ -49,38 +58,55 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { bookingAdmInfoType, bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
 
 @Component
 export default class AdmCancellationInformation extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
     
     dataReady = false;
-    records: bookingAdmInfoType[] = []
+    records: bookingAdmCancellationInfoType[] = []
+    activeRecords: bookingAdmCancellationInfoType[] = []
+    
     
     mounted(){
         this.dataReady = false
         this.records = []
+        this.activeRecords =[]
         for(const date of this.booking.dates){
-            const record: bookingAdmInfoType = JSON.parse(JSON.stringify(date))
-            if(record.status!="Cancelled") continue            
+            const record: bookingAdmCancellationInfoType = JSON.parse(JSON.stringify(date))
+            if(record.status!="Cancelled"){
+                this.activeRecords.push(record)
+                continue            
+            }
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.registryWarning = !(date.registry==this.searchLocation.name)
-            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
-        
+            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
             record.federalYN = date.federal? 'Yes' : 'No'
-
+            record.feeChanged = false;
+            record.feeDisabled = false;
             this.records.push(record)
-        }        
+        } 
+        
+        if(this.records.length==0){
+            const record = {} as bookingAdmCancellationInfoType;
+            record.feeDisabled = true
+            this.records.push(record)
+        }
         this.dataReady = true;
+    }
+
+    public feeChanged(recordDetails){        
+        recordDetails.feeChanged=false
+        this.$emit('saveChanges', [...this.records, ...this.activeRecords])        
     }
    
  

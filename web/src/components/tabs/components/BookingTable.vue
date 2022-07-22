@@ -99,6 +99,7 @@
                         <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
                             <b-button style="font-size:11px;" 
                                 size="sm" 
+                                :disabled="!userRole.includes('super-admin')"
                                 v-b-tooltip.hover.top.noninteractive
                                 title="Adm322 Forms"                                      
                                 @click="openAdm(data.item);" 
@@ -209,7 +210,7 @@ import "@/store/modules/common";
 const commonState = namespace("Common");
 
 
-import {bookingInfoType, bookingInterpreterInfoType, bookingSearchInfoType, bookingSearchResultInfoType} from '@/types/Bookings/json';
+import {bookingInfoType, bookingInterpreterInfoType, bookingSearchResultInfoType} from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
 
 @Component({
@@ -233,6 +234,9 @@ export default class BookingTable extends Vue {
 
     @commonState.State
     public courtLocations!: locationsInfoType[];
+
+    @commonState.State
+    public userRole!: string[];
  
 
     showBookingWindow = false;

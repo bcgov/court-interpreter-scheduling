@@ -53,7 +53,7 @@ import {srcFile} from './logo'
 export default class InterpreterInfo extends Vue {
     src =""
     // @Prop({required: true})
-    // booking!: bookingSearchInfoType;
+    // booking!: bookingSearchResultInfoType;
     // update = 0
 
 

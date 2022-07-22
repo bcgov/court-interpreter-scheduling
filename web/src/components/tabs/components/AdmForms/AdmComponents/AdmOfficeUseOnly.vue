@@ -117,7 +117,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 
 
@@ -125,7 +125,7 @@ import { bookingSearchInfoType } from '@/types/Bookings/json';
 export default class AdmOfficeUseOnly extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
 
   

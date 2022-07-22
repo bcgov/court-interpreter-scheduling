@@ -37,7 +37,7 @@ import {srcFile} from './logo'
 export default class SchedulingInfo extends Vue {
     src =""
     // @Prop({required: true})
-    // booking!: bookingSearchInfoType;
+    // booking!: bookingSearchResultInfoType;
     // update = 0
 
 

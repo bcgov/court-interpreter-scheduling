@@ -186,6 +186,11 @@ Vue.filter('getFullContactInfo',function(nameObject){
 	}
 })
 
+Vue.filter('verifyPhone', function(phone){	
+	const phoneFormat = /^[0-9]{3}[\-\.\ ][0-9]{3}[\-\.\ ][0-9]{4}((\s\x[0-9]{4})|)?$/;
+	return phoneFormat.test(phone?.trim())
+})
+
 Vue.filter('beautify-phone-no', function(num){
 	if(num?.trim().length==12)
 		return	'('+num.slice(0,3)+') '+num.slice(4,7)+'-'+num.slice(8,12);

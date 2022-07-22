@@ -1,14 +1,14 @@
 <template>
-    <div :key="update">
+    <div v-if="dataReady" :key="update">
         <adm-interpreter-information :booking="booking"/>
         <adm-scheduling-information :booking="booking" :searchLocation="searchLocation"/>
-        <adm-record :booking="booking" :searchLocation="searchLocation" @approved="recordsReadyForApproval=true;"/>
-        <adm-cancellation-information v-if="!booking.recordsApproved" :booking="booking" :searchLocation="searchLocation"/>
-        <adm-payment-details v-if="!booking.recordsApproved" :booking="booking"/>
-        <adm-authorizations v-if="!booking.recordsApproved" :booking="booking"/>
-        <adm-office-use-only v-if="!booking.recordsApproved"  :booking="booking"/>
+        <adm-record :booking="booking" :searchLocation="searchLocation" @approved="recordsWaitingForApproval"/>
+        <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" :searchLocation="searchLocation" @saveChanges="saveRecordChanges"/>
+        <adm-payment-details v-if="bookingRecordsApproved" :booking="booking"/>
+        <adm-authorizations v-if="bookingRecordsApproved" :booking="booking"/>
+        <adm-office-use-only v-if="bookingRecordsApproved"  :booking="booking"/>
         
-        <div v-if="!booking.recordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
+        <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
             <b-button @click="recordsApproved" variant="warning">
                 <b-icon-calendar-check class="mr-2"/>Records Approved
             </b-button>
@@ -46,7 +46,11 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { namespace } from "vuex-class";   
+import "@/store/modules/common";
+const commonState = namespace("Common");
+
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
 
 import AdmRecord from "./AdmComponents/AdmRecord.vue"
@@ -89,24 +93,96 @@ import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
 export default class AdmForms extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     update = 0
 
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
 
+    @commonState.State
+    public userName!: string;
+
+    @commonState.State
+    public userRole!: string[];
+
+    dataReady = false;
     recordsReadyForApproval = false
+    
+    errorMsg = ''
     showPrintWindow = false
+    bookingRecordsApproved = false;
 
     mounted(){
+        this.errorMsg =''
+        this.dataReady = false;
         this.showPrintWindow = false
-        this.recordsReadyForApproval = false       
+        this.recordsReadyForApproval = false  
+        this.extractInfo()     
     }
 
+    public extractInfo(){
+        console.log(this.booking)        
+        const languages =[]
+        const levels: number[] = []
+        const cancelledLanguages =[]
+        const cancelledLevels = []
+        for(const date of this.booking.dates){
+            for(const lang of date.languages)
+                if(date.status != 'Cancelled'){
+                    if(!languages.includes(lang.language))
+                        languages.push(lang.language)
+                    if(!levels.includes(lang.level))
+                        levels.push(lang.level)
+                }else{
+                    if(!cancelledLanguages.includes(lang.language))
+                        cancelledLanguages.push(lang.language)
+                    if(!cancelledLevels.includes(lang.level))
+                        cancelledLevels.push(lang.level)
+                }
+        }
+
+        this.booking.language= languages.length>0? languages.join(', '):cancelledLanguages.join(', ')
+        this.booking.level= levels.length>0? Math.min(...levels) : Math.min(...cancelledLevels)
+        this.booking.multipleLanguages=languages.length>0? (languages.length>1? "Yes" :"No") :(cancelledLanguages.length>1? "Yes" :"No")
+
+        this.bookingRecordsApproved = this.booking.recordsApproved? true : false;
+        this.dataReady = true;
+    }
+
+    
+    public recordsWaitingForApproval(approved, records){
+        if(this.userRole.includes('super-admin')){ //TODO
+            this.recordsReadyForApproval=true;            
+            this.booking.dates = JSON.parse(JSON.stringify(records))
+            console.log(this.booking)
+            if(approved==false) this.bookingRecordsApproved = false;
+        }
+    }
 
     public recordsApproved(){
         this.booking.recordsApproved = true;
-        this.update++;
+        this.booking.approverName = this.userName;
+        this.saveBooking(this.booking)        
+    }
+
+    public saveRecordChanges(records){
+        this.booking.dates = JSON.parse(JSON.stringify(records))
+        this.saveBooking(this.booking)
+    }
+
+    public saveBooking(booking){        
+            
+        this.$http.put('/booking/' + booking.id, booking)
+        .then((response) => {                        
+            console.log(this.booking)
+            this.bookingRecordsApproved = true;
+            //TODO 
+            
+            this.update++;                      
+        },(err) => {
+            // console.log(err.response.data.detail)
+            this.errorMsg=err.response.data.detail
+        });               
     }
 
     public savePrint() { 

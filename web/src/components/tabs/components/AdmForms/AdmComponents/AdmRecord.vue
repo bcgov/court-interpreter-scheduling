@@ -1,7 +1,19 @@
 <template>
-    <div v-if="dataReady">
+    <div v-if="dataReady" :key="update">
         <b-card class="glow my-5">
-            <h3 class="text-dark p-0 mt-n2 mb-4">Record</h3>
+            <b-row class="m-0 p-0">
+                <h3 class="text-dark p-0 mt-n2 mb-4">Record</h3>                 
+                <div class="text-success p-0 mt-n2 ml-3" v-if="booking.recordsApproved"> approved by <b>{{booking.approverName}}</b> </div>
+                <b-button size="sm"
+                    v-if="booking.recordsApproved"
+                    variant="info" 
+                    style="height:2rem; margin:-0.55rem 0 0 1rem;"
+                    @click="modifyRecords()"
+                    >
+                    Modify Approved Records
+                    <b-icon-pencil-square />
+                </b-button>
+            </b-row>
             <b-table
                 :items="records"
                 :fields="recordFields"
@@ -18,28 +30,32 @@
                 <template v-slot:cell(actualStartTime)="data" >                    
                     <b-form-input 
                         size="sm"
-                        :disabled="data.item.recordsApproved==true"
-                        @change="recordChanged(data.item)"                       
+                        :formatter="timeFormatter"
+                        :disabled="booking.recordsApproved==true"
+                        @input="recordChanged(data.item)"                       
                         v-model="data.item.actualStartTime"
                         :state="data.item.actualStartTimeState">
                     </b-form-input>
+                    <div v-if="data.item.actualStartTimeState==false" class="subtext" >eg. 09:00 AM</div>
                 </template>
 
                 <template v-slot:cell(actualFinishTime)="data" > 
                     <b-form-input 
                         size="sm"
-                        :disabled="data.item.recordsApproved==true"
-                        @change="recordChanged(data.item)"                     
+                        :formatter="timeFormatter"
+                        :disabled="booking.recordsApproved==true"
+                        @input="recordChanged(data.item)"                     
                         v-model="data.item.actualFinishTime"
-                        :state="data.item.finishTimeState">
+                        :state="data.item.actualFinishTimeState">
                     </b-form-input>
+                    <div v-if="data.item.actualFinishTimeState==false" class="subtext" >eg. 04:00 PM</div>
                 </template>
 
                 <template v-slot:cell(approversInitials)="data" >                    
                     <b-form-input 
                         size="sm"
-                        :disabled="data.item.recordsApproved==true"
-                        @change="recordChanged(data.item)"                     
+                        :disabled="booking.recordsApproved==true"
+                        @input="recordChanged(data.item)"                     
                         v-model="data.item.approversInitials"
                         :state="data.item.approversInitialsState">
                     </b-form-input>
@@ -80,7 +96,7 @@ import * as _ from 'underscore';
 
 import {reasonCodeClass} from '../../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
-import { bookingAdmInfoType, bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 import RecordDetails from "./RecordDetails.vue"
 
@@ -93,7 +109,7 @@ import RecordDetails from "./RecordDetails.vue"
 export default class AdmRecord extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
@@ -112,14 +128,16 @@ export default class AdmRecord extends Vue {
         {key:'approversInitials',label:"Approver's Initials",sortable:false,thStyle:'width:10%',cellStyle:'',thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'}
     ]
     dataReady = false;
-    records: bookingAdmInfoType[] = []
+    records: bookingAdmRecordInfoType[] = []
+    cancelledRecords: bookingAdmRecordInfoType[] = []
+    update=0;
 
     mounted(){
         this.dataReady = false
         this.records = []
+        this.cancelledRecords = []
         for(const date of this.booking.dates){
-            const record: bookingAdmInfoType = JSON.parse(JSON.stringify(date))
-            if(record.status=="Cancelled") continue            
+            const record: bookingAdmRecordInfoType = JSON.parse(JSON.stringify(date))
            
             record.registryWarning = !(date.registry==this.searchLocation.name)
 
@@ -129,16 +147,15 @@ export default class AdmRecord extends Vue {
 
             record.time = date.startTime + ' '+ date.finishTime
             record.federalYN = date.federal? 'Yes' : 'No'
-            record.bilingualYN = date.bilingual? 'Yes' : 'No'
-            record.actualStartTime=date.actualStartTime;
-            record.actualStartTimeState=null;
-            record.actualFinishTime=date.actualFinishTime;
-            record.actualFinishTimeState=null;
-            record.approversInitials=date.approversInitials;
+            record.bilingualYN = date.bilingual? 'Yes' : 'No'            
+            record.actualStartTimeState=null;            
+            record.actualFinishTimeState=null;            
             record.approversInitialsState=null;            
             // Vue.filter('initials')(this.booking.updated_by)
-
-            this.records.push(record)
+            if(record.status=="Cancelled"){
+                this.cancelledRecords.push(record)          
+            }else
+                this.records.push(record)
         }        
         this.dataReady = true;
         this.checkAllApproved()
@@ -161,8 +178,8 @@ export default class AdmRecord extends Vue {
         //TODO
         let allApproved = true;
         for(const record of this.records){
-            if(!record.actualStartTime    || record.actualStartTimeState==false ||
-                !record.actualFinishTime        || record.actualFinishTimeState==false      ||
+            if( !record.actualStartTime   || record.actualStartTimeState==false ||
+                !record.actualFinishTime  || record.actualFinishTimeState==false ||
                 !record.approversInitials || record.approversInitialsState==false
             ){
                 allApproved = false;
@@ -170,28 +187,31 @@ export default class AdmRecord extends Vue {
             }        
         }
 
-        if(allApproved) this.$emit('approved')
+        if(allApproved) {
+            console.log(this.records)
+            this.$emit('approved',true ,[...this.records, ...this.cancelledRecords])
+        }
     }
 
+    public modifyRecords(){
+        this.booking.recordsApproved = false
+        this.update++;
+        this.$emit('approved',false ,[...this.records, ...this.cancelledRecords])
+    }
 
-    // public saveBooking(){        
-            
-    //     this.$http.put('/booking/' + this.booking.id, this.booking)
-    //     .then((response) => {            
-    //         if(response?.data){                
-    //             this.$emit('find');                
-    //         }                
-    //     },(err) => {
-    //         // console.log(err.response.data.detail)
-    //         this.errorMsg=err.response.data.detail
-    //     });               
-    // } 
+    public timeFormatter(value){
+        const lastChar =  value.slice(-1);
+        const permittedChars=[':','A','a','p','P','m','M',' ']       
+        if(!permittedChars.includes(lastChar) && isNaN(Number(lastChar))) return value.slice(0,-1)
+        if(lastChar==':' && value.slice(0,-1).length==1) return ('0'+value)
+        if(lastChar==':' && value.slice(0,-1).length>2) return value.slice(0,2)
+        if(Number(value.slice(0,2))>12) return value.slice(0,1)
 
+        return value.toUpperCase().replace(/\s\s+/g, ' ');
+    }
 
-
-
-    public checkTimeFormat(time){
-        const timeFormat =/^(2[0-3]|[01]?[0-9]):([0-5][0-9])$/; 
+    public checkTimeFormat(time){        
+        const timeFormat =/^([0-1][0-9]):([0-5][0-9]) (AM|PM)$/; 
         
         if(time && !timeFormat.test(time)) return false
         return null
@@ -204,6 +224,13 @@ export default class AdmRecord extends Vue {
     .card.glow{
         background: rgb(182, 210, 221);
         box-shadow: 2px 5px 5px 2px #DDD;
+    }
+    .subtext{
+        font-size: 11px;        
+        color: red;
+        margin: 0rem;
+        line-height: 0;
+        transform:translate(0,10px);
     }
 
     .labels {

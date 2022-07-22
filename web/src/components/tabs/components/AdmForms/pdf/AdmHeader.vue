@@ -47,7 +47,7 @@ import moment from 'moment-timezone'
 export default class AdmHeader extends Vue {
     src =""
     // @Prop({required: true})
-    // booking!: bookingSearchInfoType;
+    // booking!: bookingSearchResultInfoType;
     // update = 0
     currentDate=""
 

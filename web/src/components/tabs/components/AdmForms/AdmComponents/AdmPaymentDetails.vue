@@ -373,7 +373,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
 import { paymentDetailsInfoType } from '@/types/Bookings';
 
@@ -386,7 +386,7 @@ import { paymentDetailsInfoType } from '@/types/Bookings';
 export default class AdmPaymentDetails extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
     form = {} as paymentDetailsInfoType
   

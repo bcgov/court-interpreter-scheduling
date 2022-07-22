@@ -92,7 +92,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 export default class Authorizations extends Vue {
 
     // @Prop({required: true})
-    // booking!: bookingSearchInfoType;
+    // booking!: bookingSearchResultInfoType;
     // update = 0
 
    
