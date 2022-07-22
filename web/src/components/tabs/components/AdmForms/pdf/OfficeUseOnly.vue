@@ -12,9 +12,9 @@
 <!-- <Line 1> -->
             <tr>                    
                 <td colspan="9"  style="background:#F4F1FF;" class="border-top border-right text-right">Supplier Name</td>
-                <td colspan="16" style="background:#EFEFEF;" class="border-top border-right"><div class="answer-record"> Name of the Court Interpreter </div></td>
+                <td colspan="16" style="background:#EFEFEF;" class="border-top border-right"><div class="answer-record"> </div></td>
                 <td colspan="9"  style="background:#F4F1FF;" class="border-top border-right text-right">Supplier # -Site #</td>
-                <td colspan="16" style="background:#EFEFEF;" class="border-top"><div class="answer-record">0000000 - 001</div></td>                                                                                        
+                <td colspan="16" style="background:#EFEFEF;" class="border-top"><div class="answer-record"></div></td>                                                                                        
             </tr>
 
 <!-- <Line 2> -->
@@ -32,7 +32,7 @@
 <!-- <Line 3> -->
             <tr>
                 <td colspan="9" style="background:#F4F1FF;" class="border-top border-right text-right">Invoice Number</td>
-                <td colspan="16" style="background:#EFEFEF;" class="border-top border-right"><div class="answer-record">2045ABBS0JAN00</div></td>
+                <td colspan="16" style="background:#EFEFEF;" class="border-top border-right"><div class="answer-record"></div></td>
                 <td colspan="9" style="background:#F4F1FF;" class="border-top border-right text-right">Expense Authority Name</td>
                 <td colspan="16" class="border-top"><div class="answer-record"></div></td>
             </tr>
@@ -73,11 +73,11 @@
                 <td colspan="1" class="border-top text-right">$</td>
                 <td colspan="3" class="border-top border-right text-left"><div class="answer-record">0.00</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">N/A</div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">105</div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">0.00</div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">10710</div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">5542</div></td>
-                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">1500000</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="5" class="border-top border-right text-center"><div class="answer-record"></div></td>
                 <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
             </tr>
 
@@ -92,7 +92,7 @@
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
-                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">1500000</div></td>
+                <td colspan="5" class="border-top border-right text-center"><div class="answer-record"></div></td>
                 <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
             </tr> 
 

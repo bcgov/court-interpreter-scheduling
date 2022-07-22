@@ -15,13 +15,13 @@
                         <td style="width:13%;"><b class="">Date of booking</b></td>
                     </tr>
                     <tr style="height:1.5rem;" >
-                        <td><div class="answer ml-1">100 Mile House Law Courts</div> </td>
+                        <td><div class="answer ml-1">{{courtLocationName}}</div> </td>
                         <td />
-                        <td><div class="answer">Clerk Name</div> </td>
+                        <td><div class="answer">{{clerkName}}</div> </td>
                         <td />
-                        <td><div class="answer">800 123 4568</div> </td>
+                        <td><div class="answer">{{clerkPhone}}</div> </td>
                         <td />
-                        <td><div class="answer">2022 Apr 26</div> </td>
+                        <td><div class="answer">{{bookingDate}}</div> </td>
                     </tr>
                     
                 </table>
@@ -39,7 +39,10 @@ export default class SchedulingInfo extends Vue {
     // @Prop({required: true})
     // booking!: bookingSearchResultInfoType;
     // update = 0
-
+    courtLocationName=""
+    clerkName=""
+    clerkPhone=""
+    bookingDate=""
 
     mounted(){        
         this.src = srcFile
