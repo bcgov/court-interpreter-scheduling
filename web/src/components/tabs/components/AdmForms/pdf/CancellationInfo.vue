@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-2">
+    <div v-if="dataReady" class="mt-2">
         <div v-for="j,inx in [1]" :key="j" :class="inx>0? 'margintop0p5':''"> 
             <table style="font-size:7.5pt;" class="print-block flexsize border border-dark m-0 p-0">
                 <tr style="font-size:12pt; " class="m-0 p-0">
@@ -15,31 +15,31 @@
                     <tr><td class="text-white">.</td></tr>
                     <tr >
                         <td />
-                        <td style="width:15%;"><b class="ml-1">Date: </b><div class="answer-record">2022-04-26</div></td>                                        
-                        <td style="width:20%;"><b>Time: </b><div class="answer-record">09:30 AM - 04:00 PM</div></td>                    
-                        <td style="width:15%;"><b>File #: </b><div class="answer-record">CS20001203</div></td>
-                        <td style="width:10%;"><b>Federal: </b><div class="answer-record">Yes</div></td>
-                        <td style="width:40%;"><b>Registry: </b><div class="answer-record">{{'100 Mile House Law Courts'|truncate-text(25)}}</div></td>
+                        <td style="width:15%;"><b class="ml-1">Date: </b><div class="answer-record">{{record.date}}</div></td>                                        
+                        <td style="width:20%;"><b>Time: </b><div class="answer-record">{{record.time}}</div></td>                    
+                        <td style="width:15%;"><b>File #: </b><div class="answer-record">{{record.file}}</div></td>
+                        <td style="width:10%;"><b>Federal: </b><div class="answer-record">{{record.federalYN}}</div></td>
+                        <td style="width:40%;"><b>Registry: </b><div class="answer-record">{{record.registry|truncate-text(25)}}</div></td>
                         <td />
                     </tr>
                     <tr>
                         <td />
-                        <td colspan="2"><b class="ml-1">Case Name: </b><div class="answer-record">Old case VS New case</div></td>
-                        <td colspan="2"><b>Cancellation Date: </b><div class="answer-record">2022-05-10</div></td>
-                        <td><b>Cancellation Time: </b><div class="answer-record">10:16 AM</div></td>                    
+                        <td colspan="2"><b class="ml-1">Case Name: </b><div class="answer-record">{{record.caseName}}</div></td>
+                        <td colspan="2"><b>Cancellation Date: </b><div class="answer-record">{{record.cancellationDate}}</div></td>
+                        <td><b>Cancellation Time: </b><div class="answer-record">{{record.cancellationTime}}</div></td>                    
                         <td />
                     </tr>
                     <tr>
                         <td />
-                        <td colspan="2"><b class="ml-1">Cancellation Reason: </b><div class="answer-record">Other Appointments</div></td>
-                        <td colspan="2"><b>Cancelled By: </b><div class="answer-record">Interpreter</div></td>
-                        <td><b>Cancellation Fee Applicable: </b><div class="answer-record">1000</div> $</td>                    
+                        <td colspan="2"><b class="ml-1">Cancellation Reason: </b><div class="answer-record">{{record.cancelReason}}</div></td>
+                        <td colspan="2"><b>Cancelled By: </b><div class="answer-record">{{record.cancelledBy}}</div></td>
+                        <td><b>Cancellation Fee Applicable: </b><div class="answer-record">{{record.cancellationFee}}</div> $</td>                    
                         <td />
                     </tr>           
                     <tr>
                         <td />
-                        <td><b class="ml-1">ReasonCd: </b><div class="answer-record">Other</div></td>
-                        <td colspan="4"><b>Comment: </b><div class="answer-record-sm">Some comment here</div> </td>
+                        <td><b class="ml-1">ReasonCd: </b><div class="answer-record">{{record.reasonCd}}</div></td>
+                        <td colspan="4"><b>Comment: </b><div class="answer-record-sm">{{record.cancellationComment}}</div> </td>
                         <td />
                     </tr>
                     <tr><td class="text-white">.</td></tr>
@@ -51,6 +51,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import { bookingAdmCancellationInfoType } from '@/types/Bookings/json';
 
 
 @Component
@@ -60,8 +61,14 @@ export default class CancellationInfo extends Vue {
     // booking!: bookingSearchResultInfoType;
     // update = 0
 
-    mounted(){        
-       //
+    record = {} as  bookingAdmCancellationInfoType
+
+    dataReady = false
+
+    mounted(){ 
+        this.dataReady=false;       
+        this.record.cancellationFee = '0'
+        this.dataReady=true
     }
     
 }

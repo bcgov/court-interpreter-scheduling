@@ -89,7 +89,7 @@
                 <th/>
                 <th colspan="4" class=""></th>                        
                 <th colspan="5" class="text-right">GST Number :</th>
-                <td colspan="6" class="border-bottom"><div class="answer-payment">0123456 - 001</div></td>
+                <td colspan="6" class="border-bottom"><div class="answer-payment">0000000 - 000</div></td>
                 <th colspan="3" class="text-center">{{'5'}} % (rate)</th>
                 <th colspan="1" class="text-right">GST</th>
                 <th colspan="1" class=""></th>

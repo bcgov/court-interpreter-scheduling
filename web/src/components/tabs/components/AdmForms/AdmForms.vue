@@ -22,12 +22,14 @@
 
         <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer>
             <div class="border-0">                
-                <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false">Cancel</b-button>
+                <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
                 <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
-                <b-button class="float-right" variant="success" @click="savePrint">Save PDF</b-button>
+                <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
+                    <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span style="font-size: 18px;" v-else>Save PDF</span>
+                </b-button>
             </div>
             <hr/>
-
             <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
                 <adm-header class="court-header"/>
                 <interpreter-info />
@@ -38,7 +40,18 @@
                 <authorizations />
                 <office-use-only />
             </b-card>
+            <hr/>
+            <div class="border-0">                
+                <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
+                <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
+                <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
+                    <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span style="font-size: 18px;" v-else>Save PDF</span>
+                </b-button>
+            </div>
         </b-modal> 
+
+        
 
     </div>    
 </template>
@@ -52,6 +65,8 @@ const commonState = namespace("Common");
 
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
+
+import Spinner from '@/components/utils/Spinner.vue'
 
 import AdmRecord from "./AdmComponents/AdmRecord.vue"
 import AdmInterpreterInformation from "./AdmComponents/AdmInterpreterInformation.vue"
@@ -72,6 +87,7 @@ import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
 
 @Component({
     components:{
+        Spinner,
         AdmRecord,
         AdmInterpreterInformation,
         AdmSchedulingInformation,
@@ -107,12 +123,13 @@ export default class AdmForms extends Vue {
 
     dataReady = false;
     recordsReadyForApproval = false
-    
+    printingPDF=false
     errorMsg = ''
     showPrintWindow = false
     bookingRecordsApproved = false;
 
     mounted(){
+        this.printingPDF=false
         this.errorMsg =''
         this.dataReady = false;
         this.showPrintWindow = false
@@ -185,8 +202,9 @@ export default class AdmForms extends Vue {
         });               
     }
 
-    public savePrint() { 
-        
+    public savePrint() {
+
+        this.printingPDF=true;
         const el= document.getElementById("print");
 
         const bottomLeftText = `" ADM 322 ";`;
@@ -216,9 +234,11 @@ export default class AdmForms extends Vue {
             link.download = "Adm322.pdf";
             link.click();
             setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            this.printingPDF=false
             //this.showPrintWindow=false 
         },err => {
-            console.error(err);        
+            console.error(err);
+            this.printingPDF=false        
         });
     }
 }

@@ -27,9 +27,9 @@
                         <td style="width:30%;" class="border border-dark text-center">Invoice Date </td>
                     </tr>
                     <tr style="border:1px solid #414142; height:1.5rem;" >
-                        <td class="border border-dark text-center"><div class="answer-record">2045</div></td>
-                        <td class="border border-dark text-center"><div class="answer-record">2045ABBS0JAN00</div></td>
-                        <td class="border border-dark text-center"><div class="answer-record">YYYY-MM-DD</div></td> <!-- {{currentDate}} -->
+                        <td class="border border-dark text-center"><div class="answer-record">{{registry}}</div></td>
+                        <td class="border border-dark text-center"><div class="answer-record">{{invoice}}</div></td>
+                        <td class="border border-dark text-center"><div class="answer-record">{{currentDate}}</div></td> <!-- {{currentDate}} -->
                            
                     </tr>
                 </table>
@@ -50,10 +50,12 @@ export default class AdmHeader extends Vue {
     // booking!: bookingSearchResultInfoType;
     // update = 0
     currentDate=""
+    registry=""//"2045"
+    invoice=""//"2045ABBS0JAN00"
 
     mounted(){        
         this.src = srcFile
-        this.currentDate=moment().format("YYYY-MM-DD")
+        // this.currentDate=moment().format("YYYY-MM-DD")
     }
     
 }

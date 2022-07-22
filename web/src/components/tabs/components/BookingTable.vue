@@ -98,8 +98,7 @@
                     <template v-slot:cell(edit)="data">                        
                         <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
                             <b-button style="font-size:11px;" 
-                                size="sm" 
-                                :disabled="!userRole.includes('super-admin')"
+                                size="sm"                                 
                                 v-b-tooltip.hover.top.noninteractive
                                 title="Adm322 Forms"                                      
                                 @click="openAdm(data.item);" 

@@ -15,13 +15,13 @@
                         <td style="width:17%;"><b class="">Telephone Number</b></td>
                     </tr>
                     <tr style="height:1.5rem;" >
-                        <td class="border-bottom"><div class="answer ml-1">Name of the Court Interpreter</div> </td>
+                        <td class="border-bottom"><div class="answer ml-1">{{interpreterName}}</div> </td>
                         <td />
-                        <td class="border-bottom"><div class="answer">2</div> </td>
+                        <td class="border-bottom"><div class="answer">{{languageLevel}}</div> </td>
                         <td />
-                        <td class="border-bottom"><div class="answer">Yes</div> </td>
+                        <td class="border-bottom"><div class="answer">{{multipleLanguages}}</div> </td>
                         <td />
-                        <td class="border-bottom"><div class="answer">604 123 4568</div> </td>
+                        <td class="border-bottom"><div class="answer">{{phone}}</div> </td>
                     </tr>
                     <tr style="font-size:7pt; line-height:1.25rem;" >
                         <td style="width:60%;"><b class="ml-1">Address</b></td>                       
@@ -34,11 +34,11 @@
                     </tr>
 
                     <tr style="height:1.0rem;" >
-                        <td ><div class="answer ml-1">800 hornby st, Vancouver BC, V6Z 2C5</div> </td>
+                        <td ><div class="answer ml-1">{{address}}</div> </td>
                         <td />
                         <td />
                         <td />
-                        <td colspan="3" ><div class="answer">email@mailserver.ca</div> </td>                        
+                        <td colspan="3" ><div class="answer">{{email}}</div> </td>                        
                     </tr>
                 </table>
         </b-row>           
@@ -55,8 +55,12 @@ export default class InterpreterInfo extends Vue {
     // @Prop({required: true})
     // booking!: bookingSearchResultInfoType;
     // update = 0
-
-
+    interpreterName = ""
+    languageLevel =""
+    multipleLanguages =""
+    phone=""
+    address=""
+    email=""
     mounted(){        
         this.src = srcFile
     }

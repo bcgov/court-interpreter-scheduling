@@ -23,14 +23,14 @@
                 <tr style="font-size:8pt;height:2rem;line-height:1.5rem;" >
                     <td />
                     <td class="border-bottom "></td>                                             
-                    <td class="border-bottom border-left text-center"><div class="answer-record">2020</div></td>
-                    <td class="border-bottom border-left text-center"><div class="answer-record">01</div></td>
-                    <td class="border-bottom border-left border-right text-center"><div class="answer-record">01</div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom border-left border-right text-center"><div class="answer-record"></div></td>
                     <td class=""></td>
                     <td class="border-bottom"></td>                                                                 
-                    <td class="border-bottom border-left text-center"><div class="answer-record">2021</div></td>
-                    <td class="border-bottom border-left text-center"><div class="answer-record">12</div></td>
-                    <td class="border-bottom border-left border-right text-center"><div class="answer-record">31</div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom border-left border-right text-center"><div class="answer-record"></div></td>
                     <td /> 
                 </tr>
 

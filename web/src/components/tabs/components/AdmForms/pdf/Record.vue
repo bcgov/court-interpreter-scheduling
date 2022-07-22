@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-2">
+    <div v-if="dataReady" class="mt-2">
         <div v-for="j,inx in [1]" :key="j" :class="inx>0? 'margintop0p5':''"> 
             <table  class="print-block flexsize border border-dark m-0 p-0">
                 <tr style="font-size:9pt; " class="m-0 p-0">
@@ -28,7 +28,7 @@
                     <td /> 
                 </tr>
                 
-                <tbody v-for="i in [1,2,3]" :key="i">
+                <tbody v-for="inx in [1,2,3]" :key="'record-table-'+inx">
                     <tr><td class="text-white">.</td></tr>                        
                     <tr class="spacer">
                         <td />
@@ -38,23 +38,23 @@
                     <tr><td class="text-white">.</td></tr>                  
                     <tr>
                         <td />
-                        <td style="width:9%;" class="border-bottom text-center"><div class="answer-record">2022-04-26</div></td>                                              
+                        <td style="width:9%;" class="border-bottom text-center"><div class="answer-record">{{record.date}}</div></td>                                              
                         <td style="width:1%;" />
-                        <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">CS20201115</div></td>
+                        <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">{{record.file}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:20%;" class="border-bottom text-center"><div class="answer-record">New case VS old Case</div></td>
+                        <td style="width:20%;" class="border-bottom text-center"><div class="answer-record">{{record.caseName}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:6%;" class="border-bottom text-center"><div class="answer-record">Other</div></td>
+                        <td style="width:6%;" class="border-bottom text-center"><div class="answer-record">{{record.reasonCd}} </div></td>
                         <td style="width:1%;" />
-                        <td style="width:4%;" class="border-bottom text-center"><div class="answer-record">Yes</div></td>
+                        <td style="width:4%;" class="border-bottom text-center"><div class="answer-record">{{record.federalYN}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">Malcolm Rowe</div></td>
+                        <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">{{record.room}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">09:45 AM</div></td>
+                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.actualStartTime}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">12:30 PM</div></td>
+                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.actualFinishTime}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">A.B.C.D.E.</div></td>                        
+                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.approversInitials}}</div></td>                        
                         <td /> 
                     </tr>
                     <tr style="font-size:6pt; " class="m-0 p-0">
@@ -63,24 +63,24 @@
                                 <div style="width:80%">
                                     <table class="flexsize mt-1 p-0">
                                         <tr>
-                                            <td style="width:40%;"><b class="ml-1">Registry: </b><div class="answer-record-sm">100 Mile House Law Courts</div></td>                                        
-                                            <td style="width:20%;"><b>Requested By: </b><div class="answer-record-sm">Court</div></td>
-                                            <td style="width:10%;"><b>Bilingual: </b><div class="answer-record-sm">No</div></td>
-                                            <td style="width:30%;"><b>Court Level: </b><div class="answer-record-sm">Court of Appeal</div></td>
+                                            <td style="width:40%;"><b class="ml-1">Registry: </b><div class="answer-record-sm">{{record.registry|truncate-text(25)}}</div></td>                                        
+                                            <td style="width:20%;"><b>Requested By: </b><div class="answer-record-sm">{{record.requestedBy}}</div></td>
+                                            <td style="width:10%;"><b>Bilingual: </b><div class="answer-record-sm">{{record.bilingual}}</div></td>
+                                            <td style="width:30%;"><b>Court Level: </b><div class="answer-record-sm">{{record.courtLevel}}</div></td>
                                         </tr>
                                         <tr>
-                                            <td><b class="ml-1">Prosecutor: </b><div class="answer-record-sm">{{'Prosecutor Name'|truncate-text(25)}}</div> </td>
-                                            <td><b>Reason Code: </b><div class="answer-record-sm">Other</div> </td>
-                                            <td colspan="2"><b>Reason Desc: </b><div class="answer-record-sm">{{'Family Law Proceeding(Divorce Act and Family Law Act)'|truncate-text(25)}}</div> </td>
+                                            <td><b class="ml-1">Prosecutor: </b><div class="answer-record-sm">{{record.prosecutor|truncate-text(25)}}</div> </td>
+                                            <td><b>Reason Code: </b><div class="answer-record-sm">{{record.reasonCd}}</div> </td>
+                                            <td colspan="2"><b>Reason Desc: </b><div class="answer-record-sm">{{record.reasonDesc|truncate-text(25)}}</div> </td>
                                         </tr>    
                                         <tr>
-                                            <td><b class="ml-1">Method Of Appearance: </b><div class="answer-record-sm">Via Teleconference</div></td>
-                                            <td><b>Case Type: </b><div class="answer-record-sm">Civil</div></td>
-                                            <td colspan="2"><b>Court Class: </b><div class="answer-record-sm">{{'Family Law Proceeding(Divorce Act and Family Law Act)'|truncate-text(29)}}</div></td>
+                                            <td><b class="ml-1">Method Of Appearance: </b><div class="answer-record-sm">{{record.methodOfAppearance}}</div></td>
+                                            <td><b>Case Type: </b><div class="answer-record-sm">{{record.caseType}}</div></td>
+                                            <td colspan="2"><b>Court Class: </b><div class="answer-record-sm">{{record.courtClass|truncate-text(29)}}</div></td>
                                         </tr>
                                         
                                         <tr>
-                                            <td colspan="4"><b class="ml-1">Comment: </b><div class="answer-record-sm"> Some comments.</div> </td>
+                                            <td colspan="4"><b class="ml-1">Comment: </b><div class="answer-record-sm">{{record.comment}}</div> </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -88,7 +88,7 @@
                                     <b-table
                                         class="mt-1 mb-0 border"
                                         style="font-size:6pt;"
-                                        :items="languages"
+                                        :items="record.languages"
                                         :fields="languageFields"                    
                                         small
                                         borderless>                                        
@@ -109,7 +109,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
+import { bookingAdmRecordInfoType } from '@/types/Bookings/json';
 
 @Component
 export default class Record extends Vue {
@@ -125,13 +125,19 @@ export default class Record extends Vue {
     ];
 
     languages =[
-        {language:"Language1",level:2, interpretFor:'Party'},
-        {language:"Language2",level:1, interpretFor:'Witness'},
-        {language:"Language3",level:3, interpretFor:'Accused'}
+        {languageId:1, language:" ",level:1, interpretFor:' '},
+        {languageId:1, language:" ",level:1, interpretFor:' '},
+        {languageId:1, language:" ",level:1, interpretFor:' '}      
     ]
 
-    mounted(){        
-       //
+    record = {} as  bookingAdmRecordInfoType
+    
+    dataReady=false
+
+    mounted(){
+        this.dataReady=false        
+        this.record.languages= this.languages
+        this.dataReady=true
     }
     
 }
