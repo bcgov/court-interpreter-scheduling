@@ -113,7 +113,7 @@
 				const link = document.createElement("a");
 				link.href = URL.createObjectURL(blob);
 				document.body.appendChild(link);
-				link.download = "Adm322_auto fill_Mar2022-1.pdf";
+				link.download = "ADM322_fillable form.pdf";
 				link.click();
 				setTimeout(() => URL.revokeObjectURL(link.href), 1000);  
 				return true;           
