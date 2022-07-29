@@ -8,7 +8,7 @@ from core.auth import logged_in_user, admin_user
 from typing import List
 from api.repository.role_transactions import modify_user_role, create_new_role
 
-from api.repository.access_request_transactions import EmailRequestAccess
+from api.repository.access_request_transactions import EmailService
 
 import logging
 logger = logging.getLogger(__name__)
@@ -76,6 +76,6 @@ def unassign_Role_To_User(request: UserRoleSchemaRequest, db: Session= Depends(g
 @router.post('/request-access', status_code=status.HTTP_200_OK)
 def request_Access(request: RoleRequestAccessSchema, db: Session= Depends(get_db_session), user = Depends(logged_in_user)):
     logger.info("__________REQUEST_ACCESS___________")
-    EmailRequestAccess().request_access(db, user['username'], request.message)
+    EmailService().request_access(db, user['username'], request.message)
     return "sent"
 

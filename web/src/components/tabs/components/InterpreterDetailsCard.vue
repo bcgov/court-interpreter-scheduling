@@ -171,7 +171,7 @@ export default class InterpreterDetailsCard extends Vue {
             {text:'Phone',     value:Vue.filter('beautify-phone-no')(this.interpreter. phone)},
             {text:'Email',     value:this.interpreter. email},
             {text:'Supplier',  value:this.interpreter. supplier},
-            {text:'Site Code', value:this.interpreter. site_code},
+            {text:'Site Code', value:this.interpreter. siteCode},
             {text:'GST#',      value:this.interpreter. gst},
             {text:'Comments',  value:this.interpreter.comments}
         ]        

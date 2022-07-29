@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import ENUM
 from core.multi_database_middleware import DeclarativeBase as Base
 from sqlalchemy.orm import relationship
 from models.booking_enums import BookingStatusEnum, BookingRequestedByEnum, BookingInterpretForEnum, BookingMethodOfAppearanceEnum
-
+from models.pdf_model import PdfModel
 
 class BookingModel(Base):
     __tablename__ = "booking"
@@ -17,20 +17,38 @@ class BookingModel(Base):
     scheduling_clerk = Column(String, unique=False, index=False, nullable=True)
     clerk_phone = Column(String, unique=False, index=False, nullable=True)
 
-    spkl1_rate = Column(Float, unique=False, index=False, nullable=True)
-    spkl2_rate = Column(Float, unique=False, index=False, nullable=True)
-    spkl3_rate = Column(Float, unique=False, index=False, nullable=True)
-    spkl4_rate = Column(Float, unique=False, index=False, nullable=True)
+    records_approved = Column(Boolean, nullable=True, default=False)
+    approver_name = Column(String, unique=False, index=False, nullable=True)
+    interpreter_signed = Column(Boolean, nullable=True, default=False)    
+    interpreter_signdate = Column(String, unique=False, index=False, nullable=True)
+    qr_signed = Column(Boolean, nullable=True, default=False)    
+    qr_signdate = Column(String, unique=False, index=False, nullable=True)
+    fees_gst = Column(Float, unique=False, index=False, nullable=True)
+    fees_total = Column(Float, unique=False, index=False, nullable=True)
+    expense_gst = Column(Float, unique=False, index=False, nullable=True)
+    expense_total = Column(Float, unique=False, index=False, nullable=True)
+    invoice_total = Column(Float, unique=False, index=False, nullable=True)
+    invoice_date = Column(String, unique=False, index=False, nullable=True)
+    invoice_number = Column(String, unique=False, index=False, nullable=True)
+    adm_detail = Column(String, unique=False, index=False, nullable=True)
+    adm_updated_by = Column(String, unique=False, index=False, nullable=True)
 
-    asl1_rate = Column(Float, unique=False, index=False, nullable=True)
-    asl2_rate = Column(Float, unique=False, index=False, nullable=True)
+    form_sender = Column(String, unique=False, index=False, nullable=True)
+    form_sender_email = Column(String, unique=False, index=False, nullable=True)
+    form_recipient_email = Column(String, unique=False, index=False, nullable=True)
+    form_sent_date = Column(DateTime(timezone=True), nullable=True)
 
-    cart_rate = Column(Float, unique=False, index=False, nullable=True)
+    invoice_sender = Column(String, unique=False, index=False, nullable=True)
+    invoice_sender_email = Column(String, unique=False, index=False, nullable=True)
+    invoice_recipient_email = Column(String, unique=False, index=False, nullable=True)
+    invoice_sent_date = Column(DateTime(timezone=True), nullable=True)
 
     interpreter_id = Column(Integer, ForeignKey('interpreter.id'))
     interpreter = relationship("InterpreterModel", back_populates="booking")
 
     dates = relationship("BookingDatesModel", back_populates="booking")
+
+    pdf = relationship("PdfModel", back_populates="booking")
      
 
 class BookingDatesModel(Base):

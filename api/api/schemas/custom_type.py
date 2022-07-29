@@ -10,7 +10,10 @@ class TruncatedUserIdBase(str):
 
     @classmethod
     def truncate(cls, value: str):
-        return value.split('_____')[0]
+        if value is None:
+            return None
+        else:
+            return value.split('_____')[0]
 
     @classmethod
     def validate(cls, v):

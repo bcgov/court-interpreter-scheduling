@@ -538,7 +538,7 @@
                                 class="input-line"
                                 id="site-code" 
                                 placeholder="001"                                                 
-                                v-model="interpreter.site_code">
+                                v-model="interpreter.siteCode">
                             </b-form-input>
                         </b-form-group>
                     </b-col> 

@@ -24,10 +24,10 @@ export interface bookingStatesInfoType {
 }
 
 export interface paymentDetailsInfoType{
-    courtHrRate: string;
-    courtTotalHrs: string;
-    courtTotal: string;
-    courtPayableFee: string;
+    courtHrRateL1: string;
+    courtTotalHrsL1: string;
+    courtTotalL1: string;
+    courtPayableFeeL1: string;
 
     travelHrRate: string;
     travelTotalHrs: string;

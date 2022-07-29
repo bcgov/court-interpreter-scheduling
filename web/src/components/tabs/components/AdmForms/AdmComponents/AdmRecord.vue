@@ -175,7 +175,7 @@ export default class AdmRecord extends Vue {
     }
 
     public checkAllApproved(){
-        //TODO
+        
         let allApproved = true;
         for(const record of this.records){
             if( !record.actualStartTime   || record.actualStartTimeState==false ||

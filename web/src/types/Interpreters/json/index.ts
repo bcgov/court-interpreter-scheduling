@@ -13,7 +13,7 @@ export interface interpreterInfoType {
     phone: string;
     email: string;
     supplier: string;
-    'site_code'?: string;
+    siteCode?: string;
     gst: string;
     comments: string;
     criminalRecordCheckDate: string;

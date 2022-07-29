@@ -21,6 +21,5 @@ def get_ADM322_Fillable_Pdf(user = Depends(user_in_role)):
 
 
 @router.post('/pdf', status_code=status.HTTP_200_OK)
-def get_ADM322_Pdf(request: PdfSchema, user = Depends(user_in_role)):
-    return get_adm322_pdf(request)
-
+def get_ADM322_Pdf(request: PdfSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
+    return get_adm322_pdf(request, db, user['username'])
