@@ -1,5 +1,5 @@
 <template>
-    <div class="margintop0p5">       
+    <div v-if="dataReady" class="margintop0p5">       
         <b-row class="m-0 p0">
                 <table class="flexsize border border-dark m-0 p-0">
                     <tr style="font-size:9pt; " class="m-0 p-0">
@@ -38,7 +38,7 @@
                         <td />
                         <td />
                         <td />
-                        <td colspan="3" ><div class="answer">{{email}}</div> </td>                        
+                        <td colspan="3" ><div class="answer" v-html="email">{{email}}</div> </td>                        
                     </tr>
                 </table>
         </b-row>           
@@ -47,22 +47,36 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import {srcFile} from './logo'
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+
 
 @Component
 export default class InterpreterInfo extends Vue {
-    src =""
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
+    
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+
+    dataReady = false;
     interpreterName = ""
-    languageLevel =""
+    languageLevel = 0
     multipleLanguages =""
     phone=""
     address=""
     email=""
+
     mounted(){        
-        this.src = srcFile
+        this.dataReady = false;
+        this.extractInfo()
+        this.dataReady = true;
+    }
+
+    public extractInfo(){
+        this.interpreterName = this.booking.interpreter.fullName
+        this.languageLevel = this.booking.level
+        this.multipleLanguages = this.booking.multipleLanguages
+        this.phone = this.booking.interpreter.phone? Vue.filter('beautify-phone-no')(this.booking.interpreter.phone) :''
+        this.address = this.booking.interpreter.fullAddress
+        this.email = this.booking.interpreter.email.replace('or', '<br>')
     }
     
 }

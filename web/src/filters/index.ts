@@ -6,7 +6,7 @@ import * as _ from 'underscore';
 
 import bootstrapCss from "!!raw-loader!@/styles/bootstrapCSS.css";
 
-Vue.filter('truncate-text', function (text: string, stop: number) {
+Vue.filter('truncate-text', function (text, stop: number) {
 	if(text){
 		return (stop < text.length) ? text.slice(0, stop) + '...' : text
 	}
@@ -275,7 +275,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 				.print-block{
 					page-break-inside: avoid;
 				}
-			}`+ bootstrapCss+
+			}`+ //bootstrapCss+
 			`@page label{font-size: 9pt;}
 			.container {				
 				padding: 0 !important; 
@@ -359,6 +359,6 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 				<div class="container">
 					`+html+
 		`</div></body></html>`	 
-	
+	// console.log(body)
 	return body
 })

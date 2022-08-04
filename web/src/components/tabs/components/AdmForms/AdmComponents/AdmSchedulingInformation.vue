@@ -21,7 +21,7 @@
                         <b-form-input 
                             size="sm"
                             disabled  
-                            v-model="booking.updated_by">
+                            v-model="updated_by">
                         </b-form-input>
                     </b-form-group>
                 </b-col>
@@ -32,7 +32,7 @@
                         <b-form-input 
                             size="sm"
                             disabled  
-                            v-model="booking.createdDate">
+                            v-model="createdDate">
                         </b-form-input>
                     </b-form-group>
                 </b-col>
@@ -44,7 +44,7 @@
                             size="sm"
                             :state="phoneState"
                             @input="phoneChanged=true"  
-                            v-model="booking.clerkPhone">
+                            v-model="clerkPhone">
                         </b-form-input>
                         <div v-if="phoneState==false" class="subtext" >eg. 800-123-1234</div>
                     </b-form-group>
@@ -79,23 +79,31 @@ export default class AdmSchedulingInformation extends Vue {
 
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
+    
+    updated_by = ""
+    createdDate = ""
+    clerkPhone = ""
+    
     phoneChanged =false
     phoneState = null
 
     mounted(){
         this.phoneState = null
         this.phoneChanged=false
+        this.updated_by = this.booking.updated_by
+        this.createdDate = this.booking.createdDate
+        this.clerkPhone = this.booking.clerkPhone
     }
 
     public applyPhoneChanges(){
-        //TODO
-        if(Vue.filter('verifyPhone')(this.booking.clerkPhone)){
+
+        if(Vue.filter('verifyPhone')(this.clerkPhone)){
             this.phoneState = null
-            this.phoneChanged=false 
+            this.phoneChanged=false
+            this.$emit('saveClerkPhone',[{name:'clerkPhone', value:this.clerkPhone}])
         }else{
             this.phoneState =false
-        }
-        console.log(this.booking)       
+        }              
     }
 
 }

@@ -42,21 +42,29 @@ export interface bookingSearchResultInfoType{ //OK
     updated_by:string;
     interpreter: bookingInterpreterInfoType;
     dates: bookingInfoType[];
-    //TODO NEW add to DB
+    
     recordsApproved?: boolean;
     approverName?: string;
-    interpreterSigned?: boolean;
-    interpreterName?: string;
+    interpreterSigned?: boolean;    
     interpreterSigningDate?: string;
-    qualifiedReceiverSigned?: boolean;
-    qualifiedReceiverName?: string;
+    qualifiedReceiverSigned?: boolean;    
     qualifiedReceiverSigningDate?: string;
-
+    feesGST: number;
+    feesTotal: number;
+    expenseGST: number;
+    expenseTotal: number;
+    invoiceTotal: number;
+    invoiceDate: string;
+    invoiceNumber: string;
+    admDetail: any;
+    adm_updated_by: string;
+    
     //Optional for ADM & PDF
     language?: string;
     level?: number;
     multipleLanguages?: string;
 
+    interpreterName?: string;
 }
 
 export interface bookingLanguageInfoType{ //OK
@@ -81,6 +89,9 @@ export interface bookingInterpreterInfoType { //OK
     city: string;
     province: string;
     postal: string;
+    supplier?: string;
+    siteCode?: string;
+    gst?: string;
 }
 
 export interface bookingAdmCancellationInfoType extends bookingInfoType{ //OK   
@@ -122,6 +133,33 @@ export interface dateRangeInfoType {
     startDate: string;
     endDate: string;
 }
+
+
+
+
+export interface officeUseOnlyVars{    
+    addressVerified: string;
+    addressInstructions: string;    
+    expenseAuthorityName: string;
+    contractNumber: string;
+    payStubComment: string;
+    additionalInstructions: string;
+}
+
+export interface paymentDetailsVars{
+    invoiceTotalAmount: number;
+    totalPaidByCourt: number;
+    totalPaidByCrown: number;
+    lodgingRate: number;
+    lodgingGST: number;
+    ferryExp: number;
+    ferryGST: number;
+    miscExp: number;
+    miscGST: number; 
+}
+
+
+
 
 // export interface bookingDateInfoType {
 //     id: number;

@@ -13,6 +13,7 @@
                     v-if="bookings.length>5"                                        
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
 
                 <b-table
@@ -100,10 +101,11 @@
                             <b-button style="font-size:11px;" 
                                 size="sm"                                 
                                 v-b-tooltip.hover.top.noninteractive
-                                title="Adm322 Forms"                                      
+                                :title="data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms'"                                      
                                 @click="openAdm(data.item);" 
-                                class="text bg-select border-info my-1 px-1 " 
-                                ><img 
+                                :class="data.item.recordsApproved? 'text bg-approved my-1 px-1':'text bg-select border-info my-1 px-1' " 
+                                >
+                                <img 
                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHaADAAQAAAABAAAAHAAAAADjGz/hAAAC2klEQVRIDe1Wy0uUURQ/9442PTaJLWqaiiCjqP6AwEAhwgja6cCMizaWIwW1aqM0QS1aGjRDERWlU1kpvWmjFhG0aBMFolCUj15ibULS8Z5+99Mr1++bme4IbaJvMfe87u93zrmvIfr//cUOCD/22nj6EpM4QMQBnz/WrwtBN6uqtjb2p2pzfp+tS1vR8mIJvblMsaGhges1qb4yP66tB6qJxNM8F3BGCPHcDi4mM/P9eb8QPWtWyNirC4em522WUJAUjobRbMstK7aoaCXrxSHheyurKuvfphqm/BMD7fUH5NN1+7alupagukDSJh6+/T+Gxrs3HXkUNjYzLop0cHAg831w/Ne6xkydAco3MtO+yYkPPX5f0QX3BxtdCpIKK68ElRsb2vnJyN7IvBQhFah47wI7lJJIo4nzOxSpc4p5lwek6E4kke4NUVnrcOfBiA2Oo1cPvcu2Gdm5vevj6QrFqpdAiIWcFCQmiEQIQLtnhNpuAF1GZ9KcJFTHqzxQKXeOZpOVMhSqRadjYx3Nl13ITIxze0NCvJvB1aE/ZnUXR+QGiZnu0c7kbQNmj3PHLe/udq50+FryDRDa0FLNvQEEx1WOX2JNn0SPdS2zCf8kO5NqIGR/isLhjVLKo0jgqQfOtIe/jiMZ98+5vRoymkjH5fTUt48dze1Q21HlY1Rdh7dhs58y2pipUYr7tF1KUTvSkew3Mc6kADmsFJ3FDhaReGYAL8pnnMFqDcRSPDSALqN7e2XZMxL0YhaUt4CwRsu4FE6XunudSUeuNr0e60xWh5eXr0aVXmUSxwW7t3U2EfdfZ1ID+f5i0xfIw7gcpkSIfxp7KWPgHJknCo6SnjZNinVPYfOcKJYANtXJkistBogdmtKghWK0T8cUrBQTS/rngLV9YMjyVWwIdUwe0ozCIQjYDWChcSzbsmCOTWwT6vmB9griK8hl9pItxOBgN632EzpM/YdCfgOczgLVckVGfAAAAABJRU5ErkJggg==" 
                                     alt="">                                                                                  
                             </b-button>
@@ -124,6 +126,7 @@
                 <custom-pagination                                         
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
             
             </b-card>
@@ -183,11 +186,22 @@
                     <div style="font-size:16pt; margin:1rem 0 0 1rem;" >ADM-322</div>
                 </b-row>
             </template>
-            <adm-forms :booking="currentAdm" :searchLocation="searchLocation"/>
+            <adm-forms :bookingId="currentAdmId" :searchLocation="searchLocation"/>
+            <template v-slot:modal-header-close>
+                <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="closeBookingWindow">&times;</b-button>
+            </template>
             <template v-slot:modal-footer>                
-                <b-button class="mr-auto" variant="dark" @click="showAdmWindow=false">Cancel</b-button>
+                <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
             </template>
         </b-modal> 
+
+        <b-modal v-model="showApprovedWarningWindow" header-class="bg-warning" title-class="h3" title="Approved ADM322 Warning">
+            This booking's ADM322 Invoice has already been approved. By editing it, the approval will require amendment.
+            <template v-slot:modal-footer>                
+                <b-button class="mr-auto" variant="dark"    @click="showApprovedWarningWindow=false;showBookingWindow=false;">Back</b-button>
+                <b-button class="ml-auto" variant="warning" @click="showApprovedWarningWindow=false;showBookingWindow=true;">Continue</b-button>
+            </template>
+        </b-modal>
 
         
     
@@ -240,6 +254,7 @@ export default class BookingTable extends Vue {
 
     showBookingWindow = false;
     showInterpreterDetailsWindow = false;
+    showApprovedWarningWindow = false;
 
     showAdmWindow = false;
 
@@ -249,7 +264,7 @@ export default class BookingTable extends Vue {
     currentInterpreter = {} as bookingInterpreterInfoType
     currentBookingId = 0
 
-    currentAdm = {} as bookingSearchResultInfoType
+    currentAdmId = null
     
     bookingItems = []
     dataReady=false
@@ -284,7 +299,9 @@ export default class BookingTable extends Vue {
         this.dataReady = true;        
     }
 
-    mounted() {         
+    mounted() {        
+        this.showApprovedWarningWindow = false;
+        this.showBookingWindow = false; 
         this.getBookingItems()
         window.addEventListener('resize', this.getWindowWidth);
         this.getWindowWidth()
@@ -301,6 +318,7 @@ export default class BookingTable extends Vue {
     }    
     
     public closeBookingWindow(){
+        this.showAdmWindow = false;
         this.showBookingWindow = false;
         this.$emit('find');
     }    
@@ -310,26 +328,15 @@ export default class BookingTable extends Vue {
         this.currentBooking = JSON.parse(JSON.stringify(bookingToEdit.dates));
         this.currentInterpreter = bookingToEdit.interpreter
         this.currentBookingId = bookingToEdit.id
-        this.showBookingWindow = true;        
+        if(bookingToEdit.recordsApproved) 
+            this.showApprovedWarningWindow = true
+        else
+            this.showBookingWindow = true;        
     }
 
     public openAdm(bookingToADM: bookingSearchResultInfoType){
-        console.log(bookingToADM);
-        
-        bookingToADM.createdDate = Vue.filter('iso-date')(bookingToADM.created_at)
-        
-        const interp = bookingToADM.interpreter
-        interp.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
-        interp.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
-        
-        this.currentAdm = JSON.parse(JSON.stringify(bookingToADM));
-        // const bookingLanguage = interp.languages.filter(lan =>lan.languageName == this.booking.language)
-        // this.booking.level = bookingLanguage.length>0? bookingLanguage[0].level:null;
-        // this.booking.federalYN = this.booking.federal? 'Yes':'No' ;
-        // this.booking.multipleLanguages = "No"
-        // const bookingCourt = this.courtLocations.filter(court => court.id == this.booking.locationId)
-        //this.booking.registry = bookingCourt.length>0?  bookingCourt[0].name : ''
-
+        console.log(bookingToADM);        
+        this.currentAdmId = bookingToADM.id;
         this.showAdmWindow = true;
     }
 

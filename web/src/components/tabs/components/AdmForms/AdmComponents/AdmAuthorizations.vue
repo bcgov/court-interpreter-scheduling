@@ -6,9 +6,9 @@
             <b-col cols="2">
                 <b-form-checkbox 
                     class="labels"
-                    @change="interpreterSigned($event,'interpreter')"
+                    @change="signingChanges($event,'interpreter')"
                     style="margin-top:1rem; line-height:1.65rem;" 
-                    v-model="booking.interpreterSigned">
+                    v-model="interpreterSigned">
                         Interpreter Signed
                 </b-form-checkbox>
             </b-col>
@@ -21,20 +21,32 @@
             <b-col cols="2">
                 <b-form-input
                     style="margin-top:0.9rem;"
-                    type="date" 
+                    type="date"
+                    :min="minDate"
+                    :max="maxDate"
+                    @input="dateChanged=true;" 
                     size="sm"                                                         
-                    v-model="booking.interpreterSigningDate">
+                    v-model="interpreterSigningDate">
                 </b-form-input>
             </b-col>
 
-            <b-col cols="2" />
+            <b-col cols="2">
+                <div class="text-center"> 
+                <b-button size="sm"             
+                    v-if="dateChanged" 
+                    @click="saveAuthorizationChanges()"                                 
+                    variant="success" 
+                    style="margin:0.90rem 0 0 0; width:5rem;"> Save 
+                </b-button>
+                </div>
+            </b-col>
 
             <b-col cols="2">
                 <b-form-checkbox 
                     class="labels"
-                    @change="interpreterSigned($event,'qualifiedReceiver')"
+                    @change="signingChanges($event,'qualifiedReceiver')"
                     style="margin-top:1rem; line-height:1.65rem;" 
-                    v-model="booking.qualifiedReceiverSigned">
+                    v-model="qualifiedReceiverSigned">
                         Qualified Receiver Signed
                 </b-form-checkbox>
             </b-col>
@@ -50,7 +62,7 @@
                     type="date"
                     disabled 
                     size="sm"                                                         
-                    v-model="booking.qualifiedReceiverSigningDate">
+                    v-model="qualifiedReceiverSigningDate">
                 </b-form-input>
             </b-col>
         </b-row>
@@ -63,7 +75,7 @@
                     <b-form-input                                                                       
                         size="sm"
                         disabled                              
-                        v-model="booking.interpreterName">
+                        v-model="interpreterName">
                     </b-form-input>
                 </b-form-group>
                 <div style="margin-top:-1rem; font-size:9.75pt;">
@@ -81,7 +93,7 @@
                     <b-form-input 
                         size="sm"
                         disabled                             
-                        v-model="booking.qualifiedReceiverName">
+                        v-model="qualifiedReceiverName">
                     </b-form-input>
                 </b-form-group>
             </b-col>            
@@ -103,47 +115,80 @@ export default class AdmAuthorizations extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
-    dataReady = false;
-    
+
     @commonState.State
     public userName!: string;
-    
+
+    dataReady = false;
+    dateChanged = false;
     update=1;
+    maxDate="2025-01-01"
+    minDate="2022-01-01"
+
+    interpreterName = ""
+    interpreterSigned = false    
+    interpreterSigningDate = ""
+    qualifiedReceiverSigned = false
+    qualifiedReceiverName = ""
+    qualifiedReceiverSigningDate =""
+    
+        
    
     mounted(){
-        this.dataReady = false;        
+        this.dataReady = false;
+        this.dateChanged = false; 
+        this.extractInfo();
         this.dataReady = true;
     }
 
-    public interpreterSigned(checked, name){
+    public extractInfo(){
+        this.interpreterSigned = this.booking.interpreterSigned
+        this.interpreterName = this.interpreterSigned? this.booking.interpreter.fullName :''
+        this.interpreterSigningDate = this.interpreterSigned? this.booking.interpreterSigningDate :''
+
+        this.qualifiedReceiverSigned = this.booking.qualifiedReceiverSigned
+        this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
+        this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
+        this.maxDate = moment().add(3,'year').format("YYYY-MM-DD")
+    }
+
+    public signingChanges(checked, name){
         
         if(name=='interpreter'){
             if(checked){
-                this.booking.interpreterSigningDate = moment().format("YYYY-MM-DD")
-                this.booking.interpreterName = this.booking.interpreter.fullName
-                
+                this.interpreterSigningDate = moment().format("YYYY-MM-DD")
+                this.interpreterName = this.booking.interpreter.fullName                
             }
             else{
-                this.booking.interpreterSigningDate =''
-                this.booking.interpreterName = ''
+                this.interpreterSigningDate =''
+                this.interpreterName = ''
             }
         }
         else if(name=='qualifiedReceiver'){
             if(checked){
-                this.booking.qualifiedReceiverSigningDate = moment().format("YYYY-MM-DD")
-                this.booking.qualifiedReceiverName = this.userName
+                this.qualifiedReceiverSigningDate = moment().format("YYYY-MM-DD")
+                this.qualifiedReceiverName = this.booking.approverName
             }
             else{
-                this.booking.qualifiedReceiverSigningDate =''
-                this.booking.qualifiedReceiverName =''
+                this.qualifiedReceiverSigningDate =''
+                this.qualifiedReceiverName =''
             }
-        }
-        this.saveAuthorizationChanges()
+        }        
         this.update++
+        this.dateChanged = true;
     }
 
     public saveAuthorizationChanges(){
-        //TODO
+        this.dateChanged = false;
+        if(this.interpreterSigningDate < this.minDate || this.interpreterSigningDate > this.maxDate)
+            this.interpreterSigningDate=''
+        const authorizationChanges =[
+            {name:'interpreterSigned', value:this.interpreterSigned},    
+            {name:'interpreterSigningDate', value:this.interpreterSigningDate},
+            {name:'qualifiedReceiverSigned', value:this.qualifiedReceiverSigned},            
+            {name:'qualifiedReceiverSigningDate', value:this.qualifiedReceiverSigningDate}
+        ]
+        this.$emit('saveAuthorizations',authorizationChanges)
     }
 
 }

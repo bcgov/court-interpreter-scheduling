@@ -31,9 +31,11 @@
                     <div 
                         style="display:inline-block"
                         v-for="pickedtime,inx in pickedTimes" :key="inx">
+                        <div v-b-tooltip.hover.v-warning
+                                :title="!allowDelete && pickedtime.original && pickedtime.start!=''? 'If you would like to change this time slot, you must cancel this booking record('+month+' '+day+', '+year+' at '+pickedtime.start+' - '+pickedtime.end +'), then add a new time slot here.':''">
                             <b-button 
                                 style="margin:0.2rem; padding:0.2rem;" 
-                                :variant="pickedtime.start==''?'primary':'time'" 
+                                :variant="pickedtime.start==''?'primary':'time'"                                 
                                 :disabled="!allowDelete && pickedtime.original && pickedtime.start!=''"
                                 size="sm" 
                                 @click="removeTime(pickedtime)">
@@ -43,6 +45,7 @@
                                     <b-icon-x-square-fill scale="0.75" variant="white" v-else />
                                     <div style="margin-left:-1.3rem;color:yellow;"> {{pickedtime.end}} </div>
                             </b-button>
+                        </div>
                     </div>
                         
                         

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     URL_SCHEME = os.getenv('URL_SCHEME' ,'http')
     
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY','5e094faa6ca25ahc81816')
-    DATA_SECURITY_KEY = os.getenv('DATA_SECURITY_KEY','1tjhb7a9563je93f7099')
+    DATA_SECURITY_KEY = os.getenv('DATA_SECURITY_KEY')
 
     PDF_SERVICE_URL = os.getenv('PDF_SERVICE_URL') 
     
@@ -60,7 +60,8 @@ class Settings(BaseSettings):
     CHES_EMAIL_URL = os.getenv('CHES_EMAIL_URL')
     EMAIL_SERVICE_CLIENT_ID = os.getenv('EMAIL_SERVICE_CLIENT_ID')
     EMAIL_SERVICE_CLIENT_SECRET = os.getenv('EMAIL_SERVICE_CLIENT_SECRET')
-    RECIPIENT_EMAILS = os.getenv('RECIPIENT_EMAILS')
+    RECIPIENT_EMAILS = os.getenv('RECIPIENT_EMAILS') 
+    ADM_RECIPIENT_EMAILS = os.getenv('ADM_RECIPIENT_EMAILS')
 
     class Config:
         case_sensitive = True

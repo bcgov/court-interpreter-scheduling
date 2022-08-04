@@ -1,5 +1,5 @@
 <template>
-    <b-card>
+    <b-card v-if="dataReady">
         <h3 class="text-dark p-0 mt-n2 mb-4">Interpreter Information</h3>
         <b-row class="my-n3">
             <b-col cols="3">                    
@@ -32,8 +32,10 @@
                             label="Email">
                             <b-form-input 
                                 size="sm"
-                                disabled                                      
-                                v-model="booking.interpreter.email">
+                                disabled
+                                tooltip.hover
+                                :title="fullEmail"                                      
+                                v-model="email">
                             </b-form-input>
                         </b-form-group>
                     </b-col>
@@ -100,9 +102,18 @@ export default class AdmInterpreterInformation extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
-   
+    
+    dataReady = false;
+    email=''
+    fullEmail=''
+
     mounted(){
+       this.dataReady = false; 
+       this.email = Vue.filter('truncate-text')(this.booking.interpreter.email, 31)
+       this.fullEmail = this.booking.interpreter?.email?.length>31? this.booking.interpreter.email :''
+       this.dataReady = true;
     }
+
 
 }
 </script>
