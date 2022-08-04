@@ -1,6 +1,6 @@
 <template>
     <div v-if="dataReady" class="mt-2">
-        <div v-for="j,inx in [1]" :key="j" :class="inx>0? 'margintop0p5':''"> 
+        <div v-for="slicedRecord,inx in slicedRecords" :key="'tbl-cont-'+inx" :class="inx>0? 'margintop0p5':''"> 
             <table  class="print-block flexsize border border-dark m-0 p-0">
                 <tr style="font-size:9pt; " class="m-0 p-0">
                     <td class="m-0 p-0" colspan="19"><div style="font-size:12pt;" class="ml-1 font-weight-bold">3 Record <span v-if="inx>0">(continued)</span></div></td>                        
@@ -19,16 +19,16 @@
                     <td style="width:4%;" class="text-center"><b class="">Fed.</b></td>
                     <td style="width:1%;" />
                     <td style="width:14%;" class="text-center"><b class="">Court Room</b></td>
+                    <td style="width:1%;" />                    
+                    <td style="width:7%;" class="text-center"><b class="">Start Time</b></td>
+                    <td style="width:0.75%;" />
+                    <td style="width:7%;" class="text-center"><b class="">Finish Time</b></td>
                     <td style="width:1%;" />
-                    <td style="width:8%;" class="text-center"><b class="">Start Time</b></td>
-                    <td style="width:1%;" />
-                    <td style="width:8%;" class="text-center"><b class="">Finish Time</b></td>
-                    <td style="width:1.5%;" />
-                    <td style="width:8%;" class="text-center"><b class="">Approver's</b><div class="mt-0"><b>Initials</b></div></td>                        
+                    <td style="width:10.5%;" class="text-center"><b class="">Approver's</b><div class="mt-0"><b>Initials</b></div></td>                        
                     <td /> 
                 </tr>
                 
-                <tbody v-for="inx in [1,2,3]" :key="'record-table-'+inx">
+                <tbody v-for="record,indx in slicedRecord" :key="'record-table-'+indx">
                     <tr><td class="text-white">.</td></tr>                        
                     <tr class="spacer">
                         <td />
@@ -38,7 +38,7 @@
                     <tr><td class="text-white">.</td></tr>                  
                     <tr>
                         <td />
-                        <td style="width:9%;" class="border-bottom text-center"><div class="answer-record">{{record.date}}</div></td>                                              
+                        <td style="width:9%;" class="border-bottom text-center"><div class="answer-record">{{record.date|iso-date}}</div></td>                                              
                         <td style="width:1%;" />
                         <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">{{record.file}}</div></td>
                         <td style="width:1%;" />
@@ -50,11 +50,17 @@
                         <td style="width:1%;" />
                         <td style="width:14%;" class="border-bottom text-center"><div class="answer-record">{{record.room}}</div></td>
                         <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.actualStartTime}}</div></td>
+                        <td style="width:7%;" class="border-bottom text-center">                            
+                            <div v-if="admApproved" class="answer-record-sm">{{record.actualStartTime}}</div>
+                            <b-form-input disabled :id="'interactive-text-'+(inx*100+indx)+'-start'" v-else style="font-size:9px; margin-left:-0.25rem; width:115%; height:1.05rem; background:#EFF6FF; color:#00F;" :alt="record['startTime']" /></td>
+                        <td style="width:0.75%;" />
+                        <td style="width:7%;" class="border-bottom text-center">
+                            <div v-if="admApproved" class="answer-record-sm">{{record.actualFinishTime}}</div>
+                            <b-input disabled :id="'interactive-text-'+(inx*100+indx)+'-finish'" v-else style="font-size:9px; margin-left:-0.15rem; width:115%; height:1.05rem; background:#EFF6FF; color:#00F;" :alt="record['finishTime']"/></td>
                         <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.actualFinishTime}}</div></td>
-                        <td style="width:1%;" />
-                        <td style="width:8%;" class="border-bottom text-center"><div class="answer-record">{{record.approversInitials}}</div></td>                        
+                        <td style="width:10.5%;" class="border-bottom text-center">
+                            <div v-if="admApproved" class="answer-record">{{record.approversInitials}}</div>
+                            <b-input disabled :id="'interactive-text-'+(inx*100+indx)+'-initials'" v-else style="font-size:9px; margin-left:-0.15rem; width:105%; height:1.05rem; background:#EFF6FF; color:#00F;"/></td>                        
                         <td /> 
                     </tr>
                     <tr style="font-size:6pt; " class="m-0 p-0">
@@ -65,7 +71,7 @@
                                         <tr>
                                             <td style="width:40%;"><b class="ml-1">Registry: </b><div class="answer-record-sm">{{record.registry|truncate-text(25)}}</div></td>                                        
                                             <td style="width:20%;"><b>Requested By: </b><div class="answer-record-sm">{{record.requestedBy}}</div></td>
-                                            <td style="width:10%;"><b>Bilingual: </b><div class="answer-record-sm">{{record.bilingual}}</div></td>
+                                            <td style="width:10%;"><b>Bilingual: </b><div class="answer-record-sm">{{record.bilingualYN}}</div></td>
                                             <td style="width:30%;"><b>Court Level: </b><div class="answer-record-sm">{{record.courtLevel}}</div></td>
                                         </tr>
                                         <tr>
@@ -109,14 +115,17 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { bookingAdmRecordInfoType } from '@/types/Bookings/json';
+import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
+import {reasonCodeClass} from '../../BookingEnums'
+import * as _ from 'underscore';
+
 
 @Component
 export default class Record extends Vue {
 
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+    
 
     languageFields = [
         {key:'language',     label:'Language',    thStyle:'width:55%', thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
@@ -124,22 +133,46 @@ export default class Record extends Vue {
         {key:'interpretFor', label:'Interp. For', thStyle:'width:35%', thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},               
     ];
 
-    languages =[
-        {languageId:1, language:" ",level:1, interpretFor:' '},
-        {languageId:1, language:" ",level:1, interpretFor:' '},
-        {languageId:1, language:" ",level:1, interpretFor:' '}      
-    ]
-
-    record = {} as  bookingAdmRecordInfoType
+    records: bookingAdmRecordInfoType[] = []
+    slicedRecords: bookingAdmRecordInfoType[][]=[]
     
     dataReady=false
+    admApproved=false
 
     mounted(){
         this.dataReady=false        
-        this.record.languages= this.languages
+        this.extractInfo()
         this.dataReady=true
     }
-    
+
+    public extractInfo(){
+        this.admApproved = this.booking.recordsApproved
+        this.records = []
+        this.slicedRecords =[]
+        for(const date of this.booking.dates){
+            const record: bookingAdmRecordInfoType = JSON.parse(JSON.stringify(date))
+           
+            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
+            record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
+            record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
+
+            record.federalYN = date.federal? 'Yes' : 'No'
+            record.bilingualYN = date.bilingual? 'Yes' : 'No'            
+            record.actualStartTimeState=null;            
+            record.actualFinishTimeState=null;            
+            record.approversInitialsState=null;            
+            
+            if(record.status!="Cancelled")
+                this.records.push(record)
+        }
+        this.records = _.sortBy(this.records,'date')
+
+        this.slicedRecords.push(this.records.slice(0,4))
+
+        for(let index=4; index<this.records.length; index+=5)
+            this.slicedRecords.push(this.records.slice(index,(index+5)))
+        
+    }   
 }
 </script>
 

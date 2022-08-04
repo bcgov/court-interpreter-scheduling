@@ -23,7 +23,7 @@ def render_pdf(*html):
         )
     elif html:
         response = requests.post(
-            "{}/pdf".format(PDF_URL), data=html[0].encode("utf-8"), stream=True
+            "{}/pdf?bootstrap=true".format(PDF_URL), data=html[0].encode("utf-8"), stream=True
         )
     else:
         raise Exception("No HTML input provided")

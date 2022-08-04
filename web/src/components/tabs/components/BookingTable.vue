@@ -13,6 +13,7 @@
                     v-if="bookings.length>5"                                        
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
 
                 <b-table
@@ -125,6 +126,7 @@
                 <custom-pagination                                         
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
             
             </b-card>
@@ -297,7 +299,7 @@ export default class BookingTable extends Vue {
         this.dataReady = true;        
     }
 
-    mounted() {
+    mounted() {        
         this.showApprovedWarningWindow = false;
         this.showBookingWindow = false; 
         this.getBookingItems()

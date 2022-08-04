@@ -8,7 +8,7 @@
         </b-row>
        
             
-        <b-tabs :key="updateTabs" v-model="tabIndex" pills card>
+        <b-tabs  v-model="tabIndex" pills card>
             <b-tab title="Edit Dates" :title-link-class="'text-center tab-class edit-button'" >
                 <b-row class="mx-0 mt-2 mb-4">                    
                     <b-col cols="6">
@@ -36,8 +36,8 @@
                         :bookingDate="bookingCardDate"/>
                 </b-row>
             </b-tab>
-
-            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" title-link-class="text-center tab-class">
+            
+            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="'dates-'+updateTabs+'-'+ inx" title-link-class="text-center tab-class">
                 <template #title>
                     <div><b-icon-calendar scale="0.85" /> {{tab.beautyDate}} </div>
                     <div style="margin-left:-1.2rem;"><b><b-icon-clock /> {{tab.time.start}}</b></div>
@@ -542,6 +542,7 @@ export default class EditBookingModal extends Vue {
             
             // this.updateEditDates++;
             }
+            this.updateTabs++;
         }
         else{
             const indexOfRemoving = this.allBookingDatesTimes.findIndex(booking =>{                

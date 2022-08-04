@@ -38,11 +38,11 @@
                 </div>
                 <hr/>
                 <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
-                    <adm-header class="court-header"/>
-                    <interpreter-info />
-                    <scheduling-info />
-                    <record />
-                    <cancellation-info />
+                    <adm-header :booking="booking" :searchLocation="searchLocation" class="court-header"/>
+                    <interpreter-info :booking="booking"/>
+                    <scheduling-info :booking="booking" :searchLocation="searchLocation"/>
+                    <record :booking="booking"/>
+                    <cancellation-info :booking="booking"/>
                     <payment-details />
                     <authorizations />
                     <office-use-only />

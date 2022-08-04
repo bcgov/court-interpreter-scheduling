@@ -1,5 +1,5 @@
 <template>
-    <div>       
+    <div v-if="dataReady">       
         <b-row class="m-0 p0">
             
             <div style="width:5%;" />
@@ -28,8 +28,8 @@
                     </tr>
                     <tr style="border:1px solid #414142; height:1.5rem;" >
                         <td class="border border-dark text-center"><div class="answer-record">{{registry}}</div></td>
-                        <td class="border border-dark text-center"><div class="answer-record">{{invoice}}</div></td>
-                        <td class="border border-dark text-center"><div class="answer-record">{{currentDate}}</div></td> <!-- {{currentDate}} -->
+                        <td class="border border-dark text-center"><div class="answer-record">{{invoiceNum}}</div></td>
+                        <td class="border border-dark text-center"><div class="answer-record">{{invoiceDate}}</div></td> <!-- {{currentDate}} -->
                            
                     </tr>
                 </table>
@@ -41,23 +41,32 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {srcFile} from './logo'
-import moment from 'moment-timezone'
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+import { locationsInfoType } from '@/types/Common/json';
 
 @Component
 export default class AdmHeader extends Vue {
-    src =""
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
-    currentDate=""
-    registry=""//"2045"
-    invoice=""//"2045ABBS0JAN00"
-
-    mounted(){        
-        this.src = srcFile
-        // this.currentDate=moment().format("YYYY-MM-DD")
-    }
     
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+    
+    @Prop({required: true})
+    public searchLocation!: locationsInfoType;
+    
+    dataReady = false;
+    registry=""
+    invoiceNum=""
+    invoiceDate=""
+    src =""
+    
+    mounted(){
+        this.dataReady = false;        
+        this.src = srcFile;
+        this.invoiceNum = this.booking.invoiceNumber;
+        this.invoiceDate = this.booking.invoiceDate;
+        this.registry = this.searchLocation.shortDescription
+        this.dataReady = true;
+    }    
 }
 </script>
 <style scoped lang="scss" src="@/styles/_pdf.scss">
