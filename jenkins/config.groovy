@@ -1,4 +1,4 @@
-// Pipeline Configuration Properties
+// Pipeline Configuration Properties.
 // Import this file into the pipeline using 'load'.
 class config {
 
