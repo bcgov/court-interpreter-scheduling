@@ -171,9 +171,10 @@ export default class BookingDateRangePicker extends Vue {
     }
 
     public allowedDates(date){
-        const day = moment(date).weekday()
-        if(day==0 || day==6) return false
-        else return true
+        return true
+        // const day = moment(date).weekday()
+        // if(day==0 || day==6) return false
+        // else return true
     }
 
 
