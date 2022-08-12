@@ -119,12 +119,13 @@ export default class BookingDatePicker extends Vue {
     }
 
     public allowedDates(date){
-        const day = moment(date).weekday()
+        return true
+        // const day = moment(date).weekday()
         
-        if(this.blockedDates?.length>0)
-            return !this.blockedDates.includes(date)
-        else if(day==0 || day==6) return false
-        else return true
+        // if(this.blockedDates?.length>0)
+        //     return !this.blockedDates.includes(date)
+        // else if(day==0 || day==6) return false
+        // else return true
     }
 
 
