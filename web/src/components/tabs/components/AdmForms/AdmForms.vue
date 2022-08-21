@@ -222,18 +222,16 @@ export default class AdmForms extends Vue {
 
 
     public recordsWaitingForApproval(approved, saveChanges, records){
-        // console.log(approved)
-        if(this.userRole.includes('super-admin')){ //TODO remove
-            this.recordsReadyForApproval=true;            
-            this.booking.dates = JSON.parse(JSON.stringify(records))
-            // console.log(this.booking)
-            if(approved==false){ 
-                this.recordsReadyForApproval=false;
-                this.bookingRecordsApproved = false;
-                if(saveChanges)
-                    this.saveBookingFields([{name:'recordsApproved', value:false}],'adm-schedule')
-            }
-        }
+        // console.log(approved)        
+        this.recordsReadyForApproval=true;            
+        this.booking.dates = JSON.parse(JSON.stringify(records))
+        // console.log(this.booking)
+        if(approved==false){ 
+            this.recordsReadyForApproval=false;
+            this.bookingRecordsApproved = false;
+            if(saveChanges)
+                this.saveBookingFields([{name:'recordsApproved', value:false}],'adm-schedule')
+        }        
     }
 
 

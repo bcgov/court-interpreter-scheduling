@@ -162,10 +162,17 @@ export default class Record extends Vue {
             record.actualFinishTimeState=null;            
             record.approversInitialsState=null;            
             
-            if(record.status!="Cancelled")
+            if(record.status=="Booked")
                 this.records.push(record)
         }
-        this.records = _.sortBy(this.records,'date')
+
+        if(this.records.length==0){
+            const record = {} as bookingAdmRecordInfoType            
+            this.slicedRecords.push([record]) 
+            return
+        }
+
+        this.records = _.sortBy(this.records,'date')       
 
         this.slicedRecords.push(this.records.slice(0,4))
 
