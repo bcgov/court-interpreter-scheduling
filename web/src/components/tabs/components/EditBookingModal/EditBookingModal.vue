@@ -1,6 +1,6 @@
 <template>
     <b-card v-if="interpreterDataReady" class="border-white text-dark bg-white" body-class="py-0" :key="updatedBookingInfo"> 
-        
+
         <b-row class="my-n2 ml-2">
             <b-col cols="9" class="mb-3 h2">  
                 {{interpreter.firstName}} {{interpreter.lastName}}
@@ -43,8 +43,12 @@
                     <div style="margin-left:-1.2rem;"><b><b-icon-clock /> {{tab.time.start}}</b></div>
                     <div style="margin-left:0.1rem; color:#ABD  ;">
                         <b> {{tab.time.end}}</b>
-                        <b-icon-x-octagon-fill v-if="tab.booking.status==statusOptions[2].value" class="text-danger ml-2"  />
-                        <b-icon-exclamation-triangle-fill v-if="tab.booking.locationId != searchLocation.id" variant="warning" class="ml-2"/>
+                        <span v-if="tab.booking.status==statusOptions[2].value" v-b-tooltip.hover.v-danger title="Cancelled">
+                            <b-icon-x-octagon-fill  class="text-danger ml-2"  />
+                        </span>
+                        <span v-if="tab.booking.locationId && tab.booking.locationId != registryLocationId" v-b-tooltip.hover title="Remote Location">
+                            <b-icon-exclamation-triangle-fill  variant="warning" class="ml-2" />
+                        </span>
                     </div>
                 </template>
 
@@ -54,7 +58,7 @@
                     :id="'tab-'+inx"
                     :tabIndex="tabIndex"                  
                     :tabNumber="inx+1"
-                    :searchLocation="searchLocation"
+                    :registry="registry"
                     :booking="tab.booking" 
                     :original="tab.original"
                     :bookingStates="tab.bookingStates"
@@ -171,6 +175,9 @@ import EditBookingFields from "./EditBookingFields.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
+import { namespace } from "vuex-class";
+import "@/store/modules/common";
+const commonState = namespace("Common");
 
 @Component({
     components:{       
@@ -191,7 +198,12 @@ export default class EditBookingModal extends Vue {
     bookingId!: number
      
     @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+    public registryLocationId!: number;
+
+    @commonState.State
+    public courtLocations!: locationsInfoType[];
+
+    registry = {id:0, name:''};
 
     updatedBookingInfo = 0;
     interpreterDataReady = false;
@@ -241,6 +253,7 @@ export default class EditBookingModal extends Vue {
         this.errorMsg=''
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
+        this.registry = {id:this.registryLocationId, name:''};
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -356,8 +369,16 @@ export default class EditBookingModal extends Vue {
     public saveBooking(){
         if (this.checkBookingStates(true)){ 
             //console.log(this.allBookingDatesTimes)
+
+            const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
+            if(location.length==1){                
+                this.registry.name = location[0].name
+            }
+
             const body = {
                 interpreter_id: this.interpreter.id,
+                locationName: this.registry.name,
+                locationId: this.registry.id,
                 dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
 
                         return  bookingDatesTimes.booking
@@ -418,7 +439,7 @@ export default class EditBookingModal extends Vue {
             bookingStates.status = !(booking.status)? false : null;
             // bookingStates.room = !(booking.room)? false : null;        
         
-            bookingStates.location = !(booking.locationId)? false : null;
+            //bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
             bookingStates.caseType = !(booking.caseType)? false : null;
@@ -579,14 +600,14 @@ export default class EditBookingModal extends Vue {
         booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
         booking.prosecutor = null;        
         booking.reason = null;
-        booking.registry = this.searchLocation.name;
+        booking.registry = null;
         booking.requestedBy = this.requestOptions[0].value;
         booking.room = null;
         booking.file = null;
         booking.status = this.statusOptions[0].value;
         booking.federal = null;
         booking.languages = [];
-        booking.locationId = this.searchLocation.id;
+        booking.locationId = null;
         booking.interpreterId = this.interpreter.id;
         booking.date = date;
         booking.startTime = time.start;

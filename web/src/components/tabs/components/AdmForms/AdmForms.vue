@@ -3,19 +3,18 @@
         <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         
         <div v-else :key="update">
-             
-            <adm-interpreter-information :booking="booking"/>
-            <adm-scheduling-information :booking="booking" :searchLocation="searchLocation" @saveClerkPhone="saveBookingFields"/>
-            <adm-record :booking="booking" :searchLocation="searchLocation" @approved="recordsWaitingForApproval"/>
-            <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" :searchLocation="searchLocation" @saveChanges="saveRecordChanges"/>
-            <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" @savePaymentDetail="saveBookingFields"/>
-            <adm-authorizations v-if="bookingRecordsApproved" :booking="booking" @saveAuthorizations="saveBookingFields"/>
-            <adm-office-use-only v-if="bookingRecordsApproved"  :booking="booking" @saveOfficeUse="saveBookingFields"/>
             
+            <adm-interpreter-information :booking="booking"/>
+            <adm-scheduling-information :booking="booking" @saveClerkPhone="saveBookingFields"/>
+            <adm-record :booking="booking" @approved="recordsWaitingForApproval"/>
+            <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" @saveChanges="saveRecordChanges"/>
+            <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" :form="paymentDetailsForm" @savePaymentDetail="saveBookingFields"/>
+            <adm-authorizations  v-if="bookingRecordsApproved" :booking="booking" @saveAuthorizations="saveBookingFields"/>
+            <adm-office-use-only v-if="bookingRecordsApproved" :booking="booking" @saveOfficeUse="saveBookingFields"/>
             
             <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
-                <b-button @click="recordsApproved" variant="warning">
-                    <b-icon-calendar-check class="mr-2"/>Records Approved
+                <b-button @click="IApproveAllRecords" variant="warning">
+                    I approve all Records<b-icon-calendar-check class="ml-2"/>
                 </b-button>
             </div>
 
@@ -38,9 +37,9 @@
                 </div>
                 <hr/>
                 <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
-                    <adm-header :booking="booking" :searchLocation="searchLocation" class="court-header"/>
+                    <adm-header :booking="booking" class="court-header"/>
                     <interpreter-info :booking="booking"/>
-                    <scheduling-info :booking="booking" :searchLocation="searchLocation"/>
+                    <scheduling-info :booking="booking" />
                     <record :booking="booking"/>
                     <cancellation-info :booking="booking"/>
                     <payment-details />
@@ -65,13 +64,15 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import moment from 'moment';
+import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";   
 import "@/store/modules/common";
 const commonState = namespace("Common");
 
-import { bookingSearchResultInfoType } from '@/types/Bookings/json';
-import { locationsInfoType } from '@/types/Common/json';
+import { bookingSearchResultInfoType, calculationVars } from '@/types/Bookings/json';
+
 
 import Spinner from '@/components/utils/Spinner.vue'
 
@@ -91,6 +92,13 @@ import CancellationInfo from './pdf/CancellationInfo.vue'
 import PaymentDetails from './pdf/PaymentDetails.vue'
 import Authorizations from './pdf/Authorizations.vue'
 import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
+
+import {getTotalInterpretingHours} from './AdmCalculations/TotalInterpretingHours'
+import {travelInformation} from './AdmCalculations/TravelInfo'
+import {paymentDetails} from './AdmCalculations/PaymentCalculation'
+import {paymentDetailsInfoType} from '@/types/Bookings';
+import { locationsInfoType } from '@/types/Common/json';
+
 
 @Component({
     components:{
@@ -118,8 +126,6 @@ export default class AdmForms extends Vue {
     @Prop({required: true})
     bookingId!: number;
 
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
 
     booking = {} as bookingSearchResultInfoType;
     update = 0
@@ -130,12 +136,18 @@ export default class AdmForms extends Vue {
     @commonState.State
     public userRole!: string[];
 
+    @commonState.State
+    public courtLocations!: locationsInfoType[];
+
+    paymentDetailsForm = {} as paymentDetailsInfoType
+
     dataReady = false;
     recordsReadyForApproval = false
     printingPDF=false
     errorMsg = ''
     showPrintWindow = false
     bookingRecordsApproved = false;
+    sectionName=''
 
     mounted(){
         this.printingPDF=false        
@@ -162,11 +174,12 @@ export default class AdmForms extends Vue {
     }
 
     public extractInfo(){
-        console.log(this.booking)        
+        // console.log(this.booking)        
         const languages =[]
         const levels: number[] = []
         const cancelledLanguages =[]
         const cancelledLevels = []
+        let recordApprovalRequired = false;
         for(const date of this.booking.dates){
             for(const lang of date.languages)
                 if(date.status != 'Cancelled'){
@@ -180,9 +193,8 @@ export default class AdmForms extends Vue {
                     if(!cancelledLevels.includes(lang.level))
                         cancelledLevels.push(lang.level)
                 }
-        }
-
-        
+            if(date.status=='Booked') recordApprovalRequired = true;
+        }        
         
         const interp = this.booking.interpreter
         interp.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
@@ -194,37 +206,150 @@ export default class AdmForms extends Vue {
         this.booking.multipleLanguages=languages.length>0? (languages.length>1? "Yes" :"No") :(cancelledLanguages.length>1? "Yes" :"No")
 
         this.bookingRecordsApproved = this.booking.recordsApproved? true : false;
+
+        if(recordApprovalRequired == false && this.bookingRecordsApproved == false){
+            this.IApproveAllRecords()
+        }
+
+        this.getInvoiceInfo()
+        
+        if(this.bookingRecordsApproved)
+            this.getpaymentDetailsForm(true)            
+
         this.dataReady = true;
+        Vue.filter('scrollToLocation')(this.sectionName)
     }
 
-    
-    public recordsWaitingForApproval(approved, records){
-        if(this.userRole.includes('super-admin')){ //TODO
+
+    public recordsWaitingForApproval(approved, saveChanges, records){
+        // console.log(approved)
+        if(this.userRole.includes('super-admin')){ //TODO remove
             this.recordsReadyForApproval=true;            
             this.booking.dates = JSON.parse(JSON.stringify(records))
-            console.log(this.booking)
+            // console.log(this.booking)
             if(approved==false){ 
+                this.recordsReadyForApproval=false;
                 this.bookingRecordsApproved = false;
-                this.saveBookingFields([{name:'recordsApproved', value:false}])
+                if(saveChanges)
+                    this.saveBookingFields([{name:'recordsApproved', value:false}],'adm-schedule')
             }
         }
     }
 
-    public recordsApproved(){
+
+    public getInvoiceInfo(){
+        let saveRequired = false;
+        let sortedDates = [];
+        let location = [];
+
+        if(!this.booking.invoiceDate || !this.booking.invoiceNumber){
+            let dates = this.booking.dates.filter(date => date.status=='Booked')
+            if(dates.length==0) dates = this.booking.dates.filter(date => date.status=='Cancelled')
+            sortedDates = _.sortBy(dates,'date')
+        }
+
+        if(!this.booking.invoiceDate && sortedDates.length>0){
+            const lenDates = sortedDates.length
+            const invoiceDate = sortedDates[lenDates-1]?.date?.slice(0,10)       
+            this.booking.invoiceDate = invoiceDate 
+            saveRequired = true;                   
+        }
+
+        if((!this.booking.location_name || !this.booking.invoiceNumber) && this.booking.location_id){
+            location = this.courtLocations.filter(loc => loc.id==this.booking.location_id)
+        }
+
+        if(!this.booking.location_name && location.length==1){
+            this.booking.location_name = location[0].name;
+        }
+
+
+        if(!this.booking.invoiceNumber && sortedDates.length>0 && location.length==1){
+            const firstBookingDate = sortedDates[0]?.date?.slice(0,10)
+            this.createInvoiceNumber(location[0],firstBookingDate)
+            //saveRequired = true;        
+        }
+            
+        
+
+        if(saveRequired)
+            this.saveBooking(this.booking)
+    }
+
+    public createInvoiceNumber(location: locationsInfoType, date:string){
+        // console.log(location.shortDescription)
+        // console.log(this.booking.interpreter.lastName)
+        // console.log(this.booking.interpreter.firstName)
+        // console.log(date)
+    }
+
+
+    public getpaymentDetailsForm(saveIfRequired){
+        this.paymentDetailsForm = paymentDetails(this.booking)
+        let saveRequired = false;
+        if(this.booking.expenseGST != Number(this.paymentDetailsForm.GSTifApplic)){
+            this.booking.expenseGST = Number(this.paymentDetailsForm.GSTifApplic)
+            saveRequired = true;
+        }
+        if(this.booking.expenseTotal != Number(this.paymentDetailsForm.totalExpenses)){
+            this.booking.expenseTotal = Number(this.paymentDetailsForm.totalExpenses)
+            saveRequired = true;
+        }
+        if(this.booking.feesGST != Number(this.paymentDetailsForm.feesGST)){
+            this.booking.feesGST = Number(this.paymentDetailsForm.feesGST)
+            saveRequired = true;
+        }
+        if(this.booking.feesTotal != Number(this.paymentDetailsForm.feesTotal)){
+            this.booking.feesTotal = Number(this.paymentDetailsForm.feesTotal)
+            saveRequired = true;
+        }
+
+        if(this.booking.invoiceTotal != Number(this.paymentDetailsForm.totalPayable)){
+            this.booking.invoiceTotal = Number(this.paymentDetailsForm.totalPayable)
+            saveRequired = true;
+        }
+        
+        // console.log(this.booking.expenseGST)
+        // console.log(this.booking.expenseTotal)
+        // console.log(this.booking.feesGST)
+        // console.log(this.booking.feesTotal)
+        // console.log(this.booking.invoiceTotal)
+        console.log("Saving Fees Required",saveRequired)
+        if(saveRequired && saveIfRequired)
+            this.saveBooking(this.booking)
+    }
+
+    public IApproveAllRecords(){
+        this.calculations()
         this.booking.recordsApproved = true;
         this.booking.approverName = this.userName;
         this.saveBooking(this.booking)        
     }
 
-    public saveRecordChanges(records){
+    public calculations(){
+        const calculations = {} as calculationVars;
+        calculations.totalInterpretingHours = getTotalInterpretingHours(this.booking)
+        calculations.travelInformation = travelInformation(this.booking)
+
+        const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
+        admDetail.calculations = calculations
+        this.booking.admDetail = admDetail
+    }
+
+    public saveRecordChanges(records, section_name){
+        this.sectionName = section_name
         this.booking.dates = JSON.parse(JSON.stringify(records))
+        this.getpaymentDetailsForm(false)
         this.saveBooking(this.booking)
     }
 
-    public saveBookingFields(fields){
+    public saveBookingFields(fields, section_name){
+        this.sectionName = section_name
         for(const field of fields){
             this.booking[field.name] = field.value
         }
+        if(section_name=='adm-payment') 
+            this.getpaymentDetailsForm(false)
         this.saveBooking(this.booking)
     }
 
@@ -232,9 +357,7 @@ export default class AdmForms extends Vue {
         this.errorMsg =''
         this.$http.put('/booking/adm/' + booking.id, booking)
         .then((response) => {                                    
-            this.getBooking(); //TODO add
-            //this.update++;//TODO remove
-            //this.bookingRecordsApproved=true; //TODO remove
+            this.getBooking();
         },(err) => {            
             this.errorMsg=err.response.data.detail
             Vue.filter('scrollToLocation')('alert-msg')

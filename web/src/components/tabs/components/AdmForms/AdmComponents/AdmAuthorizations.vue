@@ -1,5 +1,5 @@
 <template>
-    <b-card v-if="dataReady" class="my-5" :key="update" >
+    <b-card :name="section_name" v-if="dataReady" class="my-5" :key="update" >
         <h3 class="text-dark p-0 mt-n2 mb-4">Authorizations</h3>
         
         <b-row class="mt-n2 mb-2">
@@ -119,6 +119,8 @@ export default class AdmAuthorizations extends Vue {
     @commonState.State
     public userName!: string;
 
+    section_name="adm-authorization"
+
     dataReady = false;
     dateChanged = false;
     update=1;
@@ -188,7 +190,7 @@ export default class AdmAuthorizations extends Vue {
             {name:'qualifiedReceiverSigned', value:this.qualifiedReceiverSigned},            
             {name:'qualifiedReceiverSigningDate', value:this.qualifiedReceiverSigningDate}
         ]
-        this.$emit('saveAuthorizations',authorizationChanges)
+        this.$emit('saveAuthorizations',authorizationChanges, this.section_name)
     }
 
 }

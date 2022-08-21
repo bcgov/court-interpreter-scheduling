@@ -44,14 +44,18 @@ import {srcFile} from './logo'
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 import { locationsInfoType } from '@/types/Common/json';
 
+import { namespace } from "vuex-class";
+import "@/store/modules/common";
+const commonState = namespace("Common");
+
 @Component
 export default class AdmHeader extends Vue {
     
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
     
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+    @commonState.State
+    public courtLocations!: locationsInfoType[];
     
     dataReady = false;
     registry=""
@@ -63,8 +67,11 @@ export default class AdmHeader extends Vue {
         this.dataReady = false;        
         this.src = srcFile;
         this.invoiceNum = this.booking.invoiceNumber;
-        this.invoiceDate = this.booking.invoiceDate;
-        this.registry = this.searchLocation.shortDescription
+        this.invoiceDate = this.booking.invoiceDate;        
+        const location = this.courtLocations.filter(loc => loc.id==this.booking.location_id)
+        if(location.length==1){                
+            this.registry = location[0].shortDescription
+        }
         this.dataReady = true;
     }    
 }

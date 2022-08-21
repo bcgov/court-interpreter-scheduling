@@ -37,7 +37,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
-import { locationsInfoType } from '@/types/Common/json';
+
 
 
 @Component
@@ -45,9 +45,6 @@ export default class SchedulingInfo extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
-
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
     
     dataReady = false;
     courtLocationName=""
@@ -57,7 +54,7 @@ export default class SchedulingInfo extends Vue {
 
     mounted(){
         this.dataReady = false;
-        this.courtLocationName = this.searchLocation.name
+        this.courtLocationName = this.booking.location_name
         this.clerkName = this.booking.updated_by
         this.clerkPhone = this.booking.clerkPhone
         this.bookingDate = this.booking.createdDate

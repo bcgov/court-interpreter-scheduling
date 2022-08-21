@@ -17,9 +17,25 @@
                     </b-form-select>
                 </b-form-group>
             </b-col> 
-            <b-col cols="6">
+            <b-col cols="5">                
+                <b-form-group                        
+                    label="Court Location" 
+                    class="labels"
+                    label-for="location">
+                    <b-form-select 
+                        id="location"                                                   
+                        style="display:inline"                      
+                        v-model="registry.id"> 
+                        <b-form-select-option
+                            v-for="courtLocation,inx in courtLocations" 
+                            :key="inx"
+                            :value="courtLocation.id">
+                                {{courtLocation.name}}
+                        </b-form-select-option>
+                    </b-form-select> 
+                </b-form-group>            
             </b-col>
-            <b-col cols="3">                    
+            <b-col cols="4">                    
                 <b-button v-if="totalTabs>1" @click="openCopy" variant="warning" class="mt-3 float-right">
                     <b-icon-layers /> Import from Tab
                 </b-button>
@@ -65,15 +81,18 @@
                     </b-form-input>
                 </b-form-group>
             </b-col>
-            <b-col cols="5">
-                <b-form-group                        
-                    label="Court Location" 
-                    class="labels"
-                    label-for="location">
-                    <b-form-select 
-                        id="location"                                                   
-                        style="display:inline"
-                        @change="changeLocation"
+            <b-col cols="5">                
+                <b-form-group class="m-0 p-0" >                                           
+                    <b-form-checkbox
+                        class="title-label"
+                        v-model="remoteLocation" 
+                        @change="addRemoteLocation"
+                        >{{remoteLocation? '': 'Add a '}} Remote Court Location
+                    </b-form-checkbox>
+                    <b-form-select
+                        v-if="remoteLocation"
+                        id="remote-location"                                                                           
+                        @change="changeRemoteLocation"
                         :state="bookingStates.location"
                         v-model="booking.locationId"> 
                         <b-form-select-option
@@ -82,7 +101,7 @@
                             :value="courtLocation.id">
                                 {{courtLocation.name}}
                         </b-form-select-option>
-                    </b-form-select> 
+                    </b-form-select>
                 </b-form-group>
             </b-col>
             
@@ -190,11 +209,12 @@
                     </b-form-input>
                 </b-form-group>
             </b-col><b-col cols="3">
-                <b-form-group                        
+                <b-form-group
+                    :key="appearanceMethodKey"                        
                     label="Method Of Appearance" 
                     class="labels"
                     label-for="appearance-method">
-                    <b-form-select 
+                    <b-form-select                         
                         id="appearance-method"                                                   
                         style="display:inline"                                
                         :options="bookingMethodOfAppearanceOptions"
@@ -396,12 +416,18 @@ export default class InterpreterBookingFields extends Vue {
     
     @Prop({required: true})
     languages: interpreterLanguageInfoType[]
+    
+    @Prop({required: true})
+    registry!: any;
 
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
     reasonCode=''
     reasonCodeOther=''
+
+    remoteLocation=false
+    appearanceMethodKey = 0;
 
     courtClass=''
     courtClassOther=''
@@ -464,8 +490,25 @@ export default class InterpreterBookingFields extends Vue {
         bookingStates.language = true;
     }
 
-    public changeLocation(){
+    public addRemoteLocation(checked){
+        Vue.nextTick(()=>{
+            if(checked){
+                this.booking.locationId = this.registry.id
+                this.changeRemoteLocation()
+                this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions.filter(method => method.text != "In Person")
+                this.booking.methodOfAppearance = null
+                this.appearanceMethodKey++;
+            }
+            else{
+                this.booking.locationId = null
+                this.booking.registry = null
+                this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions
+                this.appearanceMethodKey++;
+            }
+        })
+    }
 
+    public changeRemoteLocation(){
         const location = this.courtLocations.filter(loc => loc.id==this.booking.locationId)
 
         if(location.length==1){
@@ -544,6 +587,14 @@ export default class InterpreterBookingFields extends Vue {
         color:rgb(67, 93, 119);
         font-weight: 600;
     }
+
+    .title-label {        
+        margin:0.7rem 0 -0.4rem 0;        
+        line-height: 1.7rem;
+        color:rgb(67, 93, 119);
+        font-weight: 600;
+    }
+
     ::v-deep label{        
         margin:0 0 0.5rem 0;
     }

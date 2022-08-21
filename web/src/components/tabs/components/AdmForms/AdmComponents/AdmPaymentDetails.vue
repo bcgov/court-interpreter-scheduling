@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataReady">
+    <div :name="section_name" v-if="dataReady">
         <b-card class="my-5">
             <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
             <b-table-simple small borderless>
@@ -8,31 +8,63 @@
                         <b-td v-for="inx in Array(50)" :key="inx" class="border-0 border-dark" style="width:2%;" />                         
                     </b-tr>
                 </b-thead>                               
-                <b-tbody>
+                
 <!-- <Court Hours> -->
-                    <b-tr>
-                        <b-th colspan="8" class="h3">Fees</b-th>
+                <b-tbody v-for="lang,inx in languageItems" :key="'fees-'+inx">
+                    <b-tr v-if="inx==0">
+                        <b-td colspan="42" class="h3 py-0" style="transform:translate(0,20px);">Fees</b-td> 
+                        <b-td colspan="8" class="h4 text-center pb-0 pt-1" style="transform:translate(0,20px);">Fees Payable</b-td>                                              
+                    </b-tr>
+                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                        <b-th colspan="8" class="h3"></b-th>
                         <b-th colspan="2" class=""></b-th>
                         <b-th colspan="8" class="text-center">Rate</b-th>
                         <b-th colspan="2" class=""></b-th>
                         <b-th colspan="8" class="text-center">Total Hours</b-th>
                         <b-th colspan="14" class=""></b-th>
-                        <b-th colspan="8" class="text-center">Fees Payable</b-th>                                                 
+                        <b-th colspan="8" class="text-center"></b-th>                                                 
                     </b-tr>
-                    <b-tr>
-                        <b-th colspan="8" class="">Court Hours (Level1)</b-th>
+                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                        <b-th colspan="8" class="">Court Hours <div class="h5">({{getLanguageHrDetail(lang)}})</div></b-th>
                         <b-th colspan="2" class="text-right">$</b-th>
-                        <b-td colspan="8" class=""><underline-text :text="form.courtHrRateL1" /></b-td>
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[0]+lang]" /></b-td>
                         <b-th colspan="2" class="text-center">x</b-th>
-                        <b-td colspan="8" class=""><underline-text :text="form.courtTotalHrsL1"/></b-td>
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[1]+lang]"/></b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="6" class=""><underline-text :text="form.courtTotalL1"/></b-td>
+                        <b-td colspan="6" class=""><underline-text :text="form[courtFeeItems[2]+lang]"/></b-td>
                         <b-th colspan="4" class=""></b-th>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="8" class=""><underline-text :text="form.courtPayableFeeL1"/></b-td>                          
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[3]+lang]"/></b-td>                          
                     </b-tr>
+                    <!-- <b-tr style="height:.1rem;line-height:.1rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>  -->
+                </b-tbody>
+                <b-tbody v-if="!form.includeCourtHrs">
+                    <b-tr>
+                        <b-th colspan="8" class="h3"></b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Rate</b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Total Hours</b-th>
+                        <b-th colspan="14" class=""></b-th>
+                        <b-th colspan="8" class="text-center"></b-th>                                                 
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="8" class="">Court Hours</b-th>
+                        <b-th colspan="2" class="text-right">$</b-th>
+                        <b-td colspan="8" class=""><underline-text text="" /></b-td>
+                        <b-th colspan="2" class="text-center">x</b-th>
+                        <b-td colspan="8" class=""><underline-text text=""/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text text=""/></b-td>
+                        <b-th colspan="4" class=""></b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text text=""/></b-td>                          
+                    </b-tr>
+                    <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>
+                </b-tbody>  
+                <b-tbody>   
 <!-- <spacer> -->                   
-                    <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>                    
+                    <!-- <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>                     -->
 <!-- <Travel Hours> -->
                     <b-tr>
                         <b-th colspan="10" class=""></b-th>
@@ -46,7 +78,7 @@
                         <b-th colspan="2" class="text-right">$</b-th>
                         <b-td colspan="8" class=""><underline-text :text="form.travelHrRate"/></b-td>
                         <b-th colspan="2" class="text-center">x</b-th>
-                        <b-th colspan="8" class=""><underline-text :text="form.travelTotalHrs"/></b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form.travelTotalHrs"/></b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="6" class=""><underline-text :text="form.travelTotal"/></b-td>
                         <b-th colspan="4" class=""></b-th>
@@ -248,7 +280,7 @@
                         <b-th colspan="6" class="text-center">Total</b-th>
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="border-left border-dark"></b-th> 
-                        <b-th colspan="8" class="text-center"></b-th>                        
+                        <b-th colspan="8" class="text-center">Total Cancellation Fees</b-th>                        
                     </b-tr>
                     <b-tr>
                         <b-th colspan="7" class="">Airfare/Ferry</b-th>
@@ -262,7 +294,7 @@
                         <b-td colspan="6" class=""><underline-text :text="form.ferryTotalExp"/></b-td> 
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="8" class=""></b-td>                        
+                        <b-td colspan="8" class=""><underline-text :text="form.totalCancellationFees"/></b-td>                        
                     </b-tr>
 <!-- <Miscellaneous> -->
                     <b-tr>                        
@@ -288,7 +320,7 @@
                         <b-td colspan="6" class=""><underline-text :text="form.miscTotalExp"/></b-td> 
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="8" class=""><underline-text :text="form.totalPayable"/></b-td>                        
+                        <b-th colspan="8" class=""><underline-text :text="form.totalPayable"/></b-th>                        
                     </b-tr>
 <!-- <Expenses Pre-GST> -->
                     <b-tr class="">                        
@@ -344,9 +376,10 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import { bookingSearchResultInfoType, paymentDetailsVars } from '@/types/Bookings/json';
+import {bookingSearchResultInfoType, paymentDetailsVars} from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
-import { paymentDetailsInfoType } from '@/types/Bookings';
+import {paymentDetailsInfoType} from '@/types/Bookings';
+import {languageItems, courtFeeItems} from '../AdmCalculations/PaymentCalculation'
 
 
 @Component({
@@ -359,8 +392,14 @@ export default class AdmPaymentDetails extends Vue {
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
     
-    form = {} as paymentDetailsInfoType
-  
+    @Prop({required: true})
+    form!: paymentDetailsInfoType;
+
+    languageItems = []
+    courtFeeItems = []
+
+    section_name="adm-payment"
+
     dataReady = false;
     paymentChanges = false;
                             
@@ -373,87 +412,32 @@ export default class AdmPaymentDetails extends Vue {
     }
 
     public extractFormInfo(){
-        this.form = {
-            courtHrRateL1:'63.16',
-            courtTotalHrsL1:'120.0',
-            courtTotalL1:'7579.20',
-            courtPayableFeeL1:'7579.20',
+        this.languageItems = languageItems
+        this.courtFeeItems = courtFeeItems               
+    }
 
-            travelHrRate:'',
-            travelTotalHrs:'',
-            travelTotal:'',
-            travelPayableFee:'0.00',
-
-            feesSubtotal:'7579.20',
-
-            gstNumber:this.booking.interpreter.gst,
-            gstRate:'0.05',
-
-            feesGST:'378.96',
-            feesTotal:'7,958.16',
-
-            travelKMsRate:'0.55',
-            travelTotalKMs:'150.0',
-            travelSubExp:'82.50',
-            travelTotalExp:'82.50',
-
-            breakfastRate:'12.75',
-            breakfastTotalDays:'16.0',
-            breakfastSubExp:'204.00',
-            breakfastTotalExp:'204.00',
-
-            lunchRate:'14.75',
-            lunchTotalDays:'16.0',
-            lunchSubExp:'236.00',
-            lunchTotalExp:'236.00',
-
-            dinnerRate:'25.50',
-            dinnerTotalDays:'16.0',
-            dinnerSubExp:'408.00',
-            dinnerTotalExp:'408.00',
-
-            lodgingRate:this.booking?.admDetail?.paymentDetail?.lodgingRate?.toFixed(2),
-            lodgingTotalDays:'1',
-            lodgingSubExp:this.booking?.admDetail?.paymentDetail?.lodgingRate?.toFixed(2),
-            lodgingGST:this.booking?.admDetail?.paymentDetail?.lodgingGST?.toFixed(2),
-            lodgingTotalExp:'0.00',
-
-            ferryExp:this.booking?.admDetail?.paymentDetail?.ferryExp?.toFixed(2),
-            ferrySubExp:this.booking?.admDetail?.paymentDetail?.ferryExp?.toFixed(2),
-            ferryGST:this.booking?.admDetail?.paymentDetail?.ferryGST?.toFixed(2),
-            ferryTotalExp:'0.00',
-
-            miscExp:this.booking?.admDetail?.paymentDetail?.miscExp?.toFixed(2),
-            miscSubExp:'0.00',
-            miscGST:this.booking?.admDetail?.paymentDetail?.miscGST?.toFixed(2),
-            miscTotalExp:'0.00',
-
-            expPreGST:'930.50',
-            expTotalGST:'0.00',
-            expTotal:'930.50',
-
-            expPayable:'930.50',
-            GSTifApplic:'0.00',
-            totalExpenses:'930.50',
-            totalPayable:'8,888.66',
-            
-            totalPaidByCourt:this.booking?.admDetail?.paymentDetail?.totalPaidByCourt?.toFixed(2),
-            totalPaidByCrown:this.booking?.admDetail?.paymentDetail?.totalPaidByCrown?.toFixed(2)
-        }
-        
+    public getLanguageHrDetail(lang){
+        let detail=lang
+        if(detail.includes('SPKL')){detail = detail.replace('SPKL','')}
+        if(detail.includes('1')){detail=detail.replace('1','')+' Level 1 '}
+        if(detail.includes('2')){detail=detail.replace('2','')+' Level 2 '}
+        if(detail.includes('3')){detail=detail.replace('3','')+' Level 3 '}
+        if(detail.includes('4')){detail=detail.replace('4','')+' Level 4 '}        
+        if(detail.includes('Old')){detail = detail.replace('Old','') +'\'Previous Rate\' '}
+        return detail
     }
 
     public savePaymentDetailsChanges(){
         this.paymentChanges=false;
         const paymentDetail = {} as  paymentDetailsVars;
-        paymentDetail.totalPaidByCourt = parseFloat(this.form.totalPaidByCourt)
-        paymentDetail.totalPaidByCrown = parseFloat(this.form.totalPaidByCrown)
-        paymentDetail.lodgingRate = parseFloat(this.form.lodgingRate)
-        paymentDetail.lodgingGST = parseFloat(this.form.lodgingGST)
-        paymentDetail.ferryExp = parseFloat(this.form.ferryExp)
-        paymentDetail.ferryGST = parseFloat(this.form.ferryGST)
-        paymentDetail.miscExp = parseFloat(this.form.miscExp)
-        paymentDetail.miscGST = parseFloat(this.form.miscGST)
+        paymentDetail.totalPaidByCourt = this.form.totalPaidByCourt? parseFloat(this.form.totalPaidByCourt): null
+        paymentDetail.totalPaidByCrown = this.form.totalPaidByCrown? parseFloat(this.form.totalPaidByCrown): null
+        paymentDetail.lodgingRate = this.form.lodgingRate? parseFloat(this.form.lodgingRate): null
+        paymentDetail.lodgingGST = this.form.lodgingGST? parseFloat(this.form.lodgingGST): null
+        paymentDetail.ferryExp = this.form.ferryExp? parseFloat(this.form.ferryExp): null
+        paymentDetail.ferryGST = this.form.ferryGST? parseFloat(this.form.ferryGST): null
+        paymentDetail.miscExp = this.form.miscExp? parseFloat(this.form.miscExp): null
+        paymentDetail.miscGST = this.form.miscGST? parseFloat(this.form.miscGST): null
 
         const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
         admDetail.paymentDetail = paymentDetail
@@ -463,7 +447,7 @@ export default class AdmPaymentDetails extends Vue {
             // {name:'invoiceDate', value:this.invoiceDate},
             // {name:'invoiceNumber', value:this.invoiceNumber}           
         ]
-        this.$emit('savePaymentDetail',paymentDetailChanges)
+        this.$emit('savePaymentDetail',paymentDetailChanges, this.section_name)
     }
 
     public formatterGST(value){

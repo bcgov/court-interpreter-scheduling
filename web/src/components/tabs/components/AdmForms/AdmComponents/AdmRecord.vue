@@ -37,6 +37,8 @@
                         :state="data.item.actualStartTimeState">
                     </b-form-input>
                     <div v-if="data.item.actualStartTimeState==false" class="subtext" >eg. 09:00 AM</div>
+                    <div v-if="data.item.startAfterFinishState==false" class="subtext mr-n4" >Start-Time is after</div>
+                    <div v-if="data.item.sessionLargerThan8hrsWarning==false" class="subtext-warning" >The session exceeds 8 hours !</div>
                 </template>
 
                 <template v-slot:cell(actualFinishTime)="data" > 
@@ -49,6 +51,7 @@
                         :state="data.item.actualFinishTimeState">
                     </b-form-input>
                     <div v-if="data.item.actualFinishTimeState==false" class="subtext" >eg. 04:00 PM</div>
+                    <div v-if="data.item.startAfterFinishState==false" class="subtext ml-n5" >the Finish-Time !</div>                    
                 </template>
 
                 <template v-slot:cell(approversInitials)="data" >                    
@@ -72,8 +75,8 @@
                         size="sm" 
                         @click="data.toggleDetails();" 
                         v-b-tooltip.hover.v-warning
-                        :title="data.item.registryWarning?'This Booking corresponds to a different location.':''"
-                        :class="data.item.registryWarning?'m-0 p-0 bg-danger text-warning': 'm-0 p-0 text-primary bg-transparent'">
+                        :title="data.item.registryWarning?'This Booking corresponds to a remote location.':''"
+                        :class="data.item.registryWarning?'m-0 p-0 text-warning': 'm-0 p-0 text-primary bg-transparent'">
                         <b-icon-caret-right-fill v-if="!data.item['_showDetails']"></b-icon-caret-right-fill>
                         <b-icon-caret-down-fill v-if="data.item['_showDetails']"></b-icon-caret-down-fill>                                                       
                     </b-button>
@@ -93,9 +96,10 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
+import moment from 'moment';
 
 import {reasonCodeClass} from '../../BookingEnums'
-import { locationsInfoType } from '@/types/Common/json';
+
 import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 import RecordDetails from "./RecordDetails.vue"
@@ -110,9 +114,7 @@ export default class AdmRecord extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
-    
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+        
 
     recordFields=[
         {key:'details',        label:'',                  sortable:false, thStyle:'width:1%',   cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
@@ -139,32 +141,47 @@ export default class AdmRecord extends Vue {
         for(const date of this.booking.dates){
             const record: bookingAdmRecordInfoType = JSON.parse(JSON.stringify(date))
            
-            record.registryWarning = !(date.registry==this.searchLocation.name)
+            record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
 
             record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
             record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
-
+            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.time = date.startTime + ' '+ date.finishTime
             record.federalYN = date.federal? 'Yes' : 'No'
             record.bilingualYN = date.bilingual? 'Yes' : 'No'            
             record.actualStartTimeState=null;            
             record.actualFinishTimeState=null;            
-            record.approversInitialsState=null;            
+            record.approversInitialsState=null;
+            record.startAfterFinishState=null;
+            record.sessionLargerThan8hrsWarning=null;           
             // Vue.filter('initials')(this.booking.updated_by)
-            if(record.status=="Cancelled"){
-                this.cancelledRecords.push(record)          
+            if(record.status=="Booked"){
+                this.records.push(record)         
             }else
-                this.records.push(record)
+                this.cancelledRecords.push(record)
         }        
         this.dataReady = true;
-        this.checkAllApproved()
+        for(const record of this.records)
+            this.recordChanged(record)
+        // this.checkAllApproved()
     }
 
     public recordChanged(record){
         //console.log(record)
         record.actualStartTimeState = this.checkTimeFormat(record.actualStartTime);
         record.actualFinishTimeState = this.checkTimeFormat(record.actualFinishTime);
+        record.sessionLargerThan8hrsWarning = null;
+        record.startAfterFinishState = null;
+       
+        if(record.actualStartTimeState != false && record.actualFinishTimeState != false){
+            const start = moment(record.actualStartTime, "hh:mm A")
+            const end = moment(record.actualFinishTime, "hh:mm A")
+            const diff = (moment.duration(end.diff(start))).asMinutes()
+            record.startAfterFinishState = (start>=end)? false :null
+            record.sessionLargerThan8hrsWarning = (diff>480)? false : null;                        
+        }
+
         const bookingDate = this.booking.dates.filter(date => date.id == record.dateId)
         if (bookingDate.length==1){
             bookingDate[0].actualStartTime = record.actualStartTimeState!=false? record.actualStartTime :'';
@@ -179,8 +196,9 @@ export default class AdmRecord extends Vue {
         let allApproved = true;
         for(const record of this.records){
             if( !record.actualStartTime   || record.actualStartTimeState==false ||
-                !record.actualFinishTime  || record.actualFinishTimeState==false ||
-                !record.approversInitials || record.approversInitialsState==false
+                !record.actualFinishTime  || record.actualFinishTimeState==false ||                
+                !record.approversInitials || record.approversInitialsState==false ||
+                record.startAfterFinishState==false
             ){
                 allApproved = false;
                 break;
@@ -188,15 +206,17 @@ export default class AdmRecord extends Vue {
         }
 
         if(allApproved) {
-            console.log(this.records)
-            this.$emit('approved',true ,[...this.records, ...this.cancelledRecords])
+            // console.log(this.records)
+            this.$emit('approved',true, false ,[...this.records, ...this.cancelledRecords])
+        }else{
+            this.$emit('approved',false, false ,[...this.records, ...this.cancelledRecords])
         }
     }
 
     public modifyRecords(){
         this.booking.recordsApproved = false
         this.update++;
-        this.$emit('approved',false ,[...this.records, ...this.cancelledRecords])
+        this.$emit('approved',false, true ,[...this.records, ...this.cancelledRecords])
     }
 
     public timeFormatter(value){
@@ -230,7 +250,16 @@ export default class AdmRecord extends Vue {
         color: red;
         margin: 0rem;
         line-height: 0;
-        transform:translate(0,10px);
+        transform:translate(0,10px);        
+    }
+
+    .subtext-warning{
+        font-size: 12px;
+        color: rgb(218, 133, 23);
+        text-shadow: 1px 1px #999393;
+        margin:0 -9rem 0 0;        
+        line-height: 0;
+        transform:translate(0,7px);        
     }
 
     .labels {

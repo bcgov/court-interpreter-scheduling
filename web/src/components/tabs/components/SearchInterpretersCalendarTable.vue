@@ -9,9 +9,11 @@
             </b-card>      
 
             <b-card v-else class="home-content border-white p-0" body-class="pt-0">
-                <custom-pagination                                         
+                <custom-pagination
+                    :key="'pagination-top-'+paginationKey"                                         
                     :pages="[3,6,10]"
                     :totalRows="interpreters.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
 
                 <b-table
@@ -37,9 +39,11 @@
                     </template>                    
                 </b-table>
                 
-                <custom-pagination                                         
+                <custom-pagination
+                    :key="'pagination-bottom-'+paginationKey"                                         
                     :pages="[3,6,10]"
                     :totalRows="interpreters.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>
             
             </b-card>
@@ -101,10 +105,12 @@ export default class SearchInterpretersCalendarTable extends Vue {
     
     currentPage = 1;
     itemsPerPage = 3;// Default
+    paginationKey = 0;
 
     public paginationChanged(currentPage, itemsPerPage){
         this.currentPage = currentPage
         this.itemsPerPage = itemsPerPage
+        this.paginationKey++
     }
     
     get currentPageInterpreters(){

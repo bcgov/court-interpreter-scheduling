@@ -112,6 +112,7 @@ import { bookingSearchResultInfoType, dateRangeInfoType } from '@/types/Bookings
 import Spinner from '@/components/utils/Spinner.vue'
 
 import BookingDateRangePicker from './components/DateComponents/BookingDateRangePicker.vue'
+import { rateJsonInfoType } from '@/types/Common';
 
 @Component({
     components:{
@@ -126,7 +127,10 @@ export default class BookingsPage extends Vue {
     public courtLocations!: locationsInfoType[];
 
     @commonState.State
-    public languages!: languagesInfoType[];    
+    public languages!: languagesInfoType[]; 
+    
+    @commonState.Action
+    public UpdateRates!: (newRates: rateJsonInfoType[]) => void
 
     @commonState.State
     public userLocation!: locationsInfoType;
@@ -217,6 +221,20 @@ export default class BookingsPage extends Vue {
             if(response?.data){ 
                 const locations = _.sortBy(response.data,'name')                                
                 this.UpdateCourtLocations(locations);
+                this.loadRates();
+            }
+            
+        },(err) => {
+            console.log(err)            
+        });
+    }
+
+    public loadRates(){
+        this.$http.get('/rate')
+        .then((response) => {            
+            if(response?.data){ 
+                const rates = response.data                              
+                this.UpdateRates(rates);
                 this.loadLanguages();
             }
             

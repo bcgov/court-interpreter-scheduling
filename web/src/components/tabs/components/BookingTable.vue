@@ -10,7 +10,8 @@
 
             <b-card v-else class="home-content border-white p-0" body-class="pt-0">
                 <custom-pagination 
-                    v-if="bookings.length>5"                                        
+                    v-if="bookings.length>5"
+                    :key="'pagination-top-'+paginationKey"                                        
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
                     :initCurrentPage="currentPage"
@@ -98,17 +99,19 @@
 
                     <template v-slot:cell(edit)="data">                        
                         <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
-                            <b-button style="font-size:11px;" 
-                                size="sm"                                 
-                                v-b-tooltip.hover.top.noninteractive
-                                :title="data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms'"                                      
-                                @click="openAdm(data.item);" 
-                                :class="data.item.recordsApproved? 'text bg-approved my-1 px-1':'text bg-select border-info my-1 px-1' " 
-                                >
-                                <img 
-                                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHaADAAQAAAABAAAAHAAAAADjGz/hAAAC2klEQVRIDe1Wy0uUURQ/9442PTaJLWqaiiCjqP6AwEAhwgja6cCMizaWIwW1aqM0QS1aGjRDERWlU1kpvWmjFhG0aBMFolCUj15ibULS8Z5+99Mr1++bme4IbaJvMfe87u93zrmvIfr//cUOCD/22nj6EpM4QMQBnz/WrwtBN6uqtjb2p2pzfp+tS1vR8mIJvblMsaGhges1qb4yP66tB6qJxNM8F3BGCPHcDi4mM/P9eb8QPWtWyNirC4em522WUJAUjobRbMstK7aoaCXrxSHheyurKuvfphqm/BMD7fUH5NN1+7alupagukDSJh6+/T+Gxrs3HXkUNjYzLop0cHAg831w/Ne6xkydAco3MtO+yYkPPX5f0QX3BxtdCpIKK68ElRsb2vnJyN7IvBQhFah47wI7lJJIo4nzOxSpc4p5lwek6E4kke4NUVnrcOfBiA2Oo1cPvcu2Gdm5vevj6QrFqpdAiIWcFCQmiEQIQLtnhNpuAF1GZ9KcJFTHqzxQKXeOZpOVMhSqRadjYx3Nl13ITIxze0NCvJvB1aE/ZnUXR+QGiZnu0c7kbQNmj3PHLe/udq50+FryDRDa0FLNvQEEx1WOX2JNn0SPdS2zCf8kO5NqIGR/isLhjVLKo0jgqQfOtIe/jiMZ98+5vRoymkjH5fTUt48dze1Q21HlY1Rdh7dhs58y2pipUYr7tF1KUTvSkew3Mc6kADmsFJ3FDhaReGYAL8pnnMFqDcRSPDSALqN7e2XZMxL0YhaUt4CwRsu4FE6XunudSUeuNr0e60xWh5eXr0aVXmUSxwW7t3U2EfdfZ1ID+f5i0xfIw7gcpkSIfxp7KWPgHJknCo6SnjZNinVPYfOcKJYANtXJkistBogdmtKghWK0T8cUrBQTS/rngLV9YMjyVWwIdUwe0ozCIQjYDWChcSzbsmCOTWwT6vmB9griK8hl9pItxOBgN632EzpM/YdCfgOczgLVckVGfAAAAABJRU5ErkJggg==" 
-                                    alt="">                                                                                  
-                            </b-button>
+                            <span                           
+                                :title="areRecordsOnlyPendings(data.item)? 'All Booking are Pending !':(data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms')"
+                                v-b-tooltip.hover.top.noninteractive>
+                                <b-button style="font-size:11px;"
+                                    :disabled="areRecordsOnlyPendings(data.item)"                                                                 
+                                    @click="openAdm(data.item);" 
+                                    :class="data.item.recordsApproved? 'text bg-approved my-1 px-1':'text bg-select border-info my-1 px-1' " 
+                                    size="sm">
+                                    <img 
+                                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHaADAAQAAAABAAAAHAAAAADjGz/hAAAC2klEQVRIDe1Wy0uUURQ/9442PTaJLWqaiiCjqP6AwEAhwgja6cCMizaWIwW1aqM0QS1aGjRDERWlU1kpvWmjFhG0aBMFolCUj15ibULS8Z5+99Mr1++bme4IbaJvMfe87u93zrmvIfr//cUOCD/22nj6EpM4QMQBnz/WrwtBN6uqtjb2p2pzfp+tS1vR8mIJvblMsaGhges1qb4yP66tB6qJxNM8F3BGCPHcDi4mM/P9eb8QPWtWyNirC4em522WUJAUjobRbMstK7aoaCXrxSHheyurKuvfphqm/BMD7fUH5NN1+7alupagukDSJh6+/T+Gxrs3HXkUNjYzLop0cHAg831w/Ne6xkydAco3MtO+yYkPPX5f0QX3BxtdCpIKK68ElRsb2vnJyN7IvBQhFah47wI7lJJIo4nzOxSpc4p5lwek6E4kke4NUVnrcOfBiA2Oo1cPvcu2Gdm5vevj6QrFqpdAiIWcFCQmiEQIQLtnhNpuAF1GZ9KcJFTHqzxQKXeOZpOVMhSqRadjYx3Nl13ITIxze0NCvJvB1aE/ZnUXR+QGiZnu0c7kbQNmj3PHLe/udq50+FryDRDa0FLNvQEEx1WOX2JNn0SPdS2zCf8kO5NqIGR/isLhjVLKo0jgqQfOtIe/jiMZ98+5vRoymkjH5fTUt48dze1Q21HlY1Rdh7dhs58y2pipUYr7tF1KUTvSkew3Mc6kADmsFJ3FDhaReGYAL8pnnMFqDcRSPDSALqN7e2XZMxL0YhaUt4CwRsu4FE6XunudSUeuNr0e60xWh5eXr0aVXmUSxwW7t3U2EfdfZ1ID+f5i0xfIw7gcpkSIfxp7KWPgHJknCo6SnjZNinVPYfOcKJYANtXJkistBogdmtKghWK0T8cUrBQTS/rngLV9YMjyVWwIdUwe0ozCIQjYDWChcSzbsmCOTWwT6vmB9griK8hl9pItxOBgN632EzpM/YdCfgOczgLVckVGfAAAAABJRU5ErkJggg==" 
+                                        alt="">                                                                                  
+                                </b-button>
+                            </span>
                             <b-button 
                                 style="font-size:11px;" 
                                 size="lg"
@@ -123,7 +126,8 @@
                     
                 </b-table>
 
-                <custom-pagination                                         
+                <custom-pagination
+                    :key="'pagination-bottom-'+paginationKey"                                         
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
                     :initCurrentPage="currentPage"
@@ -141,7 +145,7 @@
                 :interpreter="currentInterpreter"
                 :bookingDates="currentBooking"
                 :bookingId="currentBookingId"
-                :searchLocation="searchLocation"
+                :registryLocationId="currentBookingRegistryId"
                 @close="closeBookingWindow"
                 />
 
@@ -186,7 +190,7 @@
                     <div style="font-size:16pt; margin:1rem 0 0 1rem;" >ADM-322</div>
                 </b-row>
             </template>
-            <adm-forms :bookingId="currentAdmId" :searchLocation="searchLocation"/>
+            <adm-forms :bookingId="currentAdmId" />
             <template v-slot:modal-header-close>
                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="closeBookingWindow">&times;</b-button>
             </template>
@@ -263,6 +267,7 @@ export default class BookingTable extends Vue {
     currentBooking = {} as bookingInfoType;
     currentInterpreter = {} as bookingInterpreterInfoType
     currentBookingId = 0
+    currentBookingRegistryId = 0;
 
     currentAdmId = null
     
@@ -272,6 +277,7 @@ export default class BookingTable extends Vue {
 
     currentPage = 1;
     itemsPerPage = 10;// Default
+    paginationKey = 0;
 
     bookingFields = [        
         {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
@@ -309,7 +315,7 @@ export default class BookingTable extends Vue {
 
     public getWindowWidth(){
         const windowWidth = document.documentElement.clientWidth
-        this.commentLength = (-6.92932859e-9*Math.pow(windowWidth,3))+(3.4768992747e-5*Math.pow(windowWidth,2))-(0.03922*windowWidth)+16.528
+        this.commentLength = -3 + (-6.92932859e-9*Math.pow(windowWidth,3))+(3.4768992747e-5*Math.pow(windowWidth,2))-(0.03922*windowWidth)+16.528
     }    
     
     public displayInterpreterInfo(interpreterInfo: bookingInterpreterInfoType){
@@ -328,6 +334,7 @@ export default class BookingTable extends Vue {
         this.currentBooking = JSON.parse(JSON.stringify(bookingToEdit.dates));
         this.currentInterpreter = bookingToEdit.interpreter
         this.currentBookingId = bookingToEdit.id
+        this.currentBookingRegistryId = bookingToEdit.location_id
         if(bookingToEdit.recordsApproved) 
             this.showApprovedWarningWindow = true
         else
@@ -335,10 +342,17 @@ export default class BookingTable extends Vue {
     }
 
     public openAdm(bookingToADM: bookingSearchResultInfoType){
-        console.log(bookingToADM);        
+        // console.log(bookingToADM);        
         this.currentAdmId = bookingToADM.id;
         this.showAdmWindow = true;
     }
+
+    public areRecordsOnlyPendings(data){
+        for(const date of data.dates)
+            if(date.status=='Booked' || date.status=='Cancelled') return false
+        return true
+    }
+
 
     public sortByDate(data){
         return _.sortBy(data, function(data){            
@@ -354,6 +368,7 @@ export default class BookingTable extends Vue {
     public paginationChanged(currentPage, itemsPerPage){
         this.currentPage = currentPage
         this.itemsPerPage = itemsPerPage
+        this.paginationKey++;
     }
 
 }
