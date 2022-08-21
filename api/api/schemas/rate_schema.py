@@ -8,6 +8,8 @@ class RateSchema(BaseModel):
     id: Optional[int]    
     name: Optional[str]
     value: Optional[float]
+    previous_value: Optional[float] = Field(None, alias="previousValue")
+    value_changed_date: Optional[datetime] = Field(None, alias="valueChangedDate")
     
     class Config():
         orm_mode = True
@@ -15,7 +17,7 @@ class RateSchema(BaseModel):
 
 
 class RateResponseSchema(RateSchema):
-    
-    previous_value: Optional[float] = Field(None, alias="previousValue")
-    value_changed_date: Optional[datetime] = Field(None, alias="valueChangedDate")
+    pass
+    # previous_value: Optional[float] = Field(None, alias="previousValue")
+    # value_changed_date: Optional[datetime] = Field(None, alias="valueChangedDate")
     

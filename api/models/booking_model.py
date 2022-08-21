@@ -49,6 +49,9 @@ class BookingModel(Base):
     dates = relationship("BookingDatesModel", back_populates="booking")
 
     pdf = relationship("PdfModel", back_populates="booking")
+
+    location_id = Column(Integer, ForeignKey('court_location.id'))
+    location_name = Column(String, unique=False, index=False, nullable=True)
      
 
 class BookingDatesModel(Base):

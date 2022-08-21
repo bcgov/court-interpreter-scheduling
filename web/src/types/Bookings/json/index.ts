@@ -42,6 +42,8 @@ export interface bookingSearchResultInfoType{ //OK
     updated_by:string;
     interpreter: bookingInterpreterInfoType;
     dates: bookingInfoType[];
+    location_id: number;
+    location_name: string; 
     
     recordsApproved?: boolean;
     approverName?: string;
@@ -82,7 +84,7 @@ export interface bookingInterpreterInfoType { //OK
     phone: string;
     email: string;
     languages: interpreterLanguageInfoType[];
-    languageHistory? :string;
+    languageHistory? :languageHistoryInfoType[];
     highestLevel?: number;    
     fullAddress?:string;    
     address: string;
@@ -92,6 +94,16 @@ export interface bookingInterpreterInfoType { //OK
     supplier?: string;
     siteCode?: string;
     gst?: string;
+    addressLatitude?: number;
+    addressLongitude?: number;
+}
+
+export interface languageHistoryInfoType {
+    disabled?: boolean;
+    effective_date: string;
+    language: string;
+    language_id?: number;
+    level: number;
 }
 
 export interface bookingAdmCancellationInfoType extends bookingInfoType{ //OK   
@@ -116,6 +128,9 @@ export interface bookingAdmRecordInfoType extends bookingInfoType{ //OK
     actualStartTimeState?: boolean|null;            
     actualFinishTimeState?: boolean|null;            
     approversInitialsState?: boolean|null;
+    startAfterFinishState?: boolean|null;
+    sessionLargerThan8hrsWarning?: boolean|null;
+
 }
 
 export interface bookingDateTimesInfoType {    
@@ -156,6 +171,40 @@ export interface paymentDetailsVars{
     ferryGST: number;
     miscExp: number;
     miscGST: number; 
+}
+
+//__________calculation______
+
+export interface calculationVars{    
+    totalInterpretingHours: totalInterpretingHoursInfoType;
+    travelInformation: travelInformationInfoType;
+}
+
+export interface totalInterpretingHoursInfoType {
+    SPKL1: number;
+    OldSPKL1: number;
+    SPKL2: number;
+    OldSPKL2: number;
+    SPKL3: number;
+    OldSPKL3: number;
+    SPKL4: number;
+    OldSPKL4: number;
+    ASL1: number;
+    OldASL1: number;
+    ASL2: number;
+    OldASL2: number;
+    CART: number;
+    OldCART: number;
+}
+
+export interface travelInformationInfoType {
+    startDate: string;
+    status: string; 
+    totalHours: number;
+    totalKilometers: number; 
+    breakfast: number; 
+    lunch: number; 
+    dinner: number;
 }
 
 

@@ -1,7 +1,7 @@
 <template>
     <div v-if="dataReady" class="mt-2">
         <div v-for="slicedRecord,inx in slicedRecords" :key="'tbl-cancel-cont-'+inx" :class="inx>0? 'margintop0p5':''"> 
-            <table style="font-size:7.5pt;" class="print-block flexsize border border-dark m-0 p-0">
+            <table style="font-size:7.25pt;" class="print-block flexsize border border-dark m-0 p-0">
                 <tr style="font-size:12pt; " class="m-0 p-0">
                     <td class="m-0 p-0" colspan="6"><div  class="ml-1 font-weight-bold">4 Cancellation Information (Project Code 1500144) <span v-if="inx>0">(continued)</span></div></td>                        
                 </tr>
@@ -53,6 +53,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
+import moment from 'moment';
 
 @Component
 export default class CancellationInfo extends Vue {
@@ -87,16 +88,15 @@ export default class CancellationInfo extends Vue {
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.cancellationFee = date.cancellationFee? date.cancellationFee : '0.00'
-
+            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
             record.federalYN = date.federal? 'Yes' : 'No'
             record.feeChanged = false;
             record.feeDisabled = false;
-            //records.push(record)
+            records.push(record)
         }
-
-        records = _.sortBy(records,'date')
+       
 
         if(records.length==0){
             const record = {} as bookingAdmCancellationInfoType
@@ -104,6 +104,7 @@ export default class CancellationInfo extends Vue {
             this.slicedRecords.push([record]) 
             return
         }
+        records = _.sortBy(records,'date')
 
         let cancelIndex = 0;
 

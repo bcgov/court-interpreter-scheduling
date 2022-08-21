@@ -118,7 +118,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 import {reasonCodeClass} from '../../BookingEnums'
 import * as _ from 'underscore';
-
+import moment from 'moment';
 
 @Component
 export default class Record extends Vue {
@@ -155,7 +155,7 @@ export default class Record extends Vue {
             record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
             record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
-
+            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.federalYN = date.federal? 'Yes' : 'No'
             record.bilingualYN = date.bilingual? 'Yes' : 'No'            
             record.actualStartTimeState=null;            

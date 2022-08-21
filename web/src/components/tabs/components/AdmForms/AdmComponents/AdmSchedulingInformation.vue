@@ -1,5 +1,5 @@
 <template>
-        <b-card class="my-5">
+        <b-card :name="section_name" class="my-5">
             <h3 class="text-dark p-0 mt-n2 mb-4">Scheduling Information</h3>
             <b-row class="my-n2">
                 <b-col cols="4">                    
@@ -9,7 +9,7 @@
                         <b-form-input                             
                             size="sm"
                             disabled  
-                            v-model="searchLocation.name">
+                            v-model="registryLocation">
                         </b-form-input>
                     </b-form-group>
                 </b-col>
@@ -67,7 +67,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
-import { locationsInfoType } from '@/types/Common/json';
+
 
 
 
@@ -76,13 +76,13 @@ export default class AdmSchedulingInformation extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType; 
-
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+    
+    section_name="adm-schedule"
     
     updated_by = ""
     createdDate = ""
     clerkPhone = ""
+    registryLocation = ""
     
     phoneChanged =false
     phoneState = null
@@ -93,6 +93,7 @@ export default class AdmSchedulingInformation extends Vue {
         this.updated_by = this.booking.updated_by
         this.createdDate = this.booking.createdDate
         this.clerkPhone = this.booking.clerkPhone
+        this.registryLocation = this.booking.location_name
     }
 
     public applyPhoneChanges(){
@@ -100,7 +101,7 @@ export default class AdmSchedulingInformation extends Vue {
         if(Vue.filter('verifyPhone')(this.clerkPhone)){
             this.phoneState = null
             this.phoneChanged=false
-            this.$emit('saveClerkPhone',[{name:'clerkPhone', value:this.clerkPhone}])
+            this.$emit('saveClerkPhone',[{name:'clerkPhone', value:this.clerkPhone}], this.section_name)
         }else{
             this.phoneState =false
         }              

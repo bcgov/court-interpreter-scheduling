@@ -9,9 +9,11 @@
             </b-card>      
 
             <b-card v-else class="home-content border-white p-0" body-class="pt-0">
-                <custom-pagination                                         
+                <custom-pagination
+                    :key="'pagination-top-'+paginationKey"                                         
                     :pages="[10,20,30]"
                     :totalRows="interpreters.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/> 
                     
                 <b-table
@@ -143,9 +145,11 @@
                     
                 </b-table>
 
-                <custom-pagination                                           
+                <custom-pagination
+                    :key="'pagination-bottom-'+paginationKey"                                           
                     :pages="[10,20,30]"
                     :totalRows="interpreters.length"
+                    :initCurrentPage="currentPage"
                     @paginationChanged="paginationChanged"/>                
             
             </b-card>
@@ -239,6 +243,7 @@ export default class SearchInterpretersTable extends Vue {
     
     currentPage = 1;
     itemsPerPage = 10;// Default
+    paginationKey = 0;
     
    
     interpreterFields = [
@@ -305,6 +310,7 @@ export default class SearchInterpretersTable extends Vue {
     public paginationChanged(currentPage, itemsPerPage){
         this.currentPage = currentPage
         this.itemsPerPage = itemsPerPage
+        this.paginationKey++;
     }
 
 }

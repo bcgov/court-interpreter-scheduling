@@ -83,6 +83,8 @@ class InterpreterADMBookingResponseSchema(InterpreterBookingResponseSchema):
     supplier_no: Optional[str] = Field(alias="supplier")
     gst_no: Optional[str] = Field(alias="gst")
     site_code: Optional[str] = Field(alias="siteCode")
+    address_longitude : Optional[float] = Field(alias="addressLongitude")
+    address_latitude : Optional[float] = Field(alias="addressLatitude")
 
 
 class InterpreterGeoStatusSchema(BaseModel):

@@ -1,9 +1,9 @@
 <template>
-    <b-card class="glow my-5">
+    <b-card :name="section_name" class="glow my-5">
         <h3 class="text-dark p-0 mt-n2 mb-4">Cancellation Information</h3>
         
         <b-card v-for="recordDetails in records" :key="'cancellation-'+recordDetails.id" class="mb-4 bg-card_detail">
-            <b-table-simple  borderless style="width:100%;font-size:12pt;" class="my-n3 mb-0">
+            <b-table-simple  borderless style="width:100%;font-size:11pt;" class="my-n3 mb-0">
                 <tr>
                     <td class="m-1 p-1" style="width:11%;"><b>Date:</b> {{recordDetails.date|iso-date}} </td>
                     <td class="m-1 p-1" style="width:17%;"><b>Time:</b> {{recordDetails.time}} </td>
@@ -57,9 +57,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
+import * as _ from 'underscore';
+import moment from 'moment';
 import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
-import { locationsInfoType } from '@/types/Common/json';
+
 
 @Component
 export default class AdmCancellationInformation extends Vue {
@@ -67,8 +68,7 @@ export default class AdmCancellationInformation extends Vue {
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
     
-    @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+    section_name="adm-cancellation"
     
     dataReady = false;
     records: bookingAdmCancellationInfoType[] = []
@@ -85,9 +85,10 @@ export default class AdmCancellationInformation extends Vue {
                 this.activeRecords.push(record)
                 continue            
             }
+            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
-            record.registryWarning = !(date.registry==this.searchLocation.name)
+            record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
             record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
             record.federalYN = date.federal? 'Yes' : 'No'
@@ -100,13 +101,15 @@ export default class AdmCancellationInformation extends Vue {
             const record = {} as bookingAdmCancellationInfoType;
             record.feeDisabled = true
             this.records.push(record)
+        }else{
+            this.records = _.sortBy(this.records,'date')
         }
         this.dataReady = true;
     }
 
     public feeChanged(recordDetails){        
         recordDetails.feeChanged=false
-        this.$emit('saveChanges', [...this.records, ...this.activeRecords])        
+        this.$emit('saveChanges', [...this.records, ...this.activeRecords], this.section_name)        
     }
    
  

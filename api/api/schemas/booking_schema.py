@@ -81,6 +81,8 @@ class BookingResponseBase(BaseModel):
     scheduling_clerk: Optional[TruncatedUserIdBase] = Field(alias="schedulingClerk")
     clerk_phone: Optional[str] = Field(alias="clerkPhone") 
     interpreter: InterpreterBookingResponseSchema
+    location_id: Optional[int]
+    location_name: Optional[str]
 
     dates: List[BookingDateSchemaOut]
 
@@ -94,6 +96,8 @@ class BookingResponseBase(BaseModel):
 
 class BookingRequestSchema(BookingRequestBase):
     interpreter_id: Optional[int] = Field(alias="interpreterId")
+    location_id: Optional[int] = Field(alias="locationId")
+    location_name: Optional[str] = Field(alias="locationName")
 
 
 

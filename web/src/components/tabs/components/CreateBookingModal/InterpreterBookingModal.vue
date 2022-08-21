@@ -20,7 +20,8 @@
                     :totalTabs="allBookingDatesTimes.length"
                     :tabName="tab.name"
                     :language="language"
-                    :booking="tab.booking" 
+                    :booking="tab.booking"
+                    :registry="registry"                     
                     :bookingStates="tab.bookingStates" 
                     :languages="interpreter.languages"/>               
             </b-tab>
@@ -67,6 +68,9 @@ import InterpreterBookingFields from "./InterpreterBookingFields.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
+import { namespace } from "vuex-class";
+import "@/store/modules/common";
+const commonState = namespace("Common");
 
 @Component({
     components:{       
@@ -86,6 +90,9 @@ export default class InterpreterBookingModal extends Vue {
 
     @Prop({required: true})
     language!: string;
+
+    @commonState.State
+    public courtLocations!: locationsInfoType[];
      
 
     updatedBookingInfo = 0;
@@ -97,6 +104,8 @@ export default class InterpreterBookingModal extends Vue {
     targetTab=''
     sourceBookingDatesTimes = []
     updateTabs=0;
+
+    registry = {id:0, name:''};
 
     statusOptions
     requestOptions
@@ -112,6 +121,7 @@ export default class InterpreterBookingModal extends Vue {
     mounted() { 
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
+        this.registry = {id:this.searchLocation.id, name:this.searchLocation.name};
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -149,7 +159,7 @@ export default class InterpreterBookingModal extends Vue {
         booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
         booking.prosecutor = null;        
         booking.reason = null;
-        booking.registry = this.searchLocation.name;
+        booking.registry = null;
         booking.requestedBy = this.requestOptions[0].value;
         booking.room = null;
         booking.file = null;
@@ -157,7 +167,7 @@ export default class InterpreterBookingModal extends Vue {
         booking.federal = null;
         booking.bilingual = null;
         booking.languages = [];
-        booking.locationId = this.searchLocation.id;
+        booking.locationId = null;
         booking.interpreterId = this.interpreter.id;
         booking.date = date;
         booking.startTime = time.start;
@@ -195,8 +205,16 @@ export default class InterpreterBookingModal extends Vue {
     public saveNewBooking(){
         if (this.checkBookingStates(true)){ 
             //console.log(this.allBookingDatesTimes)
+
+            const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
+            if(location.length==1){                
+                this.registry.name = location[0].name
+            }
+
             const body = {
                 interpreter_id: this.interpreter.id,
+                locationName: this.registry.name,
+                locationId: this.registry.id,
                 dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
 
                         return  bookingDatesTimes.booking
@@ -229,7 +247,7 @@ export default class InterpreterBookingModal extends Vue {
             bookingStates.status = !(booking.status)? false : null;
             // bookingStates.room = !(booking.room)? false : null;        
         
-            bookingStates.location = !(booking.locationId)? false : null;
+            //bookingStates.location = !(booking.locationId)? false : null;
             bookingStates.file = !(booking.file)? false : null;           
             bookingStates.caseName = !(booking.caseName)? false : null;
             bookingStates.caseType = !(booking.caseType)? false : null;

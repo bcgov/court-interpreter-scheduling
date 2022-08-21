@@ -8,10 +8,10 @@
         <b-row class="mt-2 ml-1">
             
             <b-col cols="3">                    
-                <b-form-group
-                    class="labels"                
-                    label="Status"
-                    label-for="status">
+                <b-form-group                    
+                    :class="booking.status=='Cancelled'? 'labels text-danger':'labels'"                
+                    :label="booking.status=='Cancelled'?('Cancelled by '+cancellationBy):'Status'"
+                    label-for="status">                    
                     <b-form-select
                         id="status"
                         :disabled="disableEdit"
@@ -23,17 +23,23 @@
                 </b-form-group>
             </b-col> 
             <b-col cols="5">                              
-                <div v-if="booking.status.includes('Cancel')"  
-                    style="margin:2.45rem 0 0 0; height:2.5rem; padding:0.65rem;" 
-                    class="rounded h4 text-center text-white bg-danger" >
-                        Cancelled by: {{cancellationBy}}
-                </div>
-                <div v-else-if="booking.locationId!=searchLocation.id"  
-                    style="margin:2.45rem 0 0 0; height:2.5rem; padding:0.65rem 0 0 0;" 
-                    class="rounded h4 text-center text-white bg-warning" >
-                        <b-icon-exclamation-triangle-fill/> This Booking corresponds to a different location.
-                        
-                </div>                
+                <b-form-group                        
+                    label="Court Location" 
+                    class="labels"
+                    label-for="location">
+                    <b-form-select 
+                        id="location"
+                        disabled                                                   
+                        style="display:inline"                      
+                        v-model="registry.id"> 
+                        <b-form-select-option
+                            v-for="courtLocation,inx in courtLocations" 
+                            :key="inx"
+                            :value="courtLocation.id">
+                                {{courtLocation.name}}
+                        </b-form-select-option>
+                    </b-form-select> 
+                </b-form-group>       
             </b-col>
             
             <b-col cols="2" :key="'start-update-'+updateTime"> 
@@ -109,15 +115,19 @@
                 </b-form-group>
             </b-col>
             <b-col cols="5">
-                <b-form-group                        
-                    label="Court Location" 
-                    class="labels"
-                    label-for="location">
+                <b-form-group class="m-0 p-0" >
+                    <b-form-checkbox
+                        :disabled="disableEdit"
+                        class="title-label"
+                        v-model="remoteLocation" 
+                        @change="addRemoteLocation"
+                        >{{remoteLocation? '': 'Add a '}} Remote Court Location
+                    </b-form-checkbox>
                     <b-form-select 
-                        id="location"                           
-                        style="display:inline"
-                        @change="changeLocation"
-                        disabled
+                        id="remote-location"
+                        :disabled="disableEdit"                                                   
+                        @change="changeRemoteLocation"
+                        v-if="remoteLocation"
                         :state="bookingStates.location"
                         v-model="booking.locationId"> 
                         <b-form-select-option
@@ -242,7 +252,8 @@
                 </b-form-group>
             </b-col>
             <b-col cols="3">
-                <b-form-group                        
+                <b-form-group
+                    :key="appearanceMethodKey"                         
                     label="Method Of Appearance" 
                     class="labels"
                     label-for="appearance-method">
@@ -453,7 +464,7 @@ export default class EditBookingFields extends Vue {
     bookingStates!: bookingStatesInfoType;
 
     @Prop({required: true})
-    public searchLocation!: locationsInfoType;
+    public registry!: any;
     
     @Prop({required: true})
     languages: interpreterLanguageInfoType[]
@@ -485,6 +496,9 @@ export default class EditBookingFields extends Vue {
     errorMsg=''
 
     updateTime = 0
+
+    remoteLocation=false
+    appearanceMethodKey = 0;
 
     reasonCode=''
     reasonCodeOther=''
@@ -548,6 +562,7 @@ export default class EditBookingFields extends Vue {
         this.watchStatusChanged(this.booking.status)
         this.extractReasonCode()
         this.extractCourtClass()
+        this.remoteLocation = (this.booking.locationId && this.booking.locationId !=this.registry.id) ? true: false
         this.dataReady = true        
     }
 
@@ -565,7 +580,25 @@ export default class EditBookingFields extends Vue {
         bookingStates.language = true;
     }
 
-    public changeLocation(){
+    public addRemoteLocation(checked){
+        Vue.nextTick(()=>{
+            if(checked){
+                this.booking.locationId = this.registry.id
+                this.changeRemoteLocation()
+                this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions.filter(method => method.text != "In Person")
+                this.booking.methodOfAppearance = null
+                this.appearanceMethodKey++;
+            }
+            else{
+                this.booking.locationId = null
+                this.booking.registry = null
+                this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions
+                this.appearanceMethodKey++;
+            }
+        })
+    }
+
+    public changeRemoteLocation(){     
 
         const location = this.courtLocations.filter(loc => loc.id==this.booking.locationId)
 
@@ -719,6 +752,14 @@ export default class EditBookingFields extends Vue {
         margin:1rem 0 0rem 0;        
         line-height: 1rem;
     }
+    
+    .title-label {        
+        margin:0.7rem 0 -0.4rem 0;        
+        line-height: 1.7rem;
+        color:rgb(67, 93, 119);
+        font-weight: 600;
+    }
+
     ::v-deep label{        
         margin:0 0 0.5rem 0;
     }

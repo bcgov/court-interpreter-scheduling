@@ -17,7 +17,7 @@ class Common extends VuexModule {
     public userLocation: locationsInfoType|null = null;
     public courtLocations: locationsInfoType[] = [];
     public languages: languagesInfoType[] = [];
-    public rates = {} as ratesInfoType;
+    public rates: ratesInfoType[] = [];
 
     // public accountInfo = {} as accountInfoType;
 
@@ -102,7 +102,7 @@ class Common extends VuexModule {
     }
 
     @Mutation
-    public setRates(rates: ratesInfoType): void {   
+    public setRates(rates: ratesInfoType[]): void {   
         this.rates = rates
     }
     @Action

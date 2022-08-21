@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataReady">
+    <div :name="section_name" v-if="dataReady">
         <b-card class="my-5">
             <b-row class="mx-0 mt-n2 p-0">
                 <h3 class="text-dark p-0 my-2 mr-n5">Office Use Only</h3>
@@ -123,7 +123,8 @@ export default class AdmOfficeUseOnly extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
-    
+ 
+    section_name="adm-office-use"
  
     dataReady = false;
     interpreterName = ''
@@ -197,7 +198,7 @@ export default class AdmOfficeUseOnly extends Vue {
             {name:'invoiceDate', value:this.invoiceDate},
             {name:'invoiceNumber', value:this.invoiceNumber}           
         ]
-        this.$emit('saveOfficeUse',officeUseChanges)
+        this.$emit('saveOfficeUse',officeUseChanges, this.section_name)
     }
 
 }

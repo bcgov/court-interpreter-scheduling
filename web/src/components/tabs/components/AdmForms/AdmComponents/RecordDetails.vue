@@ -4,7 +4,11 @@
             <b-col cols="9">
                 <b-table-simple  borderless style="width:100%;font-size:10pt;" class="mt-1 mb-0">
                     <tr>
-                        <td class="m-1 p-1" style="width:38%;"><b>Registry:</b> {{recordDetails.registry}} <b-icon-exclamation-triangle-fill v-if="recordDetails.registryWarning" class="ml-1" v-b-tooltip.hover.v-warning title="This Booking corresponds to a different location." font-scale="1.3" variant="warning"/> </td>
+                        <td class="m-1 p-1" style="width:38%;"><b>Location:</b> {{recordDetails.registry}} 
+                        <span v-if="recordDetails.registryWarning" v-b-tooltip.hover.v-warning title="This Booking is set as a Remote Location.">
+                            <b-icon-exclamation-triangle-fill  class="ml-1"  font-scale="1.3" variant="warning"/> 
+                        </span>
+                        </td>
                         <td class="m-1 p-1" style="width:18%;"><b>Requested By:</b> {{recordDetails.requestedBy}} </td>
                         <td class="m-1 p-1" style="width:17%;"><b>Bilingual:</b> {{recordDetails.bilingualYN}} </td>
                         <td class="m-1 p-1" style="width:27%;"><b>Court Level:</b> {{recordDetails.courtLevel}} </td>
