@@ -100,7 +100,7 @@
                     <template v-slot:cell(edit)="data">                        
                         <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
                             <span                           
-                                :title="areRecordsOnlyPendings(data.item)? 'All Booking are Pending !':(data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms')"
+                                :title="areRecordsOnlyPendings(data.item)? 'All Bookings are Pending !':(data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms')"
                                 v-b-tooltip.hover.top.noninteractive>
                                 <b-button style="font-size:11px;"
                                     :disabled="areRecordsOnlyPendings(data.item)"                                                                 

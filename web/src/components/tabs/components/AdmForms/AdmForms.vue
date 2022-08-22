@@ -48,7 +48,7 @@
                 </b-card>
                 <hr/>
                 <div class="border-0">                
-                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
+                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Close</span></b-button>
                     <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
                     <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
                         <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
