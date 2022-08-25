@@ -59,6 +59,7 @@ services:
       - EFILING_HUB_KEYCLOAK_BASE_URL=${EFILING_HUB_KEYCLOAK_BASE_URL}
       - EFILING_HUB_KEYCLOAK_SECRET=${EFILING_HUB_KEYCLOAK_SECRET}
       - EFILING_HUB_KEYCLOAK_REALM=${EFILING_HUB_KEYCLOAK_REALM}
+      - PDF_SERVICE_URL=${PDF_SERVICE_URL}
       
     volumes:
       - ../api/api:/opt/app-root/src/api
@@ -116,3 +117,8 @@ services:
       - 5432:5432
     # volumes:
     # - data:/var/lib/pgsql/data
+
+  pdf:
+    image: bcgovimages/weasyprint
+    ports:
+      - 8083:5001

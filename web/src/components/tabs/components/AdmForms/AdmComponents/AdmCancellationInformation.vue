@@ -1,104 +1,124 @@
 <template>
-    <b-card class="my-5">
-        <h3 class="text-dark p-0 mt-n2 mb-4">CancellationInformation</h3>
-        <b-row class="my-n2">
-            <b-col cols="2">                    
-                <b-form-group
-                    class="labels"                
-                    label="Appearance Cancelled">
-                    <b-form-input 
-                        size="sm"
-                        disabled                              
-                        v-model="booking.date">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
+    <b-card :name="section_name" class="glow my-5">
+        <h3 class="text-dark p-0 mt-n2 mb-4">Cancellation Information</h3>
+        
+        <b-card v-for="recordDetails in records" :key="'cancellation-'+recordDetails.id" class="mb-4 bg-card_detail">
+            <b-table-simple  borderless style="width:100%;font-size:11pt;" class="my-n3 mb-0">
+                <tr>
+                    <td class="m-1 p-1" style="width:11%;"><b>Date:</b> {{recordDetails.date|iso-date}} </td>
+                    <td class="m-1 p-1" style="width:17%;"><b>Time:</b> {{recordDetails.time}} </td>
+                    <td class="m-1 p-1" style="width:32%;"><b>Registry:</b> {{recordDetails.registry}} <b-icon-exclamation-triangle-fill v-if="recordDetails.registryWarning" class="ml-1" v-b-tooltip.hover.v-warning title="This Booking corresponds to a different location." font-scale="1.3" variant="warning"/> </td>
+                    <td class="m-1 p-1" style="width:18%;"><b>File #:</b> {{recordDetails.file}} </td>
+                    <td class="m-1 p-1" style="width:22%;"><b>CaseName:</b> {{recordDetails.caseName}} </td>
+                                   
+                </tr>
+                <tr>
+                    <td class="m-1 p-1"><b>Federal:</b> {{recordDetails.federalYN}} </td>
+                    <td class="m-1 p-1"><b>Reason Code:</b> {{recordDetails.reasonCd}} </td>                     
+                    <td class="m-1 p-1"><b>Cancellation Date:</b> {{recordDetails.cancellationDate|iso-date}} </td>
+                    <td class="m-1 p-1" colspan="2"><b>Cancellation Time:</b> {{recordDetails.cancellationTime}} </td>                                           
+                </tr> 
+                <tr>
+                    <td class="m-1 p-1" colspan="2"><b>Cancelled By:</b> {{recordDetails.cancelledBy}} </td>
+                    <td class="m-1 p-1"><b>Cancellation Reason:</b> {{recordDetails.cancelReason}} </td>
+                    <td class="m-1 py-0 pl-1" colspan="2">
+                        <b-row class="m-0 p-0">
+                            <b>Cancellation Fee Applicable:</b>
+                            <b-form-input
+                                :disabled="recordDetails.feeDisabled"
+                                type="number"                                
+                                class="ml-3"
+                                style="width:6rem;"
+                                @input="recordDetails.feeChanged=true"
+                                size="sm"                        
+                                v-model="recordDetails.cancellationFee" />
+                            <div class="ml-3" style="font-size:13pt;" > $</div>
+                            <b-button size="sm"
+                                v-if="recordDetails.feeChanged" 
+                                @click="feeChanged(recordDetails)"                                 
+                                variant="success" 
+                                class="ml-2"> Save 
+                            </b-button>
+                        </b-row>
+                        
+                    </td>                    
+                </tr>                
+                <tr>
+                    <td class="m-1 p-1" colspan="4"><b>Cancellation Comment:</b> {{recordDetails.cancellationComment}} </td>
+                </tr>
+
+            </b-table-simple >
+        </b-card>
+
             
-            <b-col cols="2">                    
-                <b-form-group
-                    class="labels"                
-                    label="Time">
-                    <b-form-input 
-                        size="sm"
-                        disabled                                        
-                        v-model="booking.date">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
-            <b-col cols="2">                    
-                <b-form-group
-                    class="labels"                
-                    label="Date">
-                    <b-form-input 
-                        size="sm"
-                        disabled                                      
-                        v-model="booking.date">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
-                
-            <b-col cols="3">                    
-                <b-form-group
-                    class="labels"                
-                    label="Reason for Cancellation">
-                    <b-form-input 
-                        size="sm"
-                        disabled                             
-                        v-model="booking.date">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
-
-            <b-col cols="3">                    
-                <b-form-group
-                    class="labels"                
-                    label="Cancellation Fee Applicable">
-                    <b-form-input 
-                        size="sm"
-                        disabled                             
-                        v-model="booking.date">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
-
-        </b-row>
-
-        <b-row class="my-n3">
-            <b-col cols="12">                    
-                <b-form-group
-                    class="labels"                
-                    label="Notes">
-                    <b-form-input 
-                        size="sm"
-                        disabled 
-                        v-model="booking.comment">
-                    </b-form-input>
-                </b-form-group>
-            </b-col>
-            
-        </b-row>            
+                   
     </b-card>    
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import * as _ from 'underscore';
+import moment from 'moment';
+import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
 
 @Component
 export default class AdmCancellationInformation extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
-   
+    booking!: bookingSearchResultInfoType;
+    
+    section_name="adm-cancellation"
+    
+    dataReady = false;
+    records: bookingAdmCancellationInfoType[] = []
+    activeRecords: bookingAdmCancellationInfoType[] = []
+    
+    
     mounted(){
+        this.dataReady = false
+        this.records = []
+        this.activeRecords =[]
+        for(const date of this.booking.dates){
+            const record: bookingAdmCancellationInfoType = JSON.parse(JSON.stringify(date))
+            if(record.status!="Cancelled"){
+                this.activeRecords.push(record)
+                continue            
+            }
+            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            record.cancelledBy = date.cancellationReason.split('(')[0]
+            record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
+            record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
+            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
+            record.time = date.startTime + ' - '+ date.finishTime
+            record.federalYN = date.federal? 'Yes' : 'No'
+            record.feeChanged = false;
+            record.feeDisabled = false;
+            this.records.push(record)
+        } 
+        
+        if(this.records.length==0){
+            const record = {} as bookingAdmCancellationInfoType;
+            record.feeDisabled = true
+            this.records.push(record)
+        }else{
+            this.records = _.sortBy(this.records,'date')
+        }
+        this.dataReady = true;
     }
+
+    public feeChanged(recordDetails){        
+        recordDetails.feeChanged=false
+        this.$emit('saveChanges', [...this.records, ...this.activeRecords], this.section_name)        
+    }
+   
+ 
 
 }
 </script>
 
 <style scoped lang="scss">
-    .card{
+    .card.glow{
         background: rgb(182, 210, 221);
         box-shadow: 2px 5px 5px 2px #DDD;
     }

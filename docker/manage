@@ -50,7 +50,7 @@ exit 1
 # -----------------------------------------------------------------------------------------------------------------
 # Default Settings: 
 # -----------------------------------------------------------------------------------------------------------------
-DEFAULT_CONTAINERS="db api schema-spy web"
+DEFAULT_CONTAINERS="db api schema-spy web pdf"
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
@@ -84,6 +84,7 @@ build-web() {
   ${S2I_EXE} build \
     --copy \
     -e  PUBLIC_URL=${DEFAULT_BASE_URL}\
+    -e  VUE_APP_RUN_IN_DOCKER=${VUE_APP_RUN_IN_DOCKER}\
     '../web' \
     'centos/nodejs-10-centos7:10' \
     ${COMPOSE_PROJECT_NAME}'-web-artifacts'
@@ -196,6 +197,7 @@ configureEnvironment () {
   export EFILING_HUB_KEYCLOAK_REALM=${EFILING_HUB_KEYCLOAK_REALM}
 
   # web
+  export VUE_APP_RUN_IN_DOCKER=${VUE_APP_RUN_IN_DOCKER-true}
   export WEB_HTTP_PORT=${WEB_HTTP_PORT-8081}
   export API_URL=${API_URL-http://api:8080/api}
   export WEB_BASE_HREF=${DEFAULT_BASE_URL}

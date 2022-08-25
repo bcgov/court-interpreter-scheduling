@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, Json
 from datetime import datetime
 from typing import Optional, List, Dict
 
-from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema
+from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema, InterpreterADMBookingResponseSchema
 from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingMethodOfAppearanceEnum, BookingInterpretForEnum
 from api.schemas.custom_type import TruncatedUserIdBase, JsonBase
 
@@ -61,7 +61,7 @@ class BookingDateSchemaIn(BookingDateSchema):
 
 class BookingRequestBase(BaseModel):
       
-    scheduling_clerk: Optional[str] = Field(alias="schedulingClerk")
+    # scheduling_clerk: Optional[str] = Field(alias="schedulingClerk")
     clerk_phone: Optional[str] = Field(alias="clerkPhone")  
 
     dates: List[BookingDateSchemaIn]
@@ -78,9 +78,11 @@ class BookingDateSchemaOut(BookingDateSchema):
 
 class BookingResponseBase(BaseModel):
       
-    scheduling_clerk: Optional[str] = Field(alias="schedulingClerk")
+    scheduling_clerk: Optional[TruncatedUserIdBase] = Field(alias="schedulingClerk")
     clerk_phone: Optional[str] = Field(alias="clerkPhone") 
     interpreter: InterpreterBookingResponseSchema
+    location_id: Optional[int]
+    location_name: Optional[str]
 
     dates: List[BookingDateSchemaOut]
 
@@ -94,17 +96,63 @@ class BookingResponseBase(BaseModel):
 
 class BookingRequestSchema(BookingRequestBase):
     interpreter_id: Optional[int] = Field(alias="interpreterId")
+    location_id: Optional[int] = Field(alias="locationId")
+    location_name: Optional[str] = Field(alias="locationName")
 
 
 
-
+# General Info
 class BookingResponseSchema(BookingResponseBase):
     id: Optional[int]           
     interpreter: InterpreterBookingResponseSchema
+    records_approved: Optional[bool] = Field(alias="recordsApproved")
 
     created_at: Optional[datetime]
     updated_by: TruncatedUserIdBase
 
+
+
+#Specific to ADM (OUT of DB)
+class ADMBookingResponseSchema(BookingResponseBase):
+    id: Optional[int]
+    records_approved: Optional[bool] = Field(alias="recordsApproved")
+    approver_name: Optional[str] = Field(alias="approverName")
+    interpreter_signed: Optional[bool] = Field(alias="interpreterSigned")
+    interpreter_signdate: Optional[str] = Field(alias="interpreterSigningDate")
+    qr_signed: Optional[bool] = Field(alias="qualifiedReceiverSigned")
+    qr_signdate: Optional[str] = Field(alias="qualifiedReceiverSigningDate")
+    fees_gst: Optional[float] = Field(alias="feesGST")
+    fees_total: Optional[float] = Field(alias="feesTotal")
+    expense_gst: Optional[float] = Field(alias="expenseGST")
+    expense_total: Optional[float] = Field(alias="expenseTotal")
+    invoice_total: Optional[float] = Field(alias="invoiceTotal")
+    invoice_date: Optional[str] = Field(alias="invoiceDate")
+    invoice_number: Optional[str] = Field(alias="invoiceNumber")
+    adm_detail: Optional[JsonBase] = Field(alias="admDetail")          
+    interpreter: InterpreterADMBookingResponseSchema
+    created_at: Optional[datetime]
+    updated_by: TruncatedUserIdBase
+    adm_updated_by: Optional[TruncatedUserIdBase]
+
+#Specific to ADM (In to DB)
+class ADMBookingRequestSchema(BookingRequestBase):
+    id: Optional[int]
+    records_approved: Optional[bool] = Field(alias="recordsApproved")
+    approver_name: Optional[str] = Field(alias="approverName")
+    interpreter_signed: Optional[bool] = Field(alias="interpreterSigned")
+    interpreter_signdate: Optional[str] = Field(alias="interpreterSigningDate")
+    qr_signed: Optional[bool] = Field(alias="qualifiedReceiverSigned")
+    qr_signdate: Optional[str] = Field(alias="qualifiedReceiverSigningDate")
+    fees_gst: Optional[float] = Field(alias="feesGST")
+    fees_total: Optional[float] = Field(alias="feesTotal")
+    expense_gst: Optional[float] = Field(alias="expenseGST")
+    expense_total: Optional[float] = Field(alias="expenseTotal")
+    invoice_total: Optional[float] = Field(alias="invoiceTotal")
+    invoice_date: Optional[str] = Field(alias="invoiceDate")
+    invoice_number: Optional[str] = Field(alias="invoiceNumber")
+    adm_detail: Optional[Dict] = Field(alias="admDetail")
+    
+    
 
 
 class BookingDateRangeSchema(BaseModel):

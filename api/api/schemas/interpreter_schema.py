@@ -24,7 +24,7 @@ class InterpreterBase(BaseModel):
 
     supplier_no: Optional[str] = Field(alias="supplier")
     gst_no: Optional[str] = Field(alias="gst")
-    site_code: Optional[str] =None
+    site_code: Optional[str] = Field(default=None, alias="siteCode")
     
     contract_valid: Optional[bool] = Field(None, alias="contractExtension")
       
@@ -78,6 +78,13 @@ class InterpreterBookingResponseSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
+
+class InterpreterADMBookingResponseSchema(InterpreterBookingResponseSchema):
+    supplier_no: Optional[str] = Field(alias="supplier")
+    gst_no: Optional[str] = Field(alias="gst")
+    site_code: Optional[str] = Field(alias="siteCode")
+    address_longitude : Optional[float] = Field(alias="addressLongitude")
+    address_latitude : Optional[float] = Field(alias="addressLatitude")
 
 
 class InterpreterGeoStatusSchema(BaseModel):

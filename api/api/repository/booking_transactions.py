@@ -1,17 +1,22 @@
 import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from api.schemas.booking_schema import BookingRequestSchema
+from api.schemas.booking_schema import BookingRequestSchema, ADMBookingRequestSchema
 from models.booking_model import BookingModel, BookingDatesModel
 from models.user_model import UserModel
 from models.interpreter_model import InterpreterModel
 from models.booking_enums import BookingStatusEnum
 from core.auth import check_user_roles
 
+
+
 def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     
     booking_request = request.dict()
     booking_request = add_update_by(booking_request, db, username)
+    booking_request['scheduling_clerk'] = booking_request['updated_by']
+
+    booking_request['records_approved'] = False
     
     if (('interpreter_id' not in booking_request) or not booking_request['interpreter_id']):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"'interpreter_id' is required.")
@@ -31,6 +36,7 @@ def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     return new_booking.id
 
 
+
 def check_interpreter_contract_rules(id, db: Session, username):
     interpreter = db.query(InterpreterModel).filter(InterpreterModel.id==id).first()   
     if not interpreter:
@@ -45,6 +51,9 @@ def check_interpreter_contract_rules(id, db: Session, username):
 def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, username):
     booking_request = request.dict()
     booking_request = add_update_by(booking_request, db, username)
+    booking_request['scheduling_clerk'] = booking_request['updated_by']
+
+    booking_request['records_approved'] = False
 
     if 'interpreter_id' in booking_request:
         del booking_request['interpreter_id']
@@ -69,6 +78,40 @@ def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, use
     return booking.id
 
 
+
+def update_adm_booking_in_db(id: int, request:ADMBookingRequestSchema, db: Session, username):
+    booking_request = request.dict()
+    booking_request = add_update_by(booking_request, db, username)
+
+    if 'interpreter_id' in booking_request:
+        del booking_request['interpreter_id']
+
+    booking_request['adm_updated_by'] = booking_request['updated_by']
+    if 'updated_by' in booking_request:
+        del booking_request['updated_by']
+
+    booking_dates = booking_request['dates']
+    del booking_request['dates']
+
+    booking_request['adm_detail'] = json.dumps(booking_request['adm_detail'])
+
+    booking_query = db.query(BookingModel).filter(BookingModel.id==id)
+    booking = booking_query.first()    
+    if not booking:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking does not exist.")
+
+    
+    booking_query.update(booking_request)    
+    db.commit()
+    # print(booking)
+    # print(booking.interpreter_id)
+
+    add_dates(booking_dates, db, id, booking.interpreter_id)
+
+    return booking.id
+
+
+
 def check_conflict_dates(db:Session , booking, booking_request, booking_dates):
        
     other_booking_date_query = db.query(BookingDatesModel).join(BookingModel).filter(
@@ -81,6 +124,7 @@ def check_conflict_dates(db:Session , booking, booking_request, booking_dates):
     for booking_date in booking_dates:        
         if booking_date['date'] in current_interpreter_scheduel_date:                    
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Booking date '{booking_date['date'].strftime('%b %d %Y')}' conflicts with the current interpreter schedule.")
+
 
 
 def add_update_by(booking_request, db: Session, username):

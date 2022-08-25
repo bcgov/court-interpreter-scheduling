@@ -41,12 +41,15 @@ export default class CustomPagination extends Vue {
 
     @Prop({required: true})
     totalRows!: number;
-     
+    
+    @Prop({required:true})
+    initCurrentPage!: number;
     
     currentPage=1;
     itemsPerPage = 10;// Default
 
     mounted(){
+        this.currentPage = this.initCurrentPage
         this.itemsPerPage= this.pages[0]
     }
    

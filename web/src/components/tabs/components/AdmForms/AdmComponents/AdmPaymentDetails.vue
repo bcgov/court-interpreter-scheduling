@@ -1,330 +1,369 @@
 <template>
-    <div v-if="dataReady">
+    <div :name="section_name" v-if="dataReady">
         <b-card class="my-5">
             <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
             <b-table-simple small borderless>
                 <b-thead head-variant="" >
-                    <b-tr style="color:rgb(182, 210, 221)">
-                        <b-th>Country1</b-th>
-                        <b-th>Co2</b-th>
-                        <b-th>C3</b-th>
-                        <b-th>CountryCo4</b-th>
-                        <b-th>C5</b-th>
-                        <b-th>CountryCountry6</b-th>
-                        <b-th>C7</b-th>
-                        <b-th>CountryCount8</b-th>
-                        <b-th>C9</b-th>
-                        <b-th>CountryCount0</b-th>
-                        <b-th>Co1</b-th>
-                        <b-th>Country2</b-th>
-                        <b-th>Country3</b-th>
-                        <b-th>C4</b-th>
-                        <b-th>Country5</b-th>
-                        <b-th>Country6</b-th>                        
+                    <b-tr style="color:rgb(182, 210, 221); height:2rem;">                    
+                        <b-td v-for="inx in Array(50)" :key="inx" class="border-0 border-dark" style="width:2%;" />                         
                     </b-tr>
                 </b-thead>                               
-                <b-tbody>
+                
 <!-- <Court Hours> -->
+                <b-tbody v-for="lang,inx in languageItems" :key="'fees-'+inx">
+                    <b-tr v-if="inx==0">
+                        <b-td colspan="42" class="h3 py-0" style="transform:translate(0,20px);">Fees</b-td> 
+                        <b-td colspan="8" class="h4 text-center pb-0 pt-1" style="transform:translate(0,20px);">Fees Payable</b-td>                                              
+                    </b-tr>
+                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                        <b-th colspan="8" class="h3"></b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Rate</b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Total Hours</b-th>
+                        <b-th colspan="14" class=""></b-th>
+                        <b-th colspan="8" class="text-center"></b-th>                                                 
+                    </b-tr>
+                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                        <b-th colspan="8" class="">Court Hours <div class="h5">({{getLanguageHrDetail(lang)}})</div></b-th>
+                        <b-th colspan="2" class="text-right">$</b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[0]+lang]" /></b-td>
+                        <b-th colspan="2" class="text-center">x</b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[1]+lang]"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form[courtFeeItems[2]+lang]"/></b-td>
+                        <b-th colspan="4" class=""></b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[3]+lang]"/></b-td>                          
+                    </b-tr>
+                    <!-- <b-tr style="height:.1rem;line-height:.1rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>  -->
+                </b-tbody>
+                <b-tbody v-if="!form.includeCourtHrs">
                     <b-tr>
-                        <b-th colspan="4" class="h3">Fees</b-th>
-                        <b-th colspan="2" class="text-center">Rate</b-th>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="2" class="text-center">Total Hours</b-th>
-                        <b-th colspan="5" class=""></b-th>
-                        <b-th colspan="2" class="text-center">Fees Payable</b-th>                                                 
+                        <b-th colspan="8" class="h3"></b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Rate</b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Total Hours</b-th>
+                        <b-th colspan="14" class=""></b-th>
+                        <b-th colspan="8" class="text-center"></b-th>                                                 
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="3" class="">Court Hours</b-th>
-                        <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="2" class=""><underline-text :text="form.courtHrRate"/></b-td>
-                        <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="2" class=""><underline-text :text="form.courtTotalHrs"/></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.courtTotal"/></b-td>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.courtPayableFee"/></b-td>                          
+                        <b-th colspan="8" class="">Court Hours</b-th>
+                        <b-th colspan="2" class="text-right">$</b-th>
+                        <b-td colspan="8" class=""><underline-text text="" /></b-td>
+                        <b-th colspan="2" class="text-center">x</b-th>
+                        <b-td colspan="8" class=""><underline-text text=""/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text text=""/></b-td>
+                        <b-th colspan="4" class=""></b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text text=""/></b-td>                          
                     </b-tr>
+                    <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>
+                </b-tbody>  
+                <b-tbody>   
+<!-- <spacer> -->                   
+                    <!-- <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>                     -->
 <!-- <Travel Hours> -->
                     <b-tr>
-                        <b-th colspan="4" class=""></b-th>
-                        <b-th colspan="2" class="text-center">Rate</b-th>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="2" class="text-center">Total Hours</b-th>
-                        <b-th colspan="7" class=""></b-th>                                                 
+                        <b-th colspan="10" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Rate</b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Total Hours</b-th>
+                        <b-th colspan="22" class=""></b-th>                                                
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="3" class="">Travel Hours</b-th>
-                        <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="2" class=""><underline-text :text="form.travelHrRate"/></b-td>
-                        <b-th colspan="1" class="text-center">x</b-th>
-                        <b-th colspan="2" class=""><underline-text :text="form.travelTotalHrs"/></b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.travelTotal"/></b-td>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.travelPayableFee"/></b-td>                          
+                        <b-th colspan="8" class="">Travel Hours</b-th>
+                        <b-th colspan="2" class="text-right">$</b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form.travelHrRate"/></b-td>
+                        <b-th colspan="2" class="text-center">x</b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form.travelTotalHrs"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.travelTotal"/></b-td>
+                        <b-th colspan="4" class=""></b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.travelPayableFee"/></b-td>                          
                     </b-tr>
 <!-- <Subtotal> -->
                     <b-tr>
-                        <b-th colspan="12" class=""></b-th>                        
-                        <b-th colspan="1" class="text-right">Subtotal</b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.feesSubtotal"/></b-td>                          
+                        <b-th colspan="32" class=""></b-th>                        
+                        <b-th colspan="8" class="text-right">Subtotal</b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.feesSubtotal"/></b-td>                          
                     </b-tr>
 <!-- <GST> -->
                     <b-tr>
-                        <b-th colspan="5" class=""></b-th>                        
-                        <b-th colspan="2" class="text-right">GST Number:</b-th>
-                        <b-td colspan="3" class=""><underline-text :text="form.gstNumber"/></b-td>
-                        <b-th colspan="2" class="text-center">{{form.gstRate}} % (rate)</b-th>
-                        <b-th colspan="1" class="text-right">GST</b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-th colspan="2" class=""></b-th>                          
+                        <b-th colspan="10" class="p-0">
+                            <b-button size="sm"             
+                                v-if="paymentChanges"
+                                @click="savePaymentDetailsChanges()"                                 
+                                variant="success" 
+                                style="margin:0; width:14rem; font-size:14pt;"> Save Payment Details 
+                            </b-button>
+                        </b-th>                        
+                        <b-th colspan="8" class="text-right">GST Number :</b-th>
+                        <b-td colspan="12" class=""><underline-text :text="form.gstNumber"/></b-td>
+                        <b-th colspan="6" class="text-right">{{form.gstRate}} % (rate)</b-th>
+                        <b-th colspan="4" class="text-right">GST</b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.feesGST"/></b-td>                          
                     </b-tr>
 <!-- <Total> -->
                     <b-tr>
-                        <b-th colspan="12" class=""></b-th>                        
-                        <b-th colspan="1" class="text-right">Total</b-th>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-th colspan="2" class=""></b-th>                          
+                        <b-th colspan="38" class=""></b-th>                        
+                        <b-th colspan="2" class="text-right">Total</b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-th colspan="8" class=""><underline-text :text="form.feesTotal"/></b-th>                          
                     </b-tr>
 <!-- <Expenses> -->
 <!-- <Expenses> -->
                     <b-tr>
-                        <b-td colspan="16" class=""><h3 style="display:inline">Expenses</h3> (receipts attached)</b-td>                                                
+                        <b-td colspan="50" class=""><h3 style="display:inline">Expenses</h3> (receipts attached)</b-td>                                                
                     </b-tr>
 <!-- <Travel KM> -->
                     <b-tr>                        
-                        <b-th colspan="3" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Rate</b-th>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Total Kilometers</b-th>
+                        <b-th colspan="8" class=""></b-th>
+                        <b-th colspan="5" class="text-center">Rate</b-th>                        
+                        <b-th colspan="7" class="text-center">Total Kilometers</b-th>
                         <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
-                        <b-th colspan="3" class=""></b-th>                        
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center">Expenses Payable</b-th>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="7" class=""></b-th>                        
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center">Expenses Payable</b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Travel Kilometers</b-th>
+                        <b-th colspan="7" class="">Travel Kilometers</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.travelKMsRate"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.travelKMsRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.travelTotalKMs"/></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.travelSubExp"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.travelTotalKMs"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.travelSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
-                        <b-td colspan="1" class=""></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.travelTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.expPayable"/></b-td>                        
+                        <b-td colspan="4" class=""></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.travelTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.expPayable"/></b-td>                        
                     </b-tr>
 <!-- <Breakfast> -->
                     <b-tr>                        
-                        <b-th colspan="3" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Rate</b-th>
+                        <b-th colspan="8" class=""></b-th>
+                        <b-th colspan="5" class="text-center">Rate</b-th>
                         <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Total Days</b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
-                        <b-th colspan="3" class=""></b-th>                        
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class=""></b-th>                        
+                        <b-th colspan="5" class="text-center">Total Days</b-th>
+                        <b-td colspan="2" class=""></b-td>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="7" class=""></b-th>                        
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class=""></b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Breakfast</b-th>
+                        <b-th colspan="7" class="">Breakfast</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.breakfastRate"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.breakfastRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.breakfastTotalDays"/></b-td>                        
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.breakfastSubExp"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.breakfastTotalDays"/></b-td>                        
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.breakfastSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
-                        <b-td colspan="1" class=""></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.breakfastTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-td colspan="2" class=""></b-td>                        
+                        <b-td colspan="4" class=""></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.breakfastTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-td colspan="8" class=""></b-td>                        
                     </b-tr>
 <!-- <Lunch> -->
                     <b-tr>                        
-                        <b-th colspan="3" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Rate</b-th>
+                        <b-th colspan="8" class=""></b-th>
+                        <b-th colspan="5" class="text-center">Rate</b-th>
                         <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Total Days</b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
-                        <b-th colspan="3" class=""></b-th>                        
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center">GST (if applicable)</b-th>                        
+                        <b-th colspan="5" class="text-center">Total Days</b-th>
+                        <b-td colspan="2" class=""></b-td>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="7" class=""></b-th>                        
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center">GST (if applicable)</b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Lunch</b-th>
+                        <b-th colspan="7" class="">Lunch</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.lunchRate"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.lunchRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.lunchTotalDays"/></b-td>                        
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.lunchSubExp"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.lunchTotalDays"/></b-td>                        
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.lunchSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
-                        <b-td colspan="1" class=""></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.lunchTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.GSTifApplic"/></b-td>                        
+                        <b-td colspan="4" class=""></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.lunchTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.GSTifApplic"/></b-td>                        
                     </b-tr>
 <!-- <Dinner> -->
                     <b-tr>                        
-                        <b-th colspan="3" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Rate</b-th>
+                        <b-th colspan="8" class=""></b-th>
+                        <b-th colspan="5" class="text-center">Rate</b-th>
                         <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Total Days</b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
-                        <b-th colspan="3" class=""></b-th>                        
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center"></b-th>                        
+                        <b-th colspan="5" class="text-center">Total Days</b-th>
+                        <b-td colspan="2" class=""></b-td>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="7" class=""></b-th>                        
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center"></b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Dinner</b-th>
+                        <b-th colspan="7" class="">Dinner</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.dinnerRate"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.dinnerRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.dinnerTotalDays"/></b-td>                        
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.dinnerSubExp"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.dinnerTotalDays"/></b-td>                        
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.dinnerSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
-                        <b-td colspan="1" class=""></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.dinnerTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-td colspan="2" class=""></b-td>                        
+                        <b-td colspan="4" class=""></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.dinnerTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-td colspan="8" class=""></b-td>                        
                     </b-tr>
 
 <!-- <Lodging> -->
-                    <b-tr>                        
-                        <b-th colspan="3" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Rate</b-th>
-                        <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="1" class="text-center">Total Days</b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
+                    <b-tr style="height:3rem;line-height:3rem;" >                        
+                        <b-th colspan="8" class=""></b-th>                        
+                        <b-th colspan="11" class="text-center">Total Pre-GST</b-th>
+                        <b-td colspan="2" class=""></b-td>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
                         <b-th colspan="1" class=""></b-th> 
-                        <b-th colspan="1" class="text-center">GST</b-th>
-                        <b-th colspan="1" class=""></b-th>      
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center">Total Expenses</b-th>                        
+                        <b-th colspan="4" class="text-center">GST</b-th>
+                        <b-th colspan="2" class=""></b-th>      
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center">Total Expenses</b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Lodging</b-th>
+                        <b-th colspan="7" class="">Lodging</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="1" class=""><underline-text :text="form.lodgingRate"/></b-td>
-                        <b-th colspan="1" class="text-center">x</b-th>
-                        <b-th colspan="1" class=""><underline-text :text="form.lodgingTotalDays"/></b-th>                        
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.lodgingSubExp"/></b-td>
+                        <b-td colspan="11" class="p-0"><b-input class="w-50 mx-auto" v-model="form.lodgingRate" :formatter="formatterExpense" @input="paymentChanges=true;" /></b-td>                                                
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.lodgingSubExp"/></b-td>
                         <b-th colspan="1" class="text-center">+</b-th>                        
-                        <b-td colspan="1" class=""><underline-text :text="form.lodgingGST"/></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.lodgingTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.totalExpenses"/></b-td>                        
+                        <b-td colspan="4" class="p-0"><b-input class="" v-model="form.lodgingGST" :formatter="formatterExpenseGST" @input="paymentChanges=true;"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.lodgingTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.totalExpenses"/></b-td>                        
                     </b-tr>
 
 <!-- <Airfare/Ferry> -->
                     <b-tr>                        
-                        <b-th colspan="6" class=""></b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="21" class=""></b-th>                        
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
                         <b-th colspan="1" class=""></b-th> 
-                        <b-th colspan="1" class="text-center">GST</b-th>
-                        <b-th colspan="1" class=""></b-th>      
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center"></b-th>                        
+                        <b-th colspan="4" class="text-center">GST</b-th>
+                        <b-th colspan="2" class=""></b-th>      
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center">Total Cancellation Fees</b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Airfare/Ferry</b-th>
+                        <b-th colspan="7" class="">Airfare/Ferry</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="3" class=""><underline-text :text="form.ferryExp"/></b-td>                       
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.ferrySubExp"/></b-td>
+                        <b-td colspan="11" class="p-0"><b-input class="w-50 mx-auto" v-model="form.ferryExp" :formatter="formatterExpense" @input="paymentChanges=true;"/></b-td>                       
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.ferrySubExp"/></b-td>
                         <b-th colspan="1" class="text-center">+</b-th>                        
-                        <b-td colspan="1" class=""><underline-text :text="form.ferryGST"/></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.ferryTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="2" class=""></b-td>                        
+                        <b-td colspan="4" class="p-0"><b-input class="" v-model="form.ferryGST" :formatter="formatterExpenseGST" @input="paymentChanges=true;"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.ferryTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.totalCancellationFees"/></b-td>                        
                     </b-tr>
 <!-- <Miscellaneous> -->
                     <b-tr>                        
-                        <b-th colspan="6" class=""></b-th>
-                        <b-td colspan="1" class=""></b-td>                        
-                        <b-th colspan="1" class="text-center">Sub-Total</b-th>                                                 
+                        <b-th colspan="21" class=""></b-th>                       
+                        <b-th colspan="5" class="text-center">Sub-Total</b-th>                                                 
                         <b-th colspan="1" class=""></b-th> 
-                        <b-th colspan="1" class="text-center">GST</b-th>
-                        <b-th colspan="1" class=""></b-th>      
-                        <b-th colspan="2" class="pr-4 text-center">Total</b-th>
-                        <b-th colspan="1" class="border-left border-dark"></b-th> 
-                        <b-th colspan="2" class="text-center">Total Payable</b-th>                        
+                        <b-th colspan="4" class="text-center">GST</b-th>
+                        <b-th colspan="2" class=""></b-th>      
+                        <b-th colspan="6" class="text-center">Total</b-th>
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark"></b-th> 
+                        <b-th colspan="8" class="text-center">Total Payable</b-th>                        
                     </b-tr>
                     <b-tr>
-                        <b-th colspan="2" class="">Miscellaneous</b-th>
+                        <b-th colspan="7" class="">Miscellaneous</b-th>
                         <b-th colspan="1" class="text-right">$</b-th>
-                        <b-td colspan="3" class=""><underline-text :text="form.miscExp"/></b-td>                       
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.miscSubExp"/></b-td>
+                        <b-td colspan="11" class="p-0"><b-input class="w-50 mx-auto" v-model="form.miscExp" :formatter="formatterExpense" @input="paymentChanges=true;"/></b-td>                       
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
+                        <b-td colspan="5" class=""><underline-text :text="form.miscSubExp"/></b-td>
                         <b-th colspan="1" class="text-center">+</b-th>                        
-                        <b-td colspan="1" class=""><underline-text :text="form.miscGST"/></b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.miscTotalExp"/></b-td> 
-                        <b-th colspan="1" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="2" class=""><underline-text :text="form.totalPayable"/></b-td>                        
+                        <b-td colspan="4" class="p-0"><b-input class="" v-model="form.miscGST" :formatter="formatterExpenseGST" @input="paymentChanges=true;"/></b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.miscTotalExp"/></b-td> 
+                        <b-th colspan="1" class=""></b-th>
+                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
+                        <b-th colspan="8" class=""><underline-text :text="form.totalPayable"/></b-th>                        
                     </b-tr>
 <!-- <Expenses Pre-GST> -->
                     <b-tr class="">                        
-                        <b-th colspan="6" class=""></b-th>                        
-                        <b-th colspan="3" class="pt-4 text-center">Expenses Pre-GST</b-th>
-                        <b-th colspan="1" class="pt-4 text-center">Total GST</b-th>
-                        <b-th colspan="1" class=""></b-th>      
-                        <b-th colspan="2" class="pt-4 pr-4 text-center">Total Expenses</b-th>
-                        <b-th colspan="1" class=""></b-th> 
-                        <b-th colspan="2" class=""></b-th>                        
+                        <b-th colspan="20" class=""></b-th>                        
+                        <b-th colspan="7" class="pt-4 text-center">Expenses Pre-GST</b-th>
+                        <b-th colspan="4" class="pt-4 text-center">Total GST</b-th>
+                        <b-th colspan="2" class=""></b-th>      
+                        <b-th colspan="6" class="pt-4 text-center">Total Expenses</b-th>
+                        <b-th colspan="11" class=""></b-th>                      
                     </b-tr>
-                    <b-tr>
-                        <b-th colspan="2" class=""></b-th>
+                    <b-tr>                       
+                        <b-td colspan="14" class=""></b-td>                       
+                        <b-th colspan="6" class="text-right">Checks Totals</b-th>                         
                         <b-th colspan="1" class=""></b-th>
-                        <b-td colspan="2" class=""></b-td>                       
-                        <b-th colspan="2" class="text-right">Checks Totals</b-th>                         
-                        <b-td colspan="1" class=""><underline-text :text="form.expPreGST"/></b-td>
+                        <b-td colspan="5" class=""><underline-text :text="form.expPreGST"/></b-td>
                         <b-th colspan="1" class="text-center">+</b-th>                        
-                        <b-td colspan="1" class=""><underline-text :text="form.expTotalGST"/></b-td>
-                        <b-th colspan="1" class=""></b-th> 
-                        <b-td colspan="2" class="pr-4"><underline-text :text="form.expTotal"/></b-td> 
-                        <b-th colspan="1" class=""></b-th> 
-                        <b-td colspan="2" class=""></b-td>                        
+                        <b-td colspan="4" class=""><underline-text :text="form.expTotalGST"/></b-td>
+                        <b-th colspan="2" class=""></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.expTotal"/></b-td> 
+                        <b-th colspan="11" class=""></b-th>                                                 
                     </b-tr>
 <!-- <Total paid by> -->
                     <b-tr>
-                        <b-td colspan="10" class=""></b-td>                        
-                        <b-td colspan="3" class="pt-4 text-right"><b>Total paid by</b> Court Services</b-td>
-                        <b-th colspan="1" class="pt-4 text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-th colspan="2" class="pt-4"><underline-text :text="form.totalPaidByCourt"/></b-th>                          
+                        <b-td colspan="29" class=""></b-td>                        
+                        <b-td colspan="11" class="pt-4 text-right"><b>Total paid by</b> Court Services</b-td>
+                        <b-th colspan="2" class="pt-4 text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-th colspan="8" class="pt-3 pb-1"><b-input class="w-75 mx-auto" v-model="form.totalPaidByCourt" :formatter="formatterTotal" @input="paymentChanges=true;"/></b-th>                          
                     </b-tr>
 
                     <b-tr>
-                        <b-td colspan="7" class=""></b-td>
-                        <b-td colspan="3" class="text-right">Sent to Federal Crown</b-td>
-                        <b-td colspan="3" class="text-right"><b>Total paid by</b> Federal Crown</b-td>
-                        <b-th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
-                        <b-th colspan="2" class=""><underline-text :text="form.totalPaidByCrown"/></b-th>                          
+                        <b-td colspan="17" class="p-0">
+                            <b-button size="sm"             
+                                v-if="paymentChanges"
+                                @click="savePaymentDetailsChanges()"                                 
+                                variant="success" 
+                                style="margin:0; width:14rem; font-size:14pt;"> Save Payment Details 
+                            </b-button>
+                        </b-td>
+                        <b-td colspan="10" class="text-right">Sent to Federal Crown</b-td>
+                        <b-th colspan="2" class=""></b-th> 
+                        <b-td colspan="11" class="text-right"><b>Total paid by</b> Federal Crown</b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-th colspan="8" class="py-0"><b-input class="w-75 mx-auto" v-model="form.totalPaidByCrown" :formatter="formatterTotal" @input="paymentChanges=true;"/></b-th>                          
                     </b-tr>
                 
                 </b-tbody>
@@ -337,9 +376,10 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import {bookingSearchResultInfoType, paymentDetailsVars} from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
-import { paymentDetailsInfoType } from '@/types/Bookings';
+import {paymentDetailsInfoType} from '@/types/Bookings';
+import {languageItems, courtFeeItems} from '../AdmCalculations/PaymentCalculation'
 
 
 @Component({
@@ -350,88 +390,96 @@ import { paymentDetailsInfoType } from '@/types/Bookings';
 export default class AdmPaymentDetails extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    booking!: bookingSearchResultInfoType;
     
-    form = {} as paymentDetailsInfoType
-  
-    dataReady = false;
+    @Prop({required: true})
+    form!: paymentDetailsInfoType;
 
+    languageItems = []
+    courtFeeItems = []
+
+    section_name="adm-payment"
+
+    dataReady = false;
+    paymentChanges = false;
+                            
 
     mounted(){
         this.dataReady = false;
+        this.paymentChanges = false;
         this.extractFormInfo()
         this.dataReady = true;
     }
 
     public extractFormInfo(){
-        this.form = {
-            courtHrRate:'63.16',
-            courtTotalHrs:'120.0',
-            courtTotal:'7579.20',
-            courtPayableFee:'7579.20',
+        this.languageItems = languageItems
+        this.courtFeeItems = courtFeeItems               
+    }
 
-            travelHrRate:'',
-            travelTotalHrs:'',
-            travelTotal:'',
-            travelPayableFee:'0.00',
+    public getLanguageHrDetail(lang){
+        let detail=lang
+        if(detail.includes('SPKL')){detail = detail.replace('SPKL','')}
+        if(detail.includes('1')){detail=detail.replace('1','')+' Level 1 '}
+        if(detail.includes('2')){detail=detail.replace('2','')+' Level 2 '}
+        if(detail.includes('3')){detail=detail.replace('3','')+' Level 3 '}
+        if(detail.includes('4')){detail=detail.replace('4','')+' Level 4 '}        
+        if(detail.includes('Old')){detail = detail.replace('Old','') +'\'Previous Rate\' '}
+        return detail
+    }
 
-            feesSubtotal:'7579.20',
+    public savePaymentDetailsChanges(){
+        this.paymentChanges=false;
+        const paymentDetail = {} as  paymentDetailsVars;
+        paymentDetail.totalPaidByCourt = this.form.totalPaidByCourt? parseFloat(this.form.totalPaidByCourt): null
+        paymentDetail.totalPaidByCrown = this.form.totalPaidByCrown? parseFloat(this.form.totalPaidByCrown): null
+        paymentDetail.lodgingRate = this.form.lodgingRate? parseFloat(this.form.lodgingRate): null
+        paymentDetail.lodgingGST = this.form.lodgingGST? parseFloat(this.form.lodgingGST): null
+        paymentDetail.ferryExp = this.form.ferryExp? parseFloat(this.form.ferryExp): null
+        paymentDetail.ferryGST = this.form.ferryGST? parseFloat(this.form.ferryGST): null
+        paymentDetail.miscExp = this.form.miscExp? parseFloat(this.form.miscExp): null
+        paymentDetail.miscGST = this.form.miscGST? parseFloat(this.form.miscGST): null
 
-            gstNumber:'708018684',
-            gstRate:'0.05',
+        const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
+        admDetail.paymentDetail = paymentDetail
 
-            feesGST:'378.96',
-            feesTotal:'7,958.16',
+        const paymentDetailChanges =[
+            {name:'admDetail', value:admDetail},
+            // {name:'invoiceDate', value:this.invoiceDate},
+            // {name:'invoiceNumber', value:this.invoiceNumber}           
+        ]
+        this.$emit('savePaymentDetail',paymentDetailChanges, this.section_name)
+    }
 
-            travelKMsRate:'0.55',
-            travelTotalKMs:'150.0',
-            travelSubExp:'82.50',
-            travelTotalExp:'82.50',
+    public formatterGST(value){
+        return this.formatter(value, 4, 1)
+    }
 
-            breakfastRate:'12.75',
-            breakfastTotalDays:'16.0',
-            breakfastSubExp:'204.00',
-            breakfastTotalExp:'204.00',
+    public formatterRate(value){
+        return this.formatter(value, 6, 500)
+    }
 
-            lunchRate:'14.75',
-            lunchTotalDays:'16.0',
-            lunchSubExp:'236.00',
-            lunchTotalExp:'236.00',
+    public formatterExpense(value){
+        return this.formatter(value, 8, 10000)
+    }
 
-            dinnerRate:'25.50',
-            dinnerTotalDays:'16.0',
-            dinnerSubExp:'408.00',
-            dinnerTotalExp:'408.00',
+    public formatterExpenseGST(value){
+        return this.formatter(value, 7, 1000)
+    }
 
-            lodgingRate:'152.22',
-            lodgingTotalDays:'',
-            lodgingSubExp:'0.00',
-            lodgingGST:'0.00',
-            lodgingTotalExp:'0.00',
+    public formatterTotal(value){
+        return this.formatter(value, 10, 1000000)
+    }
 
-            ferryExp:'',
-            ferrySubExp:'0.00',
-            ferryGST:'0.00',
-            ferryTotalExp:'0.00',
-
-            miscExp:'',
-            miscSubExp:'0.00',
-            miscGST:'0.00',
-            miscTotalExp:'0.00',
-
-            expPreGST:'930.50',
-            expTotalGST:'0.00',
-            expTotal:'930.50',
-
-            expPayable:'930.50',
-            GSTifApplic:'0.00',
-            totalExpenses:'930.50',
-            totalPayable:'8,888.66',
-            
-            totalPaidByCourt:'',
-            totalPaidByCrown:''
-        }
-        
+    public formatter(value: string, len, max){
+        const lastChar =  value.slice(-1);
+        if(lastChar != '.' && isNaN(Number(lastChar))) return value.slice(0,-1)
+        if(lastChar =='.' && value.slice(0,-1).includes('.')) return value.slice(0,-1)
+        if(value.length>len) return value.slice(0,-1)
+        const dotInx = value.indexOf('.')
+        if(dotInx==0) return ('0'+value)
+        if(dotInx>-1 && value.length-dotInx>3)return value.slice(0,-1)
+        if(Number(value)>max) return '0'
+        return value
     }
 
 
@@ -443,6 +491,12 @@ export default class AdmPaymentDetails extends Vue {
         background: rgb(182, 210, 221);
         box-shadow: 2px 5px 5px 2px #DDD;
     }
+    // th{
+    //     border: 1px solid #000 !important;
+    // }
+    // td{
+    //     border: 1px solid #000 !important;
+    // }
 
     .labels {
         font-size: 12px; font-weight:600; line-height: 0.025rem; color: rgb(50, 50, 50);

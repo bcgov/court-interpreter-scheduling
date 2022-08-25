@@ -49,6 +49,8 @@ $other:   #7a4528 !default;
 $select:  #e6d9e2 !default;
 $time:    #607894 !default;
 $inactive:  #cccccc !default;
+$approved: #28d8a3 !default; 
+$card_detail: rgb(221, 239, 246);
 
 
 
@@ -103,6 +105,8 @@ $theme-colors: map-merge(
     "select":     $select,
     "orange":     $orange,
     "time":       $time,
+    "card_detail": $card_detail,
+    "approved"   :$approved,
   ),
   $theme-colors
 );

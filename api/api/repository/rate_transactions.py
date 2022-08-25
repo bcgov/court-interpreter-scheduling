@@ -32,16 +32,16 @@ def modify_rates(rates_request: List[RateSchema], db: Session, username):
             if not current_rate:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Rates Table has some issues.")
             
-            if current_rate.value_changed_date:
-                freeze_period = current_rate.value_changed_date + timedelta(days=30) #rates freezing period is 30 days             
+            # if current_rate.value_changed_date:
+            #     freeze_period = current_rate.value_changed_date + timedelta(days=30) #rates freezing period is 30 days             
 
-                if datetime.now(tz=freeze_period.tzinfo) > freeze_period:
-                    rate_request['previous_value'] = current_rate.value
-                    rate_request['value_changed_date'] = datetime.now()
+            #     if datetime.now(tz=freeze_period.tzinfo) > freeze_period:
+            #         rate_request['previous_value'] = current_rate.value
+            #         rate_request['value_changed_date'] = datetime.now()
                 
-            else:
-                rate_request['previous_value'] = rate_request['value']
-                rate_request['value_changed_date'] = datetime.now()
+            # else:
+            #     rate_request['previous_value'] = rate_request['value']
+            #     rate_request['value_changed_date'] = datetime.now()
                     
 
 

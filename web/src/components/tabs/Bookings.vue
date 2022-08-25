@@ -15,9 +15,9 @@
                             @change="searchAgain"                           
                             style="display:inline"                            
                             v-model="location">
-                            <b-form-select-option :value="alllocations">
+                            <!-- <b-form-select-option :value="alllocations">
                                 --- All Locations ---
-                            </b-form-select-option> 
+                            </b-form-select-option>  -->
                             <b-form-select-option
                                 v-for="courtLocation in courtLocations" 
                                 :key="courtLocation.id"
@@ -112,6 +112,7 @@ import { bookingSearchResultInfoType, dateRangeInfoType } from '@/types/Bookings
 import Spinner from '@/components/utils/Spinner.vue'
 
 import BookingDateRangePicker from './components/DateComponents/BookingDateRangePicker.vue'
+import { rateJsonInfoType } from '@/types/Common';
 
 @Component({
     components:{
@@ -126,7 +127,10 @@ export default class BookingsPage extends Vue {
     public courtLocations!: locationsInfoType[];
 
     @commonState.State
-    public languages!: languagesInfoType[];    
+    public languages!: languagesInfoType[]; 
+    
+    @commonState.Action
+    public UpdateRates!: (newRates: rateJsonInfoType[]) => void
 
     @commonState.State
     public userLocation!: locationsInfoType;
@@ -171,6 +175,7 @@ export default class BookingsPage extends Vue {
     @Watch('userLocation')
     defaultLocationChanged(){
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+        this.find()
     }
    
     mounted() {  
@@ -216,6 +221,20 @@ export default class BookingsPage extends Vue {
             if(response?.data){ 
                 const locations = _.sortBy(response.data,'name')                                
                 this.UpdateCourtLocations(locations);
+                this.loadRates();
+            }
+            
+        },(err) => {
+            console.log(err)            
+        });
+    }
+
+    public loadRates(){
+        this.$http.get('/rate')
+        .then((response) => {            
+            if(response?.data){ 
+                const rates = response.data                              
+                this.UpdateRates(rates);
                 this.loadLanguages();
             }
             
@@ -231,7 +250,7 @@ export default class BookingsPage extends Vue {
                 const languages = _.sortBy(response.data,'name')               
                 this.UpdateLanguages(languages);                
             }
-            this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+            this.location = this.userLocation?.name? this.userLocation : this.courtLocations[0]//({} as locationsInfoType);
             this.dataReady = true;
             this.find()
         },(err) => {

@@ -81,7 +81,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import moment from 'moment-timezone'
-import { bookingDateInfoType, bookingDateTimesInfoType } from '@/types/Bookings/json';
+import { bookingDateTimesInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
 
 import TimePicker from "./TimePicker/TimePicker.vue"
@@ -119,12 +119,13 @@ export default class BookingDatePicker extends Vue {
     }
 
     public allowedDates(date){
-        const day = moment(date).weekday()
+        return true
+        // const day = moment(date).weekday()
         
-        if(this.blockedDates?.length>0)
-            return !this.blockedDates.includes(date)
-        else if(day==0 || day==6) return false
-        else return true
+        // if(this.blockedDates?.length>0)
+        //     return !this.blockedDates.includes(date)
+        // else if(day==0 || day==6) return false
+        // else return true
     }
 
 

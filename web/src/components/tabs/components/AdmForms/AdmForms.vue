@@ -1,51 +1,81 @@
 <template>
-    <div :key="update">
-        <adm-interpreter-information :booking="booking"/>
-        <adm-scheduling-information :booking="booking"/>
-        <adm-record :booking="booking" @approved="recordsReadyForApproval=true;"/>
-        <adm-cancellation-information v-if="booking.recordsApproved" :booking="booking"/>
-        <adm-payment-details v-if="booking.recordsApproved" :booking="booking"/>
-        <adm-authorizations v-if="booking.recordsApproved" :booking="booking"/>
-        <adm-office-use-only v-if="booking.recordsApproved"  :booking="booking"/>
+    <div>
+        <loading-spinner color="#000" v-if="!dataReady" waitingText="Loading ..." />
         
-        <div v-if="!booking.recordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
-            <b-button @click="recordsApproved" variant="warning">
-                <b-icon-calendar-check class="mr-2"/>Records Approved
-            </b-button>
-        </div>
-        
-        <div style="transform:translate(-20px,70px);float:right;">
-            <b-button @click="showPrintWindow=true" variant="primary">Print / Email</b-button>
-        </div>
-
-        <b-modal size="xl" v-model="showPrintWindow" header-class="none" >
-            <template v-slot:modal-title>
-                <b-row class="ml-1">
-                    <img class="img-fluid d-none d-md-block"
-                        src="@/images/bcid-logo-text-en.svg"
-                        width="60"
-                        height="60"                    
-                        alt="B.C. Government Logo"/>
-                    <div style="font-size:16pt; margin:1rem 0 0 1rem;" >COURT INTERPRETER REQUEST AND RECORD</div>
-                </b-row>
-            </template>
-
-            <div class="text-center h2 my-5">PRINTING CONTENT</div>
+        <div v-else :key="update">
             
-            <template v-slot:modal-footer>                
-                <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false">Cancel</b-button>
-                <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button>
-                <b-button class="ml-auto" variant="success" @click="showPrintWindow=false">Save PDF</b-button>
-            </template>
-        </b-modal> 
+            <adm-interpreter-information :booking="booking"/>
+            <adm-scheduling-information :booking="booking" @saveClerkPhone="saveBookingFields"/>
+            <adm-record :booking="booking" @approved="recordsWaitingForApproval"/>
+            <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" @saveChanges="saveRecordChanges"/>
+            <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" :form="paymentDetailsForm" @savePaymentDetail="saveBookingFields"/>
+            <adm-authorizations  v-if="bookingRecordsApproved" :booking="booking" @saveAuthorizations="saveBookingFields"/>
+            <adm-office-use-only v-if="bookingRecordsApproved" :booking="booking" @saveOfficeUse="saveBookingFields"/>
+            
+            <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
+                <b-button @click="IApproveAllRecords" variant="warning">
+                    I approve all Records<b-icon-calendar-check class="ml-2"/>
+                </b-button>
+            </div>
+
+            <b-alert name='alert-msg' style="margin-top:0.8rem" variant="danger" :show="errorMsg !=''"  >Error: {{errorMsg}}</b-alert>           
+            
+            <div style="transform:translate(-20px,70px);float:right;">
+                <b-button @click="errorMsg='';showPrintWindow=true" variant="primary">Print 
+                    <b-icon-printer-fill class="mx-1" variant="white" scale="1" ></b-icon-printer-fill>
+                </b-button>
+            </div>
+
+            <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer>
+                <div class="border-0">                
+                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
+                    <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
+                    <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
+                        <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                        <span style="font-size: 18px;" v-else>Save PDF</span>
+                    </b-button>
+                </div>
+                <hr/>
+                <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
+                    <adm-header :booking="booking" class="court-header"/>
+                    <interpreter-info :booking="booking"/>
+                    <scheduling-info :booking="booking" />
+                    <record :booking="booking"/>
+                    <cancellation-info :booking="booking"/>
+                    <payment-details />
+                    <authorizations />
+                    <office-use-only />
+                </b-card>
+                <hr/>
+                <div class="border-0">                
+                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Close</span></b-button>
+                    <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
+                    <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
+                        <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                        <span style="font-size: 18px;" v-else>Save PDF</span>
+                    </b-button>
+                </div>
+            </b-modal> 
+
+        </div>   
 
     </div>    
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import moment from 'moment';
+import * as _ from 'underscore';
 
-import { bookingSearchInfoType } from '@/types/Bookings/json';
+import { namespace } from "vuex-class";   
+import "@/store/modules/common";
+const commonState = namespace("Common");
+
+import { bookingSearchResultInfoType, calculationVars } from '@/types/Bookings/json';
+
+
+import Spinner from '@/components/utils/Spinner.vue'
+
 import AdmRecord from "./AdmComponents/AdmRecord.vue"
 import AdmInterpreterInformation from "./AdmComponents/AdmInterpreterInformation.vue"
 import AdmSchedulingInformation from "./AdmComponents/AdmSchedulingInformation.vue"
@@ -54,35 +84,327 @@ import AdmPaymentDetails from "./AdmComponents/AdmPaymentDetails.vue"
 import AdmAuthorizations from "./AdmComponents/AdmAuthorizations.vue"
 import AdmOfficeUseOnly from "./AdmComponents/AdmOfficeUseOnly.vue"
 
+import AdmHeader from "./pdf/AdmHeader.vue"
+import InterpreterInfo from './pdf/InterpreterInfo.vue'
+import SchedulingInfo from './pdf/SchedulingInfo.vue' 
+import Record from './pdf/Record.vue'
+import CancellationInfo from './pdf/CancellationInfo.vue'
+import PaymentDetails from './pdf/PaymentDetails.vue'
+import Authorizations from './pdf/Authorizations.vue'
+import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
+
+import {getTotalInterpretingHours} from './AdmCalculations/TotalInterpretingHours'
+import {travelInformation} from './AdmCalculations/TravelInfo'
+import {paymentDetails} from './AdmCalculations/PaymentCalculation'
+import {paymentDetailsInfoType} from '@/types/Bookings';
+import { locationsInfoType } from '@/types/Common/json';
+
+
 @Component({
     components:{
+        Spinner,
         AdmRecord,
         AdmInterpreterInformation,
         AdmSchedulingInformation,
         AdmCancellationInformation,
         AdmAuthorizations,
         AdmOfficeUseOnly,
-        AdmPaymentDetails 
+        AdmPaymentDetails,
+        
+        AdmHeader,
+        InterpreterInfo,
+        SchedulingInfo,
+        Record,
+        CancellationInfo,
+        PaymentDetails,
+        Authorizations,
+        OfficeUseOnly
     }
 })
 export default class AdmForms extends Vue {
 
     @Prop({required: true})
-    booking!: bookingSearchInfoType;
+    bookingId!: number;
+
+
+    booking = {} as bookingSearchResultInfoType;
     update = 0
 
+    @commonState.State
+    public userName!: string;
+
+    @commonState.State
+    public userRole!: string[];
+
+    @commonState.State
+    public courtLocations!: locationsInfoType[];
+
+    paymentDetailsForm = {} as paymentDetailsInfoType
+
+    dataReady = false;
     recordsReadyForApproval = false
+    printingPDF=false
+    errorMsg = ''
     showPrintWindow = false
+    bookingRecordsApproved = false;
+    sectionName=''
 
     mounted(){
+        this.printingPDF=false        
+        this.recordsReadyForApproval = false  
+        this.getBooking()
+    }
+
+    public getBooking(){
+        this.errorMsg =''
+        this.dataReady = false;
         this.showPrintWindow = false
-        this.recordsReadyForApproval = false
+
+        this.$http.get('/booking/' + this.bookingId)
+        .then((response) => {
+            if(response.data){
+                this.booking = JSON.parse(JSON.stringify(response.data))
+                this.extractInfo()
+            }                           
+        },(err) => {                        
+            this.errorMsg=err.response.data.detail
+            this.dataReady = true;
+            Vue.filter('scrollToLocation')('alert-msg')
+        });               
+    }
+
+    public extractInfo(){
+        // console.log(this.booking)        
+        const languages =[]
+        const levels: number[] = []
+        const cancelledLanguages =[]
+        const cancelledLevels = []
+        let recordApprovalRequired = false;
+        for(const date of this.booking.dates){
+            for(const lang of date.languages)
+                if(date.status != 'Cancelled'){
+                    if(!languages.includes(lang.language))
+                        languages.push(lang.language)
+                    if(!levels.includes(lang.level))
+                        levels.push(lang.level)
+                }else{
+                    if(!cancelledLanguages.includes(lang.language))
+                        cancelledLanguages.push(lang.language)
+                    if(!cancelledLevels.includes(lang.level))
+                        cancelledLevels.push(lang.level)
+                }
+            if(date.status=='Booked') recordApprovalRequired = true;
+        }        
+        
+        const interp = this.booking.interpreter
+        interp.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
+        interp.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
+        
+        this.booking.createdDate = Vue.filter('iso-date')(this.booking.created_at)
+        this.booking.language= languages.length>0? languages.join(', '):cancelledLanguages.join(', ')
+        this.booking.level= levels.length>0? Math.min(...levels) : Math.min(...cancelledLevels)
+        this.booking.multipleLanguages=languages.length>0? (languages.length>1? "Yes" :"No") :(cancelledLanguages.length>1? "Yes" :"No")
+
+        this.bookingRecordsApproved = this.booking.recordsApproved? true : false;
+
+        if(recordApprovalRequired == false && this.bookingRecordsApproved == false){
+            this.IApproveAllRecords()
+        }
+
+        this.getInvoiceInfo()
+        
+        if(this.bookingRecordsApproved)
+            this.getpaymentDetailsForm(true)            
+
+        this.dataReady = true;
+        Vue.filter('scrollToLocation')(this.sectionName)
     }
 
 
-    public recordsApproved(){
+    public recordsWaitingForApproval(approved, saveChanges, records){
+        // console.log(approved)        
+        this.recordsReadyForApproval=true;            
+        this.booking.dates = JSON.parse(JSON.stringify(records))
+        // console.log(this.booking)
+        if(approved==false){ 
+            this.recordsReadyForApproval=false;
+            this.bookingRecordsApproved = false;
+            if(saveChanges)
+                this.saveBookingFields([{name:'recordsApproved', value:false}],'adm-schedule')
+        }        
+    }
+
+
+    public getInvoiceInfo(){
+        let saveRequired = false;
+        let sortedDates = [];
+        let location = [];
+
+        if(!this.booking.invoiceDate || !this.booking.invoiceNumber){
+            let dates = this.booking.dates.filter(date => date.status=='Booked')
+            if(dates.length==0) dates = this.booking.dates.filter(date => date.status=='Cancelled')
+            sortedDates = _.sortBy(dates,'date')
+        }
+
+        if(!this.booking.invoiceDate && sortedDates.length>0){
+            const lenDates = sortedDates.length
+            const invoiceDate = sortedDates[lenDates-1]?.date?.slice(0,10)       
+            this.booking.invoiceDate = invoiceDate 
+            saveRequired = true;                   
+        }
+
+        if((!this.booking.location_name || !this.booking.invoiceNumber) && this.booking.location_id){
+            location = this.courtLocations.filter(loc => loc.id==this.booking.location_id)
+        }
+
+        if(!this.booking.location_name && location.length==1){
+            this.booking.location_name = location[0].name;
+        }
+
+
+        if(!this.booking.invoiceNumber && sortedDates.length>0 && location.length==1){
+            const firstBookingDate = sortedDates[0]?.date?.slice(0,10)
+            this.createInvoiceNumber(location[0],firstBookingDate)
+            //saveRequired = true;        
+        }
+            
+        
+
+        if(saveRequired)
+            this.saveBooking(this.booking)
+    }
+
+    public createInvoiceNumber(location: locationsInfoType, date:string){
+        // console.log(location.shortDescription)
+        // console.log(this.booking.interpreter.lastName)
+        // console.log(this.booking.interpreter.firstName)
+        // console.log(date)
+    }
+
+
+    public getpaymentDetailsForm(saveIfRequired){
+        this.paymentDetailsForm = paymentDetails(this.booking)
+        let saveRequired = false;
+        if(this.booking.expenseGST != Number(this.paymentDetailsForm.GSTifApplic)){
+            this.booking.expenseGST = Number(this.paymentDetailsForm.GSTifApplic)
+            saveRequired = true;
+        }
+        if(this.booking.expenseTotal != Number(this.paymentDetailsForm.totalExpenses)){
+            this.booking.expenseTotal = Number(this.paymentDetailsForm.totalExpenses)
+            saveRequired = true;
+        }
+        if(this.booking.feesGST != Number(this.paymentDetailsForm.feesGST)){
+            this.booking.feesGST = Number(this.paymentDetailsForm.feesGST)
+            saveRequired = true;
+        }
+        if(this.booking.feesTotal != Number(this.paymentDetailsForm.feesTotal)){
+            this.booking.feesTotal = Number(this.paymentDetailsForm.feesTotal)
+            saveRequired = true;
+        }
+
+        if(this.booking.invoiceTotal != Number(this.paymentDetailsForm.totalPayable)){
+            this.booking.invoiceTotal = Number(this.paymentDetailsForm.totalPayable)
+            saveRequired = true;
+        }
+        
+        // console.log(this.booking.expenseGST)
+        // console.log(this.booking.expenseTotal)
+        // console.log(this.booking.feesGST)
+        // console.log(this.booking.feesTotal)
+        // console.log(this.booking.invoiceTotal)
+        console.log("Saving Fees Required",saveRequired)
+        if(saveRequired && saveIfRequired)
+            this.saveBooking(this.booking)
+    }
+
+    public IApproveAllRecords(){
+        this.calculations()
         this.booking.recordsApproved = true;
-        this.update++;
+        this.booking.approverName = this.userName;
+        this.saveBooking(this.booking)        
+    }
+
+    public calculations(){
+        const calculations = {} as calculationVars;
+        calculations.totalInterpretingHours = getTotalInterpretingHours(this.booking)
+        calculations.travelInformation = travelInformation(this.booking)
+
+        const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
+        admDetail.calculations = calculations
+        this.booking.admDetail = admDetail
+    }
+
+    public saveRecordChanges(records, section_name){
+        this.sectionName = section_name
+        this.booking.dates = JSON.parse(JSON.stringify(records))
+        this.getpaymentDetailsForm(false)
+        this.saveBooking(this.booking)
+    }
+
+    public saveBookingFields(fields, section_name){
+        this.sectionName = section_name
+        for(const field of fields){
+            this.booking[field.name] = field.value
+        }
+        if(section_name=='adm-payment') 
+            this.getpaymentDetailsForm(false)
+        this.saveBooking(this.booking)
+    }
+
+    public saveBooking(booking: bookingSearchResultInfoType){
+        this.errorMsg =''
+        this.$http.put('/booking/adm/' + booking.id, booking)
+        .then((response) => {                                    
+            this.getBooking();
+        },(err) => {            
+            this.errorMsg=err.response.data.detail
+            Vue.filter('scrollToLocation')('alert-msg')
+        });               
+    }    
+
+    public savePrint() {
+
+        this.printingPDF=true;
+        const el= document.getElementById("print");
+        const bottomLeftText = `" ADM 322 ";`;
+        const bottomRightText = `" "`;
+        const url = '/adm/pdf'
+        const pdfhtml = Vue.filter('printPdf')(el.innerHTML, bottomLeftText, bottomRightText );
+
+        const body = {
+            'html':pdfhtml,
+            'booking_id':this.bookingId
+        }      
+        
+        const options = {
+            responseType: "blob",
+            headers: {
+            "Content-Type": "application/json",
+            }
+        }  
+
+        this.$http.post(url,body, options)
+        .then(res => {                       
+            const blob = res.data;
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.download = "Adm322.pdf";
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            this.printingPDF=false
+            //this.showPrintWindow=false 
+        },err => {
+            // console.error(err);
+            this.showPrintWindow=false
+            this.printingPDF=false 
+            const reader = new FileReader();
+            reader.readAsText(err.response.data)
+            reader.onload = ()=> this.errorMsg = JSON.parse(String(reader.result))["detail"];
+            Vue.filter('scrollToLocation')('alert-msg')                   
+        });
     }
 }
 </script>
+<style scoped lang="scss" src="@/styles/_pdf.scss">
+</style>
