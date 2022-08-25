@@ -50,6 +50,7 @@ RUN chmod g+rw /var/cache/nginx \
                /etc/nginx/nginx.conf \
                /tmp
 RUN chmod g+rw /var/log/nginx/error.log
+RUN chmod g+rw /var/log/nginx/access.log
 # =================================================================================
 
 # Work-around for issues with S2I builds on Windows
