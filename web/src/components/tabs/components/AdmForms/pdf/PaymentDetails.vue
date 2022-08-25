@@ -7,8 +7,8 @@
                 </tr>                       
                 <tr style="font-size:8pt; " class="m-0 p-0">
                     <td class="m-0 p-0" colspan="19">                        
-                        <payment-fees />
-                        <payment-expenses />
+                        <payment-fees :booking="booking" :form="form"/>
+                        <payment-expenses :booking="booking" :form="form"/>
                     </td>                        
                 </tr>                       
                                                            
@@ -22,6 +22,8 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import PaymentFees from './PaymentTables/PaymentFees.vue'
 import PaymentExpenses from './PaymentTables/PaymentExpenses.vue'
+import { paymentDetailsInfoType } from '@/types/Bookings';
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 @Component({
     components:{
@@ -30,10 +32,12 @@ import PaymentExpenses from './PaymentTables/PaymentExpenses.vue'
     }
 })
 export default class PaymentDetails extends Vue {
-
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
+    
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+    
+    @Prop({required: true})
+    form!: paymentDetailsInfoType;
 
 
     mounted(){        

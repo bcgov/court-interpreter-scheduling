@@ -443,9 +443,7 @@ export default class AdmPaymentDetails extends Vue {
         admDetail.paymentDetail = paymentDetail
 
         const paymentDetailChanges =[
-            {name:'admDetail', value:admDetail},
-            // {name:'invoiceDate', value:this.invoiceDate},
-            // {name:'invoiceNumber', value:this.invoiceNumber}           
+            {name:'admDetail', value:admDetail}                  
         ]
         this.$emit('savePaymentDetail',paymentDetailChanges, this.section_name)
     }

@@ -22,15 +22,15 @@
 
                 <tr style="font-size:8pt;height:2rem;line-height:1.5rem;" >
                     <td />
-                    <td class="border-bottom "></td>                                             
-                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
-                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
-                    <td class="border-bottom border-left border-right text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom "><div class="answer-record">{{interpreterName}}</div></td>                                             
+                    <td class="border-bottom border-left text-center"><div class="answer-record">{{getDate('I','Y')}}</div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record">{{getDate('I','M')}}</div></td>
+                    <td class="border-bottom border-left border-right text-center"><div class="answer-record">{{getDate('I','D')}}</div></td>
                     <td class=""></td>
-                    <td class="border-bottom"></td>                                                                 
-                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
-                    <td class="border-bottom border-left text-center"><div class="answer-record"></div></td>
-                    <td class="border-bottom border-left border-right text-center"><div class="answer-record"></div></td>
+                    <td class="border-bottom"><div class="answer-record">{{qualifiedReceiverName}}</div></td>                                                                 
+                    <td class="border-bottom border-left text-center"><div class="answer-record"> {{getDate('Q','Y')}}</div></td>
+                    <td class="border-bottom border-left text-center"><div class="answer-record">{{getDate('Q','M')}}</div></td>
+                    <td class="border-bottom border-left border-right text-center"><div class="answer-record">{{getDate('Q','D')}}</div></td>
                     <td /> 
                 </tr>
 
@@ -57,7 +57,7 @@
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
-                    <th class="border-bottom"></th>                                              
+                    <td class="border-bottom"></td>                                              
                     <td class="border-bottom"></td>
                     <td class="border-bottom"></td>
                     <td class="border-bottom"></td>
@@ -86,19 +86,55 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 @Component
 export default class Authorizations extends Vue {
-
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
-
-   
+    
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+    
+    dataReady = false;
+    interpreterName = ""
+    interpreterSigned = false    
+    interpreterSigningDate = ""
+    qualifiedReceiverSigned = false
+    qualifiedReceiverName = ""
+    qualifiedReceiverSigningDate =""
 
     mounted(){        
-       //
+        this.dataReady = false;       
+        this.extractInfo();
+        this.dataReady = true;
+    }
+
+    public extractInfo(){
+        this.interpreterSigned = this.booking.interpreterSigned
+        this.interpreterName = this.interpreterSigned? this.booking.interpreter.fullName :''
+        this.interpreterSigningDate = this.interpreterSigned? this.booking.interpreterSigningDate :''
+
+        this.qualifiedReceiverSigned = this.booking.qualifiedReceiverSigned
+        this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
+        this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
+    }
+
+    public getDate(dateType, type){
+        let date=''
+        if(dateType=='Q')
+            date = this.qualifiedReceiverSigningDate
+        else
+            date = this.interpreterSigningDate
+
+        if(date && date.length>=10){
+            if(type=='Y')
+                return date.slice(0,4)
+            else if(type=='M')
+                return date.slice(5,7)
+            else if(type=='D')
+                return date.slice(8,10)    
+        }
+        else
+            return ''
     }
     
 }
