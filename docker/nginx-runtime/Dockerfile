@@ -34,7 +34,7 @@ COPY nginx.conf.template /tmp/
 
 COPY error.log /var/log/nginx
 COPY access.log /var/log/nginx
-RUN mkdir /var/cache/nginx
+RUN mkdir -p /var/cache/nginx
 # =================================================================================
 # Fix up permissions
 # ref: https://torstenwalter.de/openshift/nginx/2017/08/04/nginx-on-openshift.html
