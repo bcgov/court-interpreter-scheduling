@@ -8,10 +8,14 @@ from models.booking_model import BookingDatesModel, BookingModel
 from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema
 from datetime import datetime
 from math import sin, cos, sqrt, atan2, radians
+from api.repository.user_transactions import check_user_roles
 
 from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
-def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session):
+def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, username):
+
+    if not check_user_roles(['admin','super-admin'],username,db):
+        request.active = True
 
     interpreter = db.query(InterpreterModel).join(InterpreterLanguageModel).where(InterpreterModel.disabled==False)
 

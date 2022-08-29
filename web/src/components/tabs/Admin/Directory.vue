@@ -760,7 +760,8 @@ export default class DirectoryPage extends Vue {
 
     activeOptions = [
         {text: 'Active', value: true}, 
-        {text: 'Inactive', value: false}
+        {text: 'Inactive', value: false},
+        {text: 'Show All', value: null}
     ];
 
     levelOptions = ['1', '2', '3', '4'];

@@ -245,6 +245,7 @@ export default class SearchInterpretersPage extends Vue {
                 "distanceLimit":this.limitDistance,
                 "languageId":language.length==1? language[0].id :null,
                 "level":this.level,
+                "active":true,
                 "city":'',
                 "dates":this.bookingDates,
                 "location":this.location?this.location:null                
