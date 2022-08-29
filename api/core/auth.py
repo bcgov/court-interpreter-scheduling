@@ -58,9 +58,11 @@ def check_user_roles(require_roles, username, db: Session):
     user = db.query(UserModel).filter( UserModel.username==username).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User is not available.")
-
+    
+    user_roles = [role.role_name for role in user.role]
+    
     for require_role in require_roles:        
-        if require_role in [role.role_name for role in user.role]:
+        if require_role in user_roles:
             return
 
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Unauthorized user.")

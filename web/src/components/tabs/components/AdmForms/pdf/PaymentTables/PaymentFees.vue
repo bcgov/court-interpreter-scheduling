@@ -1,73 +1,93 @@
 <template>
-    <div>
+    <div v-if="dataReady">
                         
         <table class="flexsize mt-1 p-0">
             <tr>
                 <td />
-                <td v-for="inx in Array(25)" :key="inx" class="" style="width:4%;">                               
+                <td v-for="inx in Array(50)" :key="inx" class="" style="width:2%;">                               
                 <td/>                         
             </tr>
             <tr>
                 <th/>
-                <th colspan="4" style="font-size:11pt;" class="">Fees</th>
+                <th colspan="13" style="font-size:11pt;" class="">Fees</th>
                 <th colspan="1" class=""></th>
-                <td colspan="4" class="text-center">Rate</td>
-                <th colspan="1" class=""></th>
-                <td colspan="4" class="text-center">Total Hours</td>
-                <th colspan="1" class=""></th>
-                <th colspan="3" class=""></th>
+                <td colspan="7" class="text-center">Rate</td>
                 <th colspan="2" class=""></th>
-                <th colspan="1" class=""></th>
-                <th colspan="4" class="text-center">Fees Payable</th>                                                 
+                <td colspan="6" class="text-center">Total Hours</td>
+                <th colspan="2" class=""></th>
+                <th colspan="7" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="8" class="text-center">Fees Payable</th>                                                 
                 <th />
             </tr>
 
 <!-- <Court Hours> -->
-            <tr>
-                <th/>
-                <th colspan="4" class="">Court Hours (Level 1)</th>
-                <th colspan="1" class="text-right">$</th>
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>
-                <th colspan="1" class="text-center">x</th>
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.0</div></td>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="3" class="border-bottom"><div class="answer-payment">0.00</div></td>
-                <th colspan="2" class=""></th>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>                          
-                <th/>
-            </tr>
+            <b-tbody v-for="lang,inx in languageItems" :key="'fees-'+inx">
+                <tr v-if="form[courtFeeItems[1]+lang]">
+                    <th/>
+                    <th colspan="13" class="">Court Hours <span style="font-size:6pt;">({{getLanguageHrDetail(lang)}})</span></th>
+                    <th colspan="1" class="text-right">$</th>
+                    <td colspan="7" class="border-bottom"><div class="answer-payment">{{form[courtFeeItems[0]+lang]}}</div></td>
+                    <th colspan="2" class="text-center">x</th>
+                    <td colspan="6" class="border-bottom"><div class="answer-payment">{{form[courtFeeItems[1]+lang]}}</div></td>
+                    <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                    <td colspan="7" class="border-bottom"><div class="answer-payment">{{form[courtFeeItems[2]+lang]}}</div></td>
+                    <th colspan="2" class=""></th>
+                    <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                    <td colspan="8" class="border-bottom"><div class="answer-payment">{{form[courtFeeItems[3]+lang]}}</div></td>                          
+                    <th/>
+                </tr>
+                <b-tr v-if="form[courtFeeItems[1]+lang]" style="height:.3rem;line-height:.3rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>
+            </b-tbody>
+            <b-tbody v-if="!form.includeCourtHrs">
+                <tr>
+                    <th/>
+                    <th colspan="13" class="">Court Hours <span style="font-size:6pt;"></span></th>
+                    <th colspan="1" class="text-right">$</th>
+                    <td colspan="7" class="border-bottom"></td>
+                    <th colspan="2" class="text-center">x</th>
+                    <td colspan="6" class="border-bottom"></td>
+                    <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                    <td colspan="7" class="border-bottom"></td>
+                    <th colspan="2" class=""></th>
+                    <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                    <td colspan="8" class="border-bottom"><div class="answer-payment">0.00</div></td>                          
+                    <th/>
+                </tr>
+                <b-tr style="height:.3rem;line-height:.3rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>
+            </b-tbody>
 <!-- <spacer> -->
-            <tr><td class="text-white">.</td></tr>
-
+            <b-tr style="height:.5rem;line-height:.5rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>
+                        
 
 <!-- <Travel Hours> -->
             <tr>
                 <th/>
-                <th colspan="4" style="font-size:11pt;" class=""></th>
+                <th colspan="13" style="font-size:11pt;" class=""></th>
                 <th colspan="1" class=""></th>
-                <td colspan="4" class="text-center">Rate</td>
-                <th colspan="1" class=""></th>
-                <td colspan="4" class="text-center">Total Hours</td>
-                <th colspan="1" class=""></th>
-                <th colspan="3" class=""></th>
+                <td colspan="7" class="text-center">Rate</td>
                 <th colspan="2" class=""></th>
-                <th colspan="1" class=""></th>
-                <th colspan="4" class="text-center"></th>                                                 
+                <td colspan="6" class="text-center">Total Hours</td>
+                <th colspan="2" class=""></th>
+                <th colspan="7" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="8" class="text-center"></th>                                                 
                 <th />
             </tr>
             <tr>
                 <th/>
-                <th colspan="4" class="">Travel Hours</th>
+                <th colspan="13" class="">Travel Hours</th>
                 <th colspan="1" class="text-right">$</th>
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>
-                <th colspan="1" class="text-center">x</th>
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.0</div></td>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="3" class="border-bottom"><div class="answer-payment">0.00</div></td>
+                <td colspan="7" class="border-bottom"><div class="answer-payment">{{form.travelHrRate}}</div></td>
+                <th colspan="2" class="text-center">x</th>
+                <td colspan="6" class="border-bottom"><div class="answer-payment">{{form.travelTotalHrs}}</div></td>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="7" class="border-bottom"><div class="answer-payment">{{form.travelTotal}}</div></td>
                 <th colspan="2" class=""></th>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>                          
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="8" class="border-bottom"><div class="answer-payment">{{form.travelPayableFee}}</div></td>                          
                 <th/>
             </tr>
 <!-- <spacer> -->
@@ -75,11 +95,11 @@
 <!-- <Subtotal> -->
             <tr>
                 <th/>
-                <th colspan="15" class=""></th>                        
-                <th colspan="4" class="text-right">Subtotal</th>
-                <th colspan="1" class=""></th>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>                          
+                <th colspan="30" class=""></th>                        
+                <th colspan="8" class="text-right">Subtotal</th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="8" class="border-bottom"><div class="answer-payment">{{form.feesSubtotal}}</div></td>                          
                 <th/>
             </tr>
 <!-- <spacer small> -->
@@ -87,14 +107,14 @@
 <!-- <GST> -->
             <b-tr>
                 <th/>
-                <th colspan="4" class=""></th>                        
-                <th colspan="5" class="text-right">GST Number :</th>
-                <td colspan="6" class="border-bottom"><div class="answer-payment">0000000 - 000</div></td>
-                <th colspan="3" class="text-center">{{'5'}} % (rate)</th>
-                <th colspan="1" class="text-right">GST</th>
-                <th colspan="1" class=""></th>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <td colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></td>
+                <th colspan="8" class=""></th>                        
+                <th colspan="10" class="text-right">GST Number :</th>
+                <td colspan="12" class="border-bottom"><div class="answer-payment">{{form.gstNumber}}</div></td>
+                <th colspan="6" class="text-center">{{'5'}} % (rate)</th>
+                <th colspan="2" class="text-right">GST</th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="8" class="border-bottom"><div class="answer-payment">{{form.feesGST}}</div></td>
                 <th/>                         
             </b-tr>
 <!-- <spacer small> -->
@@ -102,11 +122,11 @@
 <!-- <Total> -->
             <b-tr>
                 <th/>
-                <th colspan="18" class=""></th>                        
-                <th colspan="1" class="text-right">Total</th>
-                <th colspan="1" class=""></th>
-                <th colspan="1" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
-                <th colspan="4" class="border-bottom"><div class="answer-payment">0.00</div></th>
+                <th colspan="36" class=""></th>                        
+                <th colspan="2" class="text-right">Total</th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <th colspan="8" class="border-bottom"><div class="answer-payment">{{form.feesTotal}}</div></th>
                 <th/>                          
             </b-tr>                            
                           
@@ -117,18 +137,44 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
+import { paymentDetailsInfoType } from '@/types/Bookings';
+import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+import {languageItems, courtFeeItems} from '../../AdmCalculations/PaymentCalculation'
 
 @Component
 export default class PaymentFees extends Vue {
+    
+    @Prop({required: true})
+    booking!: bookingSearchResultInfoType;
+    
+    @Prop({required: true})
+    form!: paymentDetailsInfoType;
 
-    // @Prop({required: true})
-    // booking!: bookingSearchResultInfoType;
-    // update = 0
-
+    dataReady = false;
+    languageItems = []
+    courtFeeItems = []
 
     mounted(){        
-       //
+        this.dataReady = false;
+        this.extractFormInfo()
+        this.dataReady = true;    
+    }
+
+    public extractFormInfo(){
+        this.languageItems = languageItems
+        this.courtFeeItems = courtFeeItems               
+    }
+
+    public getLanguageHrDetail(lang){
+        let detail=lang
+        if(detail.includes('SPKL')){detail = detail.replace('SPKL','')}
+        if(detail.includes('CART')){detail=detail+''}
+        if(detail.includes('1')){detail=detail.replace('1','')+' Level 1'}
+        if(detail.includes('2')){detail=detail.replace('2','')+' Level 2'}
+        if(detail.includes('3')){detail=detail.replace('3','')+' Level 3'}
+        if(detail.includes('4')){detail=detail.replace('4','')+' Level 4' }        
+        if(detail.includes('Old')){detail = detail.replace('Old','') +' \'Previous Rate\' '}
+        return detail
     }
     
 }

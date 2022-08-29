@@ -13,7 +13,7 @@
             <adm-office-use-only v-if="bookingRecordsApproved" :booking="booking" @saveOfficeUse="saveBookingFields"/>
             
             <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
-                <b-button @click="IApproveAllRecords" variant="warning">
+                <b-button @click="IApproveAllRecords(true)" variant="warning">
                     I approve all Records<b-icon-calendar-check class="ml-2"/>
                 </b-button>
             </div>
@@ -42,13 +42,13 @@
                     <scheduling-info :booking="booking" />
                     <record :booking="booking"/>
                     <cancellation-info :booking="booking"/>
-                    <payment-details />
-                    <authorizations />
-                    <office-use-only />
+                    <payment-details :booking="booking" :form="paymentDetailsForm"/>
+                    <authorizations :booking="booking"/>
+                    <office-use-only :booking="booking"/>
                 </b-card>
                 <hr/>
                 <div class="border-0">                
-                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Close</span></b-button>
+                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
                     <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
                     <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
                         <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
@@ -207,16 +207,18 @@ export default class AdmForms extends Vue {
 
         this.bookingRecordsApproved = this.booking.recordsApproved? true : false;
 
+        let saveRequired = false
+
         if(recordApprovalRequired == false && this.bookingRecordsApproved == false){
-            this.IApproveAllRecords()
+            this.IApproveAllRecords(false)
+            saveRequired = true;
         }
 
-        this.getInvoiceInfo()
-        
-        if(this.bookingRecordsApproved)
-            this.getpaymentDetailsForm(true)            
-
-        this.dataReady = true;
+        if(this.bookingRecordsApproved){
+            saveRequired = this.getpaymentDetailsForm(false)            
+        }
+            
+        this.dataReady = this.getInvoiceInfo(saveRequired)
         Vue.filter('scrollToLocation')(this.sectionName)
     }
 
@@ -235,8 +237,8 @@ export default class AdmForms extends Vue {
     }
 
 
-    public getInvoiceInfo(){
-        let saveRequired = false;
+    public getInvoiceInfo(saveRequired){
+        
         let sortedDates = [];
         let location = [];
 
@@ -261,24 +263,68 @@ export default class AdmForms extends Vue {
             this.booking.location_name = location[0].name;
         }
 
-
-        if(!this.booking.invoiceNumber && sortedDates.length>0 && location.length==1){
+        if(!this.booking.invoiceNumber && sortedDates.length>0 && location.length==1){                        
             const firstBookingDate = sortedDates[0]?.date?.slice(0,10)
             this.createInvoiceNumber(location[0],firstBookingDate)
-            //saveRequired = true;        
+            return false                 
         }
-            
-        
 
-        if(saveRequired)
+        if(saveRequired){
             this.saveBooking(this.booking)
+            return false
+        }
+        
+        return true
     }
 
+
     public createInvoiceNumber(location: locationsInfoType, date:string){
-        // console.log(location.shortDescription)
-        // console.log(this.booking.interpreter.lastName)
-        // console.log(this.booking.interpreter.firstName)
-        // console.log(date)
+        const locationCode = location.shortDescription
+        const firstBookingDate = moment(date).format("DDMMMYY").toUpperCase()        
+        //__Name
+        let name=''
+        const first = this.booking.interpreter.firstName
+        const last = this.booking.interpreter.lastName
+        if(last?.length>=3 && first?.length>=1)
+            name = last.slice(0,3)+first.slice(0,1)
+        else if(last?.length>=2 && first?.length>=2)
+            name = last.slice(0,2)+first.slice(0,2)
+        else if((!last || last?.length==0) && first?.length>=2)
+            name = first.slice(0,4)
+        else if((!first || first?.length==0) && last?.length>=2)
+            name = last.slice(0,4)
+        else
+            name = (last+first).slice(0,4)
+        
+        if(name.length==3) name += '*'
+        if(name.length==2) name += '**'
+
+        const invoiceNumber = (locationCode+name+firstBookingDate).toUpperCase()        
+        console.log(invoiceNumber)
+        console.log(this.bookingId)
+
+        this.$http.get('/booking/invoice-number/' + invoiceNumber)
+        .then((response) => {
+            if(response.data){
+                console.log(response.data)
+                if(response.data.length>0){
+                    const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split('#')[1]))
+                    const maxIndex = Math.max(...currentIndices)
+                    console.log(currentIndices)
+                    console.log(maxIndex)
+                    this.booking.invoiceNumber = invoiceNumber+'#'+(maxIndex+1)
+                }
+                else{
+                    this.booking.invoiceNumber = invoiceNumber+'#1'
+                }
+                this.saveBooking(this.booking)               
+            }
+            else
+                this.dataReady = true                          
+        },(err) => {                        
+            this.errorMsg=err.response.data.detail
+            this.dataReady = true            
+        });
     }
 
 
@@ -315,13 +361,15 @@ export default class AdmForms extends Vue {
         console.log("Saving Fees Required",saveRequired)
         if(saveRequired && saveIfRequired)
             this.saveBooking(this.booking)
+        return saveRequired
     }
 
-    public IApproveAllRecords(){
+    public IApproveAllRecords(save){
         this.calculations()
         this.booking.recordsApproved = true;
         this.booking.approverName = this.userName;
-        this.saveBooking(this.booking)        
+        if(save)
+            this.saveBooking(this.booking)        
     }
 
     public calculations(){

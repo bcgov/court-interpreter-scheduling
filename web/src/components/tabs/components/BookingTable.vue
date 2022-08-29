@@ -195,7 +195,7 @@
                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="closeBookingWindow">&times;</b-button>
             </template>
             <template v-slot:modal-footer>                
-                <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
+                <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Close</b-button>
             </template>
         </b-modal> 
 

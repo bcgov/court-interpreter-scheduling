@@ -181,4 +181,13 @@ class BookingSearchResponseSchema(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+
+
+class BookingInvoiceNumberResponseSchema(BaseModel):
     
+    id: Optional[int]
+    invoice_number: Optional[str] = Field(alias="invoiceNumber")
+
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True   

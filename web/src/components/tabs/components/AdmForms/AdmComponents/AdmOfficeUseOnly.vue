@@ -37,7 +37,7 @@
 
                     <b-tr>
                         <b-th colspan="9" class="border">Invoice Number</b-th>
-                        <b-td colspan="16" class="p-1 border"><b-input v-model="invoiceNumber" @input="officeUseChanges=true;"/></b-td>
+                        <b-td colspan="16" class="p-1 border"><b-input disabled v-model="invoiceNumber" @input="officeUseChanges=true;"/></b-td>
                         <b-th colspan="9" class="border">Expense Authority Name</b-th>
                         <b-td colspan="16" class="p-1 border"><b-input v-model="expenseAuthorityName" @input="officeUseChanges=true;"/></b-td>                                    
                     </b-tr>
@@ -141,7 +141,7 @@ export default class AdmOfficeUseOnly extends Vue {
     payStubComment=''
     additionalInstructions=''
 
-    invoiceTotalAmount=0
+    invoiceTotalAmount=''
     subtotalFees='0.00'
     feesGST='0.00'
     subtotalExpenses='0.00'
@@ -171,6 +171,8 @@ export default class AdmOfficeUseOnly extends Vue {
 
         this.subtotalExpenses = (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2);
         this.expensesGST = this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';
+
+        this.invoiceTotalAmount = this.booking.invoiceTotal? (this.booking.invoiceTotal + ' $'): '0.00 $'
 
         this.addressVerified = this.booking?.admDetail?.officeUse?.addressVerified;
         this.addressInstructions = this.booking?.admDetail?.officeUse?.addressInstructions    
