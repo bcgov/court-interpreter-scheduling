@@ -14,7 +14,7 @@ from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
 def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, username):
 
-    if not check_user_roles(['admin','super-admin'],username,db):
+    if not check_user_roles(['cis-admin','super-admin'],username,db):
         request.active = True
 
     interpreter = db.query(InterpreterModel).join(InterpreterLanguageModel).where(InterpreterModel.disabled==False)

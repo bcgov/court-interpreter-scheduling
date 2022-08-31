@@ -240,7 +240,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 		<html lang="en">
 		<head>		
 		<meta charset="UTF-8">
-		<title>Court Of Appeal</title>`+
+		<title>Court Interpreter Scheduling</title>`+
 		`<style>`+
 			`@page {
 				size: 8.5in 11in !important;
