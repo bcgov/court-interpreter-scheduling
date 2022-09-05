@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     EMAIL_SERVICE_CLIENT_ID = os.getenv('EMAIL_SERVICE_CLIENT_ID')
     EMAIL_SERVICE_CLIENT_SECRET = os.getenv('EMAIL_SERVICE_CLIENT_SECRET')
     RECIPIENT_EMAILS = os.getenv('RECIPIENT_EMAILS') 
-    ADM_RECIPIENT_EMAILS = os.getenv('ADM_RECIPIENT_EMAILS')
+    ADM_PRODUCTION_ENV = os.getenv('ADM_PRODUCTION_ENV','false')
 
     class Config:
         case_sensitive = True

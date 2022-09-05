@@ -28,7 +28,7 @@ export function paymentDetails(booking){
     form.totalPaidByCourt = booking?.admDetail?.paymentDetail?.totalPaidByCourt?.toFixed(2)
     form.totalPaidByCrown = booking?.admDetail?.paymentDetail?.totalPaidByCrown?.toFixed(2)
 
-    if(booking?.admDetail?.calculations){
+    if(booking?.admDetail?.calculations?.travelInformation && booking?.admDetail?.calculations?.totalInterpretingHours){
         //console.log(booking.admDetail.calculations)
         const travel: travelInformationInfoType = booking.admDetail.calculations.travelInformation
         const interpret: totalInterpretingHoursInfoType = booking.admDetail.calculations.totalInterpretingHours

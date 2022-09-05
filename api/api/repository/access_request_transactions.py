@@ -48,7 +48,8 @@ class EmailService():
             return ''
 
 
-    def send_request(self, subject):
+    def send_request(self, subject,  pdf_content = None, type = None):
+        #print(subject)
     
         sender_info = f"{self.sender_name} <{self.sender_email}>"
         to = self.recipients_email.split(",")
@@ -64,6 +65,17 @@ class EmailService():
             "tag": str(uuid4())
         }
 
+        
+        if pdf_content is not None:            
+            email["attachments"] = [
+                {
+                    "content": (base64.b64encode(pdf_content)).decode("utf-8"),
+                    "contentType": "application/pdf",
+                    "encoding": "base64",
+                    "filename": ("ADM_"+type+".pdf")
+                }
+            ]
+
         data = json.dumps(email, indent = 4)
         
         # print(data)
@@ -74,9 +86,7 @@ class EmailService():
         email_response = requests.post(
             self.email_url, headers=email_headers, data=data, auth=BearerAuth(self.token),
         )
-        # print(email_response)
-        # print(email_response.content)
-        
+
         if email_response.status_code != 201:
             raise HTTPException(status_code=404, detail=f"Email is not sent.")
 
@@ -105,4 +115,45 @@ class EmailService():
             Email : {email} \n \n \
             Reason For Access: \n \
             {reason} \n "
+
+
+#___Email_Adm    
+    def email_adm(self, db: Session, username, pdf_content, type, interpreter_name, interpreter_email):
+        current_user = db.query(UserModel).filter( UserModel.username==username).first()    
+        if not current_user:
+            raise HTTPException(status_code=404, detail=f"User is not available.")
+        
+        self.sender_name = current_user.display_name
+        self.sender_email = current_user.email
+        print("ADM_PROD_ENV=="+settings.ADM_PRODUCTION_ENV)
+        self.recipients_email = current_user.email
+        self.recipient_name = interpreter_name
+
+        #TODO for PROD
+        if(settings.ADM_PRODUCTION_ENV == 'true'):
+            print("OOOOOOOOOOOOOOOOOOOOOOOOOOO")
+            # self.recipients_email = interpreter_email
+        
+        self.get_adm_email_body(type)        
+        return self.send_request(f"Court Interpreter's ADM {type.capitalize()}", pdf_content, type)
+
+
+    def get_adm_email_body(self, type):
+        if type=='INVOICE':
+            body = f"Please find the attachment, a copy of the Invoice for your court interpreting session.\n\
+            If you see any issues in the information, please let me know through email at \'{self.sender_email}\'. \n"
+        else:
+            body = f"Please find the attachment, a copy of the court interpreting information Form (ADM322).\n\
+            Kindly fill the actual \'Start Time\' and \'Finish Time\' on the \'Record\' section of the attached file and \n\
+            send it back to me at \'{self.sender_email}\'.\n\
+            If you see any issues in the information, please let me know in the response. \n\
+            I will send you the Invoice upon receiving your confirmed times.\n"
+
+        self.email_body = f"\
+            Dear {self.recipient_name}, \n\n\
+            {body}\n\
+            Regards,\n\
+            {self.sender_name}\n\
+            {self.sender_email}\n\
+            Court Services BC"
 

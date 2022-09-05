@@ -60,13 +60,23 @@ export interface bookingSearchResultInfoType{ //OK
     invoiceNumber: string;
     admDetail: any;
     adm_updated_by: string;
-    
+
     //Optional for ADM & PDF
     language?: string;
     level?: number;
     multipleLanguages?: string;
 
     interpreterName?: string;
+
+    formSender?: string;
+    formSenderEmail?: string;
+    formRecipientEmail?: string;
+    formSentDate?: string;
+
+    invoiceSender?: string;
+    invoiceSenderEmail?: string;
+    invoiceRecipientEmail?: string;
+    invoiceSentDate?: string;
 }
 
 export interface bookingLanguageInfoType{ //OK
@@ -207,6 +217,13 @@ export interface travelInformationInfoType {
     dinner: number;
 }
 
+export interface sentEmailContentInfoType {
+    attachments: string;
+    body: string;
+    from: string;
+    subject: string;
+    to: string;
+}
 
 
 
