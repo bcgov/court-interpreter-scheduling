@@ -73,7 +73,7 @@ export default class CancellationInfo extends Vue {
     }
 
     public extractInfo(){
-
+        const bookingRecordsApproved = this.booking.recordsApproved? true : false;
         this.slicedRecords =[]
         let records:bookingAdmCancellationInfoType[] = []
         let totalAdmRecords = 0;
@@ -87,7 +87,7 @@ export default class CancellationInfo extends Vue {
             
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
-            record.cancellationFee = date.cancellationFee? date.cancellationFee : '0.00'
+            record.cancellationFee = (bookingRecordsApproved && date.cancellationFee)? date.cancellationFee : '0.00'
             record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime

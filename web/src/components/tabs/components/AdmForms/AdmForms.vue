@@ -7,10 +7,12 @@
             <adm-interpreter-information :booking="booking"/>
             <adm-scheduling-information :booking="booking" @saveClerkPhone="saveBookingFields"/>
             <adm-record :booking="booking" @approved="recordsWaitingForApproval"/>
+            <adm-sent-form-info v-if="formEmailed" :booking="booking" />
             <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" @saveChanges="saveRecordChanges"/>
             <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" :form="paymentDetailsForm" @savePaymentDetail="saveBookingFields"/>
             <adm-authorizations  v-if="bookingRecordsApproved" :booking="booking" @saveAuthorizations="saveBookingFields"/>
             <adm-office-use-only v-if="bookingRecordsApproved" :booking="booking" @saveOfficeUse="saveBookingFields"/>
+            <adm-sent-invoice-info v-if="invoiceEmailed" :booking="booking" />
             
             <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
                 <b-button @click="IApproveAllRecords(true)" variant="warning">
@@ -21,21 +23,13 @@
             <b-alert name='alert-msg' style="margin-top:0.8rem" variant="danger" :show="errorMsg !=''"  >Error: {{errorMsg}}</b-alert>           
             
             <div style="transform:translate(-20px,70px);float:right;">
-                <b-button @click="errorMsg='';showPrintWindow=true" variant="primary">Print 
-                    <b-icon-printer-fill class="mx-1" variant="white" scale="1" ></b-icon-printer-fill>
+                <b-button @click="errorMsg='';showPrintWindow=true;" variant="primary">
+                    <b-icon-printer-fill class="mx-1" variant="white" scale="1"/> Print / Email 
                 </b-button>
             </div>
 
             <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer>
-                <div class="border-0">                
-                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
-                    <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
-                    <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
-                        <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
-                        <span style="font-size: 18px;" v-else>Save PDF</span>
-                    </b-button>
-                </div>
-                <hr/>
+                <button-bar :pdfType="pdfType" position="top" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
                 <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
                     <adm-header :booking="booking" class="court-header"/>
                     <interpreter-info :booking="booking"/>
@@ -46,15 +40,11 @@
                     <authorizations :booking="booking"/>
                     <office-use-only :booking="booking"/>
                 </b-card>
-                <hr/>
-                <div class="border-0">                
-                    <b-button class="mr-auto" variant="dark" @click="showPrintWindow=false"><span style="font-size: 18px;">Cancel</span></b-button>
-                    <!-- <b-button class="mx-auto" variant="warning" @click="showPrintWindow=false">Email</b-button> -->
-                    <b-button class="float-right" variant="success" @click="savePrint" :disabled="printingPDF">                    
-                        <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
-                        <span style="font-size: 18px;" v-else>Save PDF</span>
-                    </b-button>
-                </div>
+                <button-bar :pdfType="pdfType" position="bottom" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
+            </b-modal>
+
+            <b-modal size="xl" v-model="showSentEmail" title-class="h1 text-success" ok-only title="Email Sent Successfully">
+                <sent-email-content :emailContent="emailContent" />                
             </b-modal> 
 
         </div>   
@@ -71,7 +61,7 @@ import { namespace } from "vuex-class";
 import "@/store/modules/common";
 const commonState = namespace("Common");
 
-import { bookingSearchResultInfoType, calculationVars } from '@/types/Bookings/json';
+import { bookingSearchResultInfoType, calculationVars, sentEmailContentInfoType } from '@/types/Bookings/json';
 
 
 import Spinner from '@/components/utils/Spinner.vue'
@@ -79,10 +69,14 @@ import Spinner from '@/components/utils/Spinner.vue'
 import AdmRecord from "./AdmComponents/AdmRecord.vue"
 import AdmInterpreterInformation from "./AdmComponents/AdmInterpreterInformation.vue"
 import AdmSchedulingInformation from "./AdmComponents/AdmSchedulingInformation.vue"
+import AdmSentFormInfo from "./AdmComponents/AdmSentFormInfo.vue"
 import AdmCancellationInformation from "./AdmComponents/AdmCancellationInformation.vue"
 import AdmPaymentDetails from "./AdmComponents/AdmPaymentDetails.vue"
 import AdmAuthorizations from "./AdmComponents/AdmAuthorizations.vue"
 import AdmOfficeUseOnly from "./AdmComponents/AdmOfficeUseOnly.vue"
+import AdmSentInvoiceInfo from "./AdmComponents/AdmSentInvoiceInfo.vue"
+import ButtonBar from './AdmComponents/ButtonBar.vue'
+import SentEmailContent from './AdmComponents/SentEmailContent.vue'
 
 import AdmHeader from "./pdf/AdmHeader.vue"
 import InterpreterInfo from './pdf/InterpreterInfo.vue'
@@ -106,11 +100,15 @@ import { locationsInfoType } from '@/types/Common/json';
         AdmRecord,
         AdmInterpreterInformation,
         AdmSchedulingInformation,
+        AdmSentFormInfo,
         AdmCancellationInformation,
         AdmAuthorizations,
         AdmOfficeUseOnly,
         AdmPaymentDetails,
-        
+        AdmSentInvoiceInfo,
+        ButtonBar,
+        SentEmailContent,
+
         AdmHeader,
         InterpreterInfo,
         SchedulingInfo,
@@ -144,10 +142,15 @@ export default class AdmForms extends Vue {
     dataReady = false;
     recordsReadyForApproval = false
     printingPDF=false
+    formEmailed=false
+    invoiceEmailed=false
+    pdfType=''
     errorMsg = ''
     showPrintWindow = false
     bookingRecordsApproved = false;
     sectionName=''
+    emailContent = {} as sentEmailContentInfoType
+    showSentEmail = false
 
     mounted(){
         this.printingPDF=false        
@@ -159,6 +162,7 @@ export default class AdmForms extends Vue {
         this.errorMsg =''
         this.dataReady = false;
         this.showPrintWindow = false
+        
 
         this.$http.get('/booking/' + this.bookingId)
         .then((response) => {
@@ -179,6 +183,7 @@ export default class AdmForms extends Vue {
         const levels: number[] = []
         const cancelledLanguages =[]
         const cancelledLevels = []
+        this.paymentDetailsForm = {} as paymentDetailsInfoType
         let recordApprovalRequired = false;
         for(const date of this.booking.dates){
             for(const lang of date.languages)
@@ -217,7 +222,9 @@ export default class AdmForms extends Vue {
         if(this.bookingRecordsApproved){
             saveRequired = this.getpaymentDetailsForm(false)            
         }
-            
+        
+        this.getEmailStatus()
+        
         this.dataReady = this.getInvoiceInfo(saveRequired)
         Vue.filter('scrollToLocation')(this.sectionName)
     }
@@ -410,13 +417,14 @@ export default class AdmForms extends Vue {
         });               
     }    
 
-    public savePrint() {
+    public savePrint(email) {
 
+        this.showSentEmail = false
         this.printingPDF=true;
         const el= document.getElementById("print");
         const bottomLeftText = `" ADM 322 ";`;
         const bottomRightText = `" "`;
-        const url = '/adm/pdf'
+        const url = '/adm/pdf?email='+(email?'true':'false')
         const pdfhtml = Vue.filter('printPdf')(el.innerHTML, bottomLeftText, bottomRightText );
 
         const body = {
@@ -432,16 +440,29 @@ export default class AdmForms extends Vue {
         }  
 
         this.$http.post(url,body, options)
-        .then(res => {                       
-            const blob = res.data;
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.download = "Adm322.pdf";
-            link.click();
-            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        .then(res => { 
+            if(!email){                      
+                const blob = res.data;
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                document.body.appendChild(link);
+                link.download = "Adm322.pdf";
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            }else{
+                const reader = new FileReader();
+                reader.readAsText(res.data)
+                reader.onload = ()=> {
+                    this.emailContent=JSON.parse(String(reader.result))
+                    console.log(this.emailContent)
+                    this.showSentEmail = true
+                }
+                this.printingPDF=false;
+                this.sectionName = 'adm-email'
+                this.getBooking()                
+            }
             this.printingPDF=false
-            //this.showPrintWindow=false 
+            this.showPrintWindow=false 
         },err => {
             // console.error(err);
             this.showPrintWindow=false
@@ -451,6 +472,30 @@ export default class AdmForms extends Vue {
             reader.onload = ()=> this.errorMsg = JSON.parse(String(reader.result))["detail"];
             Vue.filter('scrollToLocation')('alert-msg')                   
         });
+    }
+
+    public getEmailStatus(){
+        if (this.booking.formSenderEmail && 
+            this.booking.formSender && 
+            this.booking.formSentDate && 
+            this.booking.formRecipientEmail &&
+            !this.bookingRecordsApproved
+        )
+            this.formEmailed = true;
+        else
+            this.formEmailed = false
+
+        if (this.booking.invoiceSenderEmail && 
+            this.booking.invoiceSender && 
+            this.booking.invoiceSentDate && 
+            this.booking.invoiceRecipientEmail &&
+            this.bookingRecordsApproved
+        )
+            this.invoiceEmailed = true;
+        else
+            this.invoiceEmailed = false
+        
+        this.pdfType=this.bookingRecordsApproved?'Invoice':'Form' 
     }
 }
 </script>

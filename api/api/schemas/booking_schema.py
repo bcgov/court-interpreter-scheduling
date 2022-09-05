@@ -134,6 +134,16 @@ class ADMBookingResponseSchema(BookingResponseBase):
     updated_by: TruncatedUserIdBase
     adm_updated_by: Optional[TruncatedUserIdBase]
 
+    form_sender: Optional[TruncatedUserIdBase] = Field(alias="formSender")
+    form_sender_email: Optional[str] = Field(alias="formSenderEmail")
+    form_recipient_email: Optional[str] = Field(alias="formRecipientEmail")
+    form_sent_date: Optional[datetime] = Field(alias="formSentDate")
+
+    invoice_sender: Optional[TruncatedUserIdBase] = Field(alias="invoiceSender")
+    invoice_sender_email: Optional[str] = Field(alias="invoiceSenderEmail")
+    invoice_recipient_email: Optional[str] = Field(alias="invoiceRecipientEmail")
+    invoice_sent_date: Optional[datetime] = Field(alias="invoiceSentDate")
+
 #Specific to ADM (In to DB)
 class ADMBookingRequestSchema(BookingRequestBase):
     id: Optional[int]

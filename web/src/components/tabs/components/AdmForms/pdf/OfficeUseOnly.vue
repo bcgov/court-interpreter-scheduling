@@ -147,6 +147,7 @@ export default class OfficeUseOnly extends Vue {
     }
 
     public extractInfo(){
+        const recordApproved = this.booking.recordsApproved
         this.interpreterName = this.booking.interpreter.fullName
         this.qualifiedReceiverName = this.booking.approverName
         this.supplierNo = this.booking.interpreter.supplier
@@ -155,13 +156,13 @@ export default class OfficeUseOnly extends Vue {
         this.invoiceDate = this.booking.invoiceDate
         this.invoiceNumber = this.booking.invoiceNumber
 
-        this.subtotalFees = (this.booking.feesTotal-this.booking.feesGST).toFixed(2);
-        this.feesGST = this.booking.feesGST? this.booking.feesGST.toFixed(2): '0.00';
+        this.subtotalFees = recordApproved? (this.booking.feesTotal-this.booking.feesGST).toFixed(2): '0.00';
+        this.feesGST = recordApproved && this.booking.feesGST? this.booking.feesGST.toFixed(2): '0.00';
 
-        this.subtotalExpenses = (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2);
-        this.expensesGST = this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';
+        this.subtotalExpenses = recordApproved? (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2): '0.00';
+        this.expensesGST = recordApproved && this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';
 
-        this.invoiceTotalAmount = this.booking.invoiceTotal? (this.booking.invoiceTotal + ' $'): '0.00 $'
+        this.invoiceTotalAmount = recordApproved && this.booking.invoiceTotal? ('$ '+this.booking.invoiceTotal): '$ 0.00'
 
         this.addressVerified = this.booking?.admDetail?.officeUse?.addressVerified;
         this.addressInstructions = this.booking?.admDetail?.officeUse?.addressInstructions    

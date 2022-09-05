@@ -109,11 +109,12 @@ export default class Authorizations extends Vue {
     }
 
     public extractInfo(){
-        this.interpreterSigned = this.booking.interpreterSigned
+        const recordApproved = this.booking.recordsApproved
+        this.interpreterSigned = recordApproved && this.booking.interpreterSigned
         this.interpreterName = this.interpreterSigned? this.booking.interpreter.fullName :''
         this.interpreterSigningDate = this.interpreterSigned? this.booking.interpreterSigningDate :''
 
-        this.qualifiedReceiverSigned = this.booking.qualifiedReceiverSigned
+        this.qualifiedReceiverSigned = recordApproved && this.booking.qualifiedReceiverSigned
         this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
         this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
     }

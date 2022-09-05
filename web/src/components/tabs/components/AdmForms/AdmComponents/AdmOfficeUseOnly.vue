@@ -172,7 +172,7 @@ export default class AdmOfficeUseOnly extends Vue {
         this.subtotalExpenses = (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2);
         this.expensesGST = this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';
 
-        this.invoiceTotalAmount = this.booking.invoiceTotal? (this.booking.invoiceTotal + ' $'): '0.00 $'
+        this.invoiceTotalAmount = this.booking.invoiceTotal? ('$ '+this.booking.invoiceTotal): '$ 0.00'
 
         this.addressVerified = this.booking?.admDetail?.officeUse?.addressVerified;
         this.addressInstructions = this.booking?.admDetail?.officeUse?.addressInstructions    
