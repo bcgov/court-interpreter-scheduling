@@ -85,8 +85,8 @@ def upgrade():
     make_relations(interpreter_table, language_table, interpreter_language_table)   
 
 def seed_interpreter_spoken():
-    filepath = os.getcwd()+'/alembic/seeds/SpokenLanguageDirectoryOctober12_2021_Quartech.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021', engine='openpyxl')
+    filepath = os.getcwd()+'/alembic/seeds/SpokenLanguageDirectorySept_2022_CIS.xlsx'
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2022', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     
@@ -151,6 +151,11 @@ def seed_interpreter_spoken():
                     comment = name[key].replace('NO,', '')
                     comment = comment.replace('No,', '')
                     comment = comment.replace('no,', '')
+                    data[int(key)][item['comment']] = comment
+                elif 'YES,' in name[key].upper().strip():
+                    comment = name[key].replace('YES,', '')
+                    comment = comment.replace('Yes,', '')
+                    comment = comment.replace('yes,', '')
                     data[int(key)][item['comment']] = comment
                 else:
                     data[int(key)][item['comment']] = name[key]
@@ -308,7 +313,7 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
             'level':level, 
             'language':interpreter['language'].strip()
         })
-        
+   
     op.bulk_insert(interpreter_table, interpreters)
     op.bulk_insert(language_table, languages_data)
     op.bulk_insert(interpreter_language_table, interpreter_language)
