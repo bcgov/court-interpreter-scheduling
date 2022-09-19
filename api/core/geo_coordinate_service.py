@@ -72,6 +72,10 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     address_line2 = address_line2.replace("R.R.#", "")
     address_line1 = address_line1.replace("#", "no ")
     address_line2 = address_line2.replace("#", "no ")
+    address_line2 = address_line2.replace("PO ", "Post Office")
+    address_line2 = address_line2.replace("Suite ", "no ")
+    address_line2 = address_line2.replace("Unit ", "no ")
+    address_line2 = address_line2.replace("Apt", "") 
     
     address_line = address_line1.lower() + ", " + address_line2.lower()    
 
@@ -99,6 +103,13 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     
     if len(found_locations)==0:
         address = f"{address_line}, {city}, {province}, {country}"
+        address = remove_space(address)
+        found_locations, google_map_status = get_geo(address, google_map)
+
+    if len(found_locations)==0 and '-' in address_line:
+        line = address_line.split('-')[1]
+        address = f"{line}, {city}, {province}, {country}"
+        address = remove_space(address)
         found_locations, google_map_status = get_geo(address, google_map)
 
     if len(found_locations)==0:
@@ -110,16 +121,19 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
             address_line_tmp = re.sub( "street", "avenue", address_line_tmp)
 
         address = f"{address_line_tmp}, {city}, {province}, {country}"
+        address = remove_space(address)
         found_locations, google_map_status = get_geo(address, google_map)
     
     if len(found_locations)==0:
         address_line = re.sub( "(?<!\S)\d+(?!\S)", "", address_line)
         address_line = re.sub( "[0-9]+-[0-9]+", "", address_line)
         address = f"{address_line}, {city}, {province}, {country}"
+        address = remove_space(address)
         found_locations, google_map_status = get_geo(address, google_map)
     
     if len(found_locations)==0:        
-        address = f"{city}, {province}, {country}"        
+        address = f"{city}, {province}, {country}"
+        address = remove_space(address)        
         found_locations, google_map_status = get_geo(address, google_map)
     
 
@@ -144,3 +158,8 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
 
             return found_locations[0]["lat"], found_locations[0]["lon"]
 
+
+def remove_space(address):
+    address = re.sub(' +', ' ', address)
+    address = re.sub(', ,', ',', address)
+    return address

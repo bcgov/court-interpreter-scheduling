@@ -65,4 +65,10 @@ def downgrade():
     op.drop_index(op.f('ix_booking_name'), table_name='booking')
     op.drop_index(op.f('ix_booking_id'), table_name='booking')
     op.drop_table('booking')
+    op.execute('DROP TYPE booking_period')
+    op.execute('DROP TYPE booking_status')
+    op.execute('DROP TYPE booking_requested_by')    
+    op.execute('DROP TYPE booking_method_of_appearance')
+    op.execute('DROP TYPE booking_interpret_for')
+    
     # ### end Alembic commands ###
