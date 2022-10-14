@@ -26,6 +26,8 @@ def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     booking_dates = booking_request['dates']
     del booking_request['dates']
 
+    check_conflict_dates(db, None, booking_request['interpreter_id'], booking_dates)
+
     new_booking = BookingModel(**booking_request)
     db.add(new_booking)
     db.commit()
@@ -66,7 +68,7 @@ def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, use
     if not booking:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking does not exist.")
 
-    check_conflict_dates(db, booking, booking_request, booking_dates)
+    check_conflict_dates(db, booking.id, booking.interpreter_id, booking_dates)
 
     booking_query.update(booking_request)    
     db.commit()
@@ -112,18 +114,20 @@ def update_adm_booking_in_db(id: int, request:ADMBookingRequestSchema, db: Sessi
 
 
 
-def check_conflict_dates(db:Session , booking, booking_request, booking_dates):
+def check_conflict_dates(db:Session, booking_id, interpreter_id, booking_dates):
        
     other_booking_date_query = db.query(BookingDatesModel).join(BookingModel).filter(
         BookingDatesModel.status!=BookingStatusEnum.CANCELLED, 
-        BookingDatesModel.interpreter_id==booking.interpreter_id,
-        BookingDatesModel.booking_id!=booking.id).all()
+        BookingDatesModel.interpreter_id==interpreter_id,
+        BookingDatesModel.booking_id!=booking_id).all()
     
     current_interpreter_scheduel_date = [date.date for date in other_booking_date_query]
     
     for booking_date in booking_dates:        
-        if booking_date['date'] in current_interpreter_scheduel_date:                    
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Booking date '{booking_date['date'].strftime('%b %d %Y')}' conflicts with the current interpreter schedule.")
+        if booking_date['date'] in current_interpreter_scheduel_date and booking_date['status']!=BookingStatusEnum.CANCELLED:
+            conflict_index = current_interpreter_scheduel_date.index(booking_date['date'])
+            location = other_booking_date_query[conflict_index].booking.location_name
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Schedule Conflict: The interpreter is currently booked at '{location}' on '{booking_date['date'].strftime('%b %d %Y')}'.")
 
 
 
