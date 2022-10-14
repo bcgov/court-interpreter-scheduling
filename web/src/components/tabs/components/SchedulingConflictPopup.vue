@@ -78,12 +78,16 @@ export default class SchedulingConflictPopup extends Vue {
                         finishTime: bookingdate.finishTime,
                         file: bookingdate.file,
                         reason: bookingdate.reason,
-                        location: bookingdate.registry,
+                        location: bookingdate.registry? bookingdate.registry : this.getCourtLocation(booking.locationId) ,
                         appearance: bookingdate.methodOfAppearance
                     })
             }
         }
         this.conflictDates = _.sortBy(this.conflictDates, 'date')
+    }
+
+    public getCourtLocation(id){
+        return this.courtLocations.filter(loc => loc.id==id)[0].name
     }
 
 }

@@ -157,7 +157,7 @@
 
 
 
-        <b-modal body-class="py-0" size="xl" footer-class="d-none"  v-model="showBookingWindow" header-class="bg-primary text-white" >
+        <b-modal body-class="py-0" size="xl" footer-class="d-none"  v-model="showBookingWindow" header-class="bg-primary text-white" no-close-on-backdrop>
             <template v-slot:modal-title>
                 <h1 class="my-2 ml-2">Court Interpreter Request</h1> 
             </template>

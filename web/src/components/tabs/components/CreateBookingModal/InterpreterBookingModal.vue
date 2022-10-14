@@ -1,5 +1,7 @@
 <template>
-    <b-card v-if="interpreterDataReady" class="border-white text-dark bg-white" body-class="py-0" :key="updatedBookingInfo"> 
+<div>
+    <loading-spinner color="#000" v-if="!interpreterDataReady" waitingText="Loading ..." />
+    <b-card v-else class="border-white text-dark bg-white" body-class="py-0" :key="updatedBookingInfo"> 
         
         <b-row class="my-0 ml-2">
             <b-col cols="9" class="my-2 h2">  
@@ -7,7 +9,7 @@
             </b-col>                                       
         </b-row>
 
-        <b-tabs :key="updateTabs" v-model="tabIndex" pills card>
+        <b-tabs v-if="allowBooking" :key="updateTabs" v-model="tabIndex" pills card>
             <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" title-link-class="text-center tab-class">
                 <template #title>
                     <div><b-icon-calendar scale="0.85" /> {{tab.beautyDate}} </div>
@@ -27,16 +29,21 @@
             </b-tab>
         </b-tabs> 
 
+        <b-alert class="mt-3" variant="danger" :show="errorMsg.length>0" >            
+            <b class="mr-2">Error: </b> {{errorMsg}} <b-icon-exclamation-circle-fill/>
+        </b-alert>
+
         <b-row class="mt-5 mb-2 pt-1  border-top">
             <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
-            <b-button                     
+            <b-button 
+                v-if="allowBooking"                    
                 variant="success" 
                 @click="saveNewBooking">
                 <b-icon-calendar-check-fill class="mr-2"/>Create Booking
             </b-button>                
         </b-row> 
 
-         <b-modal body-class="py-0"  footer-class="d-none"  v-model="showCopyWindow" header-class="bg-warning" title-class="h3" title="Available Tabs to Copy" >
+        <b-modal body-class="py-0"  footer-class="d-none"  v-model="showCopyWindow" header-class="bg-warning" title-class="h3" title="Available Tabs to Copy" >
             <div class="text-center">
                 <div class="my-3 h5 bg-white text-dark">Which Tab would you like to import into <b class="text-danger"> {{targetTab}} </b> ?</div>
                 <b-button 
@@ -47,11 +54,11 @@
                         {{tab.name}}
                 </b-button>
             </div>
+        </b-modal>           
+            
+    </b-card> 
+</div>  
 
-         </b-modal>
-            
-            
-    </b-card>   
 </template>
 
 <script lang="ts">
@@ -104,7 +111,8 @@ export default class InterpreterBookingModal extends Vue {
     targetTab=''
     sourceBookingDatesTimes = []
     updateTabs=0;
-
+    errorMsg=''    
+    allowBooking = false;    
     registry = {id:0, name:''};
 
     statusOptions
@@ -118,12 +126,41 @@ export default class InterpreterBookingModal extends Vue {
     }
 
    
-    mounted() { 
+    mounted() {
+        this.errorMsg=''
+        this.interpreterDataReady = false; 
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
         this.registry = {id:this.searchLocation.id, name:this.searchLocation.name};
         this.extractBookingDates()
-        this.interpreterDataReady = true;
+        this.extractBlockDates(this.interpreter.id)
+    }
+
+    public extractBlockDates(interpreter_id){
+        this.allowBooking = false;
+        let errDates = ''
+        this.$http.get('/booking/interpreter/' + interpreter_id)
+        .then((response) => {            
+            if(response?.data){
+                const blockDates = response.data.map(bookingdate=> bookingdate.date.slice(0,10))
+                const bookingDates = this.bookingDates.map(date => date.date.slice(0,10))
+                //console.log(blockDates)
+                //console.log(bookingDates)
+                this.allowBooking = true;
+                for(const date of bookingDates){
+                    if( blockDates.includes(date)){
+                        //console.log(date)
+                        this.allowBooking = false;
+                        errDates += date+ ', ' 
+                    }
+                }
+                //console.log(errDates)
+                if(errDates) this.errorMsg = "This interpreter is currently booked on "+ errDates                
+            }
+            this.interpreterDataReady = true;           
+        },(err) => {
+            this.interpreterDataReady = true;                        
+        });       
     }
 
     public extractBookingDates(){
@@ -228,7 +265,7 @@ export default class InterpreterBookingModal extends Vue {
                 }
                 
             },(err) => {
-                            
+                this.errorMsg=err.response.data.detail          
             });
         }        
     }
