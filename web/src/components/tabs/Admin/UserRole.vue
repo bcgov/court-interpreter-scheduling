@@ -21,6 +21,7 @@
                     <b-col class="text-primary my-auto mr-0 pr-0 py-2" >
                         <b-form-radio-group                                                        
                             v-model="filterUsersBy"
+                            @change="filterLock = false;"
                             :options="filterRoles"
                             text-field="role_name"
                             value-field="role_name"                          
@@ -28,7 +29,8 @@
                         </b-form-radio-group>
                     </b-col>
                     <b-col v-if="filterUsersBy=='Keyword:'" md="4" class="ml-0 pl-0 my-auto py-0">
-                        <b-form-input                             
+                        <b-form-input
+                            @input="filterLock = false;"                             
                             style="display:inline"
                             v-model="filterKeyword"
                             placeholder="name or email"
@@ -124,6 +126,9 @@ export default class UserRolePage extends Vue {
     dismissCountDown =0
     alertType="danger"
 
+    filterLock = false;
+    filteredAllUsers: allUsersInfoType[] = []
+
     assignedRoles=[]
     tempUser: allUsersInfoType ={id:0, display_name:'', email:'', first_name:'', last_name:'', location: null, role:[]}
     showConfirmAssignAdmin=false
@@ -166,6 +171,7 @@ export default class UserRolePage extends Vue {
     
 
     public loadAllUsers(){
+        this.filterLock = false;
         this.$http.get('/user-info/all')
         .then((response) => {            
             if(response?.data){                
@@ -177,6 +183,7 @@ export default class UserRolePage extends Vue {
                 this.allUsersOriginal=JSON.parse(JSON.stringify(response.data))
             }
             this.dataLoaded = true;
+            this.filterLock = false;
         },(err) => {
             this.dataLoaded = true;            
         });
@@ -241,25 +248,40 @@ export default class UserRolePage extends Vue {
 
 
     get filteredUsers(){
-        if(this.filterUsersBy=="No Role")
-            return this.allUsers.filter(user=>{return user.role.length==0})
-        else if(this.filterUsersBy=="All")
-            return this.allUsers
-        else if(this.filterUsersBy=="Keyword:" && this.filterKeyword)
-            return this.allUsers.filter(user=>{
+        if(this.filterLock)
+            return this.filteredAllUsers
+
+        if(this.filterUsersBy=="No Role"){
+            this.filterLock = true
+            this.filteredAllUsers = this.allUsers.filter(user=>{return user.role.length==0})
+        }
+        else if(this.filterUsersBy=="All"){
+            this.filterLock = false
+            this.filteredAllUsers = this.allUsers
+        }
+        else if(this.filterUsersBy=="Keyword:" && this.filterKeyword){
+            this.filterLock = false
+            this.filteredAllUsers = this.allUsers.filter(user=>{
                 return (
                     user.first_name.toLowerCase().includes(this.filterKeyword.toLowerCase()) ||
                     user.last_name.toLowerCase().includes(this.filterKeyword.toLowerCase()) ||
                     user.email.toLowerCase().includes(this.filterKeyword.toLowerCase())
                 )
             })
-        else if(this.filterUsersBy)
-            return this.allUsers.filter(user=>{
+        }
+        else if(this.filterUsersBy){
+            this.filterLock = true
+            this.filteredAllUsers = this.allUsers.filter(user=>{
                 const roles = user.role.map(role=>{return role.role_name})                
                 return roles.includes(this.filterUsersBy) 
             })
-        else
-            return this.allUsers
+        }
+        else{
+            this.filterLock = false
+            this.filteredAllUsers = this.allUsers
+        }
+
+        return this.filteredAllUsers
     }
 
 }
