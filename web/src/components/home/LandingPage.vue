@@ -49,7 +49,7 @@ export default class LandingPage extends Vue {
       
     async mounted() {
         this.pageReady = false;
-        console.log(process)
+        // console.log(process)
         console.log(process.env)
         if(this.$store.state.Common.token)            
             await SessionManager.getUserInfo(this.$store);
