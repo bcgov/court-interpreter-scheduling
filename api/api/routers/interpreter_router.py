@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTasks
-from threading import Thread
+# from threading import Thread
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
 from api.schemas.interpreter_schema import  InterpreterGetAdminResponseSchema , InterpreterCreateModifyRequestSchema
