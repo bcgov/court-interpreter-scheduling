@@ -201,8 +201,8 @@ export default class InterpreterBookingModal extends Vue {
         booking.room = null;
         booking.file = null;
         booking.status = this.statusOptions[0].value;
-        booking.federal = null;
-        booking.bilingual = null;
+        booking.federal = false;
+        booking.bilingual = false;
         booking.languages = [];
         booking.locationId = null;
         booking.interpreterId = this.interpreter.id;

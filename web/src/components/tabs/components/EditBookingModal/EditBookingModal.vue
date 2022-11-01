@@ -46,6 +46,9 @@
                         <span v-if="tab.booking.status==statusOptions[2].value" v-b-tooltip.hover.v-danger title="Cancelled">
                             <b-icon-x-octagon-fill  class="text-danger ml-2"  />
                         </span>
+                        <span v-if="tab.booking.status==statusOptions[1].value" v-b-tooltip.hover.v-success  title="Booked">
+                            <b-icon-calendar-check-fill scale="0.9" class="text-success ml-2"  />
+                        </span>
                         <span v-if="tab.booking.locationId && tab.booking.locationId != registryLocationId" v-b-tooltip.hover title="Remote Location">
                             <b-icon-exclamation-triangle-fill  variant="warning" class="ml-2" />
                         </span>
@@ -605,7 +608,7 @@ export default class EditBookingModal extends Vue {
         booking.room = null;
         booking.file = null;
         booking.status = this.statusOptions[0].value;
-        booking.federal = null;
+        booking.federal = false;
         booking.languages = [];
         booking.locationId = null;
         booking.interpreterId = this.interpreter.id;
@@ -615,7 +618,7 @@ export default class EditBookingModal extends Vue {
         booking.actualStartTime = null;
         booking.actualFinishTime = null;
         booking.approversInitials = null;
-        booking.bilingual = null;
+        booking.bilingual = false;
         return booking
     }
 
