@@ -90,7 +90,7 @@ export default class AdmSentInvoiceInfo extends Vue {
             "Content-Type": "application/json",
             }
         }  
-        const url = '/adm/pdf/'+this.booking.id+'?type=invoice'
+        const url = '/adm/pdf/'+this.booking.id+'?type=emailed-invoice'
         
         this.$http.get(url, options)
         .then(res => {                       
