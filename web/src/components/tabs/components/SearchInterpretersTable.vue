@@ -14,6 +14,7 @@
                     :pages="[10,20,30]"
                     :totalRows="interpreters.length"
                     :initCurrentPage="currentPage"
+                    :initItemPerPage="itemsPerPage"
                     @paginationChanged="paginationChanged"/> 
                     
                 <b-table
@@ -150,6 +151,7 @@
                     :pages="[10,20,30]"
                     :totalRows="interpreters.length"
                     :initCurrentPage="currentPage"
+                    :initItemPerPage="itemsPerPage"
                     @paginationChanged="paginationChanged"/>                
             
             </b-card>

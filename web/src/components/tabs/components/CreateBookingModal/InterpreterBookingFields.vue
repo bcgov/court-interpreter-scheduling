@@ -51,7 +51,8 @@
                     label="Court File Number" 
                     label-for="file-number">
                     <b-form-input                        
-                        id="file-number" 
+                        id="file-number"
+                        @input="checkStates()"        
                         :state="bookingStates.file"                                        
                         v-model="booking.file">
                     </b-form-input>
@@ -63,7 +64,8 @@
                     label="Case Name" 
                     label-for="case-name">
                     <b-form-input                        
-                        id="case-name" 
+                        id="case-name"
+                        @input="checkStates()"
                         :state="bookingStates.caseName"                                        
                         v-model="booking.caseName">
                     </b-form-input>
@@ -130,7 +132,8 @@
                     label-for="court-level">
                     <b-form-select 
                         :options="courtLevelOptions"
-                        :state="bookingStates.courtLevel"                       
+                        :state="bookingStates.courtLevel"
+                        @change="checkStates()"                       
                         id="court-level"                                         
                         v-model="booking.courtLevel">
                     </b-form-select>
@@ -216,7 +219,8 @@
                     label-for="appearance-method">
                     <b-form-select                         
                         id="appearance-method"                                                   
-                        style="display:inline"                                
+                        style="display:inline" 
+                        @change="checkStates()"                          
                         :options="bookingMethodOfAppearanceOptions"
                         :state="bookingStates.methodOfAppearance"
                         v-model="booking.methodOfAppearance">                                    
@@ -535,7 +539,8 @@ export default class InterpreterBookingFields extends Vue {
                 this.booking.reason=''
                 this.bookingStates.reasonOther = false
             }
-        }        
+        }
+        this.checkStates()      
     }
 
     public extractReasonCode(){
@@ -561,7 +566,8 @@ export default class InterpreterBookingFields extends Vue {
         }
         // console.log(this.courtClass)
         // console.log(this.courtClassOther)
-        // console.log(this.booking.courtClass)        
+        // console.log(this.booking.courtClass)
+        this.checkStates()       
     }
 
     public extractCourtClass(){
@@ -571,6 +577,16 @@ export default class InterpreterBookingFields extends Vue {
         }else{
             this.courtClass=this.booking.courtClass
             this.courtClassOther=''
+        }
+        this.checkStates()
+    }
+
+    public checkStates(){        
+        for(const field of Object.keys(this.bookingStates)){
+            if(this.bookingStates[field]==false){
+                this.$emit('checkStatus')
+                return 
+            }
         }
     }
     
