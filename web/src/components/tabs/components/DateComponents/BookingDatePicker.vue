@@ -40,7 +40,7 @@
                             <time-picker style="width:13rem; height:22.5rem;" v-if="showTimePicker"  :pickedTimes="pickedTimes" @addTime="addTime"/>
                             <div v-else>
                                 <default-time-selector 
-                                    style="margin:0.2rem 0; width:12rem;"
+                                    style="margin:0.2rem 0; width:14rem;"
                                     :key="updateTime"  
                                     :pickedTimes="pickedTimes" 
                                     @addTime="addTime"/>
@@ -97,7 +97,7 @@ export default class BookingDatePicker extends Vue {
     @Prop({required: true})
     bookingDates!: bookingDateTimesInfoType[];
 
-    @Prop({required: false})
+    @Prop({required: false, default:[]})
     blockedDates!: string[];
 
     @Prop({required: false, default: false})
@@ -119,13 +119,13 @@ export default class BookingDatePicker extends Vue {
     }
 
     public allowedDates(date){
-        return true
+        // return true
         // const day = moment(date).weekday()
         
-        // if(this.blockedDates?.length>0)
-        //     return !this.blockedDates.includes(date)
+        if(this.blockedDates?.length>0)
+            return !this.blockedDates.includes(date)
         // else if(day==0 || day==6) return false
-        // else return true
+        else return true
     }
 
 
@@ -190,10 +190,18 @@ export default class BookingDatePicker extends Vue {
         })        
     }
 
-    public addTime(time){ 
-        if(time.start && time.end){       
-            this.pickedTimes.push(time)           
+    public addTime(time, isArray?){ 
+        // console.log(isArray)
+        if(isArray){
+            for(const eachtime of time){
+                if(eachtime.start && eachtime.end)
+                    this.pickedTimes.push(eachtime)
+            } 
         }
+        else
+            if(time.start && time.end){       
+                this.pickedTimes.push(time)           
+            }
         this.pickedTimes = this.sortPickedTimes()
         this.showTimePicker = false;
         this.$emit('change', false);

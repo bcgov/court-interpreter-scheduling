@@ -1,6 +1,6 @@
 <template>
                         
-    <b-card border-variant="white" body-class="mx-1 px-2 py-0">        
+    <b-card border-variant="white" body-class="mx-1 px-1 py-0">        
 
         <div class="my-1 pb-0" style="line-height:1rem; font-size:14pt; color:#AB0">
             <b>Time Options</b>           
@@ -41,13 +41,13 @@ export default class DefaultTimeSelector extends Vue {
     @Prop({required: true})
     pickedTimes!: bookingTimeInfoType[];
    
-    period = {start:'' , end:''} as bookingTimeInfoType
+    period = {start:'' , end:'', start1:'', end1:''}
     selectedTime = {} as bookingTimeInfoType
 
     bookingPeriodOptions=[
-        {text:'Morning', value:{start:'09:30 AM',end:'12:30 PM'}},
-        {text:'Afternoon', value:{start:'01:30 PM',end:'04:00 PM'}},
-        {text:'Full Day', value:{start:'09:30 AM',end:'04:00 PM'}}
+        {text:'Morning', value:{start:'09:30 AM',end:'12:30 PM', start1:'', end1:''}},
+        {text:'Afternoon', value:{start:'01:30 PM',end:'04:00 PM', start1:'', end1:''}},
+        {text:'Morning&Afternoon', value:{start:'09:30 AM',end:'12:30 PM', start1:'01:30 PM', end1:'04:00 PM'}}
     ]
 
 
@@ -58,28 +58,46 @@ export default class DefaultTimeSelector extends Vue {
   
     public initiatePickedTime()
     {
-        for(const pickedTime of this.pickedTimes){
-            for(const option of this.bookingPeriodOptions){
+        let bookingOptions=[]
+        for(const option of this.bookingPeriodOptions){
+            for(const pickedTime of this.pickedTimes){            
                 if(option.value.start == pickedTime.start && option.value.end == pickedTime.end){
-                    this.period = option.value
-                    return 
+                    bookingOptions.push(option.text)                    
                 }
+                // if(option.value.start1 && option.value.end1 && option.value.start1 == pickedTime.start && option.value.end1 == pickedTime.end){
+                //     bookingOptions.push(option.text)                    
+                // }
             }
         }
-        this.period = {start:'' , end:''} as bookingTimeInfoType
+        if(bookingOptions.length>0){
+            console.log(bookingOptions)
+            
+            if(bookingOptions.includes('Morning') && bookingOptions.includes('Afternoon'))
+                this.period = this.bookingPeriodOptions.filter(opt => opt.text=='Morning&Afternoon')[0].value
+            else if(bookingOptions.includes('Morning'))
+                this.period = this.bookingPeriodOptions.filter(opt => opt.text=='Morning')[0].value
+            else if(bookingOptions.includes('Afternoon'))
+                this.period = this.bookingPeriodOptions.filter(opt => opt.text=='Afternoon')[0].value                
+
+            //console.log(this.period)
+        }else
+            this.period = {start:'' , end:'', start1:'', end1:''} 
     }
 
     public duplicateTime(time){
 
         const start = moment(time.start, "hh:mm A").format()   
         const end = moment(time.end, "hh:mm A").format()
+        const start1 = time.start1? moment(time.start1, "hh:mm A").format():''   
+        const end1 = time.end1? moment(time.end1, "hh:mm A").format():''
 
         for(const pickedTime of this.pickedTimes){
             const pickedStart = moment(pickedTime.start, "hh:mm A").format()   
             const pickedEnd = moment(pickedTime.end, "hh:mm A").format()
             if(!((start>=pickedEnd && end >pickedEnd)||(start<pickedStart && end <=pickedStart)))
                 return true
-
+            if(start1 && end1 && !((start1>=pickedEnd && end1>pickedEnd)||(start1<pickedStart && end1<=pickedStart)))
+                return true
         }
         return false
     }
@@ -108,8 +126,15 @@ export default class DefaultTimeSelector extends Vue {
         
         if(this.duplicateTime(this.period))
             this.initiatePickedTime()
-        else
-            this.$emit('addTime',this.period)
+        else{
+            if(this.period.start1 && this.period.end1){
+                this.$emit('addTime',[
+                    {start:this.period.start , end:this.period.end },
+                    {start:this.period.start1, end:this.period.end1}
+                ], true)
+            }else
+                this.$emit('addTime',[{start:this.period.start , end:this.period.end }], true)
+        }
     }
    
 }
