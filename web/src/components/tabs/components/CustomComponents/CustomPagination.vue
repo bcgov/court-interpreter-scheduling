@@ -1,5 +1,5 @@
-<template>
-    <b-row style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
+<template>    
+    <b-row v-if="dataReady"  style="float: right; margin-left: auto; margin-right: auto; padding: 0;" class="mt-4">
         <b-dropdown
             style="height: 30% !important;"
             class="mr-3 py-0"      
@@ -44,17 +44,32 @@ export default class CustomPagination extends Vue {
     
     @Prop({required:true})
     initCurrentPage!: number;
+
+    @Prop({required:true})
+    initItemPerPage!: number;
     
     currentPage=1;
     itemsPerPage = 10;// Default
+    dataReady = false
 
     mounted(){
+        this.dataReady = false
         this.currentPage = this.initCurrentPage
-        this.itemsPerPage= this.pages[0]
+        if(this.initItemPerPage)
+            this.itemsPerPage = this.initItemPerPage
+        else
+            this.itemsPerPage = this.pages[0]
+        // console.log('mount ' + this.initCurrentPage)
+        this.dataReady = true
     }
    
     pageChanged(){
-        Vue.nextTick(()=>{            
+        
+
+        Vue.nextTick(()=>{   
+        // console.log('itemsPerPage '+this.itemsPerPage)
+        // console.log('currentPage '+this.currentPage)
+        
             this.$emit('paginationChanged', this.currentPage, this.itemsPerPage)
         })
     }    

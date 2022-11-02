@@ -82,6 +82,7 @@
                     label-for="file-number">
                     <b-form-input
                         id="file-number"
+                        @input="checkStates()"
                         :disabled="disableEdit" 
                         :state="bookingStates.file"                                        
                         v-model="booking.file">
@@ -94,7 +95,8 @@
                     label="Case Name" 
                     label-for="case-name">
                     <b-form-input
-                        id="case-name" 
+                        id="case-name"
+                        @input="checkStates()" 
                         :disabled="disableEdit" 
                         :state="bookingStates.caseName"                                        
                         v-model="booking.caseName">
@@ -168,6 +170,7 @@
                         :options="courtLevelOptions"
                         :disabled="disableEdit"
                         :state="bookingStates.courtLevel"
+                        @change="checkStates()"
                         id="court-level"                                         
                         v-model="booking.courtLevel">
                     </b-form-select>
@@ -260,7 +263,8 @@
                     <b-form-select 
                         id="appearance-method"
                         :disabled="disableEdit"                           
-                        style="display:inline"                                
+                        style="display:inline"
+                        @change="checkStates()"                                
                         :options="bookingMethodOfAppearanceOptions"
                         :state="bookingStates.methodOfAppearance"
                         v-model="booking.methodOfAppearance">                                    
@@ -704,6 +708,7 @@ export default class EditBookingFields extends Vue {
         // console.log(this.reasonCode)
         // console.log(this.reasonCodeOther)
         // console.log(this.booking.reason)
+        this.checkStates()
     }
 
     public extractReasonCode(){
@@ -729,7 +734,8 @@ export default class EditBookingFields extends Vue {
         }
         // console.log(this.courtClass)
         // console.log(this.courtClassOther)
-        // console.log(this.booking.courtClass)        
+        // console.log(this.booking.courtClass)
+        this.checkStates()        
     }
 
     public extractCourtClass(){
@@ -740,7 +746,17 @@ export default class EditBookingFields extends Vue {
             this.courtClass=this.booking.courtClass
             this.courtClassOther=''
         }
+        this.checkStates()
     }
+
+    public checkStates(){        
+        for(const field of Object.keys(this.bookingStates)){
+            if(this.bookingStates[field]==false){
+                this.$emit('checkStatus')
+                return 
+            }
+        }
+    }    
     
 }
 

@@ -19,6 +19,7 @@
                 <interpreter-booking-fields
                     :id="'tab-'+inx"
                     @copy="openCopyWindow"
+                    @checkStatus="checkBookingStates(false)"
                     :totalTabs="allBookingDatesTimes.length"
                     :tabName="tab.name"
                     :language="language"

@@ -15,6 +15,7 @@
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
                     :initCurrentPage="currentPage"
+                    :initItemPerPage="itemsPerPage"
                     @paginationChanged="paginationChanged"/>
 
                 <b-table
@@ -131,6 +132,7 @@
                     :pages="[10,20,30]"
                     :totalRows="bookings.length"
                     :initCurrentPage="currentPage"
+                    :initItemPerPage="itemsPerPage"
                     @paginationChanged="paginationChanged"/>
             
             </b-card>
@@ -330,7 +332,7 @@ export default class BookingTable extends Vue {
     }    
     
     public editBooking(bookingToEdit: bookingSearchResultInfoType){
-        console.log(bookingToEdit)       
+        //console.log(bookingToEdit)       
         this.currentBooking = JSON.parse(JSON.stringify(bookingToEdit.dates));
         this.currentInterpreter = bookingToEdit.interpreter
         this.currentBookingId = bookingToEdit.id

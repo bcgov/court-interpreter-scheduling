@@ -58,6 +58,7 @@
                 <edit-booking-fields
                     @cancel="cancelStatus"
                     @timeChanged="bookingTimeChanged"
+                    @checkStatus="checkBookingStates(false)"
                     :id="'tab-'+inx"
                     :tabIndex="tabIndex"                  
                     :tabNumber="inx+1"

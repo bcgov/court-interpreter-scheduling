@@ -12,7 +12,7 @@
                         label-for="location">
                         <b-form-select 
                             id="location" 
-                            @change="searchAgain"                           
+                            @change="searchAgain(true)"                           
                             style="display:inline"                            
                             v-model="location">
                             <!-- <b-form-select-option :value="alllocations">
@@ -36,7 +36,8 @@
                         <b-form-input
                             class="input-line"
                             id="interpreter"
-                            @change="searchAgain"                                         
+                            @input="searchAgain(null)"
+                            @change="searchAgain(true)"                                         
                             v-model="interpreterName">
                         </b-form-input>
                     </b-form-group>
@@ -52,7 +53,8 @@
                         <b-form-input                             
                             class="input-line"
                             id="file-number"
-                            @change="searchAgain"                                         
+                            @input="searchAgain(null)"
+                            @change="searchAgain(true)"                                         
                             v-model="courtFileNumber">
                         </b-form-input>
                     </b-form-group>                    
@@ -265,13 +267,17 @@ export default class BookingsPage extends Vue {
     public addBookingDates(dateRange){
         this.dates = dateRange
         this.update++;          
-        this.searchAgain()
+        this.searchAgain(true)
+        
     }
 
-    public searchAgain(){
+    public searchAgain(applyFind){
         this.bookings = [];
         this.dataLoaded = false;
-        this.focusSearchButton()
+        if(applyFind==true || applyFind==false)
+            this.focusSearchButton()
+        if(applyFind==true)
+            Vue.nextTick(() => this.find());
     }
 
     public focusSearchButton(){

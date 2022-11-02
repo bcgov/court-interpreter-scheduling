@@ -97,7 +97,7 @@ export default class BookingDatePicker extends Vue {
     @Prop({required: true})
     bookingDates!: bookingDateTimesInfoType[];
 
-    @Prop({required: false, default:[]})
+    @Prop({required: false})
     blockedDates!: string[];
 
     @Prop({required: false, default: false})
