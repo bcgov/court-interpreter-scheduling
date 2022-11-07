@@ -202,10 +202,10 @@ def add_language(interpreter_languages, db: Session, interpreter_id):
                 comment_on_level = interpreter_language['comment_on_level']
             )
             db.add(new_inter_lang)
-            language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
+            language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'prvlevel':None, 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
         else:
             if inter_lang_relation.level != interpreter_language['level']:
-                language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
+                language_history.append({'language_id':language.id, 'language':language.name, 'level':interpreter_language['level'], 'prvlevel':inter_lang_relation.level, 'effective_date':datetime.now().strftime("%Y-%m-%d"), 'disabled':False})
     
             inter_lang_relation_query.update({
                 'language': language.name,

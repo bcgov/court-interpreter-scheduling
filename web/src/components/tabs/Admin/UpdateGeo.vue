@@ -161,7 +161,7 @@ export default class UpdateGeoPage extends Vue {
         {key:'lastName',         label:'Last Name',      sortable:true,  tdClass: 'border-top align-middle', thStyle:'width:10%'},
         {key:'address',          label:'Address',        sortable:false, tdClass: 'border-top align-middle', thStyle:'width:20%'},
         {key:'city',             label:'City',           sortable:false, tdClass: 'border-top align-middle', thStyle:'width:10%'},
-        {key:'postal',           label:'Post Code',      sortable:false, tdClass: 'border-top align-middle', thStyle:'width:6%'},
+        {key:'postal',           label:'Postal Code',    sortable:false, tdClass: 'border-top align-middle', thStyle:'width:6%'},
         {key:'province',         label:'Province',       sortable:false, tdClass: 'border-top align-middle', thStyle:'width:6%'},
         {key:'updated_at',       label:'Last Update',    sortable:false, tdClass: 'border-top align-middle', thStyle:'width:8%'}, 
         {key:'contractExtension',label:'Valid Contract', sortable:true,  tdClass: 'border-top align-middle', thStyle:'width:9%'}, 
