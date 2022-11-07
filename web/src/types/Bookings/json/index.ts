@@ -114,6 +114,7 @@ export interface languageHistoryInfoType {
     language: string;
     language_id?: number;
     level: number;
+    prvlevel: number;
 }
 
 export interface bookingAdmCancellationInfoType extends bookingInfoType{ //OK   
