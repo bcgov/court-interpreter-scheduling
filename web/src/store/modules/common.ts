@@ -1,4 +1,4 @@
-import { ratesInfoType } from '@/types/Common';
+import { holidaysInfoType, ratesInfoType } from '@/types/Common';
 import { languagesInfoType, locationsInfoType } from '@/types/Common/json';
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 
@@ -18,6 +18,7 @@ class Common extends VuexModule {
     public courtLocations: locationsInfoType[] = [];
     public languages: languagesInfoType[] = [];
     public rates: ratesInfoType[] = [];
+    public holidays: holidaysInfoType[] = [] ; 
 
     // public accountInfo = {} as accountInfoType;
 
@@ -108,6 +109,15 @@ class Common extends VuexModule {
     @Action
     public UpdateRates(newRates: ratesInfoType): void {
         this.context.commit('setRates', newRates)
+    }
+
+    @Mutation
+    public setHolidays(holidays: holidaysInfoType[]): void {   
+        this.holidays = holidays
+    }
+    @Action
+    public UpdateHolidays(newHolidays: holidaysInfoType): void {
+        this.context.commit('setHolidays', newHolidays)
     }
 
     // @Mutation

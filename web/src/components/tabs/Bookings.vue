@@ -100,6 +100,7 @@
 
 import { Component, Vue, Watch} from 'vue-property-decorator';
 import * as _ from 'underscore';
+import moment from 'moment-timezone'
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -114,7 +115,7 @@ import { bookingSearchResultInfoType, dateRangeInfoType } from '@/types/Bookings
 import Spinner from '@/components/utils/Spinner.vue'
 
 import BookingDateRangePicker from './components/DateComponents/BookingDateRangePicker.vue'
-import { rateJsonInfoType } from '@/types/Common';
+import { holidaysInfoType, rateJsonInfoType } from '@/types/Common';
 
 @Component({
     components:{
@@ -133,6 +134,9 @@ export default class BookingsPage extends Vue {
     
     @commonState.Action
     public UpdateRates!: (newRates: rateJsonInfoType[]) => void
+
+    @commonState.Action
+    public UpdateHolidays!: (newHolidays: holidaysInfoType[]) => void
 
     @commonState.State
     public userLocation!: locationsInfoType;
@@ -237,6 +241,22 @@ export default class BookingsPage extends Vue {
             if(response?.data){ 
                 const rates = response.data                              
                 this.UpdateRates(rates);
+                this.loadHolidays();
+            }
+            
+        },(err) => {
+            console.log(err)            
+        });
+    }
+
+    public loadHolidays(){
+        const startYear = moment().add(-1, 'years').format('YYYY')
+        const endYear = moment().add(1, 'years').format('YYYY')
+        this.$http.get('/holidays/stats/'+startYear+'/'+endYear)
+        .then((response) => {            
+            if(response?.data){ 
+                const holidays = response.data                              
+                this.UpdateHolidays(holidays);
                 this.loadLanguages();
             }
             

@@ -275,8 +275,10 @@ export default class EditBookingModal extends Vue {
                 
             const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
             const booking: bookingInfoType = JSON.parse(JSON.stringify(bookingDate))
+            const date = this.combineDataTime(bookingDate.date, bookingDate.startTime).format()
+            
             this.allBookingDatesTimes.push({
-                date:bookingDate.date,
+                date:date,
                 time:{start:bookingDate.startTime, end:bookingDate.finishTime},
                 beautyDate:beautyDate,
                 name:beautyDate+bookingDate.startTime.replace(' ',''),
@@ -295,6 +297,11 @@ export default class EditBookingModal extends Vue {
         // console.log(this.allBookingDatesTimes)
         //console.log(this.blockDates)
         
+    }
+
+    public combineDataTime(dateIso, timeAmPm){
+        const tz = moment(dateIso).format('Z')
+        return moment(dateIso.slice(0,10)+' '+timeAmPm+' '+tz, 'YYYY-MM-DD HH:mm A Z')
     }
 
     public extractBookingCards(){
@@ -589,7 +596,7 @@ export default class EditBookingModal extends Vue {
     public sortAllBookingDatesTimes(){
         this.allBookingDatesTimes =  _.sortBy(this.allBookingDatesTimes, function(BookingDatesTime){            
             const startTime = BookingDatesTime.time.start
-            return (BookingDatesTime.date + startTime.slice(6,8)+ startTime.slice(0,5))
+            return (BookingDatesTime.date.slice(0,10) + startTime.slice(6,8)+ startTime.slice(0,5))
         })
     }
 

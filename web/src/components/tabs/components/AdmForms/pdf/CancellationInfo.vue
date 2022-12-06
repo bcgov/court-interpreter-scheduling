@@ -33,7 +33,9 @@
                         <td />
                         <td colspan="2"><b class="ml-1">Cancellation Reason: </b><div class="answer-record">{{record.cancelReason}}</div></td>
                         <td colspan="2"><b>Cancelled By: </b><div class="answer-record">{{record.cancelledBy}}</div></td>
-                        <td><b>Cancellation Fee Applicable: </b><div class="answer-record">{{record.cancellationFee}}</div> $</td>                    
+                        <td>
+                            <!-- <b>Cancellation Fee Applicable: </b><div class="answer-record">{{record.cancellationFee}}</div> $ -->
+                        </td>                    
                         <td />
                     </tr>           
                     <tr>

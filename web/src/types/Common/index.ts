@@ -30,3 +30,21 @@ export interface rateJsonInfoType {
     previousValue: number;
     valueChangedDate: string;
 }
+
+export interface holidaysInfoType {
+    BcDay: string;
+    BcFamilyDay: string;
+    BoxingDay: string;
+    CanadaDay: string;
+    ChristmasDay: string;
+    EasterMonday: string;
+    GoodFriday: string;
+    LabourDay: string;
+    NewYearsDay: string;
+    NextYearNewYearsDay: string;
+    RemembranceDay: string;
+    Thanksgiving: string;
+    TruthAndReconciliationDay: string;
+    VictoriaDay: string;
+    Year: string;
+}

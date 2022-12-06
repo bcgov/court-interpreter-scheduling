@@ -123,6 +123,7 @@ def other_courts_addresses(code, shortDesc):
         {'code': '8813.0001',  'shortDesc': '2040', 'longDesc': 'Vancouver Provincial Court', 'address_line1':'222 Main Street','address_line2':'','postal_code':'V6A 2S8','city':'Vancouver','province':'British Columbia'},
         {'code': '8842.0001',  'shortDesc': '3587', 'longDesc': 'Surrey Family Court', 'address_line1':'14340 - 57th Avenue','address_line2':'','postal_code':'V3X 1B2','city':'Surrey','province':'British Columbia'},
         {'code': '9066.0001',  'shortDesc': '2010', 'longDesc': 'Delta Provincial Court', 'address_line1':'','address_line2':'','postal_code':'','city':'Delta','province':'British Columbia'},
+        {'code': '19585.0103', 'shortDesc': '2042', 'longDesc': 'Downtown Community Court', 'address_line1':'211 Gore Avenue','address_line2':'','postal_code':'V6A 2S8','city':'Vancouver','province':'British Columbia'},
     ]
 
     address = [address for address in other_courts if address['shortDesc']== shortDesc ]

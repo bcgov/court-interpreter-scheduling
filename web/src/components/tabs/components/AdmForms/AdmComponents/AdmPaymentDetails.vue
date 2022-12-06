@@ -294,7 +294,9 @@
                         <b-td colspan="6" class=""><underline-text :text="form.ferryTotalExp"/></b-td> 
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="8" class=""><underline-text :text="form.totalCancellationFees"/></b-td>                        
+                        <b-td colspan="8" class=""><b-input class="w-75 mx-auto mt-n2" v-model="form.totalCancellationFees" :formatter="formatterExpense" @input="paymentChanges=true;"/>
+                            <!-- <underline-text :text="form.totalCancellationFees"/> -->
+                            </b-td>                        
                     </b-tr>
 <!-- <Miscellaneous> -->
                     <b-tr>                        
@@ -441,6 +443,10 @@ export default class AdmPaymentDetails extends Vue {
 
         const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
         admDetail.paymentDetail = paymentDetail
+       
+        if(Number(admDetail?.calculations?.cancellation?.totalFees) != Number(this.form.totalCancellationFees)){
+            admDetail.calculations.cancellation.totalFees = Number(this.form.totalCancellationFees)
+        }
 
         const paymentDetailChanges =[
             {name:'admDetail', value:admDetail}                  

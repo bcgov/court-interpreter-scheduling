@@ -62,9 +62,11 @@ export function paymentDetails(booking){
             Number(form.travelPayableFee)
         ).toFixed(2);
 
-        form.feesGST = (
-            Number(form.feesSubtotal) * Number(form.gstRate)
-        ).toFixed(2);
+        if(form.gstNumber){
+            form.feesGST = (
+                Number(form.feesSubtotal) * Number(form.gstRate)
+            ).toFixed(2);
+        }
 
         form.feesTotal = (
             Number(form.feesSubtotal)+
@@ -162,10 +164,11 @@ function getRates(ratesArray){
 }
 
 function getCancellationFees(booking){
-    let cancellationFee = 0.0
-    for(const date of booking.dates){
-        if(date.status=='Cancelled' && date.cancellationFee)
-            cancellationFee += Number(date.cancellationFee)
-    }
-    return cancellationFee.toFixed(2)
+    return booking.admDetail?.calculations?.cancellation?.totalFees? booking.admDetail?.calculations?.cancellation?.totalFees?.toFixed(2) : '0.00'
+//     let cancellationFee = 0.0
+//     for(const date of booking.dates){
+//         if(date.status=='Cancelled' && date.cancellationFee)
+//             cancellationFee += Number(date.cancellationFee)
+//     }
+//     return cancellationFee.toFixed(2)
 }

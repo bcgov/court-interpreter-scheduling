@@ -359,7 +359,7 @@ export default class BookingTable extends Vue {
     public sortByDate(data){
         return _.sortBy(data, function(data){            
             const startTime = data.startTime
-            return (data.date + startTime.slice(6,8)+ startTime.slice(0,5))+data.status
+            return (data.date.slice(0,10) + startTime.slice(6,8)+ startTime.slice(0,5))+data.status
         })
     }
     
