@@ -22,7 +22,7 @@
                     <td class="m-1 p-1" colspan="2"><b>Cancelled By:</b> {{recordDetails.cancelledBy}} </td>
                     <td class="m-1 p-1"><b>Cancellation Reason:</b> {{recordDetails.cancelReason}} </td>
                     <td class="m-1 py-0 pl-1" colspan="2">
-                        <b-row class="m-0 p-0">
+                        <!-- <b-row class="m-0 p-0">
                             <b>Cancellation Fee Applicable:</b>
                             <b-form-input
                                 :disabled="recordDetails.feeDisabled"
@@ -39,7 +39,7 @@
                                 variant="success" 
                                 class="ml-2"> Save 
                             </b-button>
-                        </b-row>
+                        </b-row> -->
                         
                     </td>                    
                 </tr>                

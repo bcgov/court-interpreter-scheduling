@@ -189,6 +189,7 @@ export interface paymentDetailsVars{
 export interface calculationVars{    
     totalInterpretingHours: totalInterpretingHoursInfoType;
     travelInformation: travelInformationInfoType;
+    cancellation: cancellationInfoType
 }
 
 export interface totalInterpretingHoursInfoType {
@@ -224,6 +225,10 @@ export interface sentEmailContentInfoType {
     from: string;
     subject: string;
     to: string;
+}
+
+export interface cancellationInfoType {
+    totalFees: number;
 }
 
 

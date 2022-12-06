@@ -90,6 +90,7 @@ import OfficeUseOnly from './pdf/OfficeUseOnly.vue'
 import {getTotalInterpretingHours} from './AdmCalculations/TotalInterpretingHours'
 import {travelInformation} from './AdmCalculations/TravelInfo'
 import {paymentDetails} from './AdmCalculations/PaymentCalculation'
+import {cancellationCalculation} from './AdmCalculations/CancellationCalculation'
 import {paymentDetailsInfoType} from '@/types/Bookings';
 import { locationsInfoType } from '@/types/Common/json';
 
@@ -381,6 +382,7 @@ export default class AdmForms extends Vue {
 
     public calculations(){
         const calculations = {} as calculationVars;
+        calculations.cancellation = cancellationCalculation(this.booking)
         calculations.totalInterpretingHours = getTotalInterpretingHours(this.booking)
         calculations.travelInformation = travelInformation(this.booking)
 
