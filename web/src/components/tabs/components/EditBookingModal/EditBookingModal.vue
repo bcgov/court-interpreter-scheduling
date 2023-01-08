@@ -133,7 +133,7 @@
                         label="Reason" 
                         class="labels">
                         <b-form-select                                
-                            :options="['Booking error']" 
+                            :options="clerkCancellationOptions" 
                             :state="cancellationReasonStates"                           
                             v-model="cancellationReason">                                    
                         </b-form-select> 
@@ -233,8 +233,8 @@ export default class EditBookingModal extends Vue {
     cancellationReason = ''
     cancellationComment = ''
     interpreterCancellationOptions = ['Sick', 'No Show', 'Other appointment']
-    courtCancellationOptions = [ 'Adjourned',  'Re-scheduled', 'Scheduling Error']
-
+    courtCancellationOptions = [ 'Adjourned',  'Re-scheduled', 'Scheduling Error', 'File ended']
+    clerkCancellationOptions = [ 'Booking error, no cancellation fee',  'Booking error, cancellation fee due'];
 
     statusOptions
     requestOptions

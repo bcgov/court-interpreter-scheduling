@@ -24,7 +24,8 @@ export function cancellationCalculation(booking){
 
         if( record.status != 'Cancelled' ||
             record.date <= record.cancellationDate ||
-            record.cancellationReason.includes('Interpreter')
+            record.cancellationReason.includes('Interpreter') ||
+            record.cancellationReason.includes('no cancellation fee')
         ) continue
         
         
