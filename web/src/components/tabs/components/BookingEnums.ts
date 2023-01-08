@@ -132,8 +132,11 @@ export const civilCourtClassOptions = [
 ]
 
 export enum reasonCodeClass {
-    'CLC'='Consult legal counsel',    
+    'CLC'='Consult legal counsel', 
+    'CNT'='Continuation',  
+    'DSP'='Disposition', 
     'FA'='First Appearance',
+    'FT'='For Trial',
     'FXD'='Fix date',
     'HR'='Hearing',
     'IAR'='Initial appearance',
@@ -146,6 +149,9 @@ export enum reasonCodeClass {
 export const reasonCodeClassOptions = [
     {text: 'CLC-Consult legal counsel',    value: "CLC"},
     {text: 'FA-First Appearance',          value: "FA"},
+    {text: 'FT-For Trial',                 value: "FT"},
+    {text: 'DSP-Disposition',              value: "DSP"},
+    {text: 'CNT-Continuation',             value: "CNT"},
     {text: 'FXD-Fix date',                 value: "FXD"},
     {text: 'HR-Hearing',                   value: "HR"},
     {text: 'IAR-Initial appearance',       value: "IAR"},
