@@ -8,7 +8,7 @@ from core.repeat_task import repeat_every
 from core.multi_database_middleware import DBSession
 
 from jc_interface.jc_update_courts import update_courts_info_in_db
-from api.repository.interpreter_transactions import update_interpreter_geo_coordinates_in_db
+from api.repository.geo_transactions import update_interpreter_geo_coordinates_in_db
 
 
 
@@ -87,14 +87,14 @@ def get_time_diff(id, db:Session):
 
 
 def update_geo(updating_name, progress, db):
-    
+    return
     if progress==100:
-        # print("__________________________Updating____________________________>>>______"+str(updating_name))
+        print("__________________________Updating____________________________>>>______"+str(updating_name))
         
         google_map=True
         
         if updating_name=='interpreters':
-            update_interpreter_geo_coordinates_in_db(db, google_map)
+            update_interpreter_geo_coordinates_in_db(db)
         elif updating_name=='locations':
             update_courts_info_in_db(db, google_map)  
         

@@ -4,6 +4,9 @@ from pydantic import BaseModel, Field
 
 from api.schemas.language_schema import InterpreterLanguageSchema
 from api.schemas.custom_type import JsonBase
+from api.schemas.location_schema import CourtDistanceSchema
+
+
 #__________________________________________
 #__________________________________________
 class InterpreterBase(BaseModel):
@@ -85,6 +88,7 @@ class InterpreterADMBookingResponseSchema(InterpreterBookingResponseSchema):
     site_code: Optional[str] = Field(alias="siteCode")
     address_longitude : Optional[float] = Field(alias="addressLongitude")
     address_latitude : Optional[float] = Field(alias="addressLatitude")
+    courts: Optional[List[CourtDistanceSchema]]
 
 
 class InterpreterGeoStatusSchema(BaseModel):

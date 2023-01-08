@@ -46,4 +46,6 @@ class InterpreterModel(Base):
     languages = relationship("InterpreterLanguageModel",overlaps="interpreters, language", back_populates="interpreter_relation")
 
     booking = relationship ("BookingModel", back_populates="interpreter")
+
+    courts = relationship("CourtDistanceModel",overlaps="interpreters, court_location", back_populates="interpreter_relation")
        

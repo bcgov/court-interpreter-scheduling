@@ -2,19 +2,48 @@ import requests
 import re
 from fastapi import status, HTTPException
 from core.config import settings
+from urllib.parse import quote
+import logging
+logger = logging.getLogger(__name__)
 
-def get_geo(address, google_map):
 
-    if google_map == True:
-        url = settings.GOOGLE_MAP_URL.format(address)
-        response = requests.get(url)
-        result = response.json()
-        return result['results'], result['status']
-    else:   
-        url = settings.OPENROAD_MAP_URL.format(address)
-        response = requests.get(url)
-        return response.json(), None
+def call_geo_service(court_address, interpreter_address):
+    # print(court_code)
+    url = settings.GOOGLE_MAP_URL.format(quote(interpreter_address), quote(court_address))
+    # print(url)
     
+    response = requests.get(url)
+    result = response.json()
+    # print("_____")
+    # print(response)
+    # print(result)
+    # print("__")
+
+    route = {
+        "distance": 0,
+        "duration": 0,
+        "court_latitude": 0.0,
+        "court_longitude": 0.0,
+        "interpreter_latitude": 0.0,
+        "interpreter_longitude": 0.0
+    }
+    
+    try:
+        route_base = result['routes'][0]['legs'][0]
+        route["distance"] = route_base['distance']['value']
+        route["duration"] = route_base['duration']['value']
+        route["court_latitude"] = route_base['end_location']['lat']
+        route["court_longitude"] = route_base['end_location']['lng']
+        route["interpreter_latitude"] = route_base['start_location']['lat']
+        route["interpreter_longitude"] = route_base['start_location']['lng']        
+    except:
+        logger.error(f"Google Route NOT found ({interpreter_address}) __TO__ ({court_address})!")
+
+    # print(route)
+
+    # raise HTTPException(status_code=400, detail=f"Terminate.")
+    return route
+
     
 
 def get_name_of_province(abvr):
@@ -41,7 +70,16 @@ def get_name_of_province(abvr):
         country="CANADA"
     return states[abvr], country
 
-def get_latitude_longitude_service(address_line1, address_line2, city, postal_code, province, google_map):
+
+def remove_space(address):
+    address = re.sub(' +', ' ', address)
+    address = address.replace(", ,", ",")
+    address = re.sub(', ,', ',', address)
+    address = re.sub('^,', '', address)   
+    return address.strip()
+
+
+def get_clean_address(address_line1, address_line2, city, postal_code, province):
     
 
     if address_line1 is None: address_line1 = ""
@@ -50,13 +88,17 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     if postal_code is None: postal_code = ""
     if province is None: province = ""
 
-    if len(province)<4: 
+    province = re.sub(" +", " ", province)
+
+    if len(province)>0 and len(province)<4: 
         province,country = get_name_of_province(province.upper())
     else:
         country="CANADA"
 
+    city = re.sub(" +", " ", city)
     city = city.lower()
 
+    if city == "van": city="vancouver"
     if city == "north van": city="north vancouver"
     if city == "west Van": city="west vancouver"
     if city == "new west": city="new westminster"
@@ -69,17 +111,20 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     if city == "kelowna" and "Sparwood" in address_line1: city="sparwood"
 
     address_line1 = address_line1.replace("R.R.#", "")
-    address_line2 = address_line2.replace("R.R.#", "")
-    address_line1 = address_line1.replace("#", "no ")
-    address_line2 = address_line2.replace("#", "no ")
+    address_line2 = address_line2.replace("R.R.#", "") 
+    # address_line1 = address_line1.replace("#", "no ")
+    # address_line2 = address_line2.replace("#", "no ")
     address_line2 = address_line2.replace("PO ", "Post Office")
     address_line2 = address_line2.replace("Suite ", "no ")
     address_line2 = address_line2.replace("Unit ", "no ")
     address_line2 = address_line2.replace("Apt", "") 
     
-    address_line = address_line1.lower() + ", " + address_line2.lower()    
+    address_line = address_line1.lower() # + ", " + address_line2.lower()    
+    
+    address_line = address_line.replace("c/o ", "")
 
-    # Remove Bag 123 or Box 123  
+    # Remove Bag 123 or Box 123 
+    address_line = re.sub( "p.o. box [0-9]+", "", address_line)
     address_line = re.sub( "bag [0-9]+,", "", address_line)
     address_line = re.sub( "box [0-9]+,", "", address_line)
     address_line = re.sub( "bag [0-9]+", "", address_line)
@@ -95,71 +140,7 @@ def get_latitude_longitude_service(address_line1, address_line2, city, postal_co
     
 
     address = f"{address_line}, {city}, {postal_code}, {province}, {country}"
-    found_locations, google_map_status = get_geo(address, google_map) 
+    address = remove_space(address)
+    # print(address)
 
-    if google_map==True and google_map_status == 'REQUEST_DENIED':
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Please review the google map subscription.")
-
-    
-    if len(found_locations)==0:
-        address = f"{address_line}, {city}, {province}, {country}"
-        address = remove_space(address)
-        found_locations, google_map_status = get_geo(address, google_map)
-
-    if len(found_locations)==0 and '-' in address_line:
-        line = address_line.split('-')[1]
-        address = f"{line}, {city}, {province}, {country}"
-        address = remove_space(address)
-        found_locations, google_map_status = get_geo(address, google_map)
-
-    if len(found_locations)==0:
-        if "ave." in address_line or "avenue" in address_line:
-            address_line_tmp = re.sub( "ave\.", "st.", address_line)
-            address_line_tmp = re.sub( "avenue", "street", address_line_tmp)
-        else:
-            address_line_tmp = re.sub( "st\.", "ave.", address_line)
-            address_line_tmp = re.sub( "street", "avenue", address_line_tmp)
-
-        address = f"{address_line_tmp}, {city}, {province}, {country}"
-        address = remove_space(address)
-        found_locations, google_map_status = get_geo(address, google_map)
-    
-    if len(found_locations)==0:
-        address_line = re.sub( "(?<!\S)\d+(?!\S)", "", address_line)
-        address_line = re.sub( "[0-9]+-[0-9]+", "", address_line)
-        address = f"{address_line}, {city}, {province}, {country}"
-        address = remove_space(address)
-        found_locations, google_map_status = get_geo(address, google_map)
-    
-    if len(found_locations)==0:        
-        address = f"{city}, {province}, {country}"
-        address = remove_space(address)        
-        found_locations, google_map_status = get_geo(address, google_map)
-    
-
-
-    if google_map == True:
-        if len(found_locations)==1:
-            return found_locations[0]["geometry"]["location"]["lat"], found_locations[0]["geometry"]["location"]["lng"]
-        else:
-            for found_location in found_locations:
-                if "courthouse" in found_location['types'] :
-                    return found_location["geometry"]["location"]["lat"], found_location["geometry"]["location"]["lng"]
-
-            return found_locations[0]["geometry"]["location"]["lat"], found_locations[0]["geometry"]["location"]["lng"]
-
-    else:
-        if len(found_locations)==1:
-            return found_locations[0]["lat"], found_locations[0]["lon"]
-        else:
-            for found_location in found_locations:
-                if found_location['type'] == "administrative":
-                    return found_location["lat"], found_location["lon"]
-
-            return found_locations[0]["lat"], found_locations[0]["lon"]
-
-
-def remove_space(address):
-    address = re.sub(' +', ' ', address)
-    address = re.sub(', ,', ',', address)
     return address
