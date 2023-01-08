@@ -2,7 +2,7 @@ import store from "@/store";
 import moment from 'moment';
 import * as _ from 'underscore';
 import { locationsInfoType } from '@/types/Common/json';
-import { bookingSearchResultInfoType, travelInformationInfoType } from "@/types/Bookings/json";
+import { bookingSearchResultInfoType, courtsDistanceInfoType, travelInformationInfoType } from "@/types/Bookings/json";
 
 export function travelInformation(booking: bookingSearchResultInfoType){
     //console.log(booking)
@@ -11,10 +11,10 @@ export function travelInformation(booking: bookingSearchResultInfoType){
     
     const location:locationsInfoType[] = store.state.Common.courtLocations.filter(loc => loc.id==booking.location_id)
     if(location.length==1){
-        
-        const travel = interpreterHomeToCourtHouseDistance(location[0].latitude,location[0].longitude, booking.interpreter.addressLatitude, booking.interpreter.addressLongitude)        
 
-        if (travel.distance>32){
+        const travel = interpreterHomeToCourtHouseDistance(location[0], booking.interpreter.courts)        
+
+        if (travel.status){
 
             const bookingDates = booking.dates.filter(date => date.status=='Booked')
             if(bookingDates.length>0){
@@ -26,8 +26,8 @@ export function travelInformation(booking: bookingSearchResultInfoType){
                 
                 travelInfo.startDate = sortedBookingDates[0].date.slice(0,10)
                 travelInfo.status = 'travel'
-                travelInfo.totalHours = travel.time, 
-                travelInfo.totalKilometers = travel.distance,
+                travelInfo.totalHours = travel.time*2, 
+                travelInfo.totalKilometers = travel.distance*2,
                 travelInfo.breakfast = meals.breakfast,
                 travelInfo.lunch = meals.lunch,
                 travelInfo.dinner = meals.dinner 
@@ -109,27 +109,16 @@ function numberOfMeals(bookingDates, travelHours){
 }
 
 
-function interpreterHomeToCourtHouseDistance(latitude1, longitude1, latitude2, longitude2){
+function interpreterHomeToCourtHouseDistance(location: locationsInfoType, courts: courtsDistanceInfoType[]){
+    
+    const court = courts.filter(court => (court.court_code==location.locationCode && court.court_id==location.id) )
 
-    if(!latitude1 || !longitude1 || !latitude2 || !longitude2)
-        return {distance:0, time:0}
+    if(!location.locationCode || !location.id || courts.length<1 || court.length!=1)
+        return {status:false, distance:0, time:0}
 
-    const R = 6373.0
-    const lat1 = (latitude1)*(Math.PI/180)
-    const lon1 = (longitude1)*(Math.PI/180)
+    const status = court[0].distance > 32000
+    const distance = (court[0].distance/1000)
+    const time = (court[0].duration/3600)
 
-    const lat2 = (latitude2)*(Math.PI/180)
-    const lon2 = (longitude2)*(Math.PI/180)
-
-    const dlon = lon2 - lon1
-    const dlat = lat2 - lat1
-
-    const a = Math.sin(dlat / 2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2)**2
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-    const distance = R * c * Math.sqrt(2) //a rough estimate for distance triangle
-    const time = Number((distance/85).toFixed(2)) //a rough estimate for time based on average speed 85KM/h
-    //console.log(distance)
-    //console.log(time)
-    return {distance, time}
+    return {status, distance, time}
 }

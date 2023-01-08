@@ -17,72 +17,12 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 from api.schemas.interpreter_schema import InterpreterCreateModifyRequestSchema
-from models.geo_status_model import GeoStatusModel
 
-from core.geo_coordinate_service import get_latitude_longitude_service
+from core.geo_coordinate_service import get_clean_address
 
 import logging
 logger = logging.getLogger(__name__)
 
-def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session, google_map: bool):
-
-    geo_service = get_geo_service_name(google_map)
-
-    interpreter_query = db.query(InterpreterModel).filter(InterpreterModel.id==id)
-    interpreter = interpreter_query.first()
-    latitude, longitude = get_latitude_longitude_service(interpreter.address, "", interpreter.city, interpreter.postal_code, interpreter.province, google_map=google_map)
-    interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude, "geo_service":geo_service})
-    db.commit()
-
-
-def update_interpreter_geo_coordinates_in_db(db: Session, google_map: bool):
-
-    geo_service = get_geo_service_name(google_map)
-
-    geo_status = db.query(GeoStatusModel).where(GeoStatusModel.name=='interpreters')
-
-    interpreters_query = db.query(InterpreterModel)
-    try:
-        interpreters = interpreters_query.all()
-    except:
-        interpreters = interpreters_query.all()
-
-    total_interpreters=(len(interpreters))
-    count=0
-    
-    for interpreter in interpreters:                
-        latitude, longitude = get_latitude_longitude_service(interpreter.address, "", interpreter.city, interpreter.postal_code, interpreter.province, google_map=google_map)
-        
-        interpreter_query = interpreters_query.filter(InterpreterModel.id==interpreter.id)
-        interpreter_query.update({"address_latitude": latitude, "address_longitude": longitude, "geo_service":geo_service})
-        count = count+1
-        progress = int(100*count/total_interpreters)+1
-        if progress>99: progress=99
-        logger.info("Interpreter Update Progress => "+str(progress)+" %")
-        geo_status.update({"progress":progress})
-
-        db.commit()
-        
-        
-    next_update = None
-    update_schedule = geo_status.first().update_schedule
-    if update_schedule:
-        next_update = get_next_update_date(update_schedule, datetime.now())    
-    
-    geo_status.update({
-        "progress": 100, 
-        "updated_at": datetime.now(), 
-        "update_service": geo_service,
-        "next_update_at": next_update
-    })          
-    db.commit()
-
-
-def get_geo_service_name(google_map):
-    if google_map:
-        return "Google Map"
-    else:
-        return "Nominatim"
 
 
 def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: Session, username):
@@ -98,7 +38,9 @@ def create_interpreter_in_db(request:InterpreterCreateModifyRequestSchema, db: S
     interpreter_request['province'] = province_abvr(interpreter_request['province'])
 
     interpreter_request = add_update_by(interpreter_request, db, username)
-    interpreter_request = add_geo_coordinates(interpreter_request)
+    interpreter_request['address_latitude'] = None
+    interpreter_request['address_longitude'] = None
+    interpreter_request['geo_service'] = None
     #create a record
     new_interpreter = InterpreterModel(**interpreter_request)   
     db.add(new_interpreter)
@@ -158,21 +100,6 @@ def add_update_by(interpreter_request, db: Session, username):
         
     updated_by = current_user.display_name+"_____"+current_user.username
     interpreter_request['updated_by'] = updated_by
-    return interpreter_request
-
-
-def add_geo_coordinates(interpreter_request):    
-    latitude, longitude = get_latitude_longitude_service(
-        interpreter_request['address'], 
-        "", 
-        interpreter_request['city'], 
-        interpreter_request['postal_code'], 
-        interpreter_request['province'], 
-        google_map=False
-    )
-    interpreter_request['address_latitude'] = latitude
-    interpreter_request['address_longitude'] = longitude
-    interpreter_request['geo_service'] = get_geo_service_name(google_map=False)
     return interpreter_request
 
 
@@ -310,37 +237,16 @@ def check_required_fields(interpreter_request, db: Session):
 
 def apply_address_changes(old_interpreter, interpreter_request): 
 
-    old_address = old_interpreter.address
-    if old_address is None: old_address=""
+    new_address = get_clean_address(interpreter_request['address'], "", interpreter_request['city'], interpreter_request['postal_code'], interpreter_request['province'])                
+    old_address = get_clean_address(old_interpreter.address,        "", old_interpreter.city,        old_interpreter.postal_code,        old_interpreter.province)
 
-    new_address = interpreter_request['address']
-    if new_address is None: new_address=""
-
-    old_city = old_interpreter.city
-    if old_city is None: old_city=""
-
-    new_city = interpreter_request['city']
-    if new_city is None: new_city=""
-   
-    old_province = old_interpreter.province
-    if old_province is None: old_province=""
-
-    new_province = interpreter_request['province']
-    if new_province is None: new_province=""
-
-    old_postal_code = old_interpreter.postal_code
-    if old_postal_code is None: old_postal_code=""
-
-    new_postal_code = interpreter_request['postal_code']
-    if new_postal_code is None: new_postal_code=""
-
-    if (old_address.lower().strip() != new_address.lower().strip() or
-        old_city.lower().strip() != new_city.lower().strip() or
-        old_province.lower().strip() != new_province.lower().strip() or
-        old_postal_code.lower().strip() != new_postal_code.lower().strip()
-    ):
-        interpreter_request = add_geo_coordinates(interpreter_request)
+    geo_service = old_interpreter.geo_service
     
+    if new_address != old_address : 
+        geo_service = "UPDATE"
+        print("______________________________")
+
+    interpreter_request['geo_service'] = geo_service
     return  interpreter_request
 
 

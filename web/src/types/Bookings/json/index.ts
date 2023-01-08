@@ -106,6 +106,15 @@ export interface bookingInterpreterInfoType { //OK
     gst?: string;
     addressLatitude?: number;
     addressLongitude?: number;
+    courts?: courtsDistanceInfoType[];
+}
+
+export interface courtsDistanceInfoType {
+    court_code: string;
+    court_id: number;
+    distance: number;
+    duration: number;
+    interpreter_id: number;
 }
 
 export interface languageHistoryInfoType {

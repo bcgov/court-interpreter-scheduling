@@ -2,12 +2,13 @@
 import re
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from models.court_location_model import CourtDistanceModel
 from models.interpreter_model import InterpreterModel
 from models.language_model import InterpreterLanguageModel
 from models.booking_model import BookingDatesModel, BookingModel
 from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema
 from datetime import datetime
-from math import sin, cos, sqrt, atan2, radians
+
 from api.repository.user_transactions import check_user_roles
 
 from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
@@ -26,15 +27,15 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = apply_active(interpreter, request.active)
     interpreter = apply_crc_date(interpreter, request.criminalRecordCheck)
     interpreter = apply_keyword(interpreter, request.keywords)
+    interpreter = apply_distance(interpreter, request.distanceLimit, request.location)
 
-    all_interpreters = interpreter.all()
     # all_interpreters = apply_dates(all_interpreters, request.dates, db)
 
 
     # distance function
-    interpreters = apply_distance(all_interpreters, request.distanceLimit, request.location)
+    # interpreters = apply_distance(all_interpreters, request.distanceLimit, request.location)
 
-    return interpreters
+    return interpreter.all()
 
 
 def apply_city(interpreter, city):
@@ -126,41 +127,22 @@ def apply_level(interpreter, levels):
     else:
         return interpreter
 
-def apply_distance(interpreters, distanceLimit, location):
+
+def apply_distance(interpreter, distanceLimit, location):
 
     if (distanceLimit == True 
         and location is not None 
-        and location.latitude is not None
-        and location.longitude is not None
-    ):
-        interpreter_in_range = list()
-        for interpreter in interpreters:
-            if is_interpreter_with_in_range(interpreter.address_latitude, interpreter.address_longitude, location.latitude, location.longitude, 32)==True:
-                interpreter_in_range.append(interpreter)
-
-        return interpreter_in_range
+        and location.id is not None
+    ):        
+        DISTANCE_LIMIT=32000   # 32km limit
+        return (interpreter
+            .join(CourtDistanceModel)
+            .filter(CourtDistanceModel.court_id==location.id)
+            .filter(CourtDistanceModel.distance.__le__(DISTANCE_LIMIT))
+        )
     else:
-        return interpreters
+        return interpreter
 
-
-
-def is_interpreter_with_in_range(latitude1, longitude1, latitude2, longitude2, range):
-    R = 6373.0
-    lat1 = radians(latitude1)
-    lon1 = radians(longitude1)
-
-    lat2 = radians(latitude2)
-    lon2 = radians(longitude2)
-
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-    distance = R * c
-
-    return distance < range
 
 
 def apply_dates(interpreters, booking_dates, db):
