@@ -1,6 +1,5 @@
 from fastapi import status, HTTPException
 from api.schemas.geo_schema import GeoUpdateScheduleRequestSchema
-from models.user_model import UserModel
 from models.geo_status_model import GeoStatusModel
 from models.interpreter_model import InterpreterModel
 from models.court_location_model import CourtDistanceModel, CourtLocationModel, CourtDistanceBackupModel
@@ -90,11 +89,9 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
 
         court_distance = court_distance_query.first()
 
-        #TODO change to GOOGLE
         if court_distance is not None and court.geo_service == "GOOGLE" and interpreter.geo_service == "GOOGLE":
-            # print('court '+str(court.id))
             continue
-        logger.info(f"Updating court {court.id} >  interpreter {interpreter.id}")
+        # logger.info(f"Updating court {court.id} >  interpreter {interpreter.id}")
 
         court_address = get_clean_address(
             court.address_line1, 
@@ -102,21 +99,37 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
             court.city, 
             court.postal_code, 
             court.province)
-
-        court_distance_backup_query = db.query(CourtDistanceBackupModel).filter(
+      
+        court_distance_backup = db.query(CourtDistanceBackupModel).filter(
             CourtDistanceBackupModel.court_address==court_address, 
-            CourtDistanceBackupModel.interpreter_address==interpreter_address) 
+            CourtDistanceBackupModel.interpreter_address==interpreter_address).first()
 
-        court_distance_backup = court_distance_backup_query.first()
+        special_court = is_special_court(court.location_code)
 
-        if court_distance_backup is not None:
-            geo = court_distance_backup.__dict__            
-            # print("++")
-            # print(geo)
-            # print(geo.__dict__)
-            print("Found geo in Backup")
+        if special_court is not None:
+            geo = handle_special_courts(db, special_court, interpreter_address)
+            # print("Special Court")
+        elif court_distance_backup is not None:
+            geo = court_distance_backup.__dict__ 
+            # print("Found geo in Backup")
         else:
             geo = call_geo_service(court_address, interpreter_address)
+            #add to backup for later 
+            adding_location_distance_backup = CourtDistanceBackupModel(
+                court_id = court.id,
+                interpreter_id = interpreter.id,
+                court_code = court.location_code,
+                court_address = court_address,
+                interpreter_address = interpreter_address,
+                distance = geo["distance"],
+                duration = geo["duration"],
+                court_latitude = geo["court_latitude"],
+                court_longitude = geo["court_longitude"],
+                interpreter_latitude = geo["interpreter_latitude"],
+                interpreter_longitude = geo["interpreter_longitude"]                
+            )
+            db.add(adding_location_distance_backup)
+            db.commit()
 
                 
         if court_distance is None:            
@@ -154,7 +167,7 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
                 "interpreter_longitude": geo["interpreter_longitude"]                
             })
 
-    interpreter_query.update({"geo_service":"GOOGLE"}) #TODO change to "GOOGLE"
+    interpreter_query.update({"geo_service":"GOOGLE"})
     db.commit()       
 
 
@@ -222,7 +235,52 @@ def apply_courts_geo_updates(db: Session):
         # print("_____________")
         # print(num_of_court_address_changes)                
     
-        #TODO change to GOOGLE
         if court.geo_service!="GOOGLE" and num_of_court_distances>0 and num_of_court_address_changes==0:            
             court_query.update({ "geo_service": "GOOGLE"})
             db.commit()
+
+
+def handle_special_courts(db: Session, special_court, interpreter_address):
+        
+    court_distance_backup_special_case = db.query(CourtDistanceBackupModel).filter(
+        CourtDistanceBackupModel.court_code==special_court["near_court_code"], 
+        CourtDistanceBackupModel.interpreter_address==interpreter_address).first()
+
+    if court_distance_backup_special_case is not None:
+        geo = court_distance_backup_special_case.__dict__
+        geo["distance"]=geo["distance"]+special_court["distance_diff"]
+        geo["duration"]=geo["duration"]+special_court["duration_diff"]
+        geo["court_latitude"]=special_court["court_latitude"]
+        geo["court_longitude"]=special_court["court_longitude"]
+    else:
+        geo = {
+            "distance": 0,
+            "duration": 0,
+            "court_latitude": 0.0,
+            "court_longitude": 0.0,
+            "interpreter_latitude": 0.0,
+            "interpreter_longitude": 0.0
+        }    
+    return geo
+
+
+def is_special_court(code):
+    special_courts = [
+        {
+            "name":"Klemtu",
+            "code":"16988.0007",
+            "court_latitude":52.58745,
+            "court_longitude":-128.52014,
+            "near_court_name":"Bella Bella", 
+            "near_court_code":"10244.0007",
+            "distance_diff":78000,
+            "duration_diff":12600
+        }
+    ]
+
+    special_court = [court for court in special_courts if court["code"]==code]
+    
+    if len(special_court)==1:
+        return special_court[0]
+    else:
+        return None
