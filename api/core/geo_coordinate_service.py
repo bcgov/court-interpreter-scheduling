@@ -1,6 +1,5 @@
 import requests
 import re
-from fastapi import status, HTTPException
 from core.config import settings
 from urllib.parse import quote
 import logging
@@ -14,10 +13,10 @@ def call_geo_service(court_address, interpreter_address):
     
     response = requests.get(url)
     result = response.json()
-    # print("_____")
+    print("__G__")
     # print(response)
-    # print(result)
-    # print("__")
+    print(result)
+    print("__")
 
     route = {
         "distance": 0,
