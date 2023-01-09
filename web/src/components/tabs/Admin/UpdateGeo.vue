@@ -26,11 +26,11 @@
                 </template>
 
                 <template v-slot:cell(manualUpdate)="data" >                    
-                    <b-row>
+                    <!-- <b-row>
                         <b-button @click="update(data.item.name,'free')"  class="ml-3 mt-2 mb-1"  variant="info" >Free Service</b-button>                
-                    </b-row>
+                    </b-row> -->
                     <b-row>
-                        <b-button @click="update(data.item.name,'google')" class="ml-3 mt-1 mb-2 " variant="warning" >Google Map</b-button>
+                        <b-button @click="update(data.item.name,'google')" class="ml-3 mt-1 mb-2 " variant="warning" >Start Update</b-button>
                     </b-row>                    
                 </template>
 
@@ -89,7 +89,7 @@
                         variant="warning"
                          @click="updateOne(data.item)"
                         ><spinner color="#FFF" v-if="data.item.update_started" style="margin:0; padding: 0; height:1.5rem; transform:translate(0px,-28px);"/>
-                        <span style="font-size: 12px;" v-else>Google Map</span>
+                        <span style="font-size: 12px;" v-else>Update</span>
                     </b-button>
                     </template>
                     <template v-slot:cell(geo_service)="data" >
@@ -145,7 +145,7 @@ export default class UpdateGeoPage extends Vue {
     [   
         {key:'description',     label:'Name',              sortable:false, tdClass: 'border-top align-middle', }, 
         {key:'updated_at',      label:'Last Update',       sortable:false, tdClass: 'border-top align-middle',},
-        {key:'update_service',  label:'Update Service',    sortable:false, tdClass: 'border-top align-middle',},
+        //{key:'update_service',  label:'Update Service',    sortable:false, tdClass: 'border-top align-middle',},
         {key:'manualUpdate',    label:'Manual Update',     sortable:false, tdClass: 'border-top align-middle',},
         {key:'update_schedule', label:'Updating Schedule', sortable:false, tdClass: 'border-top align-middle',},
         {key:'progress',        label:'Progress',          sortable:false, tdClass: 'border-top align-middle', thStyle:'width:12rem;' },
@@ -188,7 +188,7 @@ export default class UpdateGeoPage extends Vue {
         this.$http.get('/geo/interpreters')
         .then((response) => { 
             if(response.data){
-                this.interpreters = response.data.filter(interpreter => !interpreter.geo_service || !interpreter.geo_service.includes('google') )
+                this.interpreters = response.data.filter(interpreter => !interpreter.geo_service || !interpreter.geo_service.includes('GOOGLE') )
             }
 
         },(err) => {
