@@ -29,13 +29,9 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = apply_keyword(interpreter, request.keywords)
     interpreter = apply_distance(interpreter, request.distanceLimit, request.location)
 
-    # all_interpreters = apply_dates(all_interpreters, request.dates, db)
+    all_interpreters = add_court_info(interpreter.all(), request.location, db)
 
-
-    # distance function
-    # interpreters = apply_distance(all_interpreters, request.distanceLimit, request.location)
-
-    return interpreter.all()
+    return all_interpreters
 
 
 def apply_city(interpreter, city):
@@ -44,11 +40,13 @@ def apply_city(interpreter, city):
     else:
         return interpreter
 
+
 def apply_active(interpreter, active):
     if active is not None:
         return interpreter.where(InterpreterModel.contract_valid == active)
     else:
         return interpreter
+
 
 def apply_crc_date(interpreter, crc_date):
     
@@ -82,6 +80,7 @@ def apply_keyword(interpreter, keywords):
     else:
         return interpreter
 
+
 def apply_name(interpreter, name):
     if name is not None and len(name)>0:
         name = name.lower().strip()
@@ -105,12 +104,14 @@ def apply_name(interpreter, name):
     else:
         return interpreter
 
+
 def apply_language(interpreter, language_id):
 
     if language_id is not None:       
         return interpreter.filter(InterpreterLanguageModel.language_id==language_id)
     else:
         return interpreter
+
 
 def apply_level(interpreter, levels):
 
@@ -142,7 +143,6 @@ def apply_distance(interpreter, distanceLimit, location):
         )
     else:
         return interpreter
-
 
 
 def apply_dates(interpreters, booking_dates, db):
@@ -187,3 +187,16 @@ def apply_dates(interpreters, booking_dates, db):
             busy_interpreters.append(interpreter_id)
     
     return [interpreter for interpreter in interpreters if interpreter.id not in busy_interpreters]
+
+
+def add_court_info(interpreters, location, db):
+
+    for interpreter in interpreters:
+        court = db.query(CourtDistanceModel).filter(
+                CourtDistanceModel.court_id==location.id,
+                CourtDistanceModel.interpreter_id==interpreter.id
+            ).first()
+        if court is not None:
+            interpreter.court_distance=court.distance
+            interpreter.court=court
+    return interpreters

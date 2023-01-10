@@ -3,7 +3,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from api.schemas.interpreter_schema import InterpreterBase
-from api.schemas.location_schema import LocationSchema
+from api.schemas.location_schema import CourtDistanceSchema, LocationSchema
 from api.schemas.booking_schema import BookingSearchResponseSchema
 
 
@@ -38,6 +38,8 @@ class InterpreterSearchResponseSchema(InterpreterBase):
     events: Optional[List] = []
     booking: Optional[List[BookingSearchResponseSchema]] = []
     created_at: Optional[datetime]
+    court: Optional[CourtDistanceSchema]
+    court_distance: Optional[int] = Field(alias="courtDistance")    
 
 
 class InterpreterDataInExcelRequestSchema(BaseModel):
