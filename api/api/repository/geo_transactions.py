@@ -114,22 +114,23 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
             # print("Found geo in Backup")
         else:
             geo = call_geo_service(court_address, interpreter_address)
-            #add to backup for later 
-            adding_location_distance_backup = CourtDistanceBackupModel(
-                court_id = court.id,
-                interpreter_id = interpreter.id,
-                court_code = court.location_code,
-                court_address = court_address,
-                interpreter_address = interpreter_address,
-                distance = geo["distance"],
-                duration = geo["duration"],
-                court_latitude = geo["court_latitude"],
-                court_longitude = geo["court_longitude"],
-                interpreter_latitude = geo["interpreter_latitude"],
-                interpreter_longitude = geo["interpreter_longitude"]                
-            )
-            db.add(adding_location_distance_backup)
-            db.commit()
+            #add to backup for later
+            if ( geo["distance"] !=0 and geo["duration"] !=0 ): 
+                adding_location_distance_backup = CourtDistanceBackupModel(
+                    court_id = court.id,
+                    interpreter_id = interpreter.id,
+                    court_code = court.location_code,
+                    court_address = court_address,
+                    interpreter_address = interpreter_address,
+                    distance = geo["distance"],
+                    duration = geo["duration"],
+                    court_latitude = geo["court_latitude"],
+                    court_longitude = geo["court_longitude"],
+                    interpreter_latitude = geo["interpreter_latitude"],
+                    interpreter_longitude = geo["interpreter_longitude"]                
+                )
+                db.add(adding_location_distance_backup)
+                db.commit()
 
                 
         if court_distance is None:            

@@ -230,6 +230,24 @@ Vue.filter('initials', function(str: string){
 	
 })
 
+Vue.filter('meter-to-km', function(meter){
+	if(meter>0)
+		return (meter/1000).toFixed(2);
+	else
+		return '0';
+})
+
+Vue.filter('sec-to-hour', function(seconds){
+	if(seconds>0){
+		const hour = Math.floor((seconds/3600));
+		let minute = ((seconds%3600)/60).toFixed(0);
+		if(Number(minute)<10) minute='0'+minute; 
+		return hour+'h:'+minute+'m'
+	}
+	else
+		return '0h';
+})
+
 
 
 

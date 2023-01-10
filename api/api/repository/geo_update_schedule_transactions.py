@@ -87,15 +87,13 @@ def get_time_diff(id, db:Session):
 
 
 def update_geo(updating_name, progress, db):
-    return
+    
     if progress==100:
         print("__________________________Updating____________________________>>>______"+str(updating_name))
-        
-        google_map=True
-        
+                
         if updating_name=='interpreters':
             update_interpreter_geo_coordinates_in_db(db)
         elif updating_name=='locations':
-            update_courts_info_in_db(db, google_map)  
+            update_courts_info_in_db(db)  
         
     

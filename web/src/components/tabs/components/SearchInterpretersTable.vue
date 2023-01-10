@@ -27,7 +27,7 @@
                     :perPage="itemsPerPage"
                     responsive="sm">
 
-                    <template v-slot:head(email)="data" >                    
+                    <template v-slot:head(email)="data" >                                            
                         <span class="mt-1">{{data.label}}</span>
                         <b-button style="font-size:14px" 
                             size="sm"                        
@@ -54,18 +54,23 @@
                         </span>
 
                     </template>
+                    
+                    <template v-slot:cell(courtDistance)="data" >
+                        <div>{{data.item.court.distance|meter-to-km}} km</div>
+                        <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                    </template>
 
-                    <template v-slot:cell(fullAddress)="data">    
+                    <template v-slot:cell(city)="data">                          
                         <div 
-                            v-html="data.value" 
+                            v-html="data.item.fullAddress" 
                             style="display:inline">
-                            {{data.value}}
+                            {{data.item.fullAddress}}
                         </div>
                         <a
                             style="margin-left:0.5rem; display:inline"
                             target="_blank"
                             rel="noopener noreferrer"
-                            :href="'https://www.google.com/maps/dir/?api=1&origin='+data.value+' '+data.item.postal+'&destination='+data.item.city+' BC courthouse'"                            
+                            :href="'https://www.google.com/maps/dir/?api=1&origin='+data.item.fullAddress+' '+data.item.postal+'&destination='+data.item.city+' BC courthouse'"                            
                         >{{data.item.postal}} 
                         </a>           
                     </template>
@@ -251,11 +256,12 @@ export default class SearchInterpretersTable extends Vue {
     interpreterFields = [
         {key:'details',             label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'},
         {key:'lastName',            label:'Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:20%'},
-        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:14%'},
-        {key:'fullAddress',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:21%'},
-        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:14%'},
-        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:16%'},
-        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'},
+        {key:'languages',           label:'Language', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:12%'},
+        {key:'city',         label:'Address',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:20%'},
+        {key:'phone',               label:'Phone',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:13%'},
+        {key:'email',               label:'Email',    sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:15%'},
+        {key:'courtDistance',       label:'Distance', sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:6%'},       
+        {key:'new',                 label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:4%'},
         {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'}
     ]; 
 

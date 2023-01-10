@@ -266,11 +266,11 @@ export default class UpdateGeoPage extends Vue {
     }
 
     public updateOne(data){
-        console.log(data)
+        //console.log(data)
         const interpreter = this.interpreters.filter(interpreter => interpreter.id == data.id)[0]
         interpreter.update_started =  true;
         const google_map = false
-        this.$http.put('/geo/update-geo-coordinates/'+data.id+'?google_map='+google_map, {timeout: 2000})
+        this.$http.put('/geo/update-geo-coordinates/'+data.id+'?google_map='+google_map)//, {timeout: 2000})
         .then((response) => {            
             this.interpreters = this.interpreters.filter(interpreter => interpreter.id != data.id)
         },(err) => {
