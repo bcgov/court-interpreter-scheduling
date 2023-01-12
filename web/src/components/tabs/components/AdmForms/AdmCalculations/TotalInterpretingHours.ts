@@ -119,12 +119,12 @@ export function getTotalInterpretingHours(booking){
         if(sessionHours[recordDate].Morning >0 && sessionHours[recordDate].minLevelMorning<MAX_INX){
             const keyMorning = getTotalHoursKey(recordDate, rates, sortedRateNames, sessionHours[recordDate].minLevelMorning)
             const morningHours = Math.max(2.5, sessionHours[recordDate].Morning)
-            totalHours[keyMorning] = totalHours[keyMorning] + morningHours
+            totalHours[keyMorning] = totalHours[keyMorning] + Math.ceil(morningHours*2)/2
         }
         if(sessionHours[recordDate].Afternoon >0 && sessionHours[recordDate].minLevelAfternoon<MAX_INX){
             const keyAfternoon = getTotalHoursKey(recordDate, rates, sortedRateNames, sessionHours[recordDate].minLevelAfternoon)
             const afternoonHours = Math.max(2.5, sessionHours[recordDate].Afternoon)
-            totalHours[keyAfternoon] = totalHours[keyAfternoon] + afternoonHours
+            totalHours[keyAfternoon] = totalHours[keyAfternoon] + Math.ceil(afternoonHours*2)/2
         }
         
         //console.log(dateLanguagesType)
