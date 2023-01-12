@@ -16,7 +16,8 @@ export function travelInformation(booking: bookingSearchResultInfoType){
 
         if (travel.status){
 
-            const bookingDates = booking.dates.filter(date => date.status=='Booked')
+            const bookingDates = booking.dates.filter(date => date.status=='Booked' && date.methodOfAppearance=='In-Person' )            
+            
             if(bookingDates.length>0){
                 const sortedBookingDates = _.sortBy(bookingDates, bookingdate => {
                     return moment(bookingdate.date.slice(0,10)+' '+bookingdate.actualStartTime,'YYYY-MM-DD HH:mm A' ).format()                
