@@ -29,7 +29,9 @@
                         <b-th colspan="2" class="text-right">$</b-th>
                         <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[0]+lang]" /></b-td>
                         <b-th colspan="2" class="text-center">x</b-th>
-                        <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[1]+lang]"/></b-td>
+                        <b-td colspan="8" class="">                            
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form[courtFeeItems[1]+lang]" :formatter="formatterRate" @input="paymentChanges=true;"/>
+                        </b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="6" class=""><underline-text :text="form[courtFeeItems[2]+lang]"/></b-td>
                         <b-th colspan="4" class=""></b-th>
@@ -78,7 +80,9 @@
                         <b-th colspan="2" class="text-right">$</b-th>
                         <b-td colspan="8" class=""><underline-text :text="form.travelHrRate"/></b-td>
                         <b-th colspan="2" class="text-center">x</b-th>
-                        <b-td colspan="8" class=""><underline-text :text="form.travelTotalHrs"/></b-td>
+                        <b-td colspan="8" class="">                            
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.travelTotalHrs" :formatter="formatterDays" @input="paymentChanges=true;"/>
+                        </b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="6" class=""><underline-text :text="form.travelTotal"/></b-td>
                         <b-th colspan="4" class=""></b-th>
@@ -102,9 +106,14 @@
                                 style="margin:0; width:14rem; font-size:14pt;"> Save Payment Details 
                             </b-button>
                         </b-th>                        
-                        <b-th colspan="8" class="text-right">GST Number :</b-th>
+                        <b-th colspan="7" class="text-right">GST Number :</b-th>
                         <b-td colspan="12" class=""><underline-text :text="form.gstNumber"/></b-td>
-                        <b-th colspan="6" class="text-right">{{form.gstRate}} % (rate)</b-th>
+                        <b-th colspan="7" class="text-right">                            
+                            <b-row>
+                                <div style="width:10%;" />
+                                <b-input class="w-50 mx-auto mt-n2" v-model="form.gstRate" :formatter="formatterGST" @input="paymentChanges=true;"/>
+                                <div style="width:40%;" > (GST rate)</div>
+                            </b-row></b-th>
                         <b-th colspan="4" class="text-right">GST</b-th>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="8" class=""><underline-text :text="form.feesGST"/></b-td>                          
@@ -139,7 +148,9 @@
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="5" class=""><underline-text :text="form.travelKMsRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="5" class=""><underline-text :text="form.travelTotalKMs"/></b-td>
+                        <b-td colspan="5" class="">                            
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.travelTotalKMs" :formatter="formatterTravelKm" @input="paymentChanges=true;"/>
+                        </b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
                         <b-td colspan="5" class=""><underline-text :text="form.travelSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
@@ -169,7 +180,9 @@
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="5" class=""><underline-text :text="form.breakfastRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="5" class=""><underline-text :text="form.breakfastTotalDays"/></b-td>                        
+                        <b-td colspan="5" class="">
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.breakfastTotalDays" :formatter="formatterDays" @input="paymentChanges=true;"/>
+                        </b-td>                        
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
                         <b-td colspan="5" class=""><underline-text :text="form.breakfastSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
@@ -199,7 +212,9 @@
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="5" class=""><underline-text :text="form.lunchRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="5" class=""><underline-text :text="form.lunchTotalDays"/></b-td>                        
+                        <b-td colspan="5" class="">                            
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.lunchTotalDays" :formatter="formatterDays" @input="paymentChanges=true;"/>
+                        </b-td>                        
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
                         <b-td colspan="5" class=""><underline-text :text="form.lunchSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
@@ -229,7 +244,9 @@
                         <b-th colspan="1" class="text-right">$</b-th>
                         <b-td colspan="5" class=""><underline-text :text="form.dinnerRate"/></b-td>
                         <b-th colspan="1" class="text-center">x</b-th>
-                        <b-td colspan="5" class=""><underline-text :text="form.dinnerTotalDays"/></b-td>                        
+                        <b-td colspan="5" class="">
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.dinnerTotalDays" :formatter="formatterDays" @input="paymentChanges=true;"/>
+                        </b-td>                        
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th>                         
                         <b-td colspan="5" class=""><underline-text :text="form.dinnerSubExp"/></b-td>
                         <b-th colspan="1" class=""></b-th>                        
@@ -378,7 +395,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
-import {bookingSearchResultInfoType, paymentDetailsVars} from '@/types/Bookings/json';
+import {bookingSearchResultInfoType, gstInfoType, paymentDetailsVars, totalInterpretingHoursInfoType, travelInformationInfoType} from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
 import {paymentDetailsInfoType} from '@/types/Bookings';
 import {languageItems, courtFeeItems} from '../AdmCalculations/PaymentCalculation'
@@ -430,7 +447,12 @@ export default class AdmPaymentDetails extends Vue {
     }
 
     public savePaymentDetailsChanges(){
+
+        const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
+
         this.paymentChanges=false;
+        
+        //_______paymentDetail
         const paymentDetail = {} as  paymentDetailsVars;
         paymentDetail.totalPaidByCourt = this.form.totalPaidByCourt? parseFloat(this.form.totalPaidByCourt): null
         paymentDetail.totalPaidByCrown = this.form.totalPaidByCrown? parseFloat(this.form.totalPaidByCrown): null
@@ -440,13 +462,39 @@ export default class AdmPaymentDetails extends Vue {
         paymentDetail.ferryGST = this.form.ferryGST? parseFloat(this.form.ferryGST): null
         paymentDetail.miscExp = this.form.miscExp? parseFloat(this.form.miscExp): null
         paymentDetail.miscGST = this.form.miscGST? parseFloat(this.form.miscGST): null
-
-        const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
         admDetail.paymentDetail = paymentDetail
-       
+        
+        //_______travelInformation
+        const travelInformation = {} as travelInformationInfoType;        
+        travelInformation.startDate = admDetail?.calculations?.travelInformation?.startDate
+        travelInformation.status = admDetail?.calculations?.travelInformation?.status
+        travelInformation.totalHours = this.form.travelTotalHrs? parseFloat(this.form.travelTotalHrs) : 0
+        travelInformation.totalKilometers = this.form.travelTotalKMs? parseFloat(this.form.travelTotalKMs): 0
+        travelInformation.breakfast = this.form.breakfastTotalDays? parseFloat(this.form.breakfastTotalDays) : 0
+        travelInformation.lunch = this.form.lunchTotalDays ? parseFloat(this.form.lunchTotalDays) : 0
+        travelInformation.dinner = this.form.dinnerTotalDays? parseFloat(this.form.dinnerTotalDays) : 0
+        admDetail.calculations.travelInformation = travelInformation
+        
+        //_______GST
+        const gst = {} as gstInfoType
+        gst.gstRate = this.form.gstRate? parseFloat(this.form.gstRate) : 0.05
+        admDetail.calculations.gst = gst
+        
+        //_______totalInterpretingHours
+        if(admDetail?.calculations?.totalInterpretingHours){
+            const totalInterpretingHours =  admDetail.calculations.totalInterpretingHours as totalInterpretingHoursInfoType;
+            for(const lang of this.languageItems){
+                if (this.form[courtFeeItems[1]+lang]){
+                    totalInterpretingHours[lang] = parseFloat(this.form[courtFeeItems[1]+lang])
+                }
+            }
+            admDetail.calculations.totalInterpretingHours = totalInterpretingHours
+        }
+        
+        //_______cancellation
         if(Number(admDetail?.calculations?.cancellation?.totalFees) != Number(this.form.totalCancellationFees)){
             admDetail.calculations.cancellation.totalFees = Number(this.form.totalCancellationFees)
-        }
+        }        
 
         const paymentDetailChanges =[
             {name:'admDetail', value:admDetail}                  
@@ -455,7 +503,7 @@ export default class AdmPaymentDetails extends Vue {
     }
 
     public formatterGST(value){
-        return this.formatter(value, 4, 1)
+        return this.formatter(value, 4, 0.5)
     }
 
     public formatterRate(value){
@@ -472,6 +520,14 @@ export default class AdmPaymentDetails extends Vue {
 
     public formatterTotal(value){
         return this.formatter(value, 10, 1000000)
+    }
+
+    public formatterDays(value){
+        return this.formatter(value, 4, 50)
+    }
+
+    public formatterTravelKm(value){
+        return this.formatter(value, 7, 5000)
     }
 
     public formatter(value: string, len, max){

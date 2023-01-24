@@ -191,12 +191,13 @@ def apply_dates(interpreters, booking_dates, db):
 
 def add_court_info(interpreters, location, db):
 
-    for interpreter in interpreters:
-        court = db.query(CourtDistanceModel).filter(
-                CourtDistanceModel.court_id==location.id,
-                CourtDistanceModel.interpreter_id==interpreter.id
-            ).first()
-        if court is not None:
-            interpreter.court_distance=court.distance
-            interpreter.court=court
+    if location is not None and location.id is not None:
+        for interpreter in interpreters:
+            court = db.query(CourtDistanceModel).filter(
+                    CourtDistanceModel.court_id==location.id,
+                    CourtDistanceModel.interpreter_id==interpreter.id
+                ).first()
+            if court is not None:
+                interpreter.court_distance=court.distance
+                interpreter.court=court
     return interpreters

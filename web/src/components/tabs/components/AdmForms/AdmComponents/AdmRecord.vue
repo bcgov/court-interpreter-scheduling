@@ -8,7 +8,7 @@
                     v-if="booking.recordsApproved"
                     variant="info" 
                     style="height:2rem; margin:-0.55rem 0 0 1rem;"
-                    @click="modifyRecords()"
+                    @click="confirmModifyRecords=true;"
                     >
                     Modify Approved Records
                     <b-icon-pencil-square />
@@ -90,6 +90,20 @@
 
             </b-table>
         </b-card>
+
+        <b-modal size="lg" v-model="confirmModifyRecords" title-class="h1 ml-3" hide-header-close header-bg-variant="warning"  title="Confirm Modifying Records">
+            <div class="mx-3">
+                <div style="font-size:15pt;">
+                    By modifying the approved records, all the manually entered values in the 
+                    <b class="text-primary">Payment Details</b> section will be replaced with the automatically calculated values.
+                </div>
+                <h3 class="mt-5 text-danger">Are you sure you want to proceed?</h3>
+            </div>
+            <template v-slot:modal-footer>                                
+                <b-button class="ml-3 mr-auto" variant="dark" @click="confirmModifyRecords=false;">Cancel</b-button>
+                <b-button class="mr-3 ml-auto" variant="warning" @click="modifyRecords()">Confirm</b-button>
+            </template>
+        </b-modal> 
     </div>    
 </template>
 
@@ -133,9 +147,11 @@ export default class AdmRecord extends Vue {
     records: bookingAdmRecordInfoType[] = []
     cancelledRecords: bookingAdmRecordInfoType[] = []
     update=0;
+    confirmModifyRecords = false;
 
     mounted(){
         this.dataReady = false
+        this.confirmModifyRecords = false;
         this.records = []
         this.cancelledRecords = []
         for(const date of this.booking.dates){
@@ -214,6 +230,7 @@ export default class AdmRecord extends Vue {
     }
 
     public modifyRecords(){
+        this.confirmModifyRecords=false;
         this.booking.recordsApproved = false
         this.update++;
         this.$emit('approved',false, true ,[...this.records, ...this.cancelledRecords])
