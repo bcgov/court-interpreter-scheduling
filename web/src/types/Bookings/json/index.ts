@@ -198,7 +198,8 @@ export interface paymentDetailsVars{
 export interface calculationVars{    
     totalInterpretingHours: totalInterpretingHoursInfoType;
     travelInformation: travelInformationInfoType;
-    cancellation: cancellationInfoType
+    cancellation: cancellationInfoType;
+    gst: gstInfoType;
 }
 
 export interface totalInterpretingHoursInfoType {
@@ -238,6 +239,10 @@ export interface sentEmailContentInfoType {
 
 export interface cancellationInfoType {
     totalFees: number;
+}
+
+export interface gstInfoType {
+    gstRate: number;
 }
 
 

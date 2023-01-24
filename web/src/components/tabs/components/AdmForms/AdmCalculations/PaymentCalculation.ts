@@ -20,7 +20,7 @@ export function paymentDetails(booking){
     form.includeCourtHrs = false;
 
     form.gstNumber = booking.interpreter.gst
-    form.gstRate = '0.05'
+    form.gstRate = booking?.admDetail?.calculations?.gst?.gstRate? booking.admDetail.calculations.gst.gstRate: '0.05'
 
     form.feesGST = '0.00'
     form.feesTotal = '0.00'
