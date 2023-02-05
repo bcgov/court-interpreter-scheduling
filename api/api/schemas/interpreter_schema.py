@@ -71,7 +71,7 @@ class InterpreterBookingResponseSchema(BaseModel):
     email: Optional[str]
     languages: Optional[List[InterpreterLanguageSchema]] = []
     language_history: Optional[JsonBase] = Field(alias="languageHistory")
-
+    courts: Optional[List[CourtDistanceSchema]]
     address: Optional[str]
     city: Optional[str]
     province: Optional[str] = "BC"
@@ -88,7 +88,6 @@ class InterpreterADMBookingResponseSchema(InterpreterBookingResponseSchema):
     site_code: Optional[str] = Field(alias="siteCode")
     address_longitude : Optional[float] = Field(alias="addressLongitude")
     address_latitude : Optional[float] = Field(alias="addressLatitude")
-    courts: Optional[List[CourtDistanceSchema]]
 
 
 class InterpreterGeoStatusSchema(BaseModel):
