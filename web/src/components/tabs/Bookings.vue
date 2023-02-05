@@ -155,7 +155,7 @@ export default class BookingsPage extends Vue {
     
     location = {} as locationsInfoType;
 
-    alllocations: locationsInfoType= {
+    alllocations: locationsInfoType = {
         id:null, 
         addressLine1: null,
         addressLine2:null,
@@ -167,9 +167,10 @@ export default class BookingsPage extends Vue {
         name: '',
         postalCode: null,
         shortDescription: '',
-        updatedAt: ''}
+        updatedAt: ''
+    }
     
-    dates: dateRangeInfoType = {startDate:null, endDate:null};
+    dates: dateRangeInfoType = {startDate:moment().format("YYYY-MM-DD"), endDate:moment().format("YYYY-MM-DD")};
     
     courtFileNumber = '';    
     interpreterName = '';
@@ -210,7 +211,7 @@ export default class BookingsPage extends Vue {
         this.$http.post('/booking/search', body)
         .then((response) => {            
             if(response?.data){                     
-                this.bookings = response.data;                                      
+                this.bookings = response.data;                            
             }
             this.searching = false;
             
