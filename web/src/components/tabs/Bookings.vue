@@ -170,7 +170,7 @@ export default class BookingsPage extends Vue {
         updatedAt: ''
     }
     
-    dates: dateRangeInfoType = {startDate:moment().format("YYYY-MM-DD"), endDate:moment().format("YYYY-MM-DD")};
+    dates: dateRangeInfoType = {startDate:null, endDate:null};
     
     courtFileNumber = '';    
     interpreterName = '';
@@ -187,6 +187,8 @@ export default class BookingsPage extends Vue {
    
     mounted() {  
         this.dataReady = false;
+        const today = moment().format('YYYY-MM-DD');
+        this.dates = {startDate:moment(today).toISOString(), endDate:moment(today).toISOString()};
         this.extractInfo();
         this.focusSearchButton()
     }
