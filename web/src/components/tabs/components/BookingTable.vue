@@ -33,9 +33,10 @@
                         <b-button style="font-size:18px; border: white; text-decoration: underline;" 
                             size="sm"                        
                             @click="displayInterpreterInfo(data.value);" 
-                            class="text-primary bg-transparent"
+                            class="text-primary bg-transparent text-left"
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="userRole.includes('super-admin')? data.item.location_name: ''"
+
                             >{{data.value.lastName}}, {{data.value.firstName}}
                         </b-button>
 
@@ -103,7 +104,12 @@
                             <span v-if="dateInfo.comment" v-b-tooltip.hover :title="dateInfo.comment" >{{dateInfo.comment|truncate-text(commentLength)}}</span>
                             <span v-else class="text-white">-</span>
                         </div>
-                    </template>                  
+                    </template>     
+
+                    <template v-slot:cell(courtDistance)="data" >
+                        <div>{{data.item.court.distance|meter-to-km}} km</div>
+                        <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                    </template>             
 
                     <template v-slot:cell(edit)="data">                        
                         <b-row v-if="searchLocation.id" style="float: right;" class="mr-1">
@@ -290,14 +296,15 @@ export default class BookingTable extends Vue {
     paginationKey = 0;
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:21%'},
-        {key:'file',           label:'Court File #',      sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle', thStyle:' width:9%'},
-        {key:'caseName',       label:'Case Name',         sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:15%'},
-        {key:'language',       label:'Language',          sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:22%'},
-        {key:'interpreter',    label:'Interpreter',       sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
-        {key:'status',         label:'Status',            sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:4%'},
-        {key:'comment',        label:'Comment',           sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:11%'},
-        {key:'edit',           label:'',                  sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:' width:7%'}
+        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:20%'},
+        {key:'file',           label:'Court File #',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
+        {key:'caseName',       label:'Case Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
+        {key:'language',       label:'Language',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:20%'},
+        {key:'interpreter',    label:'Interpreter',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle text-left', thStyle:' width:11%'},
+        {key:'status',         label:'Status',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:4%'},
+        {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:11%'},
+        {key:'courtDistance',  label:'Distance',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:'width:6%'},       
+        {key:'edit',           label:'',              sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:7%'}
     ];
 
     @Watch('searching')
@@ -311,6 +318,7 @@ export default class BookingTable extends Vue {
             // booking['caseName'] = dates[0].caseName
             // booking['language'] = this.getLanguages(dates[0].languages)           
             booking['date'] = dates[0].date 
+            booking['court'] = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        

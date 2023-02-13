@@ -100,7 +100,7 @@ export default class Rates extends Vue {
                 // console.log(response.data)
                 this.allRates = response.data
                 this.UpdateRates(this.allRates)
-                this.allRates.forEach(rate=>rate.valueChangedDate=rate.valueChangedDate.slice(0,10))
+                this.allRates.forEach(rate=>rate.valueChangedDate=rate.valueChangedDate?.slice(0,10))
                 // console.log(this.allRates)
                 this.rates = getRatesIndices(this.allRates) 
                 this.enableSaveButton = false;

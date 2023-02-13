@@ -239,13 +239,10 @@ export default class SearchInterpretersTable extends Vue {
     @commonState.State
     public userRole!: string[];
 
-    updatedBookingInfo = 0;
-    
-    
+    updatedBookingInfo = 0;    
     showBookingWindow = false;
 
-    interpreter = {} as interpreterInfoType; 
-      
+    interpreter = {} as interpreterInfoType;       
     expandedInterpreter = {} as interpreterInfoType;
     
     currentPage = 1;
@@ -265,13 +262,9 @@ export default class SearchInterpretersTable extends Vue {
         {key:'edit',                label:'',         sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle', thStyle:'width:5%'}
     ]; 
 
-       
-
-    public bookInterpreter(interpreterToBook: interpreterInfoType){
-        // console.log(interpreterToBook)              
+    public bookInterpreter(interpreterToBook: interpreterInfoType){              
         this.interpreter = interpreterToBook;
-        this.showBookingWindow = true;
-                
+        this.showBookingWindow = true;                
     }
 
     public copyEmails(){        
