@@ -27,6 +27,7 @@ export interface interpreterInfoType {
 }
 
 export interface interpreterLanguageInfoType {
+    id?: number;
     languageId: number;
     level: number;
     languageName: string;

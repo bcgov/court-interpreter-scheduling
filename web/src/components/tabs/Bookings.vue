@@ -15,9 +15,9 @@
                             @change="searchAgain(true)"                           
                             style="display:inline"                            
                             v-model="location">
-                            <!-- <b-form-select-option :value="alllocations">
+                            <b-form-select-option v-if="userRole.includes('super-admin')" :value="alllocations">
                                 --- All Locations ---
-                            </b-form-select-option>  -->
+                            </b-form-select-option> 
                             <b-form-select-option
                                 v-for="courtLocation in courtLocations" 
                                 :key="courtLocation.id"
@@ -145,7 +145,10 @@ export default class BookingsPage extends Vue {
     public UpdateCourtLocations!: (newCourtLocations: locationsInfoType[]) => void
 
     @commonState.Action
-    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void    
+    public UpdateLanguages!: (newLanguages: languagesInfoType[]) => void  
+    
+    @commonState.State
+    public userRole!: string[];
 
     update = 0;
     

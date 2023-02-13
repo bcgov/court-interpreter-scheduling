@@ -2,7 +2,7 @@ import json
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from api.schemas.booking_schema import BookingRequestSchema, ADMBookingRequestSchema
-from models.booking_model import BookingModel, BookingDatesModel
+from models.booking_model import BookingCasesModel, BookingModel, BookingDatesModel
 from models.user_model import UserModel
 from models.interpreter_model import InterpreterModel
 from models.booking_enums import BookingStatusEnum
@@ -156,10 +156,14 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
             # print(req_booking_date)
             if len(req_booking_date)>0:
                 #modify
-                req_booking_date[0]['languages'] = json.dumps(req_booking_date[0]['languages'])
+                # req_booking_date[0]['languages'] = json.dumps(req_booking_date[0]['languages'])
+                booking_cases = req_booking_date[0]['cases']
+                del req_booking_date[0]['cases']
+
                 req_booking_date[0]['interpreter_id'] = interpreter_id
                 req_booking_date[0]['booking_id'] = booking_id
                 db_booking_date.update(req_booking_date[0])                
+                add_cases(booking_cases, db, existing_date.id)
                 req_booking_date[0]['processed']=True
             else:
                 #delete
@@ -172,9 +176,12 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
 
         if ('processed' in booking_date) and (booking_date['processed']==True ) :
             continue
+
+        booking_cases = booking_date['cases']
+        del booking_date['cases']
         
         del booking_date['id']
-        booking_date['languages']= json.dumps(booking_date['languages'])
+        # booking_date['languages']= json.dumps(booking_date['languages'])
         booking_date['interpreter_id'] = interpreter_id
         booking_date['booking_id'] = booking_id
 
@@ -182,5 +189,60 @@ def add_dates(booking_dates, db: Session, booking_id, interpreter_id):
         # print(new_booking_date.__dict__)
         
         db.add(new_booking_date)
+        db.commit()
+        db.refresh(new_booking_date)
+        add_cases(booking_cases, db, new_booking_date.id)
     
     db.commit()
+
+
+def add_cases(booking_cases, db: Session, booking_date_id):
+
+    existing_booking_cases = db.query(BookingCasesModel).filter(BookingCasesModel.booking_date_id==booking_date_id).all()
+    
+    if len(existing_booking_cases)>0:
+        for existing_case in existing_booking_cases:
+
+            req_booking_case =[booking_case for booking_case in booking_cases if (('id' in booking_case) and (booking_case['id']==existing_case.id))]
+            db_booking_case = db.query(BookingCasesModel).filter(BookingCasesModel.id==existing_case.id)
+            
+            # print(req_booking_date)
+            if len(req_booking_case)>0:
+                #modify
+                # req_booking_date[0]['languages'] = json.dumps(req_booking_date[0]['languages'])
+                        
+                req_booking_case[0]['interpreter_language_id'] = req_booking_case[0]['language']['id']
+                del req_booking_case[0]['language']
+
+                req_booking_case[0]['booking_date_id'] = booking_date_id
+
+                db_booking_case.update(req_booking_case[0])                                
+                req_booking_case[0]['processed']=True
+            else:
+                #delete
+                db_booking_case.delete(synchronize_session=False)
+        db.commit()    
+
+    for booking_case in booking_cases:
+        # print("_______________________________-")
+        # print(booking_case)
+
+        if ('processed' in booking_case) and (booking_case['processed']==True ) :
+            continue
+        
+        del booking_case['id']
+
+        booking_case['interpreter_language_id'] = booking_case['language']['id']
+        del booking_case['language']
+        
+        booking_case['booking_date_id'] = booking_date_id 
+
+        new_booking_case = BookingCasesModel(**booking_case)
+        # print(new_booking_case.__dict__)
+        
+        db.add(new_booking_case)
+    
+    db.commit()
+
+
+    

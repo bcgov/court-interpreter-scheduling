@@ -5,10 +5,48 @@ from typing import Optional, List, Dict
 from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema, InterpreterADMBookingResponseSchema
 from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingMethodOfAppearanceEnum, BookingInterpretForEnum
 from api.schemas.custom_type import TruncatedUserIdBase, JsonBase
+from api.schemas.language_schema import InterpreterLanguageSchema
+
+
+class BookingCasesResponseSchema(BaseModel):    
+    id: Optional[int]
+
+    file: Optional[str]
+    case_name: Optional[str] = Field(alias="caseName")
+    room: Optional[str]
+    
+    case_type: Optional[str] = Field(alias="caseType")
+    court_level: Optional[str] = Field(alias="courtLevel")
+    court_class: Optional[str] = Field(alias="courtClass")
+    reason: Optional[str] 
+       
+    bilingual: Optional[bool] = False
+    interpretation_mode: Optional[str] = Field(alias="interpretationMode")
+
+    language: Optional[InterpreterLanguageSchema]
+    interpret_for: Optional[str] = Field(alias="interpretFor")
+
+    federal: Optional[bool] = False
+    prosecutor: Optional[str]
+
+    remote_registry: Optional[str] = Field(alias="remoteRegistry")
+    remote_location_id: Optional[int] = Field(alias="remoteLocationId")
+    van_registry: Optional[str] = Field(alias="vanRegistry")
+    van_location_id: Optional[int] = Field(alias="vanLocationId") 
+   
+    requested_by: Optional[BookingRequestedByEnum] = Field(alias="requestedBy")
+    method_of_appearance: Optional[BookingMethodOfAppearanceEnum] = Field(alias="methodOfAppearance")
+    
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True  
+
 
 class BookingDateSchema(BaseModel):
     id: Optional[int]
     date: Optional[datetime]
+
+    cases: Optional[List[BookingCasesResponseSchema]]
 
     start_time: Optional[str] = Field(alias="startTime")
     finish_time: Optional[str] = Field(alias="finishTime")
@@ -23,31 +61,13 @@ class BookingDateSchema(BaseModel):
     cancellation_time: Optional[str] = Field(alias="cancellationTime")
     cancellation_fee: Optional[str] = Field(alias="cancellationFee")
 
-    case_name: Optional[str] = Field(alias="caseName")
-    comment: Optional[str]
-
-    prosecutor: Optional[str]
-    reason: Optional[str]
-    registry: Optional[str]
     
-    room: Optional[str]
-    file: Optional[str]
-
-    case_type: Optional[str] = Field(alias="caseType")
-    court_level: Optional[str] = Field(alias="courtLevel")
-    court_class: Optional[str] = Field(alias="courtClass")
-        
-    federal: Optional[bool] = False
-
-    bilingual: Optional[bool] = False
-    # languages: Optional[List[Dict]]
-    # languages: Optional[JsonBase]
-
-    requested_by: Optional[BookingRequestedByEnum] = Field(alias="requestedBy")
+    comment: Optional[str]
+   
     method_of_appearance: Optional[BookingMethodOfAppearanceEnum] = Field(alias="methodOfAppearance")
     status: Optional[BookingStatusEnum]
     
-    location_id: Optional[int] = Field(alias="locationId")
+    # location_id: Optional[int] = Field(alias="locationId")
     
     class Config():
         orm_mode = True
@@ -57,7 +77,8 @@ class BookingDateSchema(BaseModel):
 #_______Request____(IN)_____
 #_______________________________
 class BookingDateSchemaIn(BookingDateSchema):
-    languages: Optional[List[Dict]]
+    # languages: Optional[List[Dict]]
+    pass
 
 class BookingRequestBase(BaseModel):
       

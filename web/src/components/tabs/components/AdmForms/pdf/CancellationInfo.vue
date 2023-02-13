@@ -91,9 +91,9 @@ export default class CancellationInfo extends Vue {
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.cancellationFee = (bookingRecordsApproved && date.cancellationFee)? date.cancellationFee : '0.00'
             record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
+            // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
-            record.federalYN = date.federal? 'Yes' : 'No'
+            // record.federalYN = date.federal? 'Yes' : 'No'
             record.feeChanged = false;
             record.feeDisabled = false;
             records.push(record)
