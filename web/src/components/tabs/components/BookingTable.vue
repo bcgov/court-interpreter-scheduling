@@ -22,7 +22,7 @@
                     :items="bookingItems"
                     :fields="bookingFields"
                     class="border-info" 
-                    sort-by="date"                                   
+                    sort-by="interpreter"                                   
                     small
                     :currentPage="currentPage"
                     :perPage="itemsPerPage"                    
@@ -81,7 +81,7 @@
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="getCaseLanguage(dateInfo.cases)"
                             >                             
-                            {{getCaseLanguage(dateInfo.cases)|truncate-text(30)}}
+                            {{getCaseLanguage(dateInfo.cases)|truncate-text(20)}}
                         </div>
                     </template>                                     
 
@@ -296,13 +296,13 @@ export default class BookingTable extends Vue {
     paginationKey = 0;
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:20%'},
-        {key:'file',           label:'Court File #',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
-        {key:'caseName',       label:'Case Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
-        {key:'language',       label:'Language',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:20%'},
+        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:21%'},
+        {key:'file',           label:'Court File #',  sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
+        {key:'caseName',       label:'Case Name',     sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
+        {key:'language',       label:'Language',      sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
         {key:'interpreter',    label:'Interpreter',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle text-left', thStyle:' width:11%'},
         {key:'status',         label:'Status',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:4%'},
-        {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:11%'},
+        {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
         {key:'courtDistance',  label:'Distance',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:'width:6%'},       
         {key:'edit',           label:'',              sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:7%'}
     ];
@@ -318,7 +318,9 @@ export default class BookingTable extends Vue {
             // booking['caseName'] = dates[0].caseName
             // booking['language'] = this.getLanguages(dates[0].languages)           
             booking['date'] = dates[0].date 
-            booking['court'] = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
+            const bookingcourt = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
+            booking['court'] = bookingcourt
+            booking['courtDistance']= bookingcourt.distance
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        
