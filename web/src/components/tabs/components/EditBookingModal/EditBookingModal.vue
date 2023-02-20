@@ -7,8 +7,7 @@
             </b-col>                                       
         </b-row>
        
-            
-        <b-tabs  v-model="tabIndex" pills card>
+        <b-tabs  v-model="tabIndex" pills card class="booking-tab-header">
             <b-tab title="Edit Dates" :title-link-class="'text-center tab-class edit-button'" >
                 <b-row class="mx-0 mt-2 mb-4">                    
                     <b-col cols="6">
@@ -22,8 +21,10 @@
                     </b-col>
                 </b-row>    
                 <b-row class="date-card-container" :key="updateCards"> 
+<!-- <CHECK_POINT> -->
 <!-- <div v-for="bookingCardDate,inx in bookingCardsDates" :key="inx">
-    {{bookingCardDate.date.slice(0,10)}}
+    {{bookingCardDate.date.slice(0,10)}}<br>
+    {{bookingCardDate.date}}
     <div  v-for="i,j in bookingCardDate.bookingTimes" :key="j" >
         {{i}}
     </div>              
@@ -44,7 +45,7 @@
                     <div style="margin-left:0.1rem; color:#ABD  ;">
                         <b> {{tab.time.end}}</b>
                         <span v-if="tab.booking.status==statusOptions[2].value" v-b-tooltip.hover.v-danger title="Cancelled">
-                            <b-icon-x-octagon-fill  class="text-danger ml-2"  />
+                            <b-icon-calendar-x-fill  class="text-danger ml-2"  />
                         </span>
                         <span v-if="tab.booking.status==statusOptions[1].value" v-b-tooltip.hover.v-success  title="Booked">
                             <b-icon-calendar-check-fill scale="0.9" class="text-success ml-2"  />
@@ -58,15 +59,20 @@
                 <edit-booking-fields
                     @cancel="cancelStatus"
                     @timeChanged="bookingTimeChanged"
-                    @checkStatus="checkBookingStates(false)"
+                    @copy="openCopyWindow"
+                    @checkStates="checkBookingStates(false)"
+                    @export="exportTabData($event,tab)"
                     :id="'tab-'+inx"
-                    :tabIndex="tabIndex"                  
+                    :tabIndex="tabIndex"
+                    :tabName="tab.name"                  
                     :tabNumber="inx+1"
+                    :totalTabs="allBookingDatesTimes.length"
                     :registry="registry"
                     :booking="tab.booking" 
                     :original="tab.original"
                     :bookingStates="tab.bookingStates"
-                    :allBookings="allBookingDatesTimes" 
+                    :allBookings="allBookingDatesTimes"
+                    :caseTabId="caseTabId" 
                     :languages="interpreter.languages"/>         
             </b-tab>
         </b-tabs> 
@@ -160,6 +166,18 @@
             </template>
         </b-modal>
             
+        <b-modal body-class="py-0"  footer-class="d-none"  v-model="showCopyWindow" header-class="bg-court pt-4" title-class="h3 text-white mt-n1" title="Available Tabs to Copy" >
+            <div class="text-center mb-3">
+                <div class="my-3 h5 bg-white text-dark">Which Tab would you like to import into <b class="text-danger"> {{targetTab}} </b> ?</div>
+                <b-button 
+                    v-for="tab,inx in sourceBookingDatesTimes" :key="inx"
+                    @click="copyTab(tab)"
+                    variant="primary"
+                    class="my-2 mx-5">
+                        {{tab.name}}
+                </b-button>
+            </div>
+        </b-modal>            
             
     </b-card>   
 </template>
@@ -225,6 +243,9 @@ export default class EditBookingModal extends Vue {
     updateCards=0
     errorMsg=''
 
+    caseTabId=null
+    showCopyWindow = false
+
     cancellationBooking = {} as bookingInfoType
     cancellationBookingPreviousStatus = ''
     cancelledByStates = null
@@ -275,6 +296,7 @@ export default class EditBookingModal extends Vue {
                 
             const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
             const booking: bookingInfoType = JSON.parse(JSON.stringify(bookingDate))
+            if(!booking.cases) booking.cases=[]
             const date = this.combineDataTime(bookingDate.date, bookingDate.startTime).format()
             
             this.allBookingDatesTimes.push({
@@ -313,7 +335,7 @@ export default class EditBookingModal extends Vue {
             const bookingCancelled = (bookingDate.status==this.statusOptions[2].value)
 
             if(!bookingCancelled){
-                const index = this.bookingCardsDates.findIndex(booking => booking.date==bookingDate.date)
+                const index = this.bookingCardsDates.findIndex(booking => booking.date.slice(0,10)==bookingDate.date.slice(0,10))
                 
                 if(index>-1){
                     this.bookingCardsDates[index].bookingTimes.push({start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original})
@@ -323,7 +345,7 @@ export default class EditBookingModal extends Vue {
                         bookingTimes:[{start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original}]
                     }) 
             }else if(eachBookingDate.original==true){
-                const index = this.bookingCardsDates.findIndex(booking => booking.date==bookingDate.date)
+                const index = this.bookingCardsDates.findIndex(booking => booking.date.slice(0,10)==bookingDate.date.slice(0,10))
                 if(index<0)
                     this.bookingCardsDates.push({
                         date: bookingDate.date,    
@@ -354,25 +376,12 @@ export default class EditBookingModal extends Vue {
     public prepopulateDefaultStates(){    
         const bookingStates = {} as bookingStatesInfoType;
         bookingStates.status = null;
-        bookingStates.room = null; 
         bookingStates.location = null;
-        bookingStates.file = null;
-        bookingStates.interpretFor = null;
-        bookingStates.caseName = null;
-        bookingStates.caseType = null;
-        bookingStates.courtLevel = null;
-        bookingStates.courtClass = null;
-        bookingStates.courtClassOther = null;
-        bookingStates.request = null;
-        bookingStates.language = null;
-        bookingStates.reason = null;
-        bookingStates.reasonOther = null;
-        bookingStates.prosecutor = null;
         bookingStates.methodOfAppearance = null;
-        bookingStates.federal = null;
         bookingStates.start = null;
         bookingStates.end = null;
-        bookingStates.bilingual = null;
+        bookingStates.cases = []
+
         return bookingStates
     } 
     
@@ -420,52 +429,65 @@ export default class EditBookingModal extends Vue {
             const bookingStates = eachBookingDate.bookingStates
 
             if(booking.status==statusOptions[2].value){                
-                const originalBookingDate = this.bookingDates.filter(bookingdate =>bookingdate.id==booking.id)
-                if(originalBookingDate.length>0){
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.caseName = JSON.parse(JSON.stringify(originalBookingDate[0].caseName));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.caseType = JSON.parse(JSON.stringify(originalBookingDate[0].caseType));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.courtLevel = JSON.parse(JSON.stringify(originalBookingDate[0].courtLevel));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.courtClass = JSON.parse(JSON.stringify(originalBookingDate[0].courtClass));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.comment = JSON.parse(JSON.stringify(originalBookingDate[0].comment));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.methodOfAppearance = JSON.parse(JSON.stringify(originalBookingDate[0].methodOfAppearance));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.prosecutor = JSON.parse(JSON.stringify(originalBookingDate[0].prosecutor));        
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.reason = JSON.parse(JSON.stringify(originalBookingDate[0].reason));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.registry = JSON.parse(JSON.stringify(originalBookingDate[0].registry));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.requestedBy = JSON.parse(JSON.stringify(originalBookingDate[0].requestedBy));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.room = JSON.parse(JSON.stringify(originalBookingDate[0].room));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.file = JSON.parse(JSON.stringify(originalBookingDate[0].file));
+            //     const originalBookingDate = this.bookingDates.filter(bookingdate =>bookingdate.id==booking.id)
+            //     if(originalBookingDate.length>0){
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.caseName = JSON.parse(JSON.stringify(originalBookingDate[0].caseName));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.caseType = JSON.parse(JSON.stringify(originalBookingDate[0].caseType));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.courtLevel = JSON.parse(JSON.stringify(originalBookingDate[0].courtLevel));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.courtClass = JSON.parse(JSON.stringify(originalBookingDate[0].courtClass));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.comment = JSON.parse(JSON.stringify(originalBookingDate[0].comment));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.methodOfAppearance = JSON.parse(JSON.stringify(originalBookingDate[0].methodOfAppearance));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.prosecutor = JSON.parse(JSON.stringify(originalBookingDate[0].prosecutor));        
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.reason = JSON.parse(JSON.stringify(originalBookingDate[0].reason));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.registry = JSON.parse(JSON.stringify(originalBookingDate[0].registry));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.requestedBy = JSON.parse(JSON.stringify(originalBookingDate[0].requestedBy));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.room = JSON.parse(JSON.stringify(originalBookingDate[0].room));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.file = JSON.parse(JSON.stringify(originalBookingDate[0].file));
                     
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.federal = JSON.parse(JSON.stringify(originalBookingDate[0].federal));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.languages = JSON.parse(JSON.stringify(originalBookingDate[0].languages));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.locationId = JSON.parse(JSON.stringify(originalBookingDate[0].locationId));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.federal = JSON.parse(JSON.stringify(originalBookingDate[0].federal));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.languages = JSON.parse(JSON.stringify(originalBookingDate[0].languages));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.locationId = JSON.parse(JSON.stringify(originalBookingDate[0].locationId));
 
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.startTime = JSON.parse(JSON.stringify(originalBookingDate[0].startTime));
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.finishTime = JSON.parse(JSON.stringify(originalBookingDate[0].finishTime));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.startTime = JSON.parse(JSON.stringify(originalBookingDate[0].startTime));
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.finishTime = JSON.parse(JSON.stringify(originalBookingDate[0].finishTime));
 
-                    this.allBookingDatesTimes[eachBookingDateInx].booking.bilingual = JSON.parse(JSON.stringify(originalBookingDate[0].bilingual));
-                }
+            //         this.allBookingDatesTimes[eachBookingDateInx].booking.bilingual = JSON.parse(JSON.stringify(originalBookingDate[0].bilingual));
+            //     }
                 continue
             }
     
             bookingStates.status = !(booking.status)? false : null;
-            // bookingStates.room = !(booking.room)? false : null;        
-        
-            //bookingStates.location = !(booking.locationId)? false : null;
-            bookingStates.file = !(booking.file)? false : null;           
-            bookingStates.caseName = !(booking.caseName)? false : null;
-            bookingStates.caseType = !(booking.caseType)? false : null;
-            bookingStates.courtLevel = !(booking.courtLevel)? false : null;
-            bookingStates.courtClass = !(booking.courtClass)? false : null;
-            bookingStates.courtClassOther = !(booking.courtClass)? false : null;
-            bookingStates.request = !(booking.requestedBy)? false : null;
-            bookingStates.language = !(booking.languages.length>0 )? false : null;
-            bookingStates.reason = !(booking.reason)? false : null;
-            bookingStates.reasonOther = !(booking.reason)? false : null;
-            bookingStates.prosecutor = (booking.federal && !booking.prosecutor)? false : null;
             bookingStates.methodOfAppearance = !(booking.methodOfAppearance)? false : null;
-            bookingStates.federal = !(booking.federal != null)? false : null;
-            bookingStates.bilingual = !(booking.bilingual != null)? false : null;
 
+                       
+            for(const caseState of bookingStates.cases){
+                //console.log(caseState)
+                const bookingCase = booking.cases.filter(bookingcase => bookingcase.tmpId==caseState.tmpId)[0]
+                //console.log(bookingCase)
+                if(bookingCase){
+                    caseState.file = !(bookingCase.file)? false : null;           
+                    caseState.caseName = !(bookingCase.caseName)? false : null;
+                    caseState.language = !(bookingCase.language?.level )? false : null;
+
+                    caseState.caseType = !(bookingCase.caseType)? false : null;
+                    caseState.courtLevel = !(bookingCase.courtLevel)? false : null;
+                    caseState.courtClass = !(bookingCase.courtClass)? false : null;
+                    caseState.courtClassOther = !(bookingCase.courtClass)? false : null;
+                    caseState.request = !(bookingCase.requestedBy)? false : null;
+                    
+                    caseState.reason = !(bookingCase.reason)? false : null;
+                    caseState.reasonOther = !(bookingCase.reason)? false : null;
+                    caseState.methodOfAppearance = !(bookingCase.methodOfAppearance)? false : null;
+                    caseState.bilingual = !(bookingCase.bilingual != null)? false : null;
+                    caseState.interpretationMode = (bookingCase.bilingual && !bookingCase.interpretationMode)? false : null;
+                    
+                    caseState.prosecutor = (bookingCase.federal && !bookingCase.prosecutor)? false : null;        
+                    caseState.federal = !(bookingCase.federal != null)? false : null;
+                }
+            }
+
+
+            this.caseTabId=-1
             for(const field of Object.keys(bookingStates)){
                 if(bookingStates[field]==false){
                     stateCheck = false;
@@ -474,11 +496,26 @@ export default class EditBookingModal extends Vue {
                         break;
                     }
                 }
+                else if(field=='cases'){
+                    for(const caseitems of bookingStates.cases)
+                        for(const casefield of Object.keys(caseitems)){
+                            if(caseitems[casefield]==false && casefield!='tabNumber' && casefield!='tmpId'){ 
+                                console.log(eachBookingDateInx)
+                                console.log(caseitems.tabNumber)
+                                if(showErrorPlace){
+                                    this.tabIndex = Number(caseitems.tabNumber)
+                                    Vue.nextTick(()=> this.caseTabId = Number(caseitems.tmpId) )                       
+                                }
+                                return false
+                            }
+                        }
+                }
             }
             if(!stateCheck && showErrorPlace) break;
+            
         }
-
-        return stateCheck;            
+        
+        return stateCheck;   
     }
 
 
@@ -602,21 +639,11 @@ export default class EditBookingModal extends Vue {
 
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
-        
-        booking.caseType = null;
-        booking.courtLevel = null;
-        booking.courtClass = null;
-        booking.caseName = null;
+                
         booking.comment = null;
-        booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
-        booking.prosecutor = null;        
-        booking.reason = null;
-        booking.registry = null;
-        booking.requestedBy = this.requestOptions[0].value;
-        booking.room = null;
-        booking.file = null;
-        booking.status = this.statusOptions[0].value;
-        booking.federal = false;
+        booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;        
+        booking.registry = null;        
+        booking.status = this.statusOptions[0].value;        
         booking.languages = [];
         booking.locationId = null;
         booking.interpreterId = this.interpreter.id;
@@ -626,8 +653,68 @@ export default class EditBookingModal extends Vue {
         booking.actualStartTime = null;
         booking.actualFinishTime = null;
         booking.approversInitials = null;
-        booking.bilingual = false;
+        booking.cases = []
         return booking
+    }
+
+    public copyTab(tab){
+        //console.log(tab)
+        this.showCopyWindow = false
+        const source =  this.allBookingDatesTimes.filter(booking =>booking.name==tab.name)
+        const target =  this.allBookingDatesTimes.filter(booking =>booking.name==this.targetTab)
+        if(source.length==1 && target.length==1){           
+            
+            // target[0].booking.status = JSON.parse(JSON.stringify(source[0].booking.status));
+            target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));
+            target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
+            target[0].booking.cases = JSON.parse(JSON.stringify(source[0].booking.cases));            
+            this.updatedBookingInfo++
+        }
+        
+        this.checkBookingStates(false)
+
+    }
+
+    public openCopyWindow(tabName){
+        this.targetTab = tabName;
+        this.sourceBookingDatesTimes = JSON.parse(JSON.stringify(this.allBookingDatesTimes.filter(booking =>booking.name!=tabName)))
+        this.showCopyWindow = true
+        //console.log(this.allBookingDatesTimes)
+    }
+
+    public exportTabData(fields, source){
+        console.log(fields)
+        console.log(source)
+        const sourceCases = []
+        for(const bookingCase of source.booking.cases){
+            if(fields.includes(bookingCase.tmpId))
+                sourceCases.push(bookingCase)
+        }
+
+        for(const target of this.allBookingDatesTimes){            
+            if(target.name==source.name || target.booking.status == this.statusOptions[2].value ) continue
+            
+            console.log(target)
+            if(fields.includes('status')){
+                target.booking.status = JSON.parse(JSON.stringify(source.booking.status));
+                if(source.booking.status == this.statusOptions[2].value){
+                    target.booking.cancellationReason = JSON.parse(JSON.stringify(source.booking.cancellationReason));
+                    target.booking.cancellationComment = JSON.parse(JSON.stringify(source.booking.cancellationComment));
+                    target.booking.cancellationDate = moment().format()
+                    target.booking.cancellationTime = moment().format("hh:mm A")
+                }                
+            }
+            if(fields.includes('methodOfAppearance')){
+                target.booking.methodOfAppearance = JSON.parse(JSON.stringify(source.booking.methodOfAppearance));
+            }
+            if(fields.includes('comment')){
+                target.booking.comment = JSON.parse(JSON.stringify(source.booking.comment));
+            }
+            if(sourceCases.length>0){
+                target.booking.cases = JSON.parse(JSON.stringify(sourceCases));
+            }            
+        }
+        this.updatedBookingInfo++
     }
 
 
@@ -654,6 +741,11 @@ export default class EditBookingModal extends Vue {
         }
     }
 
+    ::v-deep .booking-tab-header>.card-header{        
+        overflow-y: auto;
+        max-height: 11.5rem;        
+    }
+
     ::v-deep .labels{
         font-weight: 600;
         color: rgb(63, 98, 133);
@@ -661,7 +753,8 @@ export default class EditBookingModal extends Vue {
     }
 
     .date-card-container{
-        margin: 1rem 0 2rem 0;
+        margin: 1rem 0 0rem 0;
+        padding:1.5rem 0;
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;        

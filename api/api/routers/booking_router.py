@@ -6,7 +6,7 @@ from api.schemas.booking_schema import BookingRequestSchema, BookingResponseSche
 from models.booking_model import BookingModel, BookingDatesModel
 from core.auth import admin_user, user_in_role
 from api.repository.booking_transactions import create_booking_in_db, update_booking_in_db, update_adm_booking_in_db
-from api.repository.search_booking_transactions import search_Booking
+from api.repository.search_booking_transactions import search_booking
 from models.booking_enums import BookingStatusEnum
 
 router = APIRouter(
@@ -19,7 +19,7 @@ router = APIRouter(
 @router.post('/search', status_code=status.HTTP_200_OK, response_model=List[BookingResponseSchema])
 def search_Bookings(request: BookingSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
 
-    return search_Booking(request, db)
+    return search_booking(request, db, user['username'])
 
 
 

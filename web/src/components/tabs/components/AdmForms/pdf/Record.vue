@@ -152,12 +152,12 @@ export default class Record extends Vue {
         for(const date of this.booking.dates){
             const record: bookingAdmRecordInfoType = JSON.parse(JSON.stringify(date))
            
-            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
-            record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
-            record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
+            // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
+            // record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
+            // record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
             record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            record.federalYN = date.federal? 'Yes' : 'No'
-            record.bilingualYN = date.bilingual? 'Yes' : 'No'            
+            // record.federalYN = date.federal? 'Yes' : 'No'
+            // record.bilingualYN = date.bilingual? 'Yes' : 'No'            
             record.actualStartTimeState=null;            
             record.actualFinishTimeState=null;            
             record.approversInitialsState=null;            

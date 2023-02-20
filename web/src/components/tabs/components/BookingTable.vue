@@ -22,19 +22,21 @@
                     :items="bookingItems"
                     :fields="bookingFields"
                     class="border-info" 
-                    sort-by="date"                                   
+                    sort-by="interpreter"                                   
                     small
                     :currentPage="currentPage"
                     :perPage="itemsPerPage"                    
                     sort-icon-left
                     responsive="sm">
 
-                    <template v-slot:cell(interpreter)="data" >                    
-                        
+                    <template v-slot:cell(interpreter)="data" >                                            
                         <b-button style="font-size:18px; border: white; text-decoration: underline;" 
                             size="sm"                        
                             @click="displayInterpreterInfo(data.value);" 
                             class="text-primary bg-transparent text-left"
+                            v-b-tooltip.hover.left.noninteractive.v-info
+                            :title="userRole.includes('super-admin')? data.item.location_name: ''"
+
                             >{{data.value.lastName}}, {{data.value.firstName}}
                         </b-button>
 
@@ -54,8 +56,10 @@
                         <div
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'file'+inx"
+                            v-b-tooltip.hover.left.noninteractive.v-info
+                            :title="getCaseField(dateInfo.cases,'file')"
                             > 
-                            {{dateInfo.file}}
+                            {{getCaseField(dateInfo.cases,'file')|truncate-text(10)}}
                         </div>
                     </template>
 
@@ -63,8 +67,10 @@
                         <div
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'case'+inx"
+                            v-b-tooltip.hover.left.noninteractive.v-info
+                            :title="getCaseField(dateInfo.cases,'caseName')"
                             > 
-                            {{dateInfo.caseName}}
+                            {{getCaseField(dateInfo.cases,'caseName')|truncate-text(10)}}
                         </div>
                     </template>
 
@@ -72,8 +78,10 @@
                         <div
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'language'+inx"
-                            > 
-                            {{getLanguages(dateInfo.languages)}}
+                            v-b-tooltip.hover.left.noninteractive.v-info
+                            :title="getCaseLanguage(dateInfo.cases)"
+                            >                             
+                            {{getCaseLanguage(dateInfo.cases)|truncate-text(20)}}
                         </div>
                     </template>                                     
 
@@ -108,8 +116,9 @@
                             <span                           
                                 :title="areRecordsOnlyPendings(data.item)? 'All Bookings are Pending !':(data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms')"
                                 v-b-tooltip.hover.top.noninteractive>
+                                <!--  disabled="areRecordsOnlyPendings(data.item)"  -->
                                 <b-button style="font-size:11px;"
-                                    :disabled="areRecordsOnlyPendings(data.item)"                                                                 
+                                    disabled                                                               
                                     @click="openAdm(data.item);" 
                                     :class="data.item.recordsApproved? 'text bg-approved my-1 px-1':'text bg-select border-info my-1 px-1' " 
                                     size="sm">
@@ -287,13 +296,13 @@ export default class BookingTable extends Vue {
     paginationKey = 0;
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:20%'},
-        {key:'file',           label:'Court File #',  sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
-        {key:'caseName',       label:'Case Name',     sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
-        {key:'language',       label:'Language',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:20%'},
+        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:21%'},
+        {key:'file',           label:'Court File #',  sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
+        {key:'caseName',       label:'Case Name',     sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
+        {key:'language',       label:'Language',      sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
         {key:'interpreter',    label:'Interpreter',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle text-left', thStyle:' width:11%'},
         {key:'status',         label:'Status',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:4%'},
-        {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:11%'},
+        {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
         {key:'courtDistance',  label:'Distance',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:'width:6%'},       
         {key:'edit',           label:'',              sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:7%'}
     ];
@@ -304,11 +313,14 @@ export default class BookingTable extends Vue {
         this.bookingItems = []
         for(const booking of this.bookings){
             const dates = this.sortByDate(booking.dates)
-            booking['file'] = dates[0].file
-            booking['caseName'] = dates[0].caseName
-            booking['language'] = this.getLanguages(dates[0].languages)           
+            // console.log(dates)
+            // booking['file'] = dates[0].file
+            // booking['caseName'] = dates[0].caseName
+            // booking['language'] = this.getLanguages(dates[0].languages)           
             booking['date'] = dates[0].date 
-            booking['court'] = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
+            const bookingcourt = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
+            booking['court'] = bookingcourt
+            booking['courtDistance']= bookingcourt.distance
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        
@@ -370,8 +382,15 @@ export default class BookingTable extends Vue {
         })
     }
     
-    public getLanguages(data){
-        return data.map(i=>(i.language)).join(',')
+    public getCaseLanguage(data){
+        const languages = data.map(i=>(i.language.languageName))
+        return _.uniq(languages).join(', ')
+
+    }
+
+    public getCaseField(data, field){ 
+        const caseField = data.map(i=>(i[field]))         
+        return  _.uniq(caseField).join(', ')
     }
 
     public paginationChanged(currentPage, itemsPerPage){

@@ -72,39 +72,14 @@ class BookingDatesModel(Base):
     cancellation_date = Column(DateTime(timezone=True), nullable=True)
     cancellation_time = Column(String, unique=False, index=False, nullable=True)
     cancellation_fee = Column(String, unique=False, index=False, nullable=True)
-
-    case_name = Column(String, unique=False, index=False, nullable=True)
-    comment = Column(String, unique=False, index=False, nullable=True)
     
-    prosecutor = Column(String, unique=False, index=False, nullable=True)
-    reason = Column(String, unique=False, index=False, nullable=True)
-    registry = Column(String, unique=False, index=False, nullable=True)
-    
-    room = Column(String, unique=False, index=False, nullable=True)
-    file = Column(String, unique=False, index=False, nullable=True)
-        
-    federal = Column(Boolean, nullable=False, default=False)    
-    languages = Column(String, unique=False, index=False, nullable=True)
-    bilingual = Column(Boolean, default=False, index=False, nullable=True)
-
-    case_type = Column(String, unique=False, index=False, nullable=True)
-    court_level = Column(String, unique=False, index=False, nullable=True)
-    court_class = Column(String, unique=False, index=False, nullable=True)     
-
-    location_id = Column(Integer, unique=False)
+    comment = Column(String, unique=False, index=False, nullable=True)    
     
     method_of_appearance = Column(
         ENUM(BookingMethodOfAppearanceEnum, name='booking_method_of_appearance', values_callable=lambda obj: [e.value for e in obj]),
         nullable=False,
         default=BookingMethodOfAppearanceEnum.IN_PERSON.value,
         server_default=BookingMethodOfAppearanceEnum.IN_PERSON.value
-    )
-
-    requested_by = Column(
-        ENUM(BookingRequestedByEnum, name='booking_requested_by', values_callable=lambda obj: [e.value for e in obj]),
-        nullable=False,
-        default=BookingRequestedByEnum.COURT.value,
-        server_default=BookingRequestedByEnum.COURT.value
     )
 
     status = Column(
@@ -118,3 +93,56 @@ class BookingDatesModel(Base):
 
     booking_id = Column(Integer, ForeignKey('booking.id', ondelete="CASCADE"))
     booking = relationship("BookingModel", back_populates="dates")
+
+    cases = relationship("BookingCasesModel", back_populates="booking_date")
+
+
+class BookingCasesModel(Base):
+    __tablename__ = 'booking_cases'
+
+    id = Column(Integer, primary_key=True, index=True)
+    
+    file = Column(String, unique=False, index=False, nullable=True)
+    case_name = Column(String, unique=False, index=False, nullable=True)    
+    room = Column(String, unique=False, index=False, nullable=True)
+
+    case_type = Column(String, unique=False, index=False, nullable=True)
+    court_level = Column(String, unique=False, index=False, nullable=True)
+    court_class = Column(String, unique=False, index=False, nullable=True) 
+
+    reason = Column(String, unique=False, index=False, nullable=True)
+    
+
+    interpret_for = Column(String, unique=False, index=False, nullable=True)
+    
+    remote_registry = Column(String, unique=False, index=False, nullable=True)
+    remote_location_id = Column(Integer, unique=False)
+
+    van_registry = Column(String, unique=False, index=False, nullable=True)
+    van_location_id = Column(Integer, unique=False)
+                
+    federal = Column(Boolean, nullable=False, default=False)    
+    prosecutor = Column(String, unique=False, index=False, nullable=True)    
+    bilingual = Column(Boolean, default=False, index=False, nullable=True)
+    interpretation_mode = Column(String, unique=False, index=False, nullable=True)
+       
+    
+    method_of_appearance = Column(
+        ENUM(BookingMethodOfAppearanceEnum, name='booking_method_of_appearance', values_callable=lambda obj: [e.value for e in obj]),
+        nullable=False,
+        default=BookingMethodOfAppearanceEnum.IN_PERSON.value,
+        server_default=BookingMethodOfAppearanceEnum.IN_PERSON.value
+    )
+
+    requested_by = Column(
+        ENUM(BookingRequestedByEnum, create_type=False, name='booking_requested_by', values_callable=lambda obj: [e.value for e in obj]),
+        nullable=False,
+        default=BookingRequestedByEnum.COURT.value,
+        server_default=BookingRequestedByEnum.COURT.value
+    )
+
+    interpreter_language_id = Column(Integer, ForeignKey('interpreter_language.id', ondelete="CASCADE"))
+    language = relationship("InterpreterLanguageModel")
+
+    booking_date_id = Column(Integer, ForeignKey('booking_dates.id', ondelete="CASCADE")) 
+    booking_date = relationship("BookingDatesModel", back_populates="cases")

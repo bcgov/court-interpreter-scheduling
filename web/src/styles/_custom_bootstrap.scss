@@ -47,6 +47,7 @@ $jail:    #A22BB9 !default;
 $escort:  #ffb007 !default;
 $other:   #7a4528 !default;
 $select:  #e6d9e2 !default;
+$lightcard: #f1edf1 !default;
 $time:    #607894 !default;
 $inactive:  #cccccc !default;
 $approved: #28d8a3 !default; 
@@ -107,6 +108,7 @@ $theme-colors: map-merge(
     "time":       $time,
     "card_detail": $card_detail,
     "approved"   :$approved,
+    "lightcard" : $lightcard
   ),
   $theme-colors
 );

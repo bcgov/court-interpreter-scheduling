@@ -89,9 +89,9 @@ export default class AdmCancellationInformation extends Vue {
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
-            record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
+            // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
-            record.federalYN = date.federal? 'Yes' : 'No'
+            // record.federalYN = date.federal? 'Yes' : 'No'
             record.feeChanged = false;
             record.feeDisabled = false;
             this.records.push(record)

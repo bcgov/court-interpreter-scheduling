@@ -18,7 +18,7 @@ class LanguageSchema(BaseModel):
 
 
 class InterpreterLanguageSchema(BaseModel):
-    
+    id: Optional[int] = None
     language_id: int = Field(alias="languageId")
     level: int
     language: str = Field(alias="languageName")

@@ -1,23 +1,49 @@
 import { interpreterLanguageInfoType } from "@/types/Interpreters/json";
 
-export interface bookingInfoType { //OK
-    id?: number;  
+export interface bookingCaseInfoType { //OK
+    id?: number;
+
+    tmpId?: number;
+
+    file: string; 
     caseName: string;
+    room: string;
+
     caseType: string;
     courtLevel: string;
     courtClass: string;
-    comment: string;
-    methodOfAppearance: string;
-    prosecutor: string;
     reason: string;
-    registry: string;
-    requestedBy: string;
-    room: string;
-    file: string;    
-    status: string;
-    federal: boolean;
+
     bilingual: boolean;
-    languages: bookingLanguageInfoType[];
+    interpretationMode: string;
+
+    language: interpreterLanguageInfoType;
+    interpretFor: string;
+
+    federal: boolean;
+    prosecutor: string;
+
+    remoteRegistry: string;
+    remoteLocationId: number;
+
+    vanRegistry: string;
+    vanLocationId: number;    
+
+    requestedBy: string;
+    methodOfAppearance: string;
+    
+}
+
+export interface bookingInfoType { //OK
+    id?: number;
+    cases: bookingCaseInfoType[];   
+    comment: string;
+    methodOfAppearance: string;   
+    registry: string;
+    status: string;
+    
+    languages: bookingLanguageInfoType[]; //TODO
+    
     locationId: number;
     interpreterId: number;
     date: string;
@@ -79,7 +105,7 @@ export interface bookingSearchResultInfoType{ //OK
     invoiceSentDate?: string;
 }
 
-export interface bookingLanguageInfoType{ //OK
+export interface bookingLanguageInfoType{ //NOT-OK  //TODO
     languageId: number;
     language:string;
     level:number;

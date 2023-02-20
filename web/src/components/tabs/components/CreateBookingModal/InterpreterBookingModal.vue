@@ -9,20 +9,28 @@
             </b-col>                                       
         </b-row>
 
-        <b-tabs v-if="allowBooking" :key="updateTabs" v-model="tabIndex" pills card>
-            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" title-link-class="text-center tab-class">
+        <b-tabs v-if="allowBooking" :key="updateTabs" v-model="tabIndex" pills card class="booking-tab-header">
+            <b-tab no-body v-for="tab,inx in allBookingDatesTimes" :key="inx" title-link-class="text-center create-tab-class">
                 <template #title>
                     <div><b-icon-calendar scale="0.85" /> {{tab.beautyDate}} </div>
-                    <div style="margin-left:-1.2rem;"><b><b-icon-clock /> {{tab.time.start}}</b></div>
-                    <div style="margin-left:0.1rem; color:#ABD  ;"><b> {{tab.time.end}}</b></div>
+                    <div style="margin-left:-1.2rem;"><b><b-icon-clock /> {{tab.time.start}}</b></div>                    
+                    <div style="margin-left:0.1rem; color:#ABD  ;">
+                        <b> {{tab.time.end}}</b>                        
+                        <span v-if="tab.booking.status==statusOptions[1].value" v-b-tooltip.hover.v-success  title="Booked">
+                            <b-icon-calendar-check-fill scale="0.9" class="text-success ml-2"  />
+                        </span>
+                    </div>
                 </template> 
                 <interpreter-booking-fields
                     :id="'tab-'+inx"
                     @copy="openCopyWindow"
-                    @checkStatus="checkBookingStates(false)"
+                    @checkStates="checkBookingStates(false)"
+                    @export="exportTabData($event,tab)"
                     :totalTabs="allBookingDatesTimes.length"
                     :tabName="tab.name"
-                    :language="language"
+                    :tabNumber="inx+1"
+                    :caseTabId="caseTabId"
+                    :pickedLanguage="language"
                     :booking="tab.booking"
                     :registry="registry"                     
                     :bookingStates="tab.bookingStates" 
@@ -44,8 +52,8 @@
             </b-button>                
         </b-row> 
 
-        <b-modal body-class="py-0"  footer-class="d-none"  v-model="showCopyWindow" header-class="bg-warning" title-class="h3" title="Available Tabs to Copy" >
-            <div class="text-center">
+        <b-modal body-class="py-0"  footer-class="d-none"  v-model="showCopyWindow" header-class="bg-court pt-4" title-class="h3 text-white mt-n1" title="Available Tabs to Copy" >
+            <div class="text-center mb-3">
                 <div class="my-3 h5 bg-white text-dark">Which Tab would you like to import into <b class="text-danger"> {{targetTab}} </b> ?</div>
                 <b-button 
                     v-for="tab,inx in sourceBookingDatesTimes" :key="inx"
@@ -70,7 +78,7 @@ import { bookingDateTimesInfoType, bookingInfoType } from '@/types/Bookings/json
 import { interpreterInfoType } from '@/types/Interpreters/json';
 
 
-import { bookingStatesInfoType } from '@/types/Bookings';
+import { bookingStatesInfoType} from '@/types/Bookings';
 
 import InterpreterBookingFields from "./InterpreterBookingFields.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
@@ -115,6 +123,8 @@ export default class InterpreterBookingModal extends Vue {
     errorMsg=''    
     allowBooking = false;    
     registry = {id:0, name:''};
+
+    caseTabId=null
 
     statusOptions
     requestOptions
@@ -188,22 +198,11 @@ export default class InterpreterBookingModal extends Vue {
 
     public prepopulateDefaultValues(date, time){
         const booking = {} as bookingInfoType;        
-        
-        booking.caseType = null;
-        booking.courtLevel = null;
-        booking.courtClass = null;
-        booking.caseName = null;
+                
         booking.comment = null;
-        booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;
-        booking.prosecutor = null;        
-        booking.reason = null;
-        booking.registry = null;
-        booking.requestedBy = this.requestOptions[0].value;
-        booking.room = null;
-        booking.file = null;
-        booking.status = this.statusOptions[0].value;
-        booking.federal = false;
-        booking.bilingual = false;
+        booking.methodOfAppearance = this.bookingMethodOfAppearanceOptions[0].value;        
+        booking.registry = null;       
+        booking.status = this.statusOptions[0].value;        
         booking.languages = [];
         booking.locationId = null;
         booking.interpreterId = this.interpreter.id;
@@ -213,29 +212,17 @@ export default class InterpreterBookingModal extends Vue {
         booking.actualStartTime = null;
         booking.actualFinishTime = null;
         booking.approversInitials = null;
+        booking.cases = []
         return booking
     }
 
     public prepopulateDefaultStates(){    
         const bookingStates = {} as bookingStatesInfoType;
-        bookingStates.status = null;
-        bookingStates.room = null; 
-        bookingStates.location = null;
-        bookingStates.file = null;
-        bookingStates.interpretFor = null;
-        bookingStates.caseName = null;
-        bookingStates.caseType = null;
-        bookingStates.courtLevel = null;
-        bookingStates.courtClass = null;
-        bookingStates.courtClassOther = null;
-        bookingStates.request = null;
-        bookingStates.language = null;
-        bookingStates.reason = null;
-        bookingStates.reasonOther = null;
-        bookingStates.prosecutor = null;
+        bookingStates.status = null;       
+        bookingStates.location = null;        
         bookingStates.methodOfAppearance = null;
-        bookingStates.federal = null;
-        bookingStates.bilingual = null;
+        bookingStates.cases = [] 
+       
         return bookingStates
     }  
 
@@ -269,8 +256,7 @@ export default class InterpreterBookingModal extends Vue {
                 this.errorMsg=err.response.data.detail          
             });
         }        
-    }
-    
+    }    
 
 
     public checkBookingStates(showErrorPlace){
@@ -281,26 +267,38 @@ export default class InterpreterBookingModal extends Vue {
             const eachBookingDate = this.allBookingDatesTimes[eachBookingDateInx]
             const booking = eachBookingDate.booking
             const bookingStates = eachBookingDate.bookingStates
-    
-            bookingStates.status = !(booking.status)? false : null;
-            // bookingStates.room = !(booking.room)? false : null;        
-        
-            //bookingStates.location = !(booking.locationId)? false : null;
-            bookingStates.file = !(booking.file)? false : null;           
-            bookingStates.caseName = !(booking.caseName)? false : null;
-            bookingStates.caseType = !(booking.caseType)? false : null;
-            bookingStates.courtLevel = !(booking.courtLevel)? false : null;
-            bookingStates.courtClass = !(booking.courtClass)? false : null;
-            bookingStates.courtClassOther = !(booking.courtClass)? false : null;
-            bookingStates.request = !(booking.requestedBy)? false : null;
-            bookingStates.language = !(booking.languages.length>0 )? false : null;
-            bookingStates.reason = !(booking.reason)? false : null;
-            bookingStates.reasonOther = !(booking.reason)? false : null;
-            bookingStates.prosecutor = (booking.federal && !booking.prosecutor)? false : null;
+            
             bookingStates.methodOfAppearance = !(booking.methodOfAppearance)? false : null;
-            bookingStates.federal = !(booking.federal != null)? false : null;
-            bookingStates.bilingual = !(booking.bilingual != null)? false : null;
+            bookingStates.status = !(booking.status)? false : null;       
+           
+                      
+            for(const caseState of bookingStates.cases){
+                //console.log(caseState)
+                const bookingCase = booking.cases.filter(bookingcase => bookingcase.tmpId==caseState.tmpId)[0]
+                //console.log(bookingCase)
+                if(bookingCase){
+                    caseState.file = !(bookingCase.file)? false : null;           
+                    caseState.caseName = !(bookingCase.caseName)? false : null;
+                    caseState.language = !(bookingCase.language?.level )? false : null;
 
+                    caseState.caseType = !(bookingCase.caseType)? false : null;
+                    caseState.courtLevel = !(bookingCase.courtLevel)? false : null;
+                    caseState.courtClass = !(bookingCase.courtClass)? false : null;
+                    caseState.courtClassOther = !(bookingCase.courtClass)? false : null;
+                    caseState.request = !(bookingCase.requestedBy)? false : null;
+                    
+                    caseState.reason = !(bookingCase.reason)? false : null;
+                    caseState.reasonOther = !(bookingCase.reason)? false : null;
+                    caseState.methodOfAppearance = !(bookingCase.methodOfAppearance)? false : null;
+                    caseState.bilingual = !(bookingCase.bilingual != null)? false : null;
+                    caseState.interpretationMode = (bookingCase.bilingual && !bookingCase.interpretationMode)? false : null;
+                    
+                    caseState.prosecutor = (bookingCase.federal && !bookingCase.prosecutor)? false : null;        
+                    caseState.federal = !(bookingCase.federal != null)? false : null;
+                }
+            }
+            
+            this.caseTabId=-1 
             for(const field of Object.keys(bookingStates)){
                 if(bookingStates[field]==false){
                     stateCheck = false;
@@ -309,13 +307,26 @@ export default class InterpreterBookingModal extends Vue {
                         break;
                     }
                 }
+                else if(field=='cases'){
+                    for(const caseitems of bookingStates.cases)
+                        for(const casefield of Object.keys(caseitems)){
+                            if(caseitems[casefield]==false && casefield!='tabNumber' && casefield!='tmpId'){ 
+                                console.log(eachBookingDateInx)
+                                console.log(caseitems.tabNumber)
+                                if(showErrorPlace){
+                                    this.tabIndex = Number(caseitems.tabNumber)-1
+                                    Vue.nextTick(()=> this.caseTabId = Number(caseitems.tmpId) )                       
+                                }
+                                return false
+                            }
+                        }
+                }
             }
             if(!stateCheck && showErrorPlace) break;
         }
 
-        return stateCheck;            
+        return stateCheck;       
     }
-
 
 
     public closeBookingWindow(){
@@ -327,26 +338,12 @@ export default class InterpreterBookingModal extends Vue {
         this.showCopyWindow = false
         const source =  this.allBookingDatesTimes.filter(booking =>booking.name==tab.name)
         const target =  this.allBookingDatesTimes.filter(booking =>booking.name==this.targetTab)
-        if(source.length==1 && target.length==1){
-           
-            // target[0].booking = JSON.parse(JSON.stringify(source[0].booking))
-            target[0].booking.caseName = JSON.parse(JSON.stringify(source[0].booking.caseName));
-            target[0].booking.caseType = JSON.parse(JSON.stringify(source[0].booking.caseType));
-            target[0].booking.courtLevel = JSON.parse(JSON.stringify(source[0].booking.courtLevel));
-            target[0].booking.courtClass = JSON.parse(JSON.stringify(source[0].booking.courtClass));
-            target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
-            target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));
-            target[0].booking.prosecutor = JSON.parse(JSON.stringify(source[0].booking.prosecutor));        
-            target[0].booking.reason = JSON.parse(JSON.stringify(source[0].booking.reason));
-            target[0].booking.registry = JSON.parse(JSON.stringify(source[0].booking.registry));
-            target[0].booking.requestedBy = JSON.parse(JSON.stringify(source[0].booking.requestedBy));
-            target[0].booking.room = JSON.parse(JSON.stringify(source[0].booking.room));
-            target[0].booking.file = JSON.parse(JSON.stringify(source[0].booking.file));
+        if(source.length==1 && target.length==1){           
+            
             target[0].booking.status = JSON.parse(JSON.stringify(source[0].booking.status));
-            target[0].booking.federal = JSON.parse(JSON.stringify(source[0].booking.federal));
-            target[0].booking.languages = JSON.parse(JSON.stringify(source[0].booking.languages));
-            target[0].booking.locationId = JSON.parse(JSON.stringify(source[0].booking.locationId));
-            target[0].booking.bilingual = JSON.parse(JSON.stringify(source[0].booking.bilingual));
+            target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));
+            target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
+            target[0].booking.cases = JSON.parse(JSON.stringify(source[0].booking.cases));            
             
             this.updateTabs++;
         }
@@ -354,23 +351,58 @@ export default class InterpreterBookingModal extends Vue {
         this.checkBookingStates(false)
 
     }
+
     public openCopyWindow(tabName){
         this.targetTab = tabName;
         this.sourceBookingDatesTimes = JSON.parse(JSON.stringify(this.allBookingDatesTimes.filter(booking =>booking.name!=tabName)))
         this.showCopyWindow = true
         //console.log(this.allBookingDatesTimes)
     }
+
+    public exportTabData(fields, source){
+        console.log(fields)
+        console.log(source)
+        const sourceCases = []
+        for(const bookingCase of source.booking.cases){
+            if(fields.includes(bookingCase.tmpId))
+                sourceCases.push(bookingCase)
+        }
+
+        for(const target of this.allBookingDatesTimes){            
+            if(target.name==source.name || target.booking.status == this.statusOptions[2].value ) continue
+            
+            console.log(target)
+            if(fields.includes('status')){
+                target.booking.status = JSON.parse(JSON.stringify(source.booking.status));                                
+            }
+            if(fields.includes('methodOfAppearance')){
+                target.booking.methodOfAppearance = JSON.parse(JSON.stringify(source.booking.methodOfAppearance));
+            }
+            if(fields.includes('comment')){
+                target.booking.comment = JSON.parse(JSON.stringify(source.booking.comment));
+            }
+            if(sourceCases.length>0){
+                target.booking.cases = JSON.parse(JSON.stringify(sourceCases));
+            }            
+        }
+        this.updatedBookingInfo++
+    }
 }
 
 </script>
 
-<style lang="scss">
-    .tab-class{
+<style lang="scss" scoped >
+    ::v-deep .create-tab-class{
         margin:0.2rem 0.25rem;
         padding: 0.2rem 0.2rem;
-        width: 8.5rem;
+        width: 8.5rem;        
         font-size: 10.5pt;
         line-height: 1.3rem;
         background: white;
+    }
+
+    ::v-deep .booking-tab-header>.card-header{        
+        overflow-y: auto;
+        max-height: 11.5rem;        
     }
 </style>

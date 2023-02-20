@@ -1,7 +1,20 @@
 export interface bookingStatesInfoType {
-    status: null | boolean;
+    status: null | boolean;    
+    location: null | boolean;   
+    methodOfAppearance: null | boolean;
+    dates: null | boolean;
+    start: null | boolean;
+    end: null | boolean;
+    conflict: null | boolean;    
+    cases: bookingCaseStatesInfoType[];
+}
+
+export interface bookingCaseStatesInfoType {
+    tabNumber: number;
+    tmpId: number;
     room: null | boolean;
-    location: null | boolean;
+    remoteLocation: null | boolean;
+    vanLocation: null | boolean;
     file: null | boolean;
     interpretFor: null | boolean;
     caseName: null | boolean;
@@ -15,12 +28,9 @@ export interface bookingStatesInfoType {
     prosecutor: null | boolean;
     reason: null | boolean;
     reasonOther: null | boolean;
-    methodOfAppearance: null | boolean;
-    dates: null | boolean;
-    start: null | boolean;
-    end: null | boolean;
-    conflict: null | boolean;
+    methodOfAppearance: null | boolean;    
     bilingual: null | boolean;
+    interpretationMode: null | boolean;
 }
 
 export interface paymentDetailsInfoType{

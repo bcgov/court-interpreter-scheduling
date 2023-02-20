@@ -161,3 +161,14 @@ export const reasonCodeClassOptions = [
     {text: 'JSL-Jury selection',           value: "JSL"},
     {text: 'Other',                        value: "OTHER"}    
 ]
+
+export enum bookingInterpretationMode {
+    'Consecutive'='Consecutive',
+    'Simultaneous'='Simultaneous',
+    'Both'='Both'
+}
+export const bookingInterpretationModeOptions = [
+    {text: 'Consecutive',   value: bookingInterpretationMode.Consecutive}, 
+    {text: 'Simultaneous',  value: bookingInterpretationMode.Simultaneous},
+    {text: 'Both',          value: bookingInterpretationMode.Both}
+]
