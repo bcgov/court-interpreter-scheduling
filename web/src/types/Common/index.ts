@@ -48,3 +48,8 @@ export interface holidaysInfoType {
     VictoriaDay: string;
     Year: string;
 }
+
+export interface optionsInfoType {    
+    text: string;
+    value: string;
+}
