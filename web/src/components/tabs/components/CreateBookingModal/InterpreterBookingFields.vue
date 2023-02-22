@@ -387,6 +387,7 @@ export default class InterpreterBookingFields extends Vue {
         this.booking.cases.push(newcase)
         this.bookingStates.cases.push(this.prepopulateDefaultCasesState(this.caseFileCounter))
         this.caseFileCounter++;
+        setTimeout(() => {this.caseTabIndex=(this.booking.cases.length-1)}, 10);
         // this.updateTab++;
     }
 
@@ -407,6 +408,7 @@ export default class InterpreterBookingFields extends Vue {
         this.booking.cases.push(dupcase)
         this.bookingStates.cases.push(this.prepopulateDefaultCasesState(this.caseFileCounter))
         this.caseFileCounter++;  
+         setTimeout(() => {this.caseTabIndex=(this.booking.cases.length-1)}, 10);
         // this.updateTab++;
     }
 

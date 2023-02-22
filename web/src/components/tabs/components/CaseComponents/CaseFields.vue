@@ -207,7 +207,7 @@
             </b-col>
             <b-col cols="2" >
                 <b-form-group>
-                    <label class="labels mb-1" style="display:block;" >Bilingual (EN, FR)</label>
+                    <label class="labels mb-1" style="display:block;" >Bilingual (FR, EN)</label>
                     <b-form-radio-group                                                
                         :class="caseStates.bilingual==false?'border rounded border-danger pb-3 pt-1 px-2':'' "                           
                         style="display:inline"
@@ -415,13 +415,14 @@ export default class CaseFields extends Vue {
                 this.bookingCase.remoteLocationId = this.registry.id
                 this.changeRemoteLocation()
                 this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions.filter(method => method.text != "In Person")
-                this.bookingCase.methodOfAppearance = null
+                this.bookingCase.methodOfAppearance = bookingMethodOfAppearanceOptions[1].value
                 this.appearanceMethodKey++;
             }
             else{
                 this.bookingCase.remoteLocationId = null
                 this.bookingCase.remoteRegistry = null
                 this.bookingMethodOfAppearanceOptions = bookingMethodOfAppearanceOptions
+                this.bookingCase.methodOfAppearance = bookingMethodOfAppearanceOptions[0].value
                 this.appearanceMethodKey++;
             }
         })
