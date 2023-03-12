@@ -2,7 +2,8 @@ export enum bookingStatus {
     'Pending'='Pending', 
     'Booked'='Booked', 
     'Cancelled'='Cancelled'
-}
+};
+
 export const statusOptions = [
     {text: 'Pending',         value: bookingStatus.Pending}, 
     {text: 'Booked',          value: bookingStatus.Booked},
@@ -104,6 +105,7 @@ export enum civilCourtClass {
     'Small Claims'='Small Claims',
     'Family Law Proceeding (Divorce Act and Family Law Act)'='Family Law Proceeding (Divorce Act and Family Law Act)',
     'Family'='Family',
+    'Divorce'='Divorce',
     'Foreclosure'='Foreclosure',
     'Enforcement Proceedings'='Enforcement Proceedings',
     'Motor Vehicle Accidents'='Motor Vehicle Accidents',
@@ -119,6 +121,7 @@ export const civilCourtClassOptions = [
     {text: 'Small Claims',                value: civilCourtClass['Small Claims']},
     {text: 'Family Law Proceeding (Divorce Act and Family Law Act)',  value: civilCourtClass['Family Law Proceeding (Divorce Act and Family Law Act)']}, 
     {text: 'Family',                      value: civilCourtClass.Family},
+    {text: 'Divorce',                      value: civilCourtClass.Divorce},
     {text: 'Foreclosure',                 value: civilCourtClass.Foreclosure}, 
     {text: 'Enforcement Proceedings',     value: civilCourtClass["Enforcement Proceedings"]},
     {text: 'Motor Vehicle Accidents',     value: civilCourtClass["Motor Vehicle Accidents"]}, 
