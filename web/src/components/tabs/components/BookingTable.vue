@@ -116,9 +116,9 @@
                             <span                           
                                 :title="areRecordsOnlyPendings(data.item)? 'All Bookings are Pending !':(data.item.recordsApproved?'Adm322 Forms Approved':'Adm322 Forms')"
                                 v-b-tooltip.hover.top.noninteractive>
-                                <!--  disabled="areRecordsOnlyPendings(data.item)"  -->
+                                
                                 <b-button style="font-size:11px;"
-                                    disabled                                                               
+                                    :disabled="areRecordsOnlyPendings(data.item)"                                                           
                                     @click="openAdm(data.item);" 
                                     :class="data.item.recordsApproved? 'text bg-approved my-1 px-1':'text bg-select border-info my-1 px-1' " 
                                     size="sm">

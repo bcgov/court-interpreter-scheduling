@@ -109,8 +109,10 @@ class BookingCasesModel(Base):
     case_type = Column(String, unique=False, index=False, nullable=True)
     court_level = Column(String, unique=False, index=False, nullable=True)
     court_class = Column(String, unique=False, index=False, nullable=True) 
+    court_class_other = Column(String, unique=False, index=False, nullable=True)
 
     reason = Column(String, unique=False, index=False, nullable=True)
+    reason_other = Column(String, unique=False, index=False, nullable=True)
     
 
     interpret_for = Column(String, unique=False, index=False, nullable=True)

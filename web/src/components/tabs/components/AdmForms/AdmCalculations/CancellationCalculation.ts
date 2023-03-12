@@ -141,15 +141,15 @@ function getTotalHours(booking, cancelledDates){
         //console.log(record)
         
         const dateLanguagesType: number[] = []
-        for(const langItem of record.languages){
-
+        for(const cancelCase of record.cases){
+            const langItem = cancelCase.language
             let languageLevel = langItem.level
-            ////console.log(langItem.language)
+            ////console.log(langItem.languageName)
             
-            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistory)
 
-            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistoryRev)
             ////console.log(languageHistoryRev[indexLanguageHistoryRev])
 
@@ -160,8 +160,8 @@ function getTotalHours(booking, cancelledDates){
             }
 
             let languageType = '' 
-            if(langItem.language.includes('CART')) languageType='CART';
-            else if(langItem.language.includes('ASL')) languageType=('ASL'+languageLevel);
+            if(langItem.languageName.includes('CART')) languageType='CART';
+            else if(langItem.languageName.includes('ASL')) languageType=('ASL'+languageLevel);
             else languageType=('SPKL'+languageLevel);                
             dateLanguagesType.push(sortedRateNames.indexOf(languageType))
         }

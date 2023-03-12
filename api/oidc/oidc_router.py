@@ -11,6 +11,13 @@ from core.config import settings
 from oidc.oidc_user_repository import oidc_user_repository
 from core import JWTtoken
 
+import base64
+import hashlib
+
+from models.user_model import UserModel
+from models.oidc_model import OidcUserModel
+
+
 hint = settings.OIDC_RP_KC_IDP_HINT
 host = settings.OIDC_RP_PROVIDER_URL
 realm = settings.OIDC_RP_PROVIDER_REALM
@@ -37,6 +44,9 @@ router = APIRouter(
     tags=['Oidc']
 )
 
+
+def logout_request(callback_uri):
+    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}&client_id=cis-api")
 
 
 @router.get('/login/session/cb')
@@ -91,7 +101,7 @@ def web_login_callback(request: Request):
     request.session["oidc_user_email"] = None 
     request.session.clear()
     
-    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
+    return logout_request(callback_uri) #RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
 
 
 
@@ -132,7 +142,7 @@ def web_logout_user(request: Request):
     request.session.clear()
     
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
-    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
+    return logout_request(callback_uri) #RedirectResponse(f"{oidc.logout_uri.replace('/court-services-jag/','/standard/')}?redirect_uri={callback_uri}")
 
 
 
@@ -177,8 +187,8 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
             return login_response
         
         oidc_userinfo = oidc.get_user_info(response['access_token'])
-        introspection_info = oidc.get_introspection_info(response['access_token'])
-        oidc_user_roles = introspection_info['realm_access']['roles']
+        # introspection_info = oidc.get_introspection_info(response['access_token'])
+        oidc_user_roles = "" #introspection_info['realm_access']['roles']
 
         # print("________REFRESH__TOKEN__RESPONSE______")
         # print(response)
@@ -193,5 +203,27 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
     else:
         return login_response
 
-    
 
+    
+@router.get('/migrate_sub')
+def migrate_sub(field: str, db: Session = Depends(get_db_session)):
+    
+    oidc_users = db.query(OidcUserModel)    
+    
+    for usr in oidc_users:
+
+        guid = usr.userinfo.get(field)
+        guid_hash = base64.urlsafe_b64encode(hashlib.sha1(str.encode(guid)).digest()).rstrip(b'=')
+        
+        if guid:
+            print(guid)
+            user = db.query(UserModel).filter(UserModel.id == usr.user_id)
+            user.update({
+                "username": guid_hash,
+                "authorization_id": guid
+            })
+            oidc_user = db.query(OidcUserModel).filter(OidcUserModel.id == usr.id)
+            oidc_user.update({        
+                "sub": guid
+            })
+            db.commit()

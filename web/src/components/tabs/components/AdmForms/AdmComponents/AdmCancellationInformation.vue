@@ -1,56 +1,47 @@
 <template>
-    <b-card :name="section_name" class="glow my-5">
+    <!-- <b-card :name="section_name" class="glow my-5"> -->
+    <b-card class="glow my-5">
         <h3 class="text-dark p-0 mt-n2 mb-4">Cancellation Information</h3>
-        
-        <b-card v-for="recordDetails in records" :key="'cancellation-'+recordDetails.id" class="mb-4 bg-card_detail">
-            <b-table-simple  borderless style="width:100%;font-size:11pt;" class="my-n3 mb-0">
-                <tr>
-                    <td class="m-1 p-1" style="width:11%;"><b>Date:</b> {{recordDetails.date|iso-date}} </td>
-                    <td class="m-1 p-1" style="width:17%;"><b>Time:</b> {{recordDetails.time}} </td>
-                    <td class="m-1 p-1" style="width:32%;"><b>Registry:</b> {{recordDetails.registry}} <b-icon-exclamation-triangle-fill v-if="recordDetails.registryWarning" class="ml-1" v-b-tooltip.hover.v-warning title="This Booking corresponds to a different location." font-scale="1.3" variant="warning"/> </td>
-                    <td class="m-1 p-1" style="width:18%;"><b>File #:</b> {{recordDetails.file}} </td>
-                    <td class="m-1 p-1" style="width:22%;"><b>CaseName:</b> {{recordDetails.caseName}} </td>
-                                   
-                </tr>
-                <tr>
-                    <td class="m-1 p-1"><b>Federal:</b> {{recordDetails.federalYN}} </td>
-                    <td class="m-1 p-1"><b>Reason Code:</b> {{recordDetails.reasonCd}} </td>                     
-                    <td class="m-1 p-1"><b>Cancellation Date:</b> {{recordDetails.cancellationDate|iso-date}} </td>
-                    <td class="m-1 p-1" colspan="2"><b>Cancellation Time:</b> {{recordDetails.cancellationTime}} </td>                                           
-                </tr> 
-                <tr>
-                    <td class="m-1 p-1" colspan="2"><b>Cancelled By:</b> {{recordDetails.cancelledBy}} </td>
-                    <td class="m-1 p-1"><b>Cancellation Reason:</b> {{recordDetails.cancelReason}} </td>
-                    <td class="m-1 py-0 pl-1" colspan="2">
-                        <!-- <b-row class="m-0 p-0">
-                            <b>Cancellation Fee Applicable:</b>
-                            <b-form-input
-                                :disabled="recordDetails.feeDisabled"
-                                type="number"                                
-                                class="ml-3"
-                                style="width:6rem;"
-                                @input="recordDetails.feeChanged=true"
-                                size="sm"                        
-                                v-model="recordDetails.cancellationFee" />
-                            <div class="ml-3" style="font-size:13pt;" > $</div>
-                            <b-button size="sm"
-                                v-if="recordDetails.feeChanged" 
-                                @click="feeChanged(recordDetails)"                                 
-                                variant="success" 
-                                class="ml-2"> Save 
-                            </b-button>
-                        </b-row> -->
-                        
-                    </td>                    
-                </tr>                
-                <tr>
-                    <td class="m-1 p-1" colspan="4"><b>Cancellation Comment:</b> {{recordDetails.cancellationComment}} </td>
-                </tr>
+        <b-table
+            :items="records"
+            :fields="recordFields"
+            sort-by="date"
+            >
+            <template v-slot:cell(date)="data" >
+                <span>{{data.value|iso-date}}</span>
+            </template>
 
-            </b-table-simple >
-        </b-card>
+            <template v-slot:cell(time)="data" >
+                <div style="font-size:10.5pt;">{{data.value}}</div>
+            </template>
 
-            
+            <template v-slot:cell(cancellationDate)="data" >
+                <span>{{data.value|beautify-date-simple}}</span>
+            </template>
+
+            <template v-slot:cell(comment)="data" >
+                <div style="font-size:10pt; line-height:1rem;">
+                    <div>{{data.item.cancellationComment}}</div>
+                    <div>{{data.item.comment}}</div>                
+                </div>
+            </template>
+
+            <template v-slot:cell(details)="data" >                        
+                <b-button 
+                    style="font-size:20px; border: none;" 
+                    size="sm" 
+                    @click="data.toggleDetails();"                         
+                    class="m-0 p-0 text-secondary bg-transparent">
+                    <b-icon-caret-right-fill v-if="!data.item['_showDetails']"></b-icon-caret-right-fill>
+                    <b-icon-caret-down-fill v-if="data.item['_showDetails']"></b-icon-caret-down-fill>                                                       
+                </b-button>                    
+            </template>
+
+            <template v-slot:row-details ="data">
+                <record-details :recordDetails="data.item" headerColor="bg-secondary" />                    
+            </template>
+
+        </b-table>           
                    
     </b-card>    
 </template>
@@ -60,9 +51,13 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 import moment from 'moment';
 import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
+import RecordDetails from "./RecordDetails.vue"
 
-
-@Component
+@Component({
+    components:{
+        RecordDetails
+    }
+})
 export default class AdmCancellationInformation extends Vue {
 
     @Prop({required: true})
@@ -73,6 +68,16 @@ export default class AdmCancellationInformation extends Vue {
     dataReady = false;
     records: bookingAdmCancellationInfoType[] = []
     activeRecords: bookingAdmCancellationInfoType[] = []
+
+    recordFields=[
+        {key:'details',          label:'',                    thStyle:'width:2%',  thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle p-0 m-0'},
+        {key:'date',             label:'Date',                thStyle:'width:9%',  thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'time',             label:'Booking Time',        thStyle:'width:12%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},        
+        {key:'cancelledBy',      label:'Cancelled By',        thStyle:'width:11%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'cancellationDate', label:'Cancellation Date',   thStyle:'width:13%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'cancelReason',     label:'Cancellation Reason', thStyle:'width:22%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'comment',          label:'Comment',             thStyle:'width:31%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+    ]
     
     
     mounted(){
@@ -107,10 +112,10 @@ export default class AdmCancellationInformation extends Vue {
         this.dataReady = true;
     }
 
-    public feeChanged(recordDetails){        
-        recordDetails.feeChanged=false
-        this.$emit('saveChanges', [...this.records, ...this.activeRecords], this.section_name)        
-    }
+    // public feeChanged(recordDetails){        
+    //     recordDetails.feeChanged=false
+    //     this.$emit('saveChanges', [...this.records, ...this.activeRecords], this.section_name)        
+    // }
    
  
 

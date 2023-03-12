@@ -530,7 +530,9 @@ export default class EditBookingFields extends Vue {
         newcase.caseType = ''
         newcase.courtLevel = ''
         newcase.courtClass = ''
+        newcase.courtClassOther = ''
         newcase.reason = ''
+        newcase.reasonOther = ''
         newcase.interpretationMode = ''
 
         newcase.language = language

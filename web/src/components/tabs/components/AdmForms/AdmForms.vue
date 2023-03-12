@@ -187,17 +187,17 @@ export default class AdmForms extends Vue {
         this.paymentDetailsForm = {} as paymentDetailsInfoType
         let recordApprovalRequired = false;
         for(const date of this.booking.dates){
-            for(const lang of date.languages)
+            for(const bookingcase of date.cases)
                 if(date.status != 'Cancelled'){
-                    if(!languages.includes(lang.language))
-                        languages.push(lang.language)
-                    if(!levels.includes(lang.level))
-                        levels.push(lang.level)
+                    if(!languages.includes(bookingcase.language.languageName))
+                        languages.push(bookingcase.language.languageName)
+                    if(!levels.includes(bookingcase.language.level))
+                        levels.push(bookingcase.language.level)
                 }else{
-                    if(!cancelledLanguages.includes(lang.language))
-                        cancelledLanguages.push(lang.language)
-                    if(!cancelledLevels.includes(lang.level))
-                        cancelledLevels.push(lang.level)
+                    if(!cancelledLanguages.includes(bookingcase.language.languageName))
+                        cancelledLanguages.push(bookingcase.language.languageName)
+                    if(!cancelledLevels.includes(bookingcase.language.level))
+                        cancelledLevels.push(bookingcase.language.level)
                 }
             if(date.status=='Booked') recordApprovalRequired = true;
         }        

@@ -472,11 +472,11 @@ export default class EditBookingModal extends Vue {
                     caseState.caseType = !(bookingCase.caseType)? false : null;
                     caseState.courtLevel = !(bookingCase.courtLevel)? false : null;
                     caseState.courtClass = !(bookingCase.courtClass)? false : null;
-                    caseState.courtClassOther = !(bookingCase.courtClass)? false : null;
+                    caseState.courtClassOther = bookingCase.courtClass=='OTHER' && !(bookingCase.courtClassOther)? false : null;
                     caseState.request = !(bookingCase.requestedBy)? false : null;
                     
                     caseState.reason = !(bookingCase.reason)? false : null;
-                    caseState.reasonOther = !(bookingCase.reason)? false : null;
+                    caseState.reasonOther = bookingCase.reason=='OTHER' && !(bookingCase.reasonOther)? false : null;
                     caseState.methodOfAppearance = !(bookingCase.methodOfAppearance)? false : null;
                     caseState.bilingual = !(bookingCase.bilingual != null)? false : null;
                     caseState.interpretationMode = (bookingCase.bilingual && !bookingCase.interpretationMode)? false : null;
