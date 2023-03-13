@@ -131,7 +131,7 @@ function getTotalHours(booking, cancelledDates){
         const start = moment(record.startTime, "hh:mm A")
         const end = moment(record.finishTime, "hh:mm A")
         const mid = moment("01:00 PM", "hh:mm A")
-        console.error(recordDate+' '+ record.startTime)
+        //console.error(recordDate+' '+ record.startTime)
         ////console.log(mid.format())
         ////console.log(end<=mid)
         ////console.log(start>=mid)
@@ -251,7 +251,7 @@ function getDaysBetweenCancellationAndAssignment(assignmentStart, cancelDate){
         if(weekDayName=='Sa' || weekDayName=='Su' || holidayList.includes(nextDay)) continue
         daysBetweenCancellationAndAssignment.push(nextDay)
     }
-    console.warn(cancellationDateObj.format())
+    // console.warn(cancellationDateObj.format())
     //console.log(assignmentStartDate)
     //console.log(daysBetweenCancellationAndAssignment)
     return daysBetweenCancellationAndAssignment

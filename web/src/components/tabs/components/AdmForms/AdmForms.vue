@@ -9,7 +9,7 @@
             <adm-record :booking="booking" @approved="recordsWaitingForApproval"/>
             <adm-sent-form-info v-if="formEmailed" :booking="booking" />
             <adm-cancellation-information v-if="bookingRecordsApproved" :booking="booking" @saveChanges="saveRecordChanges"/>
-            <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" :form="paymentDetailsForm" @savePaymentDetail="saveBookingFields"/>
+            <adm-payment-details v-if="bookingRecordsApproved" :booking="booking" :form="paymentDetailsForm" @savePaymentDetail="saveBookingFields" @cancelChanges="getBooking()" @change="paymentChanged"/>
             <adm-authorizations  v-if="bookingRecordsApproved" :booking="booking" @saveAuthorizations="saveBookingFields"/>
             <adm-office-use-only v-if="bookingRecordsApproved" :booking="booking" @saveOfficeUse="saveBookingFields"/>
             <adm-sent-invoice-info v-if="invoiceEmailed" :booking="booking" />
@@ -23,9 +23,15 @@
             <b-alert name='alert-msg' style="margin-top:0.8rem" variant="danger" :show="errorMsg !=''"  >Error: {{errorMsg}}</b-alert>           
             
             <div style="transform:translate(-20px,70px);float:right;">
-                <b-button @click="errorMsg='';showPrintWindow=true;" variant="primary">
-                    <b-icon-printer-fill class="mx-1" variant="white" scale="1"/> Print / Email 
-                </b-button>
+                <div v-b-tooltip.hover.top.v-danger
+                    :title="disablePrint?'Save changes first':''">
+                    <b-button 
+                        :disabled="disablePrint"                        
+                        @click="errorMsg='';showPrintWindow=true;" 
+                        variant="primary">
+                        <b-icon-printer-fill class="mx-1" variant="white" scale="1"/> Print / Email 
+                    </b-button>
+                </div>
             </div>
 
             <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer>
@@ -34,8 +40,8 @@
                     <adm-header :booking="booking" class="court-header"/>
                     <interpreter-info :booking="booking"/>
                     <scheduling-info :booking="booking" />
-                    <record :booking="booking"/>
-                    <cancellation-info :booking="booking"/>
+                    <record :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
+                    <cancellation-info :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
                     <payment-details :booking="booking" :form="paymentDetailsForm"/>
                     <authorizations :booking="booking"/>
                     <office-use-only :booking="booking"/>
@@ -152,6 +158,9 @@ export default class AdmForms extends Vue {
     sectionName=''
     emailContent = {} as sentEmailContentInfoType
     showSentEmail = false
+    disablePrint=false
+
+    lastPageAdmItemsNum = {num:0}
 
     mounted(){
         this.printingPDF=false        
@@ -163,6 +172,7 @@ export default class AdmForms extends Vue {
         this.errorMsg =''
         this.dataReady = false;
         this.showPrintWindow = false
+        this.disablePrint=false
         
 
         this.$http.get('/booking/' + this.bookingId)
@@ -232,7 +242,8 @@ export default class AdmForms extends Vue {
 
 
     public recordsWaitingForApproval(approved, saveChanges, records){
-        // console.log(approved)        
+        // console.log(approved)
+        this.disablePrint=false        
         this.recordsReadyForApproval=true;            
         this.booking.dates = JSON.parse(JSON.stringify(records))
         // console.log(this.booking)
@@ -308,18 +319,18 @@ export default class AdmForms extends Vue {
         if(name.length==2) name += '**'
 
         const invoiceNumber = (locationCode+name+firstBookingDate).toUpperCase()        
-        console.log(invoiceNumber)
-        console.log(this.bookingId)
+        // console.log(invoiceNumber)
+        // console.log(this.bookingId)
 
         this.$http.get('/booking/invoice-number/' + invoiceNumber)
         .then((response) => {
             if(response.data){
-                console.log(response.data)
+                // console.log(response.data)
                 if(response.data.length>0){
                     const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split('#')[1]))
                     const maxIndex = Math.max(...currentIndices)
-                    console.log(currentIndices)
-                    console.log(maxIndex)
+                    // console.log(currentIndices)
+                    // console.log(maxIndex)
                     this.booking.invoiceNumber = invoiceNumber+'#'+(maxIndex+1)
                 }
                 else{
@@ -366,7 +377,7 @@ export default class AdmForms extends Vue {
         // console.log(this.booking.feesGST)
         // console.log(this.booking.feesTotal)
         // console.log(this.booking.invoiceTotal)
-        console.log("Saving Fees Required",saveRequired)
+        // console.log("Saving Fees Required",saveRequired)
         if(saveRequired && saveIfRequired)
             this.saveBooking(this.booking)
         return saveRequired
@@ -456,7 +467,7 @@ export default class AdmForms extends Vue {
                 reader.readAsText(res.data)
                 reader.onload = ()=> {
                     this.emailContent=JSON.parse(String(reader.result))
-                    console.log(this.emailContent)
+                    // console.log(this.emailContent)
                     this.showSentEmail = true
                 }
                 this.printingPDF=false;
@@ -498,6 +509,10 @@ export default class AdmForms extends Vue {
             this.invoiceEmailed = false
         
         this.pdfType=this.bookingRecordsApproved?'Invoice':'Form' 
+    }
+
+    public paymentChanged(value){
+        this.disablePrint=value
     }
 }
 </script>

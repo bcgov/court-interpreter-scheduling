@@ -98,14 +98,14 @@ export default class AdmCancellationInformation extends Vue {
             record.time = date.startTime + ' - '+ date.finishTime
             // record.federalYN = date.federal? 'Yes' : 'No'
             record.feeChanged = false;
-            record.feeDisabled = false;
+            // record.feeDisabled = false;
             this.records.push(record)
         } 
         
         if(this.records.length==0){
-            const record = {} as bookingAdmCancellationInfoType;
-            record.feeDisabled = true
-            this.records.push(record)
+            // const record = {} as bookingAdmCancellationInfoType;
+            // record.feeDisabled = true
+            // this.records.push(record)
         }else{
             this.records = _.sortBy(this.records,'date')
         }

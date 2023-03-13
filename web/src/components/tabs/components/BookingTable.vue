@@ -107,8 +107,10 @@
                     </template>     
 
                     <template v-slot:cell(courtDistance)="data" >
-                        <div>{{data.item.court.distance|meter-to-km}} km</div>
-                        <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                        <div v-if="data.item.court">
+                            <div>{{data.item.court.distance|meter-to-km}} km</div>
+                            <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                        </div>
                     </template>             
 
                     <template v-slot:cell(edit)="data">                        
@@ -219,7 +221,8 @@
             This booking's ADM322 Invoice has already been approved. By editing it, the approval will require amendment.
             <template v-slot:modal-footer>                
                 <b-button class="mr-auto" variant="dark"    @click="showApprovedWarningWindow=false;showBookingWindow=false;">Back</b-button>
-                <b-button class="ml-auto" variant="warning" @click="showApprovedWarningWindow=false;showBookingWindow=true;">Continue</b-button>
+                <div v-if="loadingEditModal==true" class="ml-auto mr-4"><b-spinner variant="primary" label="Spinning"/></div>
+                <b-button v-else class="ml-auto" variant="warning" @click="loadingEditModal=true;openEditModal();">Continue</b-button>
             </template>
         </b-modal>
 
@@ -290,6 +293,8 @@ export default class BookingTable extends Vue {
     bookingItems = []
     dataReady=false
     commentLength =5;
+    
+    loadingEditModal=false
 
     currentPage = 1;
     itemsPerPage = 10;// Default
@@ -320,7 +325,7 @@ export default class BookingTable extends Vue {
             booking['date'] = dates[0].date 
             const bookingcourt = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
             booking['court'] = bookingcourt
-            booking['courtDistance']= bookingcourt.distance
+            booking['courtDistance']= bookingcourt?.distance
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        
@@ -356,6 +361,7 @@ export default class BookingTable extends Vue {
         this.currentInterpreter = bookingToEdit.interpreter
         this.currentBookingId = bookingToEdit.id
         this.currentBookingRegistryId = bookingToEdit.location_id
+        this.loadingEditModal=false
         if(bookingToEdit.recordsApproved) 
             this.showApprovedWarningWindow = true
         else
@@ -397,6 +403,13 @@ export default class BookingTable extends Vue {
         this.currentPage = currentPage
         this.itemsPerPage = itemsPerPage
         this.paginationKey++;
+    }
+
+    public openEditModal(){
+        setTimeout(()=>{
+            this.showApprovedWarningWindow=false;
+            this.showBookingWindow=true;
+        },50)
     }
 
 }

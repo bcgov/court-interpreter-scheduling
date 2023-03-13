@@ -38,7 +38,7 @@ export function getTotalInterpretingHours(booking){
 
     const languageHistory = _.sortBy(booking.interpreter.languageHistory,'effective_date').reverse()
     const languageHistoryRev = _.sortBy(booking.interpreter.languageHistory,'effective_date')
-    console.log(sortedRateNames)
+    // console.log(sortedRateNames)
     //console.log(sortedRateNames.length-1)
     //console.log(languageHistory)
     
@@ -111,7 +111,7 @@ export function getTotalInterpretingHours(booking){
         
     }
     
-    console.log(sessionHours)
+    // console.log(sessionHours)
     
     for (const recordDate of Object.keys(sessionHours))
     {
@@ -134,7 +134,7 @@ export function getTotalInterpretingHours(booking){
         //console.log(higherRateLanguage.valueChangedDate.slice(0,10))
 
     } 
-    console.log(totalHours)
+    // console.log(totalHours)
     return totalHours
 }
 

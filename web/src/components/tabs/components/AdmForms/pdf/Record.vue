@@ -2,8 +2,8 @@
     <div v-if="dataReady" class="mt-2">
         <div v-for="slicedRecord,inx in slicedRecords" :key="'tbl-cont-'+inx" :class="inx>0? 'margintop0p5':''"> 
             <table  class="print-block flexsize border border-dark m-0 p-0">
-                <tr style="font-size:9pt; " class="m-0 p-0">
-                    <td class="m-0 p-0" colspan="19"><div style="font-size:12pt;" class="ml-1 font-weight-bold">3 Record <span v-if="inx>0">(continued)</span></div></td>                        
+                <tr style="font-size:12pt; " class="m-0 p-0">
+                    <td class="m-0 p-0" colspan="13"><div class="ml-1 font-weight-bold">3 Record <span v-if="inx>0">(continued)</span></div></td>                        
                 </tr> 
                 
                 <tr style="font-size:7pt; background-color:#EEE;" class="m-0 p-0" >
@@ -12,7 +12,7 @@
                     <td style="width:1%;" />
                     <td style="width:16%;" class="text-center"><b class="">Method of Appearance</b></td>
                     <td style="width:1%;" />
-                    <td style="width:40%;" class="text-center"><b class="">Comment</b></td>
+                    <td style="width:41%;" class="text-center"><b class="">Comment</b></td>
                     <td style="width:1%;" />                                                            
                     <td style="width:8%;" class="text-center"><b class="">Start Time</b></td>
                     <td style="width:1%;" />
@@ -26,7 +26,7 @@
                     <tr style="line-height:0.25rem; height:0.25rem;" ><td class="text-white">.</td></tr>                        
                     <tr class="spacer">
                         <td />
-                        <td  colspan="11" style="border-top:1px solid #DDD; " />
+                        <td colspan="11" style="border-top:1px solid #DDD; " />
                         <td />
                     </tr>
                     <!-- <tr><td class="text-white">.</td></tr>                   -->
@@ -52,7 +52,8 @@
                         <td /> 
                     </tr>
                     <tr style="font-size:6pt; " class="m-0 p-0">
-                        <td class="m-0 p-0" colspan="13">                                               
+                        <td />
+                        <td class="m-0 p-0" colspan="11">
                             <b-table
                                 class="mt-1 mb-0 border"
                                 style="font-size:6pt;"
@@ -82,7 +83,8 @@
                                     {{data.value |truncate-text(20, true)}}
                                 </template>
                             </b-table>                                
-                        </td>                        
+                        </td>
+                        <td />                        
                     </tr>                        
                 </tbody>
                 <tr><td></td></tr>                                                
@@ -94,7 +96,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
-import {reasonCodeClass} from '../../BookingEnums'
+
 import * as _ from 'underscore';
 import moment from 'moment';
 
@@ -103,6 +105,9 @@ export default class Record extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
+
+    @Prop({required: true})
+    lastPageAdmItemsNum!: any;
     
 
     caseFields = [       
@@ -163,10 +168,34 @@ export default class Record extends Vue {
 
         this.records = _.sortBy(this.records,'date')       
 
-        this.slicedRecords.push(this.records.slice(0,4))
 
-        for(let index=4; index<this.records.length; index+=5)
-            this.slicedRecords.push(this.records.slice(index,(index+5)))
+        const pageCapacity=[40, 52]        
+        let pageNum=0
+        let pageItem = 5 // per page
+        const slicedRecords = []
+        for(const record of this.records){            
+            pageItem +=3 //per case
+            pageItem += record.cases.length
+            // console.log(pageItem)
+            if(pageItem <= pageCapacity[pageNum>0?1:0]){
+                slicedRecords.push(record)
+            }else{
+                this.slicedRecords.push(JSON.parse(JSON.stringify(slicedRecords)))
+                slicedRecords.splice(0)
+                pageNum++;
+                pageItem = 5+3+record.cases.length
+                // console.error(pageItem)
+                slicedRecords.push(record)
+            }
+        }
+        if(slicedRecords.length>0){
+            this.slicedRecords.push(JSON.parse(JSON.stringify(slicedRecords)))
+            slicedRecords.splice(0)
+        }
+        // console.log(slicedRecords)
+        pageItem += 12*(pageNum==0?1:0)
+        this.lastPageAdmItemsNum.num=pageItem
+        // console.log(pageItem)
         
     }   
 }

@@ -159,7 +159,6 @@ export default class UserRolePage extends Vue {
         this.$http.get('/role/all')
         .then((response) => {
             if(response?.data){
-                // console.log(response.data)
                 this.allRoles = response.data
                 this.filterRoles = this.allRoles.concat(this.filterRoles)
                 this.loadAllUsers()
@@ -174,8 +173,7 @@ export default class UserRolePage extends Vue {
         this.filterLock = false;
         this.$http.get('/user-info/all')
         .then((response) => {            
-            if(response?.data){                
-                // console.log(response.data)
+            if(response?.data){
                 this.allUsers = response.data
                 const currentUser = this.allUsers.filter(usr => usr.email == this.userEmail)[0]
                 currentUser['_rowVariant']="warning"

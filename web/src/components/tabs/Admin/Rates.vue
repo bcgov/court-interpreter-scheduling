@@ -97,11 +97,11 @@ export default class Rates extends Vue {
         this.$http.get('/rate')
         .then((response) => {
             if(response?.data){
-                // console.log(response.data)
+
                 this.allRates = response.data
                 this.UpdateRates(this.allRates)
                 this.allRates.forEach(rate=>rate.valueChangedDate=rate.valueChangedDate?.slice(0,10))
-                // console.log(this.allRates)
+
                 this.rates = getRatesIndices(this.allRates) 
                 this.enableSaveButton = false;
                 this.dataLoaded = true;                                 

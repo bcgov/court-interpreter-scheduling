@@ -1,6 +1,6 @@
 <template>
     <div v-if="dataReady" class="mt-2">
-        <div v-for="slicedRecord,inx in slicedRecords" :key="'tbl-cancel-cont-'+inx" :class="inx>0? 'margintop0p5':''"> 
+        <div v-for="slicedRecord,inx in slicedRecords" :key="'tbl-cancel-cont-'+inx" :class="inx>0? 'new-page margintop0p5':''"> 
             <table style="font-size:7.25pt;" class="print-block flexsize border border-dark m-0 p-0">
                 <tr style="font-size:12pt; " class="m-0 p-0">
                     <td class="m-0 p-0" colspan="13"><div  class="ml-1 font-weight-bold">4 Cancellation Information (Project Code 1500144) <span v-if="inx>0">(continued)</span></div></td>                        
@@ -40,12 +40,13 @@
                         <td  />
                         <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancelReason}}</div></td>
                         <td  />
-                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{(record.cancellationComment+' '+record.comment) | truncate-text(47)}}</div></td>
+                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{((record.cancellationComment?record.cancellationComment:'')+' '+(record.comment?record.comment:'')) | truncate-text(47)}}</div></td>
                         <td  />                        
                         
                     </tr>
                     <tr style="font-size:6pt; " class="m-0 p-0">
-                        <td class="m-0 p-0" colspan="13">                                               
+                        <td />
+                        <td class="m-0 p-0" colspan="11">                                               
                             <b-table
                                 class="mt-1 mb-0 border"
                                 style="font-size:6pt;"
@@ -75,7 +76,8 @@
                                     {{data.value |truncate-text(20, true)}}
                                 </template>
                             </b-table>                                
-                        </td>                        
+                        </td>
+                        <td />                      
                     </tr>                        
                 </tbody>
                 <tr><td></td></tr>                                                
@@ -95,6 +97,9 @@ export default class CancellationInfo extends Vue {
 
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
+
+    @Prop({required: true})
+    lastPageAdmItemsNum!: any;
 
     caseFields = [       
         {key:'file',           label:'File#',        thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
@@ -128,13 +133,11 @@ export default class CancellationInfo extends Vue {
     public extractInfo(){
         const bookingRecordsApproved = this.booking.recordsApproved? true : false;
         this.slicedRecords =[]
-        let records:bookingAdmCancellationInfoType[] = []
-        let totalAdmRecords = 0;
+        let records:bookingAdmCancellationInfoType[] = []        
         
         for(const date of this.booking.dates){
             const record: bookingAdmCancellationInfoType = JSON.parse(JSON.stringify(date))
-            if(record.status!="Cancelled"){
-                totalAdmRecords++;
+            if(record.status!="Cancelled"){                
                 continue; 
             } 
             
@@ -142,9 +145,9 @@ export default class CancellationInfo extends Vue {
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.cancellationFee = (bookingRecordsApproved && date.cancellationFee)? date.cancellationFee : '0.00'
             record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
+                   
             record.time = date.startTime + ' - '+ date.finishTime
-            // record.federalYN = date.federal? 'Yes' : 'No'
+            
             record.feeChanged = false;
             record.feeDisabled = false;
             records.push(record)
@@ -154,25 +157,38 @@ export default class CancellationInfo extends Vue {
         if(records.length==0){
             const record = {} as bookingAdmCancellationInfoType
             record.cancellationFee = "0.00"
+            record.cancellationComment=' '
+            record.comment=' '
             this.slicedRecords.push([record]) 
             return
         }
         records = _.sortBy(records,'date')
 
-        let cancelIndex = 0;
 
-        if(totalAdmRecords<4){// page=1
-            cancelIndex = (4-totalAdmRecords)            
-        }else{ //page!=1 {record:n, cancel:m, m_n ==6}
-            const recordsOnLastPage = (totalAdmRecords-4)%5            
-            cancelIndex = (recordsOnLastPage==0)? 8 :(6-recordsOnLastPage)            
+
+        const pageCapacity=[52-Number(this.lastPageAdmItemsNum.num), 52]        
+        let pageNum=0
+        let pageItem = 5 // per page
+        const slicedRecords = []
+        for(const record of records){            
+            pageItem +=3 //per case
+            pageItem += record.cases.length
+            // console.log(pageItem)
+            if(pageItem <= pageCapacity[pageNum>0?1:0]){
+                slicedRecords.push(record)
+            }else{
+                this.slicedRecords.push(JSON.parse(JSON.stringify(slicedRecords)))
+                slicedRecords.splice(0)
+                pageNum++;
+                pageItem = 5+3+record.cases.length
+                // console.error(pageItem)
+                slicedRecords.push(record)
+            }
         }
-        
-        this.slicedRecords.push(records.slice(0,cancelIndex))
-
-        // page !=1 cancel ==8
-        for(let index=cancelIndex; index<records.length; index+=8)
-            this.slicedRecords.push(records.slice(index,(index+8)))
+        if(slicedRecords.length>0){
+            this.slicedRecords.push(JSON.parse(JSON.stringify(slicedRecords)))
+            slicedRecords.splice(0)
+        }
       
     }
     

@@ -291,8 +291,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 					display:inline-block;
 				}
 				.new-page{
-					page-break-before: always;
-					position: relative; top: 8em;
+					page-break-before: always;					
 				}
 				section{
 					page-break-inside: avoid;
