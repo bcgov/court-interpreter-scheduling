@@ -64,8 +64,8 @@
                     </b-form-input>
                 </template>
 
-                <template v-slot:cell(federal)="data" >
-                    <span>{{data.item.federalYN}}</span>
+                <template v-slot:cell(comment)="data" >
+                    <div style="font-size:10pt; line-height:1rem;">{{data.value}}</div>
                 </template>
 
                 <template v-slot:cell(details)="data" >
@@ -84,7 +84,6 @@
                 </template>
 
                 <template v-slot:row-details ="data"> 
-                    <!-- {{data.item}} -->
                     <record-details :recordDetails="data.item" />                    
                 </template>
 
@@ -131,17 +130,14 @@ export default class AdmRecord extends Vue {
         
 
     recordFields=[
-        {key:'details',        label:'',                  sortable:false, thStyle:'width:1%',   cellStyle:'', thClass:'bg-primary text-white align-middle', tdClass:'align-middle'},
-        {key:'date',           label:'Date',              sortable:false, thStyle:' width:9%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'file',           label:'Court File Number', sortable:false, thStyle:' width:12%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'caseName',       label:'Case Name',         sortable:false, thStyle:' width:13%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},        
-        {key:'reasonCd',         label:'Reason',            sortable:false, thStyle:' width:12%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},      
-        {key:'federal',        label:'Fed.',              sortable:false, thStyle:' width:3%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},        
-        {key:'room',           label:'Court Room',        sortable:false, thStyle:' width:13%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'time',           label:'Booking Time',      sortable:false, thStyle:' width:7%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'actualStartTime',label:'Actual Start Time', sortable:false, thStyle:' width:10%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'actualFinishTime',label:'Finish Time',      sortable:false, thStyle:' width:10%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'approversInitials',label:"Approver's Initials",sortable:false,thStyle:'width:10%',cellStyle:'',thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'}
+        {key:'details',           label:'',                     sortable:false, thStyle:'width:2%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle p-0 m-0'},
+        {key:'date',              label:'Date',                 sortable:false, thStyle:'width:8%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'methodOfAppearance',label:'Method of Appearance', sortable:false, thStyle:'width:17%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'comment',           label:'Comment',              sortable:false, thStyle:'width:23%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},       
+        {key:'time',              label:'Booking Time',         sortable:false, thStyle:'width:12%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'actualStartTime',   label:'Actual Start Time',    sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'actualFinishTime',  label:'Finish Time',          sortable:false, thStyle:'width:12%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'approversInitials', label:"Approver's Initials",  sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'}
     ]
     dataReady = false;
     records: bookingAdmRecordInfoType[] = []
@@ -163,7 +159,7 @@ export default class AdmRecord extends Vue {
             // record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             // record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
             record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            record.time = date.startTime + ' '+ date.finishTime
+            record.time = date.startTime + ' - '+ date.finishTime
             // record.federalYN = date.federal? 'Yes' : 'No'
             // record.bilingualYN = date.bilingual? 'Yes' : 'No'            
             record.actualStartTimeState=null;            

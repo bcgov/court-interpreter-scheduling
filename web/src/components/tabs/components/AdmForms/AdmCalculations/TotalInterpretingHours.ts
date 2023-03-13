@@ -38,7 +38,7 @@ export function getTotalInterpretingHours(booking){
 
     const languageHistory = _.sortBy(booking.interpreter.languageHistory,'effective_date').reverse()
     const languageHistoryRev = _.sortBy(booking.interpreter.languageHistory,'effective_date')
-    console.log(sortedRateNames)
+    // console.log(sortedRateNames)
     //console.log(sortedRateNames.length-1)
     //console.log(languageHistory)
     
@@ -61,15 +61,15 @@ export function getTotalInterpretingHours(booking){
         //console.log(record)
         
         const dateLanguagesType: number[] = []
-        for(const langItem of record.languages){
-
+        for(const bookingCase of record.cases){
+            const langItem = bookingCase.language
             let languageLevel = langItem.level
-            //console.log(langItem.language)
+            //console.log(langItem.languageName)
             
-            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistory)
 
-            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistoryRev)
             //console.log(languageHistoryRev[indexLanguageHistoryRev])
 
@@ -80,8 +80,8 @@ export function getTotalInterpretingHours(booking){
             }
 
             let languageType = '' 
-            if(langItem.language.includes('CART')) languageType='CART';
-            else if(langItem.language.includes('ASL')) languageType=('ASL'+languageLevel);
+            if(langItem.languageName.includes('CART')) languageType='CART';
+            else if(langItem.languageName.includes('ASL')) languageType=('ASL'+languageLevel);
             else languageType=('SPKL'+languageLevel);                
             dateLanguagesType.push(sortedRateNames.indexOf(languageType))
         }
@@ -111,7 +111,7 @@ export function getTotalInterpretingHours(booking){
         
     }
     
-    console.log(sessionHours)
+    // console.log(sessionHours)
     
     for (const recordDate of Object.keys(sessionHours))
     {
@@ -134,7 +134,7 @@ export function getTotalInterpretingHours(booking){
         //console.log(higherRateLanguage.valueChangedDate.slice(0,10))
 
     } 
-    console.log(totalHours)
+    // console.log(totalHours)
     return totalHours
 }
 

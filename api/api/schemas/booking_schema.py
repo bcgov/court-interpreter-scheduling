@@ -18,7 +18,9 @@ class BookingCasesResponseSchema(BaseModel):
     case_type: Optional[str] = Field(alias="caseType")
     court_level: Optional[str] = Field(alias="courtLevel")
     court_class: Optional[str] = Field(alias="courtClass")
-    reason: Optional[str] 
+    court_class_other: Optional[str] = Field(alias="courtClassOther")
+    reason: Optional[str]
+    reason_other: Optional[str] = Field(alias="reasonOther")
        
     bilingual: Optional[bool] = False
     interpretation_mode: Optional[str] = Field(alias="interpretationMode")

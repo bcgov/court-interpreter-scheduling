@@ -1,7 +1,23 @@
 <template>
     <div :name="section_name" v-if="dataReady">
         <b-card class="my-5">
-            <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
+            
+            <b-row class="m-0">
+                <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
+                <b-button size="sm"             
+                    v-if="paymentChanges"
+                    @click="savePaymentDetailsChanges()"                                 
+                    variant="success" 
+                    style="margin:-0.5rem 0 -1rem auto; width:14rem; font-size:14pt;"
+                    > Save Payment Details 
+                </b-button>
+                <b-button size="sm"
+                    v-if="paymentChanges"
+                    @click="cancelPaymentChanges()"
+                    style="margin:-0.5rem 0 -1rem 1rem; width:16rem; font-size:14pt;"
+                    >Cancel Payment Changes
+                </b-button>
+            </b-row>
             <b-table-simple small borderless>
                 <b-thead head-variant="" >
                     <b-tr style="color:rgb(182, 210, 221); height:2rem;">                    
@@ -14,8 +30,8 @@
                     <b-tr v-if="inx==0">
                         <b-td colspan="42" class="h3 py-0" style="transform:translate(0,20px);">Fees</b-td> 
                         <b-td colspan="8" class="h4 text-center pb-0 pt-1" style="transform:translate(0,20px);">Fees Payable</b-td>                                              
-                    </b-tr>
-                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                    </b-tr>                    
+                    <b-tr v-if="form[courtFeeItems[1]+lang] || form[courtFeeItems[1]+lang]==''">
                         <b-th colspan="8" class="h3"></b-th>
                         <b-th colspan="2" class=""></b-th>
                         <b-th colspan="8" class="text-center">Rate</b-th>
@@ -24,7 +40,7 @@
                         <b-th colspan="14" class=""></b-th>
                         <b-th colspan="8" class="text-center"></b-th>                                                 
                     </b-tr>
-                    <b-tr v-if="form[courtFeeItems[1]+lang]">
+                    <b-tr v-if="form[courtFeeItems[1]+lang] || form[courtFeeItems[1]+lang]==''">
                         <b-th colspan="8" class="">Court Hours <div class="h5">({{getLanguageHrDetail(lang)}})</div></b-th>
                         <b-th colspan="2" class="text-right">$</b-th>
                         <b-td colspan="8" class=""><underline-text :text="form[courtFeeItems[0]+lang]" /></b-td>
@@ -98,14 +114,7 @@
                     </b-tr>
 <!-- <GST> -->
                     <b-tr>
-                        <b-th colspan="10" class="p-0">
-                            <b-button size="sm"             
-                                v-if="paymentChanges"
-                                @click="savePaymentDetailsChanges()"                                 
-                                variant="success" 
-                                style="margin:0; width:14rem; font-size:14pt;"> Save Payment Details 
-                            </b-button>
-                        </b-th>                        
+                        <b-th colspan="10" class="p-0"></b-th>                        
                         <b-th colspan="7" class="text-right">GST Number :</b-th>
                         <b-td colspan="12" class=""><underline-text :text="form.gstNumber"/></b-td>
                         <b-th colspan="7" class="text-right">                            
@@ -370,15 +379,24 @@
                     </b-tr>
 
                     <b-tr>
-                        <b-td colspan="17" class="p-0">
-                            <b-button size="sm"             
-                                v-if="paymentChanges"
-                                @click="savePaymentDetailsChanges()"                                 
-                                variant="success" 
-                                style="margin:0; width:14rem; font-size:14pt;"> Save Payment Details 
-                            </b-button>
+                        <b-td colspan="20" class="p-0">
+                            <b-row class="m-0">                                
+                                <b-button size="sm"             
+                                    v-if="paymentChanges"
+                                    @click="savePaymentDetailsChanges()"                                 
+                                    variant="success" 
+                                    style="margin:0rem 0 0rem 0; width:14rem; font-size:14pt;"
+                                    > Save Payment Details 
+                                </b-button>
+                                <b-button size="sm"
+                                    v-if="paymentChanges"
+                                    @click="cancelPaymentChanges()"
+                                    style="margin:0rem 0 0rem 1rem; width:16rem; font-size:14pt;"
+                                    >Cancel Payment Changes
+                                </b-button>
+                            </b-row>                            
                         </b-td>
-                        <b-td colspan="10" class="text-right">Sent to Federal Crown</b-td>
+                        <b-td colspan="7" class="text-right">Sent to Federal Crown</b-td>
                         <b-th colspan="2" class=""></b-th> 
                         <b-td colspan="11" class="text-right"><b>Total paid by</b> Federal Crown</b-td>
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
@@ -392,7 +410,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import {bookingSearchResultInfoType, gstInfoType, paymentDetailsVars, totalInterpretingHoursInfoType, travelInformationInfoType} from '@/types/Bookings/json';
@@ -421,6 +439,12 @@ export default class AdmPaymentDetails extends Vue {
 
     dataReady = false;
     paymentChanges = false;
+
+    @Watch('paymentChanges')
+    paymentChanged(newVal){
+        console.log(newVal)
+        this.$emit('change',newVal)
+    }
                             
 
     mounted(){
@@ -500,6 +524,10 @@ export default class AdmPaymentDetails extends Vue {
             {name:'admDetail', value:admDetail}                  
         ]
         this.$emit('savePaymentDetail',paymentDetailChanges, this.section_name)
+    }
+
+    cancelPaymentChanges(){
+        this.$emit('cancelChanges')
     }
 
     public formatterGST(value){

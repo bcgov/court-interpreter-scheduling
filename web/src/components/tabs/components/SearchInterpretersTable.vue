@@ -56,15 +56,16 @@
                     </template>
                     
                     <template v-slot:cell(courtDistance)="data" >
-                        <div>{{data.item.court.distance|meter-to-km}} km</div>
-                        <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                        <div v-if="data.item.court">
+                            <div>{{data.item.court.distance|meter-to-km}} km</div>
+                            <div class="text-primary">{{data.item.court.duration|sec-to-hour}}</div>
+                        </div>
                     </template>
 
                     <template v-slot:cell(city)="data">                          
                         <div 
                             v-html="data.item.fullAddress" 
                             style="display:inline">
-                            {{data.item.fullAddress}}
                         </div>
                         <a
                             style="margin-left:0.5rem; display:inline"

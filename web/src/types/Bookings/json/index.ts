@@ -12,7 +12,9 @@ export interface bookingCaseInfoType { //OK
     caseType: string;
     courtLevel: string;
     courtClass: string;
+    courtClassOther: string;
     reason: string;
+    reasonOther: string;
 
     bilingual: boolean;
     interpretationMode: string;

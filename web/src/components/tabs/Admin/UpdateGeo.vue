@@ -25,10 +25,7 @@
                     <div v-else class="text-danger">{{data.value}}</div>
                 </template>
 
-                <template v-slot:cell(manualUpdate)="data" >                    
-                    <!-- <b-row>
-                        <b-button @click="update(data.item.name,'free')"  class="ml-3 mt-2 mb-1"  variant="info" >Free Service</b-button>                
-                    </b-row> -->
+                <template v-slot:cell(manualUpdate)="data" >                                       
                     <b-row>
                         <b-button @click="update(data.item.name,'google')" class="ml-3 mt-1 mb-2 " variant="warning" >Start Update</b-button>
                     </b-row>                    
@@ -144,8 +141,7 @@ export default class UpdateGeoPage extends Vue {
     updateFields = 
     [   
         {key:'description',     label:'Name',              sortable:false, tdClass: 'border-top align-middle', }, 
-        {key:'updated_at',      label:'Last Update',       sortable:false, tdClass: 'border-top align-middle',},
-        //{key:'update_service',  label:'Update Service',    sortable:false, tdClass: 'border-top align-middle',},
+        {key:'updated_at',      label:'Last Update',       sortable:false, tdClass: 'border-top align-middle',},        
         {key:'manualUpdate',    label:'Manual Update',     sortable:false, tdClass: 'border-top align-middle',},
         {key:'update_schedule', label:'Updating Schedule', sortable:false, tdClass: 'border-top align-middle',},
         {key:'progress',        label:'Progress',          sortable:false, tdClass: 'border-top align-middle', thStyle:'width:12rem;' },
@@ -266,7 +262,6 @@ export default class UpdateGeoPage extends Vue {
     }
 
     public updateOne(data){
-        //console.log(data)
         const interpreter = this.interpreters.filter(interpreter => interpreter.id == data.id)[0]
         interpreter.update_started =  true;
         const google_map = false

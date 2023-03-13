@@ -6,9 +6,9 @@ import * as _ from 'underscore';
 
 import bootstrapCss from "!!raw-loader!@/styles/bootstrapCSS.css";
 
-Vue.filter('truncate-text', function (text, stop: number) {
+Vue.filter('truncate-text', function (text, stop: number, crumbs?) {
 	if(text){
-		return (stop < text.length) ? text.slice(0, stop) + '...' : text
+		return (stop < text.length) ? text.slice(0, stop) + (crumbs?'':'...') : text
 	}
 	else
 		return ''
@@ -105,6 +105,13 @@ Vue.filter('beautify-date-weekday-time', function(date){
 Vue.filter('beautify-date-weekday', function(date){
 	if(date)
 		return	moment(date).format('ddd, MMM DD, YYYY');
+	else
+		return ''
+})
+
+Vue.filter('beautify-date-simple', function(date){
+	if(date)
+		return	moment(date).format('YYYY-MM-DD HH:mm');
 	else
 		return ''
 })
@@ -284,8 +291,7 @@ Vue.filter('printPdf', function(html, pageFooterLeft, pageFooterRight){
 					display:inline-block;
 				}
 				.new-page{
-					page-break-before: always;
-					position: relative; top: 8em;
+					page-break-before: always;					
 				}
 				section{
 					page-break-inside: avoid;

@@ -2,6 +2,7 @@
     <div v-if="dataReady" class="border p-1" style="border-radius:0 0 5px 5px;" :key="updateCaseFrame">
         <!-- {{caseStates}} -->
         <!-- {{bookingStatus}} -->
+        <!-- {{bookingCase}} -->
 <!-- <ROW - 1> -->
         <b-row style="margin:0 -0.5rem;">
             <b-col cols="2">
@@ -89,7 +90,7 @@
                         :options="caseTypeOptions"
                         :disabled="disableEdit"                    
                         :state="caseStates.caseType"
-                        @input="bookingCase.courtClass='';extractCourtClass()"
+                        @change="bookingCase.courtClass='';"
                         id="case-type"                                         
                         v-model="bookingCase.caseType">
                     </b-form-select>
@@ -104,13 +105,13 @@
                         :options="courtLevelOptions"
                         :disabled="disableEdit"
                         :state="caseStates.courtLevel"
-                        @input="checkStates()"
+                        @change="checkStates()"
                         id="court-level"                                         
                         v-model="bookingCase.courtLevel">
                     </b-form-select>
                 </b-form-group>
             </b-col>
-            <b-col :cols="courtClass=='OTHER'? 2: 5">
+            <b-col :cols="bookingCase.courtClass=='OTHER'? 2: 5">
                 <b-form-group
                     class="labels"                
                     label="Court Class" 
@@ -119,23 +120,22 @@
                         :options="bookingCase.caseType=='Civil'? civilCourtClassOptions: criminalCourtClassOptions"
                         :disabled="disableEdit"
                         :state="caseStates.courtClass"
-                        @input="courtClassChanged()"
                         id="court-class"                                         
-                        v-model="courtClass">
+                        v-model="bookingCase.courtClass">
                     </b-form-select>
                 </b-form-group>
             </b-col>
-            <b-col v-if="courtClass=='OTHER'" cols="3">
-                <b-form-group v-if="courtClass=='OTHER'"
+            <b-col v-if="bookingCase.courtClass=='OTHER'" cols="3">
+                <b-form-group v-if="bookingCase.courtClass=='OTHER'"
                     class="labels"                
                     label="Other Court Class" 
                     label-for="other-court-class">
                     <b-form-input
                         id="other-court-class" 
-                        :disabled="disableEdit"                                                                         
-                        :state="caseStates.courtClassOther"
-                        @input="courtClassChanged()"                                    
-                        v-model="courtClassOther">
+                        :disabled="disableEdit"
+                        @change="checkStates()"                                                                       
+                        :state="caseStates.courtClassOther"                             
+                        v-model="bookingCase.courtClassOther">
                     </b-form-input>
                 </b-form-group>
             </b-col>
@@ -159,7 +159,7 @@
         
 <!-- <ROW - 3> -->
         <b-row style="margin:0 -0.5rem;">
-            <b-col :cols="reasonCode=='OTHER'? 2: 5">
+            <b-col :cols="bookingCase.reason=='OTHER'? 2: 5">
                 <b-form-group                
                     class="labels"                
                     label="Reason Code" 
@@ -168,23 +168,23 @@
                         id="reason-code"
                         :disabled="disableEdit"
                         :options="reasonCodeClassOptions"                          
-                        :state="caseStates.reason" 
-                        @input="reasonCodeChanged"                                   
-                        v-model="reasonCode">
+                        :state="caseStates.reason"
+                        @input="checkStates()"                                   
+                        v-model="bookingCase.reason">
                     </b-form-select>
                 </b-form-group>
             </b-col>
-            <b-col v-if="reasonCode=='OTHER'" cols="3">
-                <b-form-group v-if="reasonCode=='OTHER'"
+            <b-col v-if="bookingCase.reason=='OTHER'" cols="3">
+                <b-form-group v-if="bookingCase.reason=='OTHER'"
                     class="labels"                
                     label="Other Reason Code " 
                     label-for="other-reason-code">
                     <b-form-input
                         id="reason-code"
+                        @input="checkStates()"
                         :disabled="disableEdit"                                                                          
-                        :state="caseStates.reasonOther"
-                        @input="reasonCodeChanged"                                    
-                        v-model="reasonCodeOther">
+                        :state="caseStates.reasonOther"                               
+                        v-model="bookingCase.reasonOther">
                     </b-form-input>
                 </b-form-group>
             </b-col>
@@ -230,7 +230,7 @@
                         id="interpretation-mode"
                         :disabled="disableEdit"                           
                         style="display:inline"
-                        @input="checkStates()"                                
+                        @change="checkStates()"                                
                         :options="bookingInterpretationModeOptions"
                         :state="caseStates.interpretationMode"
                         v-model="bookingCase.interpretationMode">                                    
@@ -367,15 +367,8 @@ export default class CaseFields extends Vue {
     updateCaseFrame=0
     remoteLocation=false
     appearanceMethodKey = 0;
-
-    reasonCode=''
-    reasonCodeOther=''
-
-    courtClass=''
-    courtClassOther=''
     
     vanCourtLocations: locationsInfoType[] = []
-
 
     requestOptions
     bookingMethodOfAppearanceOptions
@@ -403,8 +396,7 @@ export default class CaseFields extends Vue {
     mounted() { 
         this.dataReady = false
         this.vanCourtLocations = this.courtLocations.filter(court => court.shortDescription=="2040" || court.shortDescription=="2042")        
-        this.extractReasonCode()
-        this.extractCourtClass()
+
         this.remoteLocation = (this.bookingCase.remoteLocationId && this.bookingCase.remoteLocationId !=this.registry.id) ? true: false
         this.dataReady = true        
     }
@@ -453,69 +445,14 @@ export default class CaseFields extends Vue {
         }
     }
     
-    public reasonCodeChanged(){
-        if(this.reasonCode !='OTHER'){
-            this.bookingCase.reason=this.reasonCode            
-        }else{
-            if(this.reasonCodeOther){
-                this.bookingCase.reason=this.reasonCode+'__'+this.reasonCodeOther 
-            }else{
-                this.bookingCase.reason=''
-                this.caseStates.reasonOther = false
-            }
-        }
-        // console.log(this.reasonCode)
-        // console.log(this.reasonCodeOther)
-        // console.log(this.bookingCase.reason)
-        this.checkStates()
-    }
-
-    public extractReasonCode(){
-        if(this.bookingCase.reason?.includes('OTHER__')){
-            this.reasonCode='OTHER'
-            this.reasonCodeOther=this.bookingCase.reason.slice(7)
-        }else{
-            this.reasonCode=this.bookingCase.reason
-            this.reasonCodeOther=''
-        }
-    }
     
-    public courtClassChanged(){
-        if(this.courtClass !='OTHER'){
-            this.bookingCase.courtClass=this.courtClass            
-        }else{
-            if(this.courtClassOther){
-                this.bookingCase.courtClass=this.courtClass+'__'+this.courtClassOther 
-            }else{
-                this.bookingCase.courtClass=''
-                this.caseStates.courtClassOther = false
-            }
-        }
-        // console.log(this.courtClass)
-        // console.log(this.courtClassOther)
-        // console.log(this.booking.courtClass)
-        this.checkStates()        
-    }
-
-    public extractCourtClass(){
-        if(this.bookingCase.courtClass?.includes('OTHER__')){
-            this.courtClass='OTHER'
-            this.courtClassOther=this.bookingCase.courtClass.slice(7)
-        }else{
-            this.courtClass=this.bookingCase.courtClass
-            this.courtClassOther=''
-        }
-        this.checkStates()
-    }
 
     public checkStates(){
 
-console.log('CASE_STATE_CHECK') //TODO
         for(const field of Object.keys(this.caseStates)){
             if(this.caseStates[field]==false && field!='tabNumber' && field!='tmpId'){
-                console.log(this.caseStates[field])
-                this.$emit('checkStates')
-                console.log('EMIT=CASE_STATE_CHECK') //TODO
+                // console.log(this.caseStates[field])
+                this.$emit('checkStates')                
                 break
             }
         }

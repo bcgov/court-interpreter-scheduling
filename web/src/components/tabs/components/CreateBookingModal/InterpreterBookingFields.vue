@@ -343,7 +343,7 @@ export default class InterpreterBookingFields extends Vue {
 
     @Watch('caseTabId')
     caseTabIdChanged(value){
-        console.log(value)       
+        // console.log(value)       
         if(value>=0){
             for(const inx in this.booking.cases){
                 if(this.booking.cases[inx].tmpId==value){
@@ -435,7 +435,9 @@ export default class InterpreterBookingFields extends Vue {
         newcase.caseType = ''
         newcase.courtLevel = ''
         newcase.courtClass = ''
+        newcase.courtClassOther = ''
         newcase.reason = ''
+        newcase.reasonOther = ''
         newcase.interpretationMode = ''
 
         newcase.language = language

@@ -173,6 +173,7 @@
                     v-for="tab,inx in sourceBookingDatesTimes" :key="inx"
                     @click="copyTab(tab)"
                     variant="primary"
+                    style="width:19rem;"
                     class="my-2 mx-5">
                         {{tab.name}}
                 </b-button>
@@ -274,7 +275,8 @@ export default class EditBookingModal extends Vue {
         }
     }
    
-    mounted() { 
+    mounted() {
+        this.interpreterDataReady = false;
         this.errorMsg=''
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
@@ -303,7 +305,7 @@ export default class EditBookingModal extends Vue {
                 date:date,
                 time:{start:bookingDate.startTime, end:bookingDate.finishTime},
                 beautyDate:beautyDate,
-                name:beautyDate+bookingDate.startTime.replace(' ',''),
+                name:beautyDate+bookingDate.startTime.replace(' ','')+' ('+bookingDate.status+')',
                 booking: booking,
                 bookingStates:this.prepopulateDefaultStates(),
                 original:true
@@ -472,11 +474,11 @@ export default class EditBookingModal extends Vue {
                     caseState.caseType = !(bookingCase.caseType)? false : null;
                     caseState.courtLevel = !(bookingCase.courtLevel)? false : null;
                     caseState.courtClass = !(bookingCase.courtClass)? false : null;
-                    caseState.courtClassOther = !(bookingCase.courtClass)? false : null;
+                    caseState.courtClassOther = bookingCase.courtClass=='OTHER' && !(bookingCase.courtClassOther)? false : null;
                     caseState.request = !(bookingCase.requestedBy)? false : null;
                     
                     caseState.reason = !(bookingCase.reason)? false : null;
-                    caseState.reasonOther = !(bookingCase.reason)? false : null;
+                    caseState.reasonOther = bookingCase.reason=='OTHER' && !(bookingCase.reasonOther)? false : null;
                     caseState.methodOfAppearance = !(bookingCase.methodOfAppearance)? false : null;
                     caseState.bilingual = !(bookingCase.bilingual != null)? false : null;
                     caseState.interpretationMode = (bookingCase.bilingual && !bookingCase.interpretationMode)? false : null;
@@ -500,8 +502,8 @@ export default class EditBookingModal extends Vue {
                     for(const caseitems of bookingStates.cases)
                         for(const casefield of Object.keys(caseitems)){
                             if(caseitems[casefield]==false && casefield!='tabNumber' && casefield!='tmpId'){ 
-                                console.log(eachBookingDateInx)
-                                console.log(caseitems.tabNumber)
+                                // console.log(eachBookingDateInx)
+                                // console.log(caseitems.tabNumber)
                                 if(showErrorPlace){
                                     this.tabIndex = Number(caseitems.tabNumber)
                                     Vue.nextTick(()=> this.caseTabId = Number(caseitems.tmpId) )                       
@@ -556,7 +558,7 @@ export default class EditBookingModal extends Vue {
             const index = this.allBookingDatesTimes.findIndex(item => item.booking.id==newBookingDate.id)
             if(index>-1){
                 this.allBookingDatesTimes[index].time = {start:newBookingDate.startTime, end:newBookingDate.finishTime};                
-                this.allBookingDatesTimes[index].name = this.allBookingDatesTimes[index].beautyDate+newBookingDate.startTime.replace(' ','');
+                this.allBookingDatesTimes[index].name = this.allBookingDatesTimes[index].beautyDate+newBookingDate.startTime.replace(' ','')+' ('+this.allBookingDatesTimes[index].booking.status+')';
                 this.allBookingDatesTimes[index].booking =  newBookingDate;
             }
             this.extractBookingCards()
@@ -604,7 +606,7 @@ export default class EditBookingModal extends Vue {
                     date:changedBookingDate.date,
                     time:time,
                     beautyDate:beautyDate,
-                    name:beautyDate+time.start.replace(' ',''),
+                    name:beautyDate+time.start.replace(' ','')+' ('+this.statusOptions[0].value+')',
                     booking:this.prepopulateDefaultValues(changedBookingDate.date, time),
                     bookingStates:this.prepopulateDefaultStates()                    
                 })
@@ -627,7 +629,7 @@ export default class EditBookingModal extends Vue {
         //console.log(this.allBookingDatesTimes)
         this.sortAllBookingDatesTimes()
         this.extractBookingCards()
-        // 
+        //        
     }
 
     public sortAllBookingDatesTimes(){
@@ -683,8 +685,8 @@ export default class EditBookingModal extends Vue {
     }
 
     public exportTabData(fields, source){
-        console.log(fields)
-        console.log(source)
+        // console.log(fields)
+        // console.log(source)
         const sourceCases = []
         for(const bookingCase of source.booking.cases){
             if(fields.includes(bookingCase.tmpId))
@@ -694,7 +696,7 @@ export default class EditBookingModal extends Vue {
         for(const target of this.allBookingDatesTimes){            
             if(target.name==source.name || target.booking.status == this.statusOptions[2].value ) continue
             
-            console.log(target)
+            // console.log(target)
             if(fields.includes('status')){
                 target.booking.status = JSON.parse(JSON.stringify(source.booking.status));
                 if(source.booking.status == this.statusOptions[2].value){

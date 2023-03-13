@@ -131,7 +131,7 @@ function getTotalHours(booking, cancelledDates){
         const start = moment(record.startTime, "hh:mm A")
         const end = moment(record.finishTime, "hh:mm A")
         const mid = moment("01:00 PM", "hh:mm A")
-        console.error(recordDate+' '+ record.startTime)
+        //console.error(recordDate+' '+ record.startTime)
         ////console.log(mid.format())
         ////console.log(end<=mid)
         ////console.log(start>=mid)
@@ -141,15 +141,15 @@ function getTotalHours(booking, cancelledDates){
         //console.log(record)
         
         const dateLanguagesType: number[] = []
-        for(const langItem of record.languages){
-
+        for(const cancelCase of record.cases){
+            const langItem = cancelCase.language
             let languageLevel = langItem.level
-            ////console.log(langItem.language)
+            ////console.log(langItem.languageName)
             
-            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistory = languageHistory.findIndex(lang => ((recordDate > lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistory)
 
-            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.language.toLowerCase()==lang.language.toLowerCase())))
+            const indexLanguageHistoryRev = languageHistoryRev.findIndex(lang => ((recordDate < lang.effective_date)&&(langItem.languageName.toLowerCase()==lang.language.toLowerCase())))
             //console.warn(indexLanguageHistoryRev)
             ////console.log(languageHistoryRev[indexLanguageHistoryRev])
 
@@ -160,8 +160,8 @@ function getTotalHours(booking, cancelledDates){
             }
 
             let languageType = '' 
-            if(langItem.language.includes('CART')) languageType='CART';
-            else if(langItem.language.includes('ASL')) languageType=('ASL'+languageLevel);
+            if(langItem.languageName.includes('CART')) languageType='CART';
+            else if(langItem.languageName.includes('ASL')) languageType=('ASL'+languageLevel);
             else languageType=('SPKL'+languageLevel);                
             dateLanguagesType.push(sortedRateNames.indexOf(languageType))
         }
@@ -251,7 +251,7 @@ function getDaysBetweenCancellationAndAssignment(assignmentStart, cancelDate){
         if(weekDayName=='Sa' || weekDayName=='Su' || holidayList.includes(nextDay)) continue
         daysBetweenCancellationAndAssignment.push(nextDay)
     }
-    console.warn(cancellationDateObj.format())
+    // console.warn(cancellationDateObj.format())
     //console.log(assignmentStartDate)
     //console.log(daysBetweenCancellationAndAssignment)
     return daysBetweenCancellationAndAssignment

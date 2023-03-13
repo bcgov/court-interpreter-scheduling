@@ -855,7 +855,8 @@ export default class DirectoryPage extends Vue {
         this.searching = true;
         this.interpreters = [];
         const language = this.languages.filter(lang => lang.name==this.language);
-
+        this.currentPage = 1;
+        
         const body = {
             "name":this.name,
             "active":this.active,

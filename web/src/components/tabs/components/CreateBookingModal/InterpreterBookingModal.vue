@@ -284,11 +284,11 @@ export default class InterpreterBookingModal extends Vue {
                     caseState.caseType = !(bookingCase.caseType)? false : null;
                     caseState.courtLevel = !(bookingCase.courtLevel)? false : null;
                     caseState.courtClass = !(bookingCase.courtClass)? false : null;
-                    caseState.courtClassOther = !(bookingCase.courtClass)? false : null;
+                    caseState.courtClassOther = bookingCase.courtClass=='OTHER' && !(bookingCase.courtClassOther)? false : null;
                     caseState.request = !(bookingCase.requestedBy)? false : null;
                     
                     caseState.reason = !(bookingCase.reason)? false : null;
-                    caseState.reasonOther = !(bookingCase.reason)? false : null;
+                    caseState.reasonOther = bookingCase.reason=='OTHER' && !(bookingCase.reasonOther)? false : null;
                     caseState.methodOfAppearance = !(bookingCase.methodOfAppearance)? false : null;
                     caseState.bilingual = !(bookingCase.bilingual != null)? false : null;
                     caseState.interpretationMode = (bookingCase.bilingual && !bookingCase.interpretationMode)? false : null;
@@ -311,8 +311,8 @@ export default class InterpreterBookingModal extends Vue {
                     for(const caseitems of bookingStates.cases)
                         for(const casefield of Object.keys(caseitems)){
                             if(caseitems[casefield]==false && casefield!='tabNumber' && casefield!='tmpId'){ 
-                                console.log(eachBookingDateInx)
-                                console.log(caseitems.tabNumber)
+                                // console.log(eachBookingDateInx)
+                                // console.log(caseitems.tabNumber)
                                 if(showErrorPlace){
                                     this.tabIndex = Number(caseitems.tabNumber)-1
                                     Vue.nextTick(()=> this.caseTabId = Number(caseitems.tmpId) )                       
