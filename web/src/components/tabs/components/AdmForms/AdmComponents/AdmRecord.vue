@@ -24,7 +24,13 @@
                 </template>
 
                 <template v-slot:cell(time)="data" >
-                    <div style="font-size:10.5pt;">{{data.value}}</div>
+                    <b-row class="mx-0 p-0">
+                        <div style="font-size:10.5pt;">{{data.value}}</div>
+                        <b-button size="sm" class="ml-2 mr-n1 p-0 border-0"
+                            variant="transparent"
+                            @click="copyTime(data.item)"
+                            ><b-icon-arrow-bar-right/></b-button>
+                    </b-row>
                 </template>
 
                 <template v-slot:cell(actualStartTime)="data" >                    
@@ -37,7 +43,7 @@
                         :state="data.item.actualStartTimeState">
                     </b-form-input>
                     <div v-if="data.item.actualStartTimeState==false" class="subtext" >eg. 09:00 AM</div>
-                    <div v-if="data.item.startAfterFinishState==false" class="subtext mr-n4" >Start-Time is after</div>
+                    <div v-if="data.item.startAfterFinishState==false" class="subtext mr-n4" >Start-Time is after the Finish-Time</div>
                     <div v-if="data.item.sessionLargerThan8hrsWarning==false" class="subtext-warning" >The session exceeds 8 hours !</div>
                 </template>
 
@@ -51,7 +57,7 @@
                         :state="data.item.actualFinishTimeState">
                     </b-form-input>
                     <div v-if="data.item.actualFinishTimeState==false" class="subtext" >eg. 04:00 PM</div>
-                    <div v-if="data.item.startAfterFinishState==false" class="subtext ml-n5" >the Finish-Time !</div>                    
+                    <div v-if="data.item.startAfterFinishState==false" class="subtext ml-n5" ></div>                    
                 </template>
 
                 <template v-slot:cell(approversInitials)="data" >                    
@@ -111,9 +117,8 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 import moment from 'moment';
 
-import {reasonCodeClass} from '../../BookingEnums'
 
-import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
+import { bookingAdmRecordInfoType, bookingInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 import RecordDetails from "./RecordDetails.vue"
 
@@ -134,9 +139,9 @@ export default class AdmRecord extends Vue {
         {key:'date',              label:'Date',                 sortable:false, thStyle:'width:8%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'methodOfAppearance',label:'Method of Appearance', sortable:false, thStyle:'width:17%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'comment',           label:'Comment',              sortable:false, thStyle:'width:23%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},       
-        {key:'time',              label:'Booking Time',         sortable:false, thStyle:'width:12%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'time',              label:'Booking Time',         sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center px-1'},
         {key:'actualStartTime',   label:'Actual Start Time',    sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'actualFinishTime',  label:'Finish Time',          sortable:false, thStyle:'width:12%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'actualFinishTime',  label:'Finish Time',          sortable:false, thStyle:'width:11%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'approversInitials', label:"Approver's Initials",  sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'}
     ]
     dataReady = false;
@@ -248,6 +253,16 @@ export default class AdmRecord extends Vue {
         
         if(time && !timeFormat.test(time)) return false
         return null
+    }
+
+    public copyTime(item: bookingInfoType){
+        item.actualStartTime=item.startTime;
+        item['actualStartTimeState']=null;            
+
+        item.actualFinishTime=item.finishTime;
+        item['actualFinishTimeState']=null;
+
+        this.recordChanged(item)
     }
 
 }

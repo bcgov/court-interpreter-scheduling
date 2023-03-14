@@ -53,7 +53,8 @@
                                 :items="record.cases"
                                 :fields="caseFields"                    
                                 small
-                                borderless>                                        
+                                borderless                                
+                                responsive="sm">                                        
                                 <template v-slot:cell(language)="data" >
                                     {{'('+data.value.level+') '+data.value.languageName |truncate-text(14,true)}}
                                 </template>
