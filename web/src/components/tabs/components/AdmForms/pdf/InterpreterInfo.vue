@@ -76,7 +76,7 @@ export default class InterpreterInfo extends Vue {
         this.multipleLanguages = this.booking.multipleLanguages
         this.phone = this.booking.interpreter.phone? Vue.filter('beautify-phone-no')(this.booking.interpreter.phone) :''
         this.address = this.booking.interpreter.fullAddress
-        this.email = this.booking.interpreter.email.replace('or', '<br>')
+        this.email = this.booking.interpreter.email.replace(',', '<br>')
     }
     
 }
