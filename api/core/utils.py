@@ -20,7 +20,7 @@ def getBaseUrl(request: Request):
         and ":" not in request.headers["x-forwarded-host"]
     ):
         # print("____X_FORWARDED_HOST_II")
-        return f"{settings.URL_SCHEME}://{request.headers['x-forwarded-host']}"
+        return f"{settings.URL_SCHEME}://{request.headers['x-forwarded-host']}/court-interpreter-scheduling"
     
     else:
         # print("____regular_URL___")
