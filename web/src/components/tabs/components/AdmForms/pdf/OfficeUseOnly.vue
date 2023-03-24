@@ -73,10 +73,10 @@
                 <td colspan="3" class="border-top border-right text-left"><div class="answer-record">{{feesGST}}</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">N/A</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">105</div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">{{resp0}}</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">10710</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">5542</div></td>
-                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">1500000</div></td>
+                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">{{project0}}</div></td>
                 <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
             </tr>
 
@@ -88,10 +88,10 @@
                 <td colspan="3" class="border-top border-right text-left"><div class="answer-record">{{expensesGST}}</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record">N/A</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">{{resp1}}</div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
                 <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
-                <td colspan="4" class="border-top border-right text-center"><div class="answer-record"></div></td>
-                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">1500000</div></td>
+                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">{{project1}}</div></td>
                 <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
             </tr> 
 
@@ -137,6 +137,11 @@ export default class OfficeUseOnly extends Vue {
     subtotalExpenses='0.00'
     expensesGST='0.00'
 
+    resp0=''
+    resp1=''
+    project0=''
+    project1=''
+
     officeUseChanges = false;
 
     mounted(){        
@@ -170,6 +175,12 @@ export default class OfficeUseOnly extends Vue {
         this.contractNumber = this.booking?.admDetail?.officeUse?.contractNumber 
         this.payStubComment = this.booking?.admDetail?.officeUse?.payStubComment 
         this.additionalInstructions = this.booking?.admDetail?.officeUse?.additionalInstructions
+
+        this.resp0 = this.booking?.admDetail?.officeUse?.resp0
+        this.resp1 = this.booking?.admDetail?.officeUse?.resp1
+        this.project0 = this.booking?.admDetail?.officeUse?.project0? this.booking.admDetail.officeUse.project0:'1500000'
+        this.project1 = this.booking?.admDetail?.officeUse?.project1? this.booking.admDetail.officeUse.project1:'1500000'
+
     }
     
 }

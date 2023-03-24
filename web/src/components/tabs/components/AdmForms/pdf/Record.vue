@@ -175,7 +175,7 @@ export default class Record extends Vue {
         let pageItem = 5 // per page
         const slicedRecords = []
         for(const record of this.records){            
-            pageItem +=3 //per case
+            pageItem +=4 //per case up down
             pageItem += record.cases.length
             // console.log(pageItem)
             if(pageItem <= pageCapacity[pageNum>0?1:0]){

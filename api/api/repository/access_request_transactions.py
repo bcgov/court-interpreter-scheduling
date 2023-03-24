@@ -130,9 +130,8 @@ class EmailService():
         self.recipient_name = interpreter_name
 
         #TODO for PROD
-        if(settings.ADM_PRODUCTION_ENV == 'true'):
-            print("OOOOOOOOOOOOOOOOOOOOOOOOOOO")
-            # self.recipients_email = interpreter_email
+        if(settings.ADM_PRODUCTION_ENV == 'true'):           
+            self.recipients_email = interpreter_email
         
         self.get_adm_email_body(type)        
         return self.send_request(f"Court Interpreter's ADM {type.capitalize()}", pdf_content, type)
@@ -143,11 +142,11 @@ class EmailService():
             body = f"Please find the attachment, a copy of the Invoice for your court interpreting session.\n\
             If you see any issues in the information, please let me know through email at \'{self.sender_email}\'. \n"
         else:
-            body = f"Please find the attachment, a copy of the court interpreting information Form (ADM322).\n\
-            Kindly fill the actual \'Start Time\' and \'Finish Time\' on the \'Record\' section of the attached file and \n\
-            send it back to me at \'{self.sender_email}\'.\n\
-            If you see any issues in the information, please let me know in the response. \n\
-            I will send you the Invoice upon receiving your confirmed times.\n"
+            body = f"Please find attached, a copy of the invoice as a confirmation for your booking. \n\
+            If you have any questions or concerns, please contact me at \'{self.sender_email}\'.\n"
+            
+            # Please find the attachment, a copy of the court interpreting information Form (ADM322).\n\
+            
 
         self.email_body = f"\
             Dear {self.recipient_name}, \n\n\
@@ -155,5 +154,5 @@ class EmailService():
             Regards,\n\
             {self.sender_name}\n\
             {self.sender_email}\n\
-            Court Services BC"
+            Court Services Branch"
 

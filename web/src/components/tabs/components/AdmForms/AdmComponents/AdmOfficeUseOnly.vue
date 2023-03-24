@@ -77,10 +77,10 @@
                         <b-td colspan="4" class="text-center border">$ {{feesGST}}</b-td>
                         <b-td colspan="4" class="text-center border">N/A</b-td>
                         <b-td colspan="4" class="text-center border">105</b-td>
-                        <b-td colspan="4" class="text-center border">15160</b-td>
+                        <b-td colspan="4" class="text-center border"><b-input v-model="resp0" @input="officeUseChanges=true;"/></b-td>
                         <b-td colspan="4" class="text-center border">10710</b-td>
                         <b-td colspan="4" class="text-center border">5542</b-td>
-                        <b-td colspan="5" class="text-center border">1500000</b-td>                        
+                        <b-td colspan="5" class="text-center border"><b-input v-model="project0" @input="officeUseChanges=true;"/></b-td>                        
                         <b-td colspan="16" class="text-center border"></b-td>
                     </b-tr>
 
@@ -89,10 +89,10 @@
                         <b-td colspan="4" class="text-center border">$ {{expensesGST}}</b-td>
                         <b-td colspan="4" class="text-center border">N/A</b-td>
                         <b-td colspan="4" class="text-center border"></b-td>
-                        <b-td colspan="4" class="text-center border"></b-td>
+                        <b-td colspan="4" class="text-center border"><b-input v-model="resp1" @input="officeUseChanges=true;"/></b-td>
                         <b-td colspan="4" class="text-center border"></b-td>
                         <b-td colspan="4" class="text-center border"></b-td>                        
-                        <b-td colspan="5" class="text-center border">1500000</b-td>
+                        <b-td colspan="5" class="text-center border"><b-input v-model="project1" @input="officeUseChanges=true;"/></b-td>
                         <b-td colspan="16" class="text-center border"></b-td>
                     </b-tr>
 
@@ -147,6 +147,12 @@ export default class AdmOfficeUseOnly extends Vue {
     subtotalExpenses='0.00'
     expensesGST='0.00'
 
+    resp0=''
+    resp1=''
+    project0=''
+    project1=''
+
+
     officeUseChanges = false;
                 
 
@@ -180,6 +186,12 @@ export default class AdmOfficeUseOnly extends Vue {
         this.contractNumber = this.booking?.admDetail?.officeUse?.contractNumber 
         this.payStubComment = this.booking?.admDetail?.officeUse?.payStubComment 
         this.additionalInstructions = this.booking?.admDetail?.officeUse?.additionalInstructions
+
+        this.resp0 = this.booking?.admDetail?.officeUse?.resp0
+        this.resp1 = this.booking?.admDetail?.officeUse?.resp1
+        this.project0 = this.booking?.admDetail?.officeUse?.project0? this.booking.admDetail.officeUse.project0:'1500000'
+        this.project1 = this.booking?.admDetail?.officeUse?.project1? this.booking.admDetail.officeUse.project1:'1500000'
+    
     }
 
     public saveOfficeUseChanges(){
@@ -190,6 +202,11 @@ export default class AdmOfficeUseOnly extends Vue {
         officeUse.contractNumber = this.contractNumber
         officeUse.payStubComment = this.payStubComment
         officeUse.additionalInstructions = this.additionalInstructions
+
+        officeUse.resp0 = this.resp0 
+        officeUse.resp1 = this.resp1
+        officeUse.project0 = this.project0
+        officeUse.project1 = this.project1
 
         const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
         admDetail.officeUse = officeUse

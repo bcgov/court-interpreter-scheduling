@@ -49,7 +49,7 @@ def beautify_name(lang_name):
         names = lang_name.split("<>")
         seperator = " <> "
     else:
-        names = lang_name.split("-")
+        names = lang_name.split(" ")
         seperator = " "
 
     language_name = ""

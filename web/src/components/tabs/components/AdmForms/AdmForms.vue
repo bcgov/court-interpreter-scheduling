@@ -298,7 +298,7 @@ export default class AdmForms extends Vue {
 
 
     public createInvoiceNumber(location: locationsInfoType, date:string){
-        const locationCode = location.shortDescription
+        const locationCode = ''; //location.shortDescription
         const firstBookingDate = moment(date).format("DDMMMYY").toUpperCase()        
         //__Name
         let name=''
