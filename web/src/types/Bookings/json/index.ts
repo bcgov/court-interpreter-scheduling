@@ -207,6 +207,10 @@ export interface officeUseOnlyVars{
     contractNumber: string;
     payStubComment: string;
     additionalInstructions: string;
+    resp0: string;
+    resp1: string;
+    project0: string;
+    project1: string;
 }
 
 export interface paymentDetailsVars{

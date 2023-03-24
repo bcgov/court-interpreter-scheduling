@@ -18,4 +18,6 @@ openpyxl >= 3.0.9
 lxml >= 4.6.4
 pynacl>=1.4
 
+# Util
+setuptools>=65.5.1
 
