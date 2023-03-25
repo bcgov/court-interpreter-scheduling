@@ -46,7 +46,7 @@ router = APIRouter(
 
 
 def logout_request(callback_uri):
-    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}&client_id=cis-api")
+    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}&client_id={client_id}")
 
 
 @router.get('/login/session/cb')
@@ -213,10 +213,9 @@ def migrate_sub(field: str, db: Session = Depends(get_db_session)):
     for usr in oidc_users:
 
         guid = usr.userinfo.get(field)
-        guid_hash = base64.urlsafe_b64encode(hashlib.sha1(str.encode(guid)).digest()).rstrip(b'=')
-        
         if guid:
             print(guid)
+            guid_hash = base64.urlsafe_b64encode(hashlib.sha1(str.encode(guid)).digest()).rstrip(b'=')
             user = db.query(UserModel).filter(UserModel.id == usr.user_id)
             user.update({
                 "username": guid_hash,
