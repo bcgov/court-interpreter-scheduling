@@ -85,8 +85,8 @@ def upgrade():
     make_relations(interpreter_table, language_table, interpreter_language_table)   
 
 def seed_interpreter_spoken():
-    filepath = os.getcwd()+'/alembic/seeds/SpokenLanguageDirectorySept_2022_CIS.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2022', engine='openpyxl')
+    filepath = os.getcwd()+'/alembic/seeds/SpokenLanguageDirectoryMarch21_2023_CIS.xlsx'
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='2023', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     
@@ -107,7 +107,7 @@ def seed_interpreter_spoken():
         {'label':'GST', 'field':'gst_no'},
         {'label':'Criminal Record Check', 'field':'crc_check_date', 'comment':'crc_comment'},           
         {'label':'COMMENTS', 'field':'comments'},
-        {'label':'Page 12 of contract received', 'field':'contract_valid', 'comment':'contract_comment'},
+        {'label':'CONTRACT', 'field':'contract_valid', 'comment':'contract_comment'},
     ]
 
     data = list()
@@ -115,7 +115,7 @@ def seed_interpreter_spoken():
     for item in items:
         name = json_content[item['label']]
         for key in name:
-            
+            # print(key)
             #LEVEL
             if item['label'] =='LEVEL':
                 data.append({item['field']:name[key].strip(), item['field2']:False, item['field3']:None, item['field4']:'System'})   
@@ -138,14 +138,14 @@ def seed_interpreter_spoken():
                 data[int(key)][item['field']] = None
                 data[int(key)][item['comment']] = name[key]
             
-            #Page 12 of contract received
-            elif (item['label'] =='Page 12 of contract received' and name[key].upper().strip() == 'YES'):
+            #CONTRACT
+            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'YES'):
                 data[int(key)][item['field']] = True
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='Page 12 of contract received' and name[key].upper().strip() == 'NO'):                
+            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'NO'):                
                 data[int(key)][item['field']] = False
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='Page 12 of contract received'):
+            elif (item['label'] =='CONTRACT'):
                 data[int(key)][item['field']] = False
                 if 'NO,' in name[key].upper().strip():
                     comment = name[key].replace('NO,', '')
@@ -171,7 +171,7 @@ def seed_interpreter_spoken():
     return data
 
 def seed_interpreter_visual():
-    filepath = os.getcwd()+'/alembic/seeds/VisualLanguageInterpretersList_as_of_ September14_2021e.xlsx'
+    filepath = os.getcwd()+'/alembic/seeds/VisualLanguageInterpretersListMarch21_2023_CIS.xlsx'
     excel_data_fragment = pandas.read_excel(filepath, sheet_name='2021', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
@@ -193,7 +193,7 @@ def seed_interpreter_visual():
         {'label':'EMAIL ADDRESS', 'field':'email'},
         {'label':'FAX', 'field':'fax'},
         {'label':'COMMENTS', 'field':'comments'},
-        {'label':'Page 12 contract received', 'field':'contract_valid', 'comment':'contract_comment'},
+        {'label':'CONTRACT', 'field':'contract_valid', 'comment':'contract_comment'},
     ]
 
     data = list()
@@ -201,7 +201,7 @@ def seed_interpreter_visual():
     for item in items:
         name = json_content[item['label']]
         for key in name:
-            
+            # print(key)
             #LEVEL
             if item['label'] =='Level':
                 data.append({item['field']:name[key].strip(), item['field2']:None, item['field3']:None, item['field4']:'System'})
@@ -227,15 +227,29 @@ def seed_interpreter_visual():
                 splited_text = name[key].split(',')
                 data[int(key)][item['field']] = splited_text[0].strip()
                 data[int(key)][item['state']] = splited_text[1].strip()
+
+            #FIRST_NAME
+            elif (item['label'] =='FIRST NAME' and ' ' in name[key].strip()):
+                splited_text = name[key].split(' ')
+                data[int(key)][item['field']] = splited_text[0].capitalize().strip()+' '+splited_text[1].capitalize().strip()
+            elif (item['label'] =='FIRST NAME'):
+                data[int(key)][item['field']] = name[key].capitalize().strip()
+
+            #LAST_NAME
+            elif (item['label'] =='LAST NAME' and '-' in name[key]):
+                splited_text = name[key].split('-')
+                data[int(key)][item['field']] = splited_text[0].capitalize().strip()+'-'+splited_text[1].capitalize().strip()
+            elif (item['label'] =='LAST NAME'):
+                data[int(key)][item['field']] = name[key].capitalize().strip()
             
-            #Page 12 contract received
-            elif (item['label'] =='Page 12 contract received' and name[key].upper().strip() == 'YES'):
+            #CONTRACT
+            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'YES'):
                 data[int(key)][item['field']] = True
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='Page 12 contract received' and name[key].upper().strip() == 'NO'):                
+            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'NO'):                
                 data[int(key)][item['field']] = False
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='Page 12 contract received'):
+            elif (item['label'] =='CONTRACT'):
                 data[int(key)][item['field']] = False
                 if 'NO,' in name[key].upper().strip():
                     comment = name[key].replace('NO,', '')
@@ -279,7 +293,8 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
     counter = 0 
     
     for interpreter in combined_interpreters:
-        
+        # print(languages_data)
+        # print(interpreter['language'].upper())
         id_langguage=[lang for lang in languages_data if lang['name'].upper() == interpreter['language'].upper().strip()][0]['id']
         
         same_interpreter = [inter for inter in interpreters if (
@@ -313,7 +328,7 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
             'level':level, 
             'language':interpreter['language'].strip()
         })
-   
+    
     op.bulk_insert(interpreter_table, interpreters)
     op.bulk_insert(language_table, languages_data)
     op.bulk_insert(interpreter_language_table, interpreter_language)

@@ -70,7 +70,7 @@ def downgrade():
     op.add_column('booking_dates', sa.Column('bilingual', sa.BOOLEAN(), autoincrement=False, nullable=True))
     op.add_column('booking_dates', sa.Column('file', sa.VARCHAR(), autoincrement=False, nullable=True))
     op.add_column('booking_dates', sa.Column('case_type', sa.VARCHAR(), autoincrement=False, nullable=True))
-    op.add_column('booking_dates', sa.Column('federal', sa.BOOLEAN(), autoincrement=False, nullable=False))
+    op.add_column('booking_dates', sa.Column('federal', sa.BOOLEAN(), autoincrement=False, nullable=False, server_default='f'))
     op.add_column('booking_dates', sa.Column('requested_by', postgresql.ENUM('Court', 'Crown', 'Applicant', 'Defence', 'Respondent', name='booking_requested_by'), server_default=sa.text("'Court'::booking_requested_by"), autoincrement=False, nullable=False))
     op.add_column('booking_dates', sa.Column('court_level', sa.VARCHAR(), autoincrement=False, nullable=True))
     op.add_column('booking_dates', sa.Column('registry', sa.VARCHAR(), autoincrement=False, nullable=True))
