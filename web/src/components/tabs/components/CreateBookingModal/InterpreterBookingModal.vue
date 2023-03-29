@@ -48,7 +48,12 @@
                 v-if="allowBooking"                    
                 variant="success" 
                 @click="saveNewBooking">
-                <b-icon-calendar-check-fill class="mr-2"/>Create Booking
+                
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else> 
+                        <b-icon-calendar-check-fill class="mr-2"/> 
+                        Create Booking 
+                    </span>
             </b-button>                
         </b-row> 
 
@@ -76,7 +81,7 @@ import moment from 'moment-timezone'
 
 import { bookingDateTimesInfoType, bookingInfoType } from '@/types/Bookings/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
-
+import Spinner from '@/components/utils/Spinner.vue'
 
 import { bookingStatesInfoType} from '@/types/Bookings';
 
@@ -89,7 +94,8 @@ import "@/store/modules/common";
 const commonState = namespace("Common");
 
 @Component({
-    components:{       
+    components:{  
+       Spinner,     
        InterpreterBookingFields
     }
 })
@@ -123,7 +129,7 @@ export default class InterpreterBookingModal extends Vue {
     errorMsg=''    
     allowBooking = false;    
     registry = {id:0, name:''};
-
+    savingData = false;
     caseTabId=null
 
     statusOptions
@@ -139,6 +145,7 @@ export default class InterpreterBookingModal extends Vue {
    
     mounted() {
         this.errorMsg=''
+        this.savingData = false;
         this.interpreterDataReady = false; 
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
@@ -230,7 +237,7 @@ export default class InterpreterBookingModal extends Vue {
     public saveNewBooking(){
         if (this.checkBookingStates(true)){ 
             //console.log(this.allBookingDatesTimes)
-
+            this.savingData = true;
             const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
             if(location.length==1){                
                 this.registry.name = location[0].name
@@ -248,11 +255,13 @@ export default class InterpreterBookingModal extends Vue {
             this.$http.post('/booking', body)
             .then((response) => {            
                 if(response?.data){
-                    this.closeBookingWindow();
+                    this.savingData = false;
+                    this.closeBookingWindow();                    
                     this.$router.push({ name: "bookings" });                
                 }
                 
             },(err) => {
+                this.savingData = false;
                 this.errorMsg=err.response.data.detail          
             });
         }        

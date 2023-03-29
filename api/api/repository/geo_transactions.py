@@ -61,7 +61,7 @@ def get_next_update_date(update_schedule, ref_date = None):
 
 
 
-def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
+def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session, force):
        
     interpreter_query = db.query(InterpreterModel).filter(InterpreterModel.id==id)
     interpreter = interpreter_query.first()
@@ -89,7 +89,7 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
 
         court_distance = court_distance_query.first()
 
-        if court_distance is not None and court.geo_service == "GOOGLE" and interpreter.geo_service == "GOOGLE":
+        if force!=True and court_distance is not None and court.geo_service == "GOOGLE" and interpreter.geo_service == "GOOGLE":
             continue
         # logger.info(f"Updating court {court.id} >  interpreter {interpreter.id}")
 
@@ -172,7 +172,7 @@ def update_one_interpreter_geo_coordinates_in_db(id:int, db: Session):
     db.commit()       
 
 
-def update_interpreter_geo_coordinates_in_db(db: Session):
+def update_interpreter_geo_coordinates_in_db(db: Session, force):
     
     geo_status = db.query(GeoStatusModel).where(GeoStatusModel.name=='interpreters')
 
@@ -188,7 +188,7 @@ def update_interpreter_geo_coordinates_in_db(db: Session):
 
     for interpreter in interpreters:
         # print(interpreter.id)
-        update_one_interpreter_geo_coordinates_in_db(interpreter.id, db)
+        update_one_interpreter_geo_coordinates_in_db(interpreter.id, db, force)
         count = count+1
 
         progress = int(100*count/total_interpreters)+1

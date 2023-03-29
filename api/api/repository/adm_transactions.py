@@ -73,7 +73,7 @@ def get_adm322_pdf(request: PdfSchema, db: Session, username , email=None):
         pdf_type = 'EMAILED-'+pdf_type
 
     interpreter_name = str(booking.interpreter.first_name + ' '+booking.interpreter.last_name)
-    interpreter_email = str(booking.interpreter.email).replace(' or ',',')
+    interpreter_email = str(booking.interpreter.email)
 
     pdf_query = db.query(PdfModel).filter(PdfModel.booking_id==booking_id, PdfModel.pdf_type==pdf_type)
     if(pdf_query.first()):

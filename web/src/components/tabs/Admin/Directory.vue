@@ -504,7 +504,7 @@
                     </b-col>          
                 </b-row>
                 <b-row class="ml-1">
-                    <b-col cols="6">
+                    <b-col cols="8">
                         <b-form-group
                             class="labels"                
                             label="Email" 
@@ -516,7 +516,7 @@
                                 v-model="interpreter.email">
                             </b-form-input>
                         </b-form-group>
-                        <div v-if="interpreterStates.email==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Email</div>         
+                        <div v-if="interpreterStates.email==false" style="margin-top:-1rem; font-size:10pt;" class="ml-1 text-danger" >Invalid Email. If there are multiple Emails, they should be comma( , ) separated.</div>         
                     </b-col>                     
                 </b-row>
 
@@ -637,20 +637,32 @@
                     variant="danger"
                     class="mr-auto" 
                     @click="confirmDeleteInterpreter">
-                    <b-icon-person-x-fill class="mr-1" />Delete
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else>
+                        <b-icon-person-x-fill class="mr-1" />Delete
+                    </span>
                 </b-button>
-                <b-button variant="dark" @click="closeInterpreterWindow">Cancel</b-button>
+                <b-button variant="dark" @click="closeInterpreterWindow">
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else>Cancel</span>
+                </b-button>
                 <b-button 
                     v-if="isCreate"
                     variant="success" 
                     @click="saveNewInterpreter">
-                    <b-icon-person-plus-fill class="mr-1"/>Add Interpreter
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else>
+                        <b-icon-person-plus-fill class="mr-1"/>Add Interpreter
+                    </span>
                 </b-button>
                 <b-button 
                     v-else-if="!isCreate"
                     variant="success" 
                     @click="saveInterpreter">
-                    <b-icon-person-check-fill class="mr-1"/>Save
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else>
+                        <b-icon-person-check-fill class="mr-1"/>Save
+                    </span>
                 </b-button>
             </template>
 
@@ -744,7 +756,8 @@ export default class DirectoryPage extends Vue {
     dataReady = false;
     searching = false;
     dataLoaded = false;
-    
+    savingData = false;
+
     name = '';
     keyword = '';
     active = true;
@@ -839,6 +852,7 @@ export default class DirectoryPage extends Vue {
         this.dataLoaded = false;
         this.dataReady = false; 
         this.searching = false;
+        this.savingData = false;
         this.lastMonth = moment().add(-1, 'month').format()
         this.interpreterStates = {} as interpreterStatesInfoType;
         this.extractInfo()
@@ -886,6 +900,7 @@ export default class DirectoryPage extends Vue {
     public editInterpreter(interpreterToEdit: interpreterInfoType){              
         this.interpreter = JSON.parse(JSON.stringify(interpreterToEdit));
         this.isCreate = false;
+        this.savingData = false;
         this.showInterpreterWindow = true;
         this.interpreterDataReady = true;        
     }
@@ -903,7 +918,8 @@ export default class DirectoryPage extends Vue {
 
     public createInterpreter(){       
         this.interpreter = {} as interpreterInfoType;        
-        this.isCreate = true;        
+        this.isCreate = true;
+        this.savingData = false;        
         this.interpreterDataReady = false;
         this.interpreter.languages = [];  
         this.interpreter.province = this.provinceOptions[1].value;    
@@ -946,7 +962,7 @@ export default class DirectoryPage extends Vue {
     
     public saveNewInterpreter(){
         if (this.checkInterpreterStates()){ 
-
+            this.savingData = true;
             if(this.interpreter.criminalRecordCheckDate){
                 const crcDate = new Date(this.interpreter.criminalRecordCheckDate);           
                 this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
@@ -955,12 +971,13 @@ export default class DirectoryPage extends Vue {
             this.$http.post('/interpreter', this.interpreter)
             .then((response) => {            
                 if(response?.data){
+                    this.savingData = false;
                     this.closeInterpreterWindow();
                     // this.find();                
                 }
                 
             },(err) => {
-                            
+                this.savingData = false;
             });
 
         }        
@@ -969,7 +986,7 @@ export default class DirectoryPage extends Vue {
     public saveInterpreter(){    
         
         if (this.checkInterpreterStates()){
-
+            this.savingData = true;
             const crcDate = new Date(this.interpreter.criminalRecordCheckDate);
             this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
 
@@ -977,11 +994,12 @@ export default class DirectoryPage extends Vue {
             .then((response) => {            
                 if(response?.data){
                     this.closeInterpreterWindow();
+                    this.savingData = false;
                     this.find();                
                 }
                 
             },(err) => {
-                            
+                this.savingData = false;
             });
         }
     }
@@ -1029,12 +1047,12 @@ export default class DirectoryPage extends Vue {
         return false
     }
 
-    public checkEmailFormat(email){
-        
-        const emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;               
-        if(email){     
-            if(!emailFormat.test(email)) return false
-            return null
+    public checkEmailFormat(emails){
+        const separatedEmails = emails.split(',')
+        for( const email of separatedEmails){
+            const emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;               
+            if(email && !emailFormat.test(email.trim())) 
+                return false                            
         }
         return null
     }
@@ -1128,7 +1146,7 @@ export default class DirectoryPage extends Vue {
     }
 
     public clearStates(){
-
+        this.savingData = false;
         for(const field of Object.keys(this.interpreterStates)){
             this.interpreterStates[field] = null;
                 

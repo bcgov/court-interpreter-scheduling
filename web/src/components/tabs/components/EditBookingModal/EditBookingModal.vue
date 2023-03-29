@@ -85,8 +85,11 @@
             <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel Changes</b-button>
             <b-button                     
                 variant="success"                 
-                @click="saveBooking">
-                <b-icon-check-square class="mr-2"/>Save Changes
+                @click="saveBooking"> 
+                <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                <span v-else> 
+                    <b-icon-check-square class="mr-2"/>Save Changes
+                </span>
             </b-button>                
         </b-row>
 
@@ -188,8 +191,9 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import moment from 'moment-timezone'
 import * as _ from 'underscore';
 
-import { bookingDateTimesInfoType, bookingInfoType } from '@/types/Bookings/json';
+import { bookingInfoType } from '@/types/Bookings/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
+import Spinner from '@/components/utils/Spinner.vue'
 
 import { bookingStatesInfoType } from '@/types/Bookings';
 import DateCard from "../DateComponents/DateCard.vue"
@@ -207,6 +211,7 @@ const commonState = namespace("Common");
         EditBookingFields,
         DateCard,
         BookingDatePicker,
+        Spinner,
     }
 })
 export default class EditBookingModal extends Vue {
@@ -243,6 +248,7 @@ export default class EditBookingModal extends Vue {
     editDateReady = false
     updateCards=0
     errorMsg=''
+    savingData = false;
 
     caseTabId=null
     showCopyWindow = false
@@ -278,6 +284,7 @@ export default class EditBookingModal extends Vue {
     mounted() {
         this.interpreterDataReady = false;
         this.errorMsg=''
+        this.savingData = false;
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
         this.registry = {id:this.registryLocationId, name:''};
@@ -391,7 +398,7 @@ export default class EditBookingModal extends Vue {
     public saveBooking(){
         if (this.checkBookingStates(true)){ 
             //console.log(this.allBookingDatesTimes)
-
+            this.savingData = true;
             const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
             if(location.length==1){                
                 this.registry.name = location[0].name
@@ -411,9 +418,11 @@ export default class EditBookingModal extends Vue {
                 if(response?.data){
                     this.closeBookingWindow();                 
                 }
+                this.savingData = false;
                 
             },(err) => {
                 //console.log(err.response.data.detail)
+                this.savingData = false;
                 this.errorMsg=err.response.data.detail           
             });
         }        
@@ -430,31 +439,7 @@ export default class EditBookingModal extends Vue {
             let booking = eachBookingDate.booking
             const bookingStates = eachBookingDate.bookingStates
 
-            if(booking.status==statusOptions[2].value){                
-            //     const originalBookingDate = this.bookingDates.filter(bookingdate =>bookingdate.id==booking.id)
-            //     if(originalBookingDate.length>0){
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.caseName = JSON.parse(JSON.stringify(originalBookingDate[0].caseName));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.caseType = JSON.parse(JSON.stringify(originalBookingDate[0].caseType));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.courtLevel = JSON.parse(JSON.stringify(originalBookingDate[0].courtLevel));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.courtClass = JSON.parse(JSON.stringify(originalBookingDate[0].courtClass));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.comment = JSON.parse(JSON.stringify(originalBookingDate[0].comment));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.methodOfAppearance = JSON.parse(JSON.stringify(originalBookingDate[0].methodOfAppearance));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.prosecutor = JSON.parse(JSON.stringify(originalBookingDate[0].prosecutor));        
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.reason = JSON.parse(JSON.stringify(originalBookingDate[0].reason));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.registry = JSON.parse(JSON.stringify(originalBookingDate[0].registry));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.requestedBy = JSON.parse(JSON.stringify(originalBookingDate[0].requestedBy));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.room = JSON.parse(JSON.stringify(originalBookingDate[0].room));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.file = JSON.parse(JSON.stringify(originalBookingDate[0].file));
-                    
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.federal = JSON.parse(JSON.stringify(originalBookingDate[0].federal));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.languages = JSON.parse(JSON.stringify(originalBookingDate[0].languages));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.locationId = JSON.parse(JSON.stringify(originalBookingDate[0].locationId));
-
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.startTime = JSON.parse(JSON.stringify(originalBookingDate[0].startTime));
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.finishTime = JSON.parse(JSON.stringify(originalBookingDate[0].finishTime));
-
-            //         this.allBookingDatesTimes[eachBookingDateInx].booking.bilingual = JSON.parse(JSON.stringify(originalBookingDate[0].bilingual));
-            //     }
+            if(booking.status==statusOptions[2].value){                            
                 continue
             }
     

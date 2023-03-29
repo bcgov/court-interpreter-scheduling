@@ -40,7 +40,7 @@ def update_locations(db: Session= Depends(get_db_session), user = Depends(super_
 @router.get('/update-geo-coordinates')
 def update_geo_coordinates_of_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(super_admin)):
 
-    update_interpreter_geo_coordinates_in_db(db)
+    update_interpreter_geo_coordinates_in_db(db, force=True)
     return "Update has been performed."
 
 
@@ -57,7 +57,7 @@ def get_All_Interpreters(db: Session= Depends(get_db_session), user = Depends(su
 @router.put('/update-geo-coordinates/{id}')
 def update_geo_coordinates_of_All_Interpreters(id:int, db: Session= Depends(get_db_session), user = Depends(super_admin)):
 
-    update_one_interpreter_geo_coordinates_in_db(id, db)
+    update_one_interpreter_geo_coordinates_in_db(id, db, force=False)
     return "Update has been performed."
 
 

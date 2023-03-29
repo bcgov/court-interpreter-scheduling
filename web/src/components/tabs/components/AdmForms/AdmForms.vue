@@ -16,7 +16,10 @@
             
             <div v-if="!bookingRecordsApproved && recordsReadyForApproval" class="text-right mr-1 mb-5">
                 <b-button @click="IApproveAllRecords(true)" variant="warning">
-                    I approve all Records<b-icon-calendar-check class="ml-2"/>
+                    <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span v-else>
+                        I approve all Records<b-icon-calendar-check class="ml-2"/>
+                    </span>
                 </b-button>
             </div>
 
@@ -159,11 +162,13 @@ export default class AdmForms extends Vue {
     emailContent = {} as sentEmailContentInfoType
     showSentEmail = false
     disablePrint=false
+    savingData = false;
 
     lastPageAdmItemsNum = {num:0}
 
     mounted(){
-        this.printingPDF=false        
+        this.printingPDF=false
+        this.savingData = false;
         this.recordsReadyForApproval = false  
         this.getBooking()
     }
@@ -421,10 +426,13 @@ export default class AdmForms extends Vue {
 
     public saveBooking(booking: bookingSearchResultInfoType){
         this.errorMsg =''
+        this.savingData = true;
         this.$http.put('/booking/adm/' + booking.id, booking)
-        .then((response) => {                                    
+        .then((response) => {
+            this.savingData = false;                                    
             this.getBooking();
-        },(err) => {            
+        },(err) => { 
+            this.savingData = false;           
             this.errorMsg=err.response.data.detail
             Vue.filter('scrollToLocation')('alert-msg')
         });               
