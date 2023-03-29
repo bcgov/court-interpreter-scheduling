@@ -1048,6 +1048,7 @@ export default class DirectoryPage extends Vue {
     }
 
     public checkEmailFormat(emails){
+        if(!emails) return null
         const separatedEmails = emails.split(',')
         for( const email of separatedEmails){
             const emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;               
