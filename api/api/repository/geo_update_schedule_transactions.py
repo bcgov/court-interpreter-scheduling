@@ -88,11 +88,11 @@ def get_time_diff(id, db:Session):
 
 def update_geo(updating_name, progress, db):
     
-    if progress==100:
+    # if progress==100:
         print("__________________________Updating____________________________>>>______"+str(updating_name))
                 
         if updating_name=='interpreters':
-            update_interpreter_geo_coordinates_in_db(db)
+            update_interpreter_geo_coordinates_in_db(db, force=False)
         elif updating_name=='locations':
             update_courts_info_in_db(db)  
         

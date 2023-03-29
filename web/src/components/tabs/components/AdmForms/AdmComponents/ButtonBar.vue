@@ -3,7 +3,10 @@
         <hr v-if="position=='bottom'"/>
         <div class="border-0 row">
             <div style="width:39%;">
-                <b-button class="float-left ml-2" variant="dark" @click="closePrint"><span style="font-size: 18px;">Cancel</span></b-button>
+                <b-button class="float-left ml-2" variant="dark" @click="closePrint">
+                    <spinner color="#FFF" v-if="printingPDF" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                    <span style="font-size: 18px;" v-else>Cancel</span>
+                </b-button>
             </div>
             <div style="width:22%;">
                 <b-button class="mx-5" variant="warning" @click="savePrint(true)">

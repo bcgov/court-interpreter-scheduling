@@ -205,24 +205,24 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
 
 
     
-@router.get('/migrate_sub')
-def migrate_sub(field: str, db: Session = Depends(get_db_session)):
+# @router.get('/migrate_sub')
+# def migrate_sub(field: str, db: Session = Depends(get_db_session)):
     
-    oidc_users = db.query(OidcUserModel)    
+#     oidc_users = db.query(OidcUserModel)    
     
-    for usr in oidc_users:
+#     for usr in oidc_users:
 
-        guid = usr.userinfo.get(field)
-        if guid:
-            print(guid)
-            guid_hash = base64.urlsafe_b64encode(hashlib.sha1(str.encode(guid)).digest()).rstrip(b'=')
-            user = db.query(UserModel).filter(UserModel.id == usr.user_id)
-            user.update({
-                "username": guid_hash,
-                "authorization_id": guid
-            })
-            oidc_user = db.query(OidcUserModel).filter(OidcUserModel.id == usr.id)
-            oidc_user.update({        
-                "sub": guid
-            })
-            db.commit()
+#         guid = usr.userinfo.get(field)
+#         if guid:
+#             print(guid)
+#             guid_hash = base64.urlsafe_b64encode(hashlib.sha1(str.encode(guid)).digest()).rstrip(b'=')
+#             user = db.query(UserModel).filter(UserModel.id == usr.user_id)
+#             user.update({
+#                 "username": guid_hash,
+#                 "authorization_id": guid
+#             })
+#             oidc_user = db.query(OidcUserModel).filter(OidcUserModel.id == usr.id)
+#             oidc_user.update({        
+#                 "sub": guid
+#             })
+#             db.commit()

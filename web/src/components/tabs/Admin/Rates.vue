@@ -43,7 +43,10 @@
                 <b-col cols="6"></b-col>
                 
                 <b-col cols="3" class="ml-0 pl-0 my-auto py-0">
-                    <b-button v-if="enableSaveButton" style="float: right;" variant="success" @click="saveChanges">Save Changes</b-button>
+                    <b-button v-if="enableSaveButton" style="float: right;" variant="success" @click="saveChanges">
+                        <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; height:1.9rem; transform:translate(0px,-25px);"/>
+                        <span v-else> Save Changes</span>
+                    </b-button>
                 </b-col>
             </b-row>  
            
@@ -61,11 +64,13 @@ const commonState = namespace("Common");
 
 import { rateJsonInfoType, ratesInfoType } from '@/types/Common';
 import {getRatesIndices} from "./RateFunctions"
+import Spinner from '@/components/utils/Spinner.vue'
 
 import RateBox from './components/RateBox.vue'
 
 @Component({
     components:{
+        Spinner,
         RateBox
     }
 })
@@ -75,7 +80,7 @@ export default class Rates extends Vue {
     public UpdateRates!: (newRates: rateJsonInfoType[]) => void
 
     dataLoaded = false; 
-    
+    savingData = false;
     enableSaveButton = false;
     
     dismissCountDown =0
@@ -84,6 +89,7 @@ export default class Rates extends Vue {
     rates = {} as ratesInfoType;
     
     mounted() { 
+        this.savingData = false;
         this.loadAllRates()        
     }
 
@@ -120,14 +126,16 @@ export default class Rates extends Vue {
                 
         const allRates = JSON.parse(JSON.stringify(this.allRates))
         allRates.forEach(rate=>rate.valueChangedDate=moment(rate.valueChangedDate).format())
-        
+        this.savingData = true;
         this.$http.put('/rate', allRates).then(res=>{
             if(res?.status==202){
                 this.alertType="success"
                 this.dismissCountDown=2
             }
+            this.savingData = false;
             this.loadAllRates()
         },error => {
+            this.savingData = false;
             this.alertType="danger"
             this.dismissCountDown=2           
         })
