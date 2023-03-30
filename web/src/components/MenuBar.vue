@@ -75,7 +75,7 @@
 			{name:'language', label:'Language Directory', super_admin:false},
 			{name:'user-role', label:'Manage User', super_admin:false},
 			{name:'rates', label:'Manage Rates', super_admin:false},
-			{name:'update-geo', label:'Update Coordinates', super_admin:true}
+			{name:'update-geo', label:'Update Coordinates', super_admin:false}
 		]
 
 		@Watch('$route', { immediate: true, deep: true })
