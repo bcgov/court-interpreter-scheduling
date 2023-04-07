@@ -91,7 +91,7 @@ export function paymentDetails(booking){
             form.lunchSubExp = (Number(form.lunchTotalDays) * Number(form.lunchRate)).toFixed(2)
             form.lunchTotalExp = form.lunchSubExp
 
-            form.dinnerRate = travel.startDate >= rates['DateDinner']? rates['DINNER'] : rates['OldDINNER']
+            form.dinnerRate = travel.startDate >= rates['DateDINNER']? rates['DINNER'] : rates['OldDINNER']
             form.dinnerTotalDays = travel.dinner? travel.dinner.toFixed(1) :'0.0'
             form.dinnerSubExp = (Number(form.dinnerTotalDays) * Number(form.dinnerRate)).toFixed(2)
             form.dinnerTotalExp = form.dinnerSubExp

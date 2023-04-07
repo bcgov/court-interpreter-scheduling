@@ -8,7 +8,7 @@ from api.schemas.token_schema import TokenDataSchema
 
 SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 10
+ACCESS_TOKEN_EXPIRE_MINUTES = 3
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
