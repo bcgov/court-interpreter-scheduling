@@ -43,7 +43,7 @@ export function paymentDetails(booking){
                 if(rates[key]>maxLanguageRate) maxLanguageRate = rates[key]
                 form[courtFeeItems[0]+key]= rates[key]
                 form[courtFeeItems[1]+key]= interpret[key].toFixed(1)
-                form[courtFeeItems[2]+key]= (interpret[key]*Number(form[courtFeeItems[0]+key])).toFixed(2)
+                form[courtFeeItems[2]+key]= ((interpret[key]*Number(form[courtFeeItems[0]+key]))+0.0001).toFixed(2)
                 form[courtFeeItems[3]+key]= form[courtFeeItems[2]+key]
                 totalCourtHourFees += Number(form[courtFeeItems[3]+key])
                 form.includeCourtHrs = true;
@@ -53,7 +53,7 @@ export function paymentDetails(booking){
         if(travel.status =='travel'){
             form.travelHrRate = maxLanguageRate.toFixed(2)
             form.travelTotalHrs = travel.totalHours? travel.totalHours.toFixed(1): '0.0'
-            form.travelTotal = (Number(form.travelHrRate) * Number(form.travelTotalHrs)).toFixed(2)
+            form.travelTotal = ((Number(form.travelHrRate) * Number(form.travelTotalHrs))+0.0001).toFixed(2)
         }
         form.travelPayableFee = form.travelTotal? form.travelTotal : '0.00'
 
@@ -64,7 +64,7 @@ export function paymentDetails(booking){
 
         if(form.gstNumber){
             form.feesGST = (
-                Number(form.feesSubtotal) * Number(form.gstRate)
+               ( Number(form.feesSubtotal) * Number(form.gstRate) )+0.0001 
             ).toFixed(2);
         }
 
@@ -78,22 +78,22 @@ export function paymentDetails(booking){
             
             form.travelKMsRate = travel.startDate >= rates['DateMILEAGE']? rates['MILEAGE'] : rates['OldMILEAGE']
             form.travelTotalKMs =  travel.totalKilometers? travel.totalKilometers.toFixed(2): '0.00'
-            form.travelSubExp = (Number(form.travelTotalKMs) * Number(form.travelKMsRate)).toFixed(2)
+            form.travelSubExp = ((Number(form.travelTotalKMs) * Number(form.travelKMsRate))+0.0001).toFixed(2)
             form.travelTotalExp = form.travelSubExp 
 
             form.breakfastRate = travel.startDate >= rates['DateBREAKFAST']? rates['BREAKFAST'] : rates['OldBREAKFAST']
             form.breakfastTotalDays = travel.breakfast? travel.breakfast.toFixed(1) :'0.0'
-            form.breakfastSubExp = (Number(form.breakfastTotalDays) * Number(form.breakfastRate)).toFixed(2)
+            form.breakfastSubExp = ((Number(form.breakfastTotalDays) * Number(form.breakfastRate))+0.0001).toFixed(2)
             form.breakfastTotalExp = form.breakfastSubExp
 
             form.lunchRate = travel.startDate >= rates['DateLUNCH']? rates['LUNCH'] : rates['OldLUNCH']
             form.lunchTotalDays = travel.lunch? travel.lunch.toFixed(1) :'0.0'
-            form.lunchSubExp = (Number(form.lunchTotalDays) * Number(form.lunchRate)).toFixed(2)
+            form.lunchSubExp = ((Number(form.lunchTotalDays) * Number(form.lunchRate))+0.0001).toFixed(2)
             form.lunchTotalExp = form.lunchSubExp
 
             form.dinnerRate = travel.startDate >= rates['DateDINNER']? rates['DINNER'] : rates['OldDINNER']
             form.dinnerTotalDays = travel.dinner? travel.dinner.toFixed(1) :'0.0'
-            form.dinnerSubExp = (Number(form.dinnerTotalDays) * Number(form.dinnerRate)).toFixed(2)
+            form.dinnerSubExp = ((Number(form.dinnerTotalDays) * Number(form.dinnerRate))+0.0001).toFixed(2)
             form.dinnerTotalExp = form.dinnerSubExp
 
                

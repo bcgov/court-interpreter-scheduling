@@ -417,7 +417,7 @@ import {bookingSearchResultInfoType, gstInfoType, paymentDetailsVars, totalInter
 import UnderlineText from "./UnderlineText.vue"
 import {paymentDetailsInfoType} from '@/types/Bookings';
 import {languageItems, courtFeeItems} from '../AdmCalculations/PaymentCalculation'
-
+import {cancellationCalculation} from '../AdmCalculations/CancellationCalculation'
 
 @Component({
     components:{
@@ -442,7 +442,7 @@ export default class AdmPaymentDetails extends Vue {
 
     @Watch('paymentChanges')
     paymentChanged(newVal){
-        console.log(newVal)
+        // console.log(newVal)
         this.$emit('change',newVal)
     }
                             
@@ -501,6 +501,7 @@ export default class AdmPaymentDetails extends Vue {
         
         //_______GST
         const gst = {} as gstInfoType
+        const tmpGST = admDetail?.calculations?.gst?.gstRate
         gst.gstRate = this.form.gstRate? parseFloat(this.form.gstRate) : 0.05
         admDetail.calculations.gst = gst
         
@@ -514,11 +515,14 @@ export default class AdmPaymentDetails extends Vue {
             }
             admDetail.calculations.totalInterpretingHours = totalInterpretingHours
         }
-        
+
         //_______cancellation
         if(Number(admDetail?.calculations?.cancellation?.totalFees) != Number(this.form.totalCancellationFees)){
             admDetail.calculations.cancellation.totalFees = Number(this.form.totalCancellationFees)
-        }        
+        }else if(Number(tmpGST).toFixed(2) != Number(this.form.gstRate).toFixed(2)){        
+            const cancellation = cancellationCalculation(this.booking, gst.gstRate) 
+            admDetail.calculations.cancellation = cancellation
+        }
 
         const paymentDetailChanges =[
             {name:'admDetail', value:admDetail}                  
