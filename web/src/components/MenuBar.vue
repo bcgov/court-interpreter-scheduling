@@ -20,6 +20,7 @@
 						Fillable ADM322
 					</b-dropdown-item>
 				</b-dropdown>
+				<b-navbar-brand v-if="determineEnv()" style="font-weight: 700; font-size: 20pt; margin: -0.35rem 1rem;" ><b-badge class="ml-4 px-5" variant="danger">{{determineEnv()}}</b-badge></b-navbar-brand>
 			</b-navbar-nav>
 			
 			<b-navbar-nav class="ml-auto mr-5">	
@@ -122,6 +123,22 @@
 				console.error(err);
 				return false;
 			});
+		}
+
+		public determineEnv(){
+
+			const host = window.location.host;
+			const DEV = ['0.0.0.0', 'localhost', 'dev.'];
+			const TEST = ['test.'];
+
+			if (DEV.some(s=>host.indexOf(s) > -1)) {
+				return 'DEV';
+			} else if (TEST.some(s=>host.indexOf(s) > -1)) {
+				return 'TEST';
+			} else {
+				return '';
+			}
+
 		}
 
 	}
