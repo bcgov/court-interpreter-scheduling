@@ -7,7 +7,7 @@ import { totalInterpretingHoursInfoType } from "@/types/Bookings/json";
 
 
 
-export function cancellationCalculation(booking){
+export function cancellationCalculation(booking, gstRate?){
     //console.log(booking.dates)
 
     const dates = booking.dates.map(date => date.date)
@@ -40,7 +40,7 @@ export function cancellationCalculation(booking){
     //console.log(cancelledDates)
     if(cancelledDates.length>0){
         const totalHours = getTotalHours(booking, cancelledDates)
-        const totalCancellationFee = getTotalCancellations(totalHours)
+        const totalCancellationFee = getTotalCancellations(totalHours, booking, gstRate)        
         //console.log(totalCancellationFee)
         //====
         return {totalFees: totalCancellationFee}        
@@ -53,7 +53,7 @@ export function cancellationCalculation(booking){
 //______________________________________
 //______________________________________
 
-function getTotalCancellations(totalHours: totalInterpretingHoursInfoType){
+function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booking, gstRate){
     let totalCancelledHr=0;
     const cancelledLaguagesType=[]
     const cancelledLaguagesName=[]
@@ -88,7 +88,18 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType){
     else if(totalCancelledHr>tendays && totalCancelledHr<=fifteendays) cancellationFee = bestRate*20
     else if(totalCancelledHr>fifteendays) cancellationFee = bestRate*25
     
-    return  Number((cancellationFee).toFixed(2))
+    const gstNumber = booking?.interpreter?.gst
+    if(!gstRate)
+        gstRate = (booking?.admDetail?.calculations?.gst?.gstRate)? booking.admDetail.calculations.gst.gstRate: '0.05'
+
+
+    const cancellationSubtotal = Number((cancellationFee).toFixed(2))
+    if(gstNumber)
+        return Number((
+            (cancellationSubtotal * Number(gstRate))+cancellationSubtotal+0.0001 
+        ).toFixed(2));
+    else
+        return cancellationSubtotal
 }
 
 
