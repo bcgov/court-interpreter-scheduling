@@ -22,27 +22,27 @@
                     :items="bookingItems"
                     :fields="bookingFields"
                     class="border-info" 
-                    sort-by="interpreter"                                   
+                    sort-by="date"                                   
                     small
                     :currentPage="currentPage"
                     :perPage="itemsPerPage"                    
                     sort-icon-left
                     responsive="sm">
 
-                    <template v-slot:cell(interpreter)="data" >                                            
+                    <template v-slot:cell(interpreterName)="data" >                                            
                         <b-button style="font-size:18px; border: white; text-decoration: underline;" 
                             size="sm"                        
-                            @click="displayInterpreterInfo(data.value);" 
+                            @click="displayInterpreterInfo(data.item.interpreter);" 
                             class="text-primary bg-transparent text-left"
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="userRole.includes('super-admin')? data.item.location_name: ''"
 
-                            >{{data.value.lastName}}, {{data.value.firstName}}
+                            >{{data.value}}
                         </b-button>
 
                     </template>
 
-                    <template v-slot:cell(dates)="data" >                        
+                    <template v-slot:cell(date)="data" >  
                         <div
                             v-for="dateInfo,inx in sortByDate(data.item.dates)" 
                             :key="'date'+inx"
@@ -301,11 +301,11 @@ export default class BookingTable extends Vue {
     paginationKey = 0;
 
     bookingFields = [        
-        {key:'dates',          label:'Date Range',    sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:21%'},
+        {key:'date',            label:'Date Range',    sortable:true, cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:21%'},
         {key:'file',           label:'Court File #',  sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle,', tdClass:'align-middle',          thStyle:' width:9%'},
         {key:'caseName',       label:'Case Name',     sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:12%'},
         {key:'language',       label:'Language',      sortable:false,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
-        {key:'interpreter',    label:'Interpreter',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle text-left', thStyle:' width:11%'},
+        {key:'interpreterName',label:'Interpreter',   sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle text-left', thStyle:' width:11%'},
         {key:'status',         label:'Status',        sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:4%'},
         {key:'comment',        label:'Comment',       sortable:false, cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:' width:15%'},
         {key:'courtDistance',  label:'Distance',      sortable:true,  cellStyle:'', thClass:'bg-primary text-white align-middle',  tdClass:'align-middle',           thStyle:'width:6%'},       
@@ -325,7 +325,9 @@ export default class BookingTable extends Vue {
             booking['date'] = dates[0].date 
             const bookingcourt = booking.interpreter.courts.filter(court => court.court_id == booking.location_id)[0];
             booking['court'] = bookingcourt
-            booking['courtDistance']= bookingcourt?.distance
+            booking['courtDistance']= bookingcourt?.distance;
+            
+            booking['interpreterName'] = (booking.interpreter?.lastName?(booking.interpreter.lastName + ', '):'') + (booking.interpreter?.firstName?(booking.interpreter.firstName):'');
             this.bookingItems.push(booking)
         }
         this.dataReady = true;        
