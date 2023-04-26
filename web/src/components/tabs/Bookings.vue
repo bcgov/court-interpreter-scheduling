@@ -206,10 +206,13 @@ export default class BookingsPage extends Vue {
         this.searching = true;
         this.bookings = [];
 
+        const startDate = moment(this.dates.startDate).startOf('day')
+        const endDate = moment(this.dates.endDate).endOf('day')
+
         const body = {
             "file":this.courtFileNumber?this.courtFileNumber:'',
             "interpreter":this.interpreterName?this.interpreterName:'',  
-            "dates": [this.dates],                           
+            "dates": [{startDate: startDate, endDate: endDate}],                           
             "locationId":this.location.id?this.location.id:null                
         }
 
