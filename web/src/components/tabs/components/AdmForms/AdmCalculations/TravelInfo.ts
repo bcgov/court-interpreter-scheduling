@@ -27,7 +27,7 @@ export function travelInformation(booking: bookingSearchResultInfoType){
                 
                 travelInfo.startDate = sortedBookingDates[0].date.slice(0,10)
                 travelInfo.status = 'travel'
-                travelInfo.totalHours = travel.time*2, 
+                travelInfo.totalHours = Math.ceil(travel.time*4)/2, 
                 travelInfo.totalKilometers = travel.distance*2,
                 travelInfo.breakfast = meals.breakfast,
                 travelInfo.lunch = meals.lunch,
