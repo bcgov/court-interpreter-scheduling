@@ -28,6 +28,7 @@
                         <div style="font-size:10.5pt;">{{data.value}}</div>
                         <b-button size="sm" class="ml-2 mr-n1 p-0 border-0"
                             variant="transparent"
+                            :disabled="booking.recordsApproved==true"
                             @click="copyTime(data.item)"
                             ><b-icon-arrow-bar-right/></b-button>
                     </b-row>
