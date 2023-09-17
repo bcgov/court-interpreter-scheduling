@@ -156,6 +156,7 @@ export interface languageHistoryInfoType {
 
 export interface bookingAdmCancellationInfoType extends bookingInfoType{ //OK   
     time?: string;
+    recordDate?: string;
     cancelledBy?: string; 
     cancelReason?: string;
     registryWarning?: boolean;
@@ -167,6 +168,7 @@ export interface bookingAdmCancellationInfoType extends bookingInfoType{ //OK
 
 export interface bookingAdmRecordInfoType extends bookingInfoType{ //OK
     time?: string;
+    recordDate?: string;
     federalYN?: string;
     bilingualYN?: string;
     registryWarning?: boolean; 

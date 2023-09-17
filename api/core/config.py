@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     FRONTEND_HOST_URL = os.getenv('FRONTEND_HOST_URL','http://localhost:8081')
     DEFAULT_BASE_URL = os.getenv('DEFAULT_BASE_URL' ,'/court-interpreter-scheduling')
     URL_SCHEME = os.getenv('URL_SCHEME' ,'http')
+    APP_RUN_IN_DOCKER = os.getenv('APP_RUN_IN_DOCKER', 'False')
     
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY','5e094faa6ca25ahc81816')
     DATA_SECURITY_KEY = os.getenv('DATA_SECURITY_KEY')
