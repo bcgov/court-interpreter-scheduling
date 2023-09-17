@@ -61,6 +61,7 @@ services:
       - EFILING_HUB_KEYCLOAK_REALM=${EFILING_HUB_KEYCLOAK_REALM}
       - PDF_SERVICE_URL=${PDF_SERVICE_URL}
       - ADM_RECIPIENT_EMAILS=${ADM_RECIPIENT_EMAILS}
+      - APP_RUN_IN_DOCKER=${APP_RUN_IN_DOCKER}
       
     volumes:
       - ../api/api:/opt/app-root/src/api

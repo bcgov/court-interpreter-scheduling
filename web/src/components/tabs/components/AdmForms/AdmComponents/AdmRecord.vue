@@ -17,9 +17,9 @@
             <b-table
                 :items="records"
                 :fields="recordFields"
-                sort-by="date"                
+                sort-by="recordDate"                
             >
-                <template v-slot:cell(date)="data" >
+                <template v-slot:cell(recordDate)="data" >
                     <span>{{data.value|iso-date}}</span>
                 </template>
 
@@ -137,7 +137,7 @@ export default class AdmRecord extends Vue {
 
     recordFields=[
         {key:'details',           label:'',                     sortable:false, thStyle:'width:2%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle p-0 m-0'},
-        {key:'date',              label:'Date',                 sortable:false, thStyle:'width:8%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'recordDate',        label:'Date',                 sortable:false, thStyle:'width:8%', cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'methodOfAppearance',label:'Method of Appearance', sortable:false, thStyle:'width:17%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'comment',           label:'Comment',              sortable:false, thStyle:'width:23%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},       
         {key:'time',              label:'Booking Time',         sortable:false, thStyle:'width:13%',cellStyle:'', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center px-1'},
@@ -164,7 +164,7 @@ export default class AdmRecord extends Vue {
             // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
             // record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             // record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
-            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            record.recordDate = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.time = date.startTime + ' - '+ date.finishTime
             // record.federalYN = date.federal? 'Yes' : 'No'
             // record.bilingualYN = date.bilingual? 'Yes' : 'No'            

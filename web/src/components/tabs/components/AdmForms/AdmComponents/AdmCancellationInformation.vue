@@ -5,9 +5,9 @@
         <b-table
             :items="records"
             :fields="recordFields"
-            sort-by="date"
+            sort-by="recordDate"
             >
-            <template v-slot:cell(date)="data" >
+            <template v-slot:cell(recordDate)="data" >
                 <span>{{data.value|iso-date}}</span>
             </template>
 
@@ -71,7 +71,7 @@ export default class AdmCancellationInformation extends Vue {
 
     recordFields=[
         {key:'details',          label:'',                    thStyle:'width:2%',  thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle p-0 m-0'},
-        {key:'date',             label:'Date',                thStyle:'width:9%',  thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'recordDate',       label:'Date',                thStyle:'width:9%',  thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'time',             label:'Booking Time',        thStyle:'width:12%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},        
         {key:'cancelledBy',      label:'Cancelled By',        thStyle:'width:11%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'cancellationDate', label:'Cancellation Date',   thStyle:'width:13%', thClass:'bg-secondary text-white align-middle text-center', tdClass:'align-middle text-center'},
@@ -90,7 +90,7 @@ export default class AdmCancellationInformation extends Vue {
                 this.activeRecords.push(record)
                 continue            
             }
-            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            record.recordDate = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)

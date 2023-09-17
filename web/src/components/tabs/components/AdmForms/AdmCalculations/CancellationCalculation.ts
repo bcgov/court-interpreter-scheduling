@@ -43,9 +43,13 @@ export function cancellationCalculation(booking, gstRate?){
         const totalCancellationFee = getTotalCancellations(totalHours, booking, gstRate)        
         //console.log(totalCancellationFee)
         //====
-        return {totalFees: totalCancellationFee}        
+        return { 
+            subtotalFees: totalCancellationFee.subtotal, 
+            totalFees: totalCancellationFee.total, 
+            totalGst: totalCancellationFee.gst
+        }        
     }else{
-        return {totalFees: 0}
+        return { subtotalFees:0, totalFees:0, totalGst:0}
     }
 }
 
@@ -95,11 +99,21 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booki
 
     const cancellationSubtotal = Number((cancellationFee).toFixed(2))
     if(gstNumber)
-        return Number((
-            (cancellationSubtotal * Number(gstRate))+cancellationSubtotal+0.0001 
-        ).toFixed(2));
+        return {
+            subtotal: cancellationSubtotal,
+            total: Number((
+                    (cancellationSubtotal * Number(gstRate))+cancellationSubtotal+0.0001 
+                ).toFixed(2)),
+            gst: Number((
+                    (cancellationSubtotal * Number(gstRate))+0.0001 
+                ).toFixed(2))
+        }
     else
-        return cancellationSubtotal
+        return {
+            subtotal: cancellationSubtotal,
+            total: cancellationSubtotal,
+            gst: 0
+        }
 }
 
 

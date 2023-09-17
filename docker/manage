@@ -130,7 +130,7 @@ build-api() {
   ${S2I_EXE} build \
     --copy \
     '../api' \
-    'centos/python-38-centos7' \
+    'registry.access.redhat.com/ubi8/python-39' \
     ${COMPOSE_PROJECT_NAME}'-api'
   echo -e "===================================================================================================="
 }
@@ -196,6 +196,8 @@ configureEnvironment () {
   export EFILING_HUB_KEYCLOAK_BASE_URL=${EFILING_HUB_KEYCLOAK_BASE_URL}
   export EFILING_HUB_KEYCLOAK_SECRET=${EFILING_HUB_KEYCLOAK_SECRET}
   export EFILING_HUB_KEYCLOAK_REALM=${EFILING_HUB_KEYCLOAK_REALM}
+
+  export APP_RUN_IN_DOCKER=${APP_RUN_IN_DOCKER-True}
 
   # web
   export VUE_APP_RUN_IN_DOCKER=${VUE_APP_RUN_IN_DOCKER-true}
