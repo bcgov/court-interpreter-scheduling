@@ -8,19 +8,21 @@
         </b-row>
        
         <b-tabs  v-model="tabIndex" pills card class="booking-tab-header">
-            <b-tab title="Edit Dates" :title-link-class="'text-center tab-class edit-button'" >
+            <b-tab title="Edit Dates" @click="errorMsg=''" :title-link-class="'text-center tab-class edit-button'" >
                 <b-row class="mx-0 mt-2 mb-4">                    
                     <b-col cols="6">
                         <booking-date-picker 
-                            v-if="editDateReady"                            
+                            v-if="editDateReady"
+                            :key="'booking-datepicker-'+updateCards"                            
                             :editDateMode="true"  
                             :bookingDates="bookingCardsDates" 
-                            :blockedDates="blockDates" 
+                            :blockedDates="blockDates"
+                            :locationTimezone="registry.timezone" 
                             @datesAdded="addBookingDates"/>
                         <loading-spinner color="#000" v-else waitingText="Loading ..." />
                     </b-col>
                 </b-row>    
-                <b-row class="date-card-container" :key="updateCards"> 
+                <b-row class="date-card-container" :key="'date-card-row'+updateCards"> 
 <!-- <CHECK_POINT> -->
 <!-- <div v-for="bookingCardDate,inx in bookingCardsDates" :key="inx">
     {{bookingCardDate.date.slice(0,10)}}<br>
@@ -31,7 +33,8 @@
 </div> -->
                     <date-card 
                         @remove="RemoveBookingDate" 
-                        @bookingChanged="ChangeBookingDate" 
+                        @bookingChanged="ChangeBookingDate"
+                        :locationTimezone="registry.timezone" 
                         v-for="bookingCardDate,inx in bookingCardsDates" :key="'edit-card-'+inx"
                         :allowDelete="false" 
                         :bookingDate="bookingCardDate"/>
@@ -231,7 +234,7 @@ export default class EditBookingModal extends Vue {
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
-    registry = {id:0, name:''};
+    registry = {id:0, name:'', timezone:''};
 
     updatedBookingInfo = 0;
     interpreterDataReady = false;
@@ -287,7 +290,8 @@ export default class EditBookingModal extends Vue {
         this.savingData = false;
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
-        this.registry = {id:this.registryLocationId, name:''};
+        const location = this.courtLocations.filter(loc => loc.id==this.registryLocationId)
+        this.registry = {id:this.registryLocationId, name:location[0].name, timezone:location[0].timezone};
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -299,14 +303,15 @@ export default class EditBookingModal extends Vue {
         this.blockDates = []
         this.editDateReady = false
 
-        this.extractBlockDates()
+        
 
         for(const bookingDate of this.bookingDates){              
-                
-            const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
+            const momentdate = moment(bookingDate.date).tz(this.registry.timezone)
+            const dateIso = momentdate.format('YYYY-MM-DD') 
+            const beautyDate = momentdate.format('MMM DD, YYYY ')
             const booking: bookingInfoType = JSON.parse(JSON.stringify(bookingDate))
-            if(!booking.cases) booking.cases=[]
-            const date = this.combineDataTime(bookingDate.date, bookingDate.startTime).format()
+            if(!booking.cases) booking.cases = []                       
+            const date =  moment.tz(dateIso+' '+bookingDate.startTime, 'YYYY-MM-DD HH:mm A', this.registry.timezone).format()
             
             this.allBookingDatesTimes.push({
                 date:date,
@@ -318,33 +323,34 @@ export default class EditBookingModal extends Vue {
                 original:true
             })
                         
-            this.blockDates.push(bookingDate.date.slice(0,10));
+            
                   
         }
 
         this.sortAllBookingDatesTimes()
         this.extractBookingCards()
-        
+        this.editDateReady = true;
         // console.log(this.allBookingDatesTimes)
         //console.log(this.blockDates)
         
     }
 
-    public combineDataTime(dateIso, timeAmPm){
-        const tz = moment(dateIso).format('Z')
-        return moment(dateIso.slice(0,10)+' '+timeAmPm+' '+tz, 'YYYY-MM-DD HH:mm A Z')
-    }
 
     public extractBookingCards(){
         this.bookingCardsDates = []
         for(const eachBookingDate of this.allBookingDatesTimes){              
-                
+            
             const bookingDate = eachBookingDate.booking
 
             const bookingCancelled = (bookingDate.status==this.statusOptions[2].value)
 
             if(!bookingCancelled){
-                const index = this.bookingCardsDates.findIndex(booking => booking.date.slice(0,10)==bookingDate.date.slice(0,10))
+                const index = this.bookingCardsDates.findIndex(booking => {
+                    const date1 = moment(booking.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                    const date2 = moment(bookingDate.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                    return date1==date2
+                    // booking.date.slice(0,10)==bookingDate.date.slice(0,10)
+                })
                 
                 if(index>-1){
                     this.bookingCardsDates[index].bookingTimes.push({start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original})
@@ -354,7 +360,12 @@ export default class EditBookingModal extends Vue {
                         bookingTimes:[{start:bookingDate.startTime, end:bookingDate.finishTime, original:eachBookingDate.original}]
                     }) 
             }else if(eachBookingDate.original==true){
-                const index = this.bookingCardsDates.findIndex(booking => booking.date.slice(0,10)==bookingDate.date.slice(0,10))
+                const index = this.bookingCardsDates.findIndex(booking => {
+                    const date1 = moment(booking.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                    const date2 = moment(bookingDate.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                    return date1==date2
+                    // booking.date.slice(0,10)==bookingDate.date.slice(0,10)
+                })
                 if(index<0)
                     this.bookingCardsDates.push({
                         date: bookingDate.date,    
@@ -364,23 +375,29 @@ export default class EditBookingModal extends Vue {
             } 
                   
         }
-        
+        this.blockDates=[];
         for(const booking of this.bookingCardsDates){
             booking.bookingTimes.push({start:'', end:''})
+            const dateTZ = moment(booking.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+            this.blockDates.push(dateTZ)
         }
+        this.updateCards++;
     }
 
-    public extractBlockDates(){
-        this.$http.get('/booking/interpreter/' + this.interpreter.id)
-        .then((response) => {            
-            if(response?.data){
-                this.blockDates = response.data.map(bookingdate=> bookingdate.date.slice(0,10))
-                this.editDateReady = true; 
-            }           
-        },(err) => {
-            this.editDateReady = true;         
-        });       
-    }
+    // public extractBlockDates(){
+    //     this.$http.get('/booking/interpreter/' + this.interpreter.id)
+    //     .then((response) => {            
+    //         if(response?.data){
+    //             this.blockDates = response.data.map(bookingdate=> {
+    //                 const timezone = bookingdate.booking?.location?.timezone? bookingdate.booking.location.timezone : 'America/Vancouver'
+    //                 return moment(bookingdate.date).tz(timezone).format('YYYY-MM-DD')
+    //             })
+    //             this.editDateReady = true; 
+    //         }           
+    //     },(err) => {
+    //         this.editDateReady = true;         
+    //     });       
+    // }
 
     public prepopulateDefaultStates(){    
         const bookingStates = {} as bookingStatesInfoType;
@@ -398,20 +415,14 @@ export default class EditBookingModal extends Vue {
     public saveBooking(){
         if (this.checkBookingStates(true)){ 
             //console.log(this.allBookingDatesTimes)
-            this.savingData = true;
-            const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
-            if(location.length==1){                
-                this.registry.name = location[0].name
-            }
+            this.savingData = true;            
 
             const body = {
                 interpreter_id: this.interpreter.id,
                 locationName: this.registry.name,
                 locationId: this.registry.id,
-                dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
-
-                        return  bookingDatesTimes.booking
-                    })
+                timezone: this.registry.timezone,
+                dates: this.allBookingDatesTimes.map(bookingDatesTimes => bookingDatesTimes.booking)
             }
             this.$http.put('/booking/' + this.bookingId, body)
             .then((response) => {            
@@ -539,6 +550,7 @@ export default class EditBookingModal extends Vue {
     }
 
     public bookingTimeChanged(newBookingDate: bookingInfoType){
+        this.errorMsg='';
         if(newBookingDate.id){
             const index = this.allBookingDatesTimes.findIndex(item => item.booking.id==newBookingDate.id)
             if(index>-1){
@@ -575,18 +587,19 @@ export default class EditBookingModal extends Vue {
                 if(time.original==true || time.start=='') continue;
                 
                 const indexOfExisting = this.allBookingDatesTimes.findIndex(booking =>{ 
-                    
-                    return ((booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
+                    const date1 = moment(booking.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                    const date2 = moment(changedBookingDate.date).tz(this.registry.timezone).format('YYYY-MM-DD')                    
+
+                    return ((date1==date2) && //(booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
                             (booking.time.start == time.start) &&
                             (booking.time.end == time.end) && 
                             (booking.booking.status != this.statusOptions[2].value)
-                            
                     )               
                 })
                 
                 if(indexOfExisting>-1) continue;
 
-                const beautyDate = moment(changedBookingDate.date).format('MMM DD, YYYY ')
+                const beautyDate = moment(changedBookingDate.date).tz(this.registry.timezone).format('MMM DD, YYYY ')
                 this.allBookingDatesTimes.push({
                     date:changedBookingDate.date,
                     time:time,
@@ -601,8 +614,11 @@ export default class EditBookingModal extends Vue {
             this.updateTabs++;
         }
         else{
-            const indexOfRemoving = this.allBookingDatesTimes.findIndex(booking =>{                
-                return ((booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
+            const indexOfRemoving = this.allBookingDatesTimes.findIndex(booking =>{
+                const date1 = moment(booking.date).tz(this.registry.timezone).format('YYYY-MM-DD')
+                const date2 = moment(changedBookingDate.date).tz(this.registry.timezone).format('YYYY-MM-DD')                    
+                
+                return ((date1==date2) && //(booking.date.slice(0,10) == changedBookingDate.date.slice(0,10)) &&
                         (booking.time.start == removedTime.start) &&
                         (booking.time.end == removedTime.end) &&
                         (booking.booking.status != this.statusOptions[2].value)
@@ -620,6 +636,7 @@ export default class EditBookingModal extends Vue {
     public sortAllBookingDatesTimes(){
         this.allBookingDatesTimes =  _.sortBy(this.allBookingDatesTimes, function(BookingDatesTime){            
             const startTime = BookingDatesTime.time.start
+            // console.log(BookingDatesTime.date) // tz already added
             return (BookingDatesTime.date.slice(0,10) + startTime.slice(6,8)+ startTime.slice(0,5))
         })
     }

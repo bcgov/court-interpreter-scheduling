@@ -1,5 +1,5 @@
 <template>
-    <b-card class="date-card mb-2 mx-2" :body-class="!showTimePicker? 'py-2' :'p-0'"> 
+    <b-card class="date-card mb-2 mx-2" :body-class="!showTimePicker? 'py-2' :'p-0'">
         <div v-if="!showTimePicker">               
             <b-row style="line-height:1rem; font-size:14pt; ">
                 <b-col cols="9">
@@ -31,8 +31,8 @@
                     <div 
                         style="display:inline-block"
                         v-for="pickedtime,inx in pickedTimes" :key="inx">
-                        <div v-b-tooltip.hover.v-warning
-                                :title="!allowDelete && pickedtime.original && pickedtime.start!=''? 'If you would like to change this time slot, you must cancel this booking record('+month+' '+day+', '+year+' at '+pickedtime.start+' - '+pickedtime.end +'), then add a new time slot here.':''">
+                        <div v-b-tooltip.hover.noninteractive.v-warning
+                                :title="tooltipTitle(pickedtime)">
                             <b-button 
                                 style="margin:0.2rem; padding:0.2rem;" 
                                 :variant="pickedtime.start==''?'primary':'time'"                                 
@@ -72,13 +72,16 @@ import * as _ from 'underscore';
         TimePicker
     }
 })
-export default class SearchInterpretersPage extends Vue {
+export default class DateCard extends Vue {
     
     @Prop({required: true})
     bookingDate!: bookingDateTimesInfoType;
 
     @Prop({required: false, default:true})
     allowDelete!: boolean;
+
+    @Prop({required: true})
+    public locationTimezone!: string;
 
     bookingPeriodOptions 
     created(){
@@ -96,10 +99,10 @@ export default class SearchInterpretersPage extends Vue {
      
 
     mounted(){
-       this.dayOfWeek = moment(this.bookingDate.date).format('dddd')
-       this.day = moment(this.bookingDate.date).format('DD')
-       this.month = moment(this.bookingDate.date).format('MMM')
-       this.year = moment(this.bookingDate.date).format('YYYY')
+       this.dayOfWeek = moment(this.bookingDate.date).tz(this.locationTimezone).format('dddd')
+       this.day = moment(this.bookingDate.date).tz(this.locationTimezone).format('DD')
+       this.month = moment(this.bookingDate.date).tz(this.locationTimezone).format('MMM')
+       this.year = moment(this.bookingDate.date).tz(this.locationTimezone).format('YYYY')
        this.pickedTimes = this.bookingDate.bookingTimes
 
     }
@@ -144,6 +147,15 @@ export default class SearchInterpretersPage extends Vue {
             bookingTimes: this.pickedTimes
         }
         this.$emit('bookingChanged', newBookingDate, removedTime)
+    }
+
+    public tooltipTitle(pickedtime){
+        let title = ''
+        if(!this.allowDelete && pickedtime.original && pickedtime.start!='')
+            title = 'If you would like to change this time slot, you must cancel this booking record('+this.month+' '+this.day+', '+this.year+' at '+pickedtime.start+' - '+pickedtime.end +'), then add a new time slot here.';
+        else if(pickedtime.start!='')
+            title = 'Click to REMOVE this booking time'
+        return title
     }
 
 }

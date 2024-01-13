@@ -110,7 +110,7 @@
                             v-for="conflict,inx in [disableBookingButton(data.item.booking)]"
                             :key="inx"
                             v-b-tooltip.hover.left.noninteractive.v-warning
-                            :title="data.item.contractExtension==false?'Contract Expired!':(bookingDates.length==0?'Please, first select the dates':'')" 
+                            :title="data.item.contractExtension==false?'Contract Expired!':(bookingDates.length==0?'Please first select the dates.':'')" 
                         >
                             <b-button style="font-size:12px" 
                                 size="sm" 
@@ -126,7 +126,7 @@
                                 placement="left"
                                 customClass="conflict-popover"                                              
                                 >                                
-                                    <scheduling-conflict-popup :bookings="data.item.booking" :bookingDates="bookingDates"/>
+                                    <scheduling-conflict-popup :bookings="data.item.booking" :bookingDates="bookingDates" :searchLocation="searchLocation"/>
                             </b-popover>
                         </div>
                         
@@ -203,7 +203,7 @@ import CustomPagination from "./CustomComponents/CustomPagination.vue"
 import { locationsInfoType } from '@/types/Common/json';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingDateTimesInfoType} from '@/types/Bookings/json';
-import {statusOptions} from './BookingEnums'
+import { courtBookingDateTimesConflict, bookedDateTimesTZ} from '@/components/utils/BookingDateFunctions/BookingDatesFunctions';
 
 import { namespace } from "vuex-class";
 import "@/store/modules/common";
@@ -298,15 +298,10 @@ export default class SearchInterpretersTable extends Vue {
     public disableBookingButton(booking){
         if(this.bookingDates.length==0) return true
         if(booking.length>0){
-            const busyDates = _.flatten((booking.map(item=>item.dates?.map(bookedDate=>{
-                if(bookedDate.status == statusOptions[2].value) return
-                return bookedDate.date?.slice(0,10) 
-            }))))
-            for(const bookingDate of this.bookingDates)
-                if(busyDates.includes(bookingDate.date.slice(0,10)))
-                    return true
-        }
-        return false
+            const interpreterBusyDates = _.flatten(booking.map(item=> bookedDateTimesTZ(item?.dates, item?.location?.timezone)))
+            return courtBookingDateTimesConflict(this.bookingDates, interpreterBusyDates, this.searchLocation.timezone)
+        }else
+            return false
     }
 
     public paginationChanged(currentPage, itemsPerPage){

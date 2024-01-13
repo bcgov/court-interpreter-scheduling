@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
-from api.schemas.booking_schema import BookingRequestSchema, BookingResponseSchema, ADMBookingResponseSchema, BookingSearchRequestSchema, ADMBookingRequestSchema, BookingInvoiceNumberResponseSchema
+from api.schemas.booking_schema import BookingDateTzSchema, BookingRequestSchema, BookingResponseSchema, ADMBookingResponseSchema, BookingSearchRequestSchema, ADMBookingRequestSchema, BookingInvoiceNumberResponseSchema
 from models.booking_model import BookingModel, BookingDatesModel
 from core.auth import admin_user, user_in_role
 from api.repository.booking_transactions import create_booking_in_db, update_booking_in_db, update_adm_booking_in_db
@@ -33,7 +33,7 @@ def get_Booking(id: int, db: Session= Depends(get_db_session), user = Depends(us
 
 
 
-@router.get('/interpreter/{id}', status_code=status.HTTP_200_OK)
+@router.get('/interpreter/{id}', status_code=status.HTTP_200_OK, response_model=List[BookingDateTzSchema])
 def get_All_Active_Bookings_For_Interpreter(id: int, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
     
     if id>0:

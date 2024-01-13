@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from api.repository.geo_transactions import get_next_update_date
 from jc_interface.jc_calls import JcInterfaceCalls
@@ -67,6 +68,7 @@ def update_courts_info_in_db(db: Session):
                     province = court_address['province'],
                     latitude = None,
                     longitude = None,
+                    timezone = get_timezone(court_address['city']),
                     geo_service = None
                 )
                 db.add(adding_location)                
@@ -96,6 +98,7 @@ def update_courts_info_in_db(db: Session):
                     "province": court_address['province'],
                     "latitude": None,
                     "longitude": None,
+                    "timezone": get_timezone(court_address['city']),
                     "geo_service": geo_service
                 })
 
@@ -112,6 +115,27 @@ def update_courts_info_in_db(db: Session):
         "next_update_at":next_update
     })          
     db.commit()
+
+
+def get_timezone(city: str):
+
+    edmonton = ['cranbrook','fernie','sparwood','golden','invermere']
+    dawson = ['dawson creek','tumbler ridge','chetwynd','fort st. john','fort st john']
+    creston = ['creston']
+
+    if remove_space(city) in edmonton:
+        return "America/Edmonton"
+    elif remove_space(city) in dawson:
+        return "America/Dawson_Creek"
+    elif remove_space(city) in creston:
+        return "America/Creston"
+    else:
+        return "America/Vancouver"
+
+
+def remove_space(address):
+    address = re.sub(' +', ' ', address) 
+    return address.strip().lower()
 
 
 def other_courts_addresses(code, shortDesc):

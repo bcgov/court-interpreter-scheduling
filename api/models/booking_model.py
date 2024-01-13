@@ -52,7 +52,7 @@ class BookingModel(Base):
 
     location_id = Column(Integer, ForeignKey('court_location.id'))
     location_name = Column(String, unique=False, index=False, nullable=True)
-     
+    location = relationship("CourtLocationModel", back_populates="booking")
 
 class BookingDatesModel(Base):
     __tablename__ = 'booking_dates'

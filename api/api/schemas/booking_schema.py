@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, Json
 from datetime import datetime
 from typing import Optional, List, Dict
+from api.schemas.location_schema import LocationShortSchema
 
 from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema, InterpreterADMBookingResponseSchema
 from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingMethodOfAppearanceEnum, BookingInterpretForEnum
@@ -112,6 +113,20 @@ class BookingResponseBase(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+
+#_______________________________
+#_______Request____(TZ)_____
+#_______________________________
+class BookingTzSchema(BaseModel):
+    id: Optional[int]    
+    location: Optional[LocationShortSchema] 
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
+    
+
+class BookingDateTzSchema(BookingDateSchema):
+    booking: Optional[BookingTzSchema]
 #_______________________________
 #_______________________________
 #_______________________________
@@ -121,6 +136,7 @@ class BookingRequestSchema(BookingRequestBase):
     interpreter_id: Optional[int] = Field(alias="interpreterId")
     location_id: Optional[int] = Field(alias="locationId")
     location_name: Optional[str] = Field(alias="locationName")
+    timezone: Optional[str] = Field(alias="timezone")
 
 
 
@@ -129,7 +145,7 @@ class BookingResponseSchema(BookingResponseBase):
     id: Optional[int]           
     interpreter: InterpreterBookingResponseSchema
     records_approved: Optional[bool] = Field(alias="recordsApproved")
-
+    location: Optional[LocationShortSchema] 
     created_at: Optional[datetime]
     updated_by: TruncatedUserIdBase
 
@@ -208,7 +224,8 @@ class BookingSearchResponseSchema(BaseModel):
     
     reason: Optional[str]    
     file: Optional[str]    
-    location_id: Optional[int] = Field(alias="locationId")    
+    location_id: Optional[int] = Field(alias="locationId")
+    location: Optional[LocationShortSchema]    
     dates: List[BookingDateSchemaOut]
 
     class Config():

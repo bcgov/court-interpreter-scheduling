@@ -1,3 +1,4 @@
+import { locationShortInfoType } from "@/types/Common";
 import { interpreterLanguageInfoType } from "@/types/Interpreters/json";
 
 export interface bookingCaseInfoType { //OK
@@ -71,7 +72,8 @@ export interface bookingSearchResultInfoType{ //OK
     interpreter: bookingInterpreterInfoType;
     dates: bookingInfoType[];
     location_id: number;
-    location_name: string; 
+    location_name: string;
+    location?: locationShortInfoType;
     
     recordsApproved?: boolean;
     approverName?: string;

@@ -96,7 +96,7 @@
             <b-row>
                 <b-col cols="4">
                     <div class="mb-1">Criminal Record Check Expiry</div>
-                    <booking-date-range-picker :key="updateCrc" :bookingRange="crcExpiryDate" @datesAdded="addCrcExpiryDates"/>                          
+                    <booking-date-range-picker :key="updateCrc" :bookingRange="crcExpiryDate" @datesAdded="addCrcExpiryDates" :locationTimezone="locationTimezone"/>                          
                 </b-col>
                 <b-col cols="1" />
                 <b-col cols="2">
@@ -757,6 +757,7 @@ export default class DirectoryPage extends Vue {
     searching = false;
     dataLoaded = false;
     savingData = false;
+    locationTimezone = 'America/Vancouver';
 
     name = '';
     keyword = '';
@@ -859,7 +860,8 @@ export default class DirectoryPage extends Vue {
         this.focusSearchButton()       
     }
 
-    public extractInfo(){
+    public extractInfo(){        
+        if(this.userLocation?.timezone) this.locationTimezone = this.userLocation.timezone;
         this.languageNames = this.languages.map( language => {return language.name});
         this.find()
     }

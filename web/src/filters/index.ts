@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import moment from 'moment-timezone';
-import store from '@/store';
+// import store from '@/store';
 
 import * as _ from 'underscore';
 
-import bootstrapCss from "!!raw-loader!@/styles/bootstrapCSS.css";
+// import bootstrapCss from "!!raw-loader!@/styles/bootstrapCSS.css";
 
 Vue.filter('truncate-text', function (text, stop: number, crumbs?) {
 	if(text){
@@ -102,9 +102,13 @@ Vue.filter('beautify-date-weekday-time', function(date){
 		return ''
 })
 
-Vue.filter('beautify-date-weekday', function(date){
-	if(date)
-		return	moment(date).format('ddd, MMM DD, YYYY');
+Vue.filter('beautify-date-weekday', function(date, tz?){	
+	if(date){
+		if(tz)
+			return	moment(date).tz(tz).format('ddd, MMM DD, YYYY');
+		else
+			return	moment(date).format('ddd, MMM DD, YYYY');
+	}
 	else
 		return ''
 })

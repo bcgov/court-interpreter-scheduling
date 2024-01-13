@@ -4,15 +4,19 @@
         <b-form-input
             :tabindex="type=='end'?6:3"
             @focus ="focus"
+            :class="selectedTime.focusAmPm?'focused':''"
             v-model="selectedTime.ampm"
             :formatter="amPmFormatter"                    
             style="font-size:11pt; margin:0; padding:0.1rem; width:1.75rem; height:1.75rem;" />           
-        <b-card v-if="this.selectedTime.focusAmPm" style="margin:0.2rem 0.15rem; height:2.7rem; width:1.5rem;" no-body>
+        <b-card 
+            v-if="this.selectedTime.focusAmPm" 
+            style="margin:0.2rem 0.15rem 0.2rem -3.8rem; height:6rem; width:5.5rem;" no-body>
+            <b style="font-size:14pt; line-height:1.45rem; color:#552" class="text-center">AM/PM</b>
             <b-button
                 v-for="ampm in ampms" :key="ampm"
                 @click="clicked(ampm)" 
-                style="font-size:7.5pt; margin:0.07rem 0.1rem; padding:0 0rem"
-                variant="info" 
+                style="font-size:15pt; margin:0.12rem 0.15rem; padding:0 0rem"
+                variant="court" 
                 size="sm" 
                 :disabled="selectedTime.ampm==ampm">
                     {{ampm}}
@@ -62,3 +66,13 @@ export default class AmPmPicker extends Vue {
    
 }
 </script>
+
+<style scoped lang="scss">
+    .focused {
+        border: 3px solid #f0bc1e;
+    }
+    button.disabled {
+        color: rgb(255, 0, 0);
+        background: #f0bc1e;
+    }
+</style>

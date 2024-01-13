@@ -18,6 +18,7 @@
                     @paginationChanged="paginationChanged"/>
 
                 <b-table
+                    :key="'pagination-table-'+paginationKey"
                     :items="currentPageInterpreters"
                     :fields="interpreterFields"
                     borderless
@@ -33,9 +34,11 @@
                     </template>
 
                     <template v-slot:cell(calendar)="data" > 
-                        <booking-calendar-view 
+                        <booking-calendar-view
+                            :interpreter="data.item" 
                             :bookings="data.item.booking" 
                             :bookingDates="bookingDates"
+                            :searchLocation="searchLocation"
                             style="margin:3rem 0 2rem 0"/>
                     </template>                    
                 </b-table>
