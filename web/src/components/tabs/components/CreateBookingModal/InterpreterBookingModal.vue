@@ -84,6 +84,7 @@ import { interpreterInfoType } from '@/types/Interpreters/json';
 import Spinner from '@/components/utils/Spinner.vue'
 
 import { bookingStatesInfoType} from '@/types/Bookings';
+import { courtBookingDateTimesConflict, bookedDateTimesTZ} from '@/components/utils/BookingDateFunctions/BookingDatesFunctions';
 
 import InterpreterBookingFields from "./InterpreterBookingFields.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
@@ -128,7 +129,7 @@ export default class InterpreterBookingModal extends Vue {
     updateTabs=0;
     errorMsg=''    
     allowBooking = false;    
-    registry = {id:0, name:''};
+    registry = {id:0, name:'', timezone:''};
     savingData = false;
     caseTabId=null
 
@@ -149,31 +150,19 @@ export default class InterpreterBookingModal extends Vue {
         this.interpreterDataReady = false; 
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
-        this.registry = {id:this.searchLocation.id, name:this.searchLocation.name};
+        this.registry = {id:this.searchLocation.id, name:this.searchLocation.name, timezone:this.searchLocation.timezone};
         this.extractBookingDates()
         this.extractBlockDates(this.interpreter.id)
     }
 
     public extractBlockDates(interpreter_id){
         this.allowBooking = false;
-        let errDates = ''
         this.$http.get('/booking/interpreter/' + interpreter_id)
         .then((response) => {            
             if(response?.data){
-                const blockDates = response.data.map(bookingdate=> bookingdate.date.slice(0,10))
-                const bookingDates = this.bookingDates.map(date => date.date.slice(0,10))
-                //console.log(blockDates)
-                //console.log(bookingDates)
-                this.allowBooking = true;
-                for(const date of bookingDates){
-                    if( blockDates.includes(date)){
-                        //console.log(date)
-                        this.allowBooking = false;
-                        errDates += date+ ', ' 
-                    }
-                }
-                //console.log(errDates)
-                if(errDates) this.errorMsg = "This interpreter is currently booked on "+ errDates                
+                const blockDates = bookedDateTimesTZ(response.data, null);
+                this.allowBooking = !courtBookingDateTimesConflict(this.bookingDates, blockDates, this.searchLocation.timezone);
+                if(!this.allowBooking) this.errorMsg = "This interpreter is currently booked";
             }
             this.interpreterDataReady = true;           
         },(err) => {
@@ -188,7 +177,7 @@ export default class InterpreterBookingModal extends Vue {
                 
                 if(time.start=='') continue;
                 
-                const beautyDate = moment(bookingDate.date).format('MMM DD, YYYY ')
+                const beautyDate = moment.tz(bookingDate.date, this.searchLocation.timezone).format('MMM DD, YYYY ')
                 this.allBookingDatesTimes.push({
                     date:bookingDate.date,
                     time:time,
@@ -241,12 +230,14 @@ export default class InterpreterBookingModal extends Vue {
             const location = this.courtLocations.filter(loc => loc.id==this.registry.id)
             if(location.length==1){                
                 this.registry.name = location[0].name
+                this.registry.timezone = location[0].timezone
             }
 
             const body = {
                 interpreter_id: this.interpreter.id,
                 locationName: this.registry.name,
                 locationId: this.registry.id,
+                timezone: this.registry.timezone,
                 dates: this.allBookingDatesTimes.map(bookingDatesTimes=> {
 
                         return  bookingDatesTimes.booking

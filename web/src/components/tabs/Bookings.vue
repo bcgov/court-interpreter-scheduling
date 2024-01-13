@@ -65,7 +65,11 @@
 
             <b-row>
                 <b-col cols="4 mt-2">
-                    <booking-date-range-picker :key="update" :bookingRange="dates" @datesAdded="addBookingDates"/>
+                    <booking-date-range-picker 
+                        :key="update"
+                        :locationTimezone="location.timezone"
+                        :bookingRange="dates" 
+                        @datesAdded="addBookingDates"/>
                 </b-col>
                 <b-col cols="4">
                 </b-col>
@@ -167,6 +171,7 @@ export default class BookingsPage extends Vue {
         latitude: null,
         locationCode: "",
         longitude: null,
+        timezone:'America/Vancouver',
         name: '',
         postalCode: null,
         shortDescription: '',

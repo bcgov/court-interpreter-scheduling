@@ -1,5 +1,6 @@
 
-from fastapi import FastAPI, HTTPException, Depends, Response, status, Request, Cookie
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
 import uvicorn
 import os
@@ -27,6 +28,18 @@ logger = logging.getLogger(__name__)
 
 # app = FastAPI()
 
+@repeat_every(seconds= 60*60)  # for 1hour  ==>  60*60
+async def geo_update_schedule_task() -> None:
+    logger.info("_________CHECK___GEO_Update_Schedule________")
+    with DBSession() as db:
+        await check_geo_update_schedule(db)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await geo_update_schedule_task()
+    yield
+
 #___________________________________________________
 
 def get_application() -> FastAPI:
@@ -34,7 +47,8 @@ def get_application() -> FastAPI:
     new_app = FastAPI(
         title=settings.API_TITLE, 
         description=settings.API_DESCRIPTION, 
-        version=settings.API_VERSION
+        version=settings.API_VERSION,
+        lifespan=lifespan
     )
 
     logger.info("CORES are: "+" ".join(settings.CORS_ORIGIN))
@@ -65,14 +79,6 @@ app = get_application()
 def openshift_Health_Check():
     #______Health check for OpenShift______
     return "Healthy"
-
-
-@app.on_event("startup")
-@repeat_every(seconds= 60*60)  # for 1hour  ==>  60*60
-async def geo_update_schedule_task() -> None:
-    logger.info("_________CHECK___GEO_Update_Schedule________")
-    with DBSession() as db:
-        await check_geo_update_schedule(db)
 
       
 

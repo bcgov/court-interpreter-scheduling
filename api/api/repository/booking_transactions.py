@@ -7,6 +7,8 @@ from models.user_model import UserModel
 from models.interpreter_model import InterpreterModel
 from models.booking_enums import BookingStatusEnum
 from core.auth import check_user_roles
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 
@@ -24,9 +26,11 @@ def create_booking_in_db(request:BookingRequestSchema, db: Session, username):
     check_interpreter_contract_rules(booking_request['interpreter_id'], db, username)
     
     booking_dates = booking_request['dates']
+    court_timezone = booking_request['timezone']
     del booking_request['dates']
+    del booking_request['timezone']
 
-    check_conflict_dates(db, None, booking_request['interpreter_id'], booking_dates)
+    check_conflict_dates(db, None, booking_request['interpreter_id'], booking_dates, court_timezone)
 
     new_booking = BookingModel(**booking_request)
     db.add(new_booking)
@@ -61,14 +65,16 @@ def update_booking_in_db(id: int, request:BookingRequestSchema, db: Session, use
         del booking_request['interpreter_id']
 
     booking_dates = booking_request['dates']
+    court_timezone = booking_request['timezone']
     del booking_request['dates']
+    del booking_request['timezone']
 
     booking_query = db.query(BookingModel).filter(BookingModel.id==id)
     booking = booking_query.first()    
     if not booking:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Booking does not exist.")
 
-    check_conflict_dates(db, booking.id, booking.interpreter_id, booking_dates)
+    check_conflict_dates(db, booking.id, booking.interpreter_id, booking_dates, court_timezone)
 
     booking_query.update(booking_request)    
     db.commit()
@@ -114,20 +120,58 @@ def update_adm_booking_in_db(id: int, request:ADMBookingRequestSchema, db: Sessi
 
 
 
-def check_conflict_dates(db:Session, booking_id, interpreter_id, booking_dates):
+def check_conflict_dates(db:Session, booking_id, interpreter_id, booking_dates, court_timezone='America/Vancouver'):
        
     other_booking_date_query = db.query(BookingDatesModel).join(BookingModel).filter(
         BookingDatesModel.status!=BookingStatusEnum.CANCELLED, 
         BookingDatesModel.interpreter_id==interpreter_id,
         BookingDatesModel.booking_id!=booking_id).all()
     
-    current_interpreter_scheduel_date = [date.date for date in other_booking_date_query]
-    
-    for booking_date in booking_dates:        
-        if booking_date['date'] in current_interpreter_scheduel_date and booking_date['status']!=BookingStatusEnum.CANCELLED:
-            conflict_index = current_interpreter_scheduel_date.index(booking_date['date'])
-            location = other_booking_date_query[conflict_index].booking.location_name
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Schedule Conflict: The interpreter is currently booked at '{location}' on '{booking_date['date'].strftime('%b %d %Y')}'.")
+    interpreter_blocked_dates = booked_date_times_tz(other_booking_date_query)
+    court_booking_date_times_conflict(booking_dates, interpreter_blocked_dates, court_timezone)   
+
+
+
+def dates_overlap(booking_start, booking_end, blocked_date_start, blocked_date_end):
+    return (  
+        (booking_start >= blocked_date_start and booking_start < blocked_date_end) or
+        (booking_end > blocked_date_start and booking_end <= blocked_date_end) or
+        (booking_start <= blocked_date_start and booking_end >= blocked_date_end)
+    )
+
+
+
+def booked_date_times_tz(dates):
+    booked_dates = list()
+    for booked_date in dates:        
+        if booked_date.status != BookingStatusEnum.CANCELLED :
+            timezone = booked_date.booking.location.timezone
+            location = booked_date.booking.location.name
+            date_with_tz = booked_date.date.astimezone(ZoneInfo(timezone))
+            start_date = date_with_tz.strftime('%Y-%m-%d ')+booked_date.start_time
+            start = datetime.strptime(start_date, "%Y-%m-%d %I:%M %p").replace(tzinfo=ZoneInfo(timezone)).timestamp()            
+            
+            end_date = date_with_tz.strftime('%Y-%m-%d ')+booked_date.finish_time
+            end = datetime.strptime(end_date, "%Y-%m-%d %I:%M %p").replace(tzinfo=ZoneInfo(timezone)).timestamp()            
+            booked_dates.append({'start':start, 'end':end, 'timezone':timezone, 'location':location, 'start_date':start_date, 'end_date':end_date})
+    return booked_dates
+
+
+
+def court_booking_date_times_conflict(booking_dates, interpreter_blocked_dates, court_timezone):
+
+    for booking_date in booking_dates:
+        if booking_date['status'] == BookingStatusEnum.CANCELLED: 
+            continue
+        date_with_tz = booking_date['date'].astimezone(ZoneInfo(court_timezone))                
+        start_date = date_with_tz.strftime('%Y-%m-%d ')+booking_date['start_time']
+        bookingstart = datetime.strptime(start_date, "%Y-%m-%d %I:%M %p").replace(tzinfo=ZoneInfo(court_timezone)).timestamp()
+        end_date = date_with_tz.strftime('%Y-%m-%d ')+booking_date['finish_time']
+        bookingend = datetime.strptime(end_date, "%Y-%m-%d %I:%M %p").replace(tzinfo=ZoneInfo(court_timezone)).timestamp()
+            
+        for blocked_date in interpreter_blocked_dates:
+            if dates_overlap(bookingstart, bookingend, blocked_date['start'], blocked_date['end'] ):
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Schedule Conflict: This interpreter is booked at '{blocked_date['location']}' from '{blocked_date['start_date']}' to '{blocked_date['end_date']}'.")        
 
 
 
