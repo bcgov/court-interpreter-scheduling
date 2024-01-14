@@ -32,7 +32,7 @@
                 </b-row>
                 <b-row class="py-0 mt-n4 mb-4" >
                     <b-col cols="6" class="vuetify">
-                        <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
+                        <v-app style="height:21.5rem; padding:0; margin:1rem 0 -2rem 0;">                        
                             <v-date-picker
                                 v-model="dates"
                                 color="success" 
@@ -43,7 +43,7 @@
                         </v-app>
                     </b-col>
                     <b-col cols="4" class="vuetify">
-                        <v-app style="height:24rem; padding:0; margin:1rem 0 -2rem 0;">                        
+                        <v-app style="height:21.5rem; padding:0; margin:1rem 0 0 0;">                        
                             <v-date-picker
                                 v-model="dates"
                                 color="success"
@@ -56,18 +56,21 @@
                 </b-row>
             </div>
 
-            <b-row style="margin-top:-1.5rem;">
-                <b-col>
-                    <b-button @click="setDatesToday" style="width:8rem;" variant="primary">Today</b-button>
+            <b-row style="margin-top:-1.25rem;">
+                <b-col class="text-center p-0">
+                    <b-button @click="setDatesToday" style="width:7rem" variant="primary">Today</b-button>
+                </b-col>               
+                <b-col class="text-center p-0">
+                    <b-button @click="setDatesOneWeek" style="width:7.2rem;" variant="primary">One Week</b-button>
                 </b-col>
-                <b-col>
-                    <b-button @click="setDatesOneWeek" style="width:8rem;" variant="primary">One Week</b-button>
+                <b-col class="text-center p-0">
+                    <b-button @click="setDatesTwoWeeks" style="width:7.2rem;" variant="primary">Two Weeks</b-button>
                 </b-col>
-                <b-col>
-                    <b-button @click="setDatesTwoWeeks" style="width:8rem;" variant="primary">Two Weeks</b-button>
+                <b-col class="text-center p-0">
+                    <b-button @click="setDatesOneMonth" style="width:7.2rem;" variant="primary" >One Month</b-button>
                 </b-col>
-                <b-col>
-                    <b-button @click="setDatesOneMonth" style="width:8rem;" variant="primary" >One Month</b-button>
+                <b-col class="text-center pl-1 pr-2">
+                    <b-button @click="setDatesThreeMonths" style="width:8.3rem;" variant="primary">Three Months</b-button>
                 </b-col>
             </b-row>
 
@@ -187,6 +190,7 @@ export default class BookingDateRangePicker extends Vue {
         const today = moment.tz(this.locationTimezone).format("YYYY-MM-DD")        
         this.dates=[today, today]
         this.pickerDateL = moment.tz(this.locationTimezone).format("YYYY-MM")
+        this.AddDates()
     }
 
     public setDatesOneWeek(){
@@ -194,6 +198,7 @@ export default class BookingDateRangePicker extends Vue {
         const nextWeek = moment.tz(this.locationTimezone).add(6,'days').format("YYYY-MM-DD")        
         this.dates=[today, nextWeek]
         this.pickerDateL = moment.tz(this.locationTimezone).format("YYYY-MM")
+        this.AddDates()
     }
 
     public setDatesTwoWeeks(){
@@ -201,12 +206,22 @@ export default class BookingDateRangePicker extends Vue {
         const twoWeek = moment.tz(this.locationTimezone).add(13,'days').format("YYYY-MM-DD")
         this.dates=[today, twoWeek]
         this.pickerDateL = moment.tz(this.locationTimezone).format("YYYY-MM")
+        this.AddDates()
     }
 
     public setDatesOneMonth(){
         const today = moment.tz(this.locationTimezone).format("YYYY-MM-DD")
         const oneMonth = moment.tz(today, this.locationTimezone).add(1,'month').format("YYYY-MM-DD")       
         this.dates=[today, oneMonth]
+        this.AddDates()
+    }
+
+    public setDatesThreeMonths(){
+        const today = moment.tz(this.locationTimezone).format("YYYY-MM-DD")
+        const lastMonth = moment.tz(today, this.locationTimezone).add(-1,'month').format("YYYY-MM-DD")
+        const twoMonth = moment.tz(today, this.locationTimezone).add(2,'month').format("YYYY-MM-DD")       
+        this.dates=[lastMonth, twoMonth]
+        this.AddDates()
     }
 }
 </script>
