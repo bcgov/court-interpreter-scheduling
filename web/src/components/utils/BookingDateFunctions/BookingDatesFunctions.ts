@@ -10,10 +10,11 @@ export function datesOverlap(bookingStart, bookingEnd, busyDateStart, busyDateEn
     )
 }
 
-export function bookedDateTimesTZ(dates, timezone){
+export function bookedDateTimesTZ(dates, tz){
+    let timezone = tz;
     return dates?.map(bookedDate =>
         {   
-            if (!timezone) timezone = bookedDate.booking?.location?.timezone?  bookedDate.booking.location.timezone : 'America/Vancouver';
+            if (!tz) timezone = bookedDate.booking?.location?.timezone?  bookedDate.booking.location.timezone : 'America/Vancouver';
             if(bookedDate.status == statusOptions[2].value) return
             const date = moment(bookedDate.date).tz(timezone).format('YYYY-MM-DD')
             const startDate = date+' '+bookedDate.startTime

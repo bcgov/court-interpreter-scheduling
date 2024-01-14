@@ -107,6 +107,7 @@ class BookingResponseBase(BaseModel):
     interpreter: InterpreterBookingResponseSchema
     location_id: Optional[int]
     location_name: Optional[str]
+    location: Optional[LocationShortSchema]
 
     dates: List[BookingDateSchemaOut]
 

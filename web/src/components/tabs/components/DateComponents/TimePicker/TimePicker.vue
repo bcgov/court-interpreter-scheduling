@@ -20,9 +20,12 @@
                     <span v-if="duplicateTime=='after'" style="font-size:7.5pt;">
                         Start after End
                     </span>
-                     <span v-else-if="duplicateTime=='conflict'" style="font-size:7.5pt;">
+                    <span v-else-if="duplicateTime=='conflict'" style="font-size:7.5pt;">
                         Already Included
-                     </span>
+                    </span>
+                    <span v-else-if="duplicateTime=='invalid'" style="font-size:7.5pt;">
+                        Invalid Times
+                    </span>
                     <span  v-else>
                         Add Time
                     </span>
@@ -103,7 +106,10 @@ export default class TimePicker extends Vue {
 
     get duplicateTime(){
 
+        const timeFormat=/^[0-9]{2}:[0-9]{2}\s[A,P]M$/
         const time = this.getTime()
+        if(!timeFormat.test(time.start) || !timeFormat.test(time.end)) return 'invalid'
+
         const start = moment(time.start, "hh:mm A").format()   
         const end = moment(time.end, "hh:mm A").format()
         if(start >= end) return 'after'
