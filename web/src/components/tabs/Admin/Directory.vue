@@ -967,7 +967,7 @@ export default class DirectoryPage extends Vue {
             this.savingData = true;
             if(this.interpreter.criminalRecordCheckDate){
                 const crcDate = new Date(this.interpreter.criminalRecordCheckDate);           
-                this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+                this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, 'America/Vancouver').format();
             }
 
             this.$http.post('/interpreter', this.interpreter)
@@ -990,7 +990,7 @@ export default class DirectoryPage extends Vue {
         if (this.checkInterpreterStates()){
             this.savingData = true;
             const crcDate = new Date(this.interpreter.criminalRecordCheckDate);
-            this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, moment.tz.guess()).format();
+            this.interpreter.criminalRecordCheckDate = moment.tz(crcDate, 'America/Vancouver').format();
 
             this.$http.put('/interpreter/' + this.interpreter.id, this.interpreter)
             .then((response) => {            

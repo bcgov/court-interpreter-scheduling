@@ -1,11 +1,12 @@
 import store from "@/store";
-import moment from 'moment';
+import moment from 'moment-timezone';
 import * as _ from 'underscore';
 import { locationsInfoType } from '@/types/Common/json';
 import { bookingSearchResultInfoType, courtsDistanceInfoType, travelInformationInfoType } from "@/types/Bookings/json";
 
 export function travelInformation(booking: bookingSearchResultInfoType){
     //console.log(booking)
+    const timezone = booking.location.timezone;
 
     const travelInfo = {status:'local', totalHours: 0, totalKilometers:0, breakfast:0, lunch:0, dinner:0} as travelInformationInfoType
     
@@ -20,12 +21,13 @@ export function travelInformation(booking: bookingSearchResultInfoType){
             
             if(bookingDates.length>0){
                 const sortedBookingDates = _.sortBy(bookingDates, bookingdate => {
-                    return moment(bookingdate.date.slice(0,10)+' '+bookingdate.actualStartTime,'YYYY-MM-DD HH:mm A' ).format()                
+                    const dateTZ = moment(bookingdate.date).tz(timezone).format('YYYY-MM-DD')
+                    return moment.tz(dateTZ+' '+bookingdate.actualStartTime,'YYYY-MM-DD HH:mm A', timezone).format()                
                 })
                 
-                const meals = numberOfMeals(sortedBookingDates, travel.time)
+                const meals = numberOfMeals(sortedBookingDates, travel.time, timezone)
                 
-                travelInfo.startDate = sortedBookingDates[0].date.slice(0,10)
+                travelInfo.startDate = moment(sortedBookingDates[0].date).tz(timezone).format('YYYY-MM-DD')
                 travelInfo.status = 'travel'
                 travelInfo.totalHours = Math.ceil(travel.time*4)/2, 
                 travelInfo.totalKilometers = travel.distance*2,
@@ -40,7 +42,7 @@ export function travelInformation(booking: bookingSearchResultInfoType){
 }
 
 
-function numberOfMeals(bookingDates, travelHours){
+function numberOfMeals(bookingDates, travelHours, timezone){
     //console.log("Days")
     // for(const bookingDate of bookingDates){
     //     console.log(bookingDate.date + bookingDate.startTime)
@@ -51,8 +53,8 @@ function numberOfMeals(bookingDates, travelHours){
     //console.log('Travel Hours ',travelHours)
 
     if(!travelHours) travelHours =0
-    
-    const startOfTravel = moment(bookingDates[0].date.slice(0,10)+' '+bookingDates[0].actualStartTime,'YYYY-MM-DD HH:mm A' ).add(-1*travelHours,'hours')    
+    const dayFirstTZ = moment(bookingDates[0].date).tz(timezone).format('YYYY-MM-DD')
+    const startOfTravel = moment(dayFirstTZ+' '+bookingDates[0].actualStartTime,'YYYY-MM-DD HH:mm A' ).add(-1*travelHours,'hours')    
     const startOfTravelTime = startOfTravel.format()
     //console.log(startOfTravelTime)
     
@@ -70,8 +72,8 @@ function numberOfMeals(bookingDates, travelHours){
     //console.log('first Lunch ', eligibleFirstLunch)
     //console.log('first Dinner ', eligibleFirstDinner)
 
-
-    const endOfTravel = moment(bookingDates[lastIndex].date.slice(0,10)+' '+bookingDates[lastIndex].actualFinishTime,'YYYY-MM-DD HH:mm A' ).add(travelHours,'hours')
+    const dayLastTZ = moment(bookingDates[lastIndex].date).tz(timezone).format('YYYY-MM-DD')
+    const endOfTravel = moment(dayLastTZ+' '+bookingDates[lastIndex].actualFinishTime,'YYYY-MM-DD HH:mm A' ).add(travelHours,'hours')
     const endOfTravelTime = endOfTravel.format()
     //console.log(endOfTravelTime)
 

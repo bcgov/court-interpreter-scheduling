@@ -44,7 +44,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 
 

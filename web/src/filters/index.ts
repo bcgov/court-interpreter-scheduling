@@ -14,9 +14,13 @@ Vue.filter('truncate-text', function (text, stop: number, crumbs?) {
 		return ''
 })
 
-Vue.filter('iso-date', function(date){
-	if(date)
-		return	moment(date).format('YYYY-MM-DD');
+Vue.filter('iso-date', function(date,tz?){
+	if(date){
+		if(tz)
+			return	moment(date).tz(tz).format('YYYY-MM-DD');
+		else
+			return	moment(date).format('YYYY-MM-DD');
+	}
 	else
 		return ''
 })

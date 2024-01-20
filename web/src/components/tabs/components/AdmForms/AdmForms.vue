@@ -63,7 +63,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import * as _ from 'underscore';
 
 import { namespace } from "vuex-class";   
@@ -102,6 +102,7 @@ import {paymentDetails} from './AdmCalculations/PaymentCalculation'
 import {cancellationCalculation} from './AdmCalculations/CancellationCalculation'
 import {paymentDetailsInfoType} from '@/types/Bookings';
 import { locationsInfoType } from '@/types/Common/json';
+import { locationShortInfoType } from '@/types/Common';
 
 
 @Component({
@@ -221,7 +222,7 @@ export default class AdmForms extends Vue {
         interp.fullName = Vue.filter("fullName")(interp.firstName, interp.lastName)
         interp.fullAddress = Vue.filter('fullAddress')(interp.address, interp.city, interp.province, interp.postal)
         
-        this.booking.createdDate = Vue.filter('iso-date')(this.booking.created_at)
+        this.booking.createdDate = Vue.filter('iso-date')(this.booking.created_at, this.booking.location.timezone)
         this.booking.language= languages.length>0? languages.join(', '):cancelledLanguages.join(', ')
         this.booking.level= levels.length>0? Math.min(...levels) : Math.min(...cancelledLevels)
         this.booking.multipleLanguages=languages.length>0? (languages.length>1? "Yes" :"No") :(cancelledLanguages.length>1? "Yes" :"No")
@@ -262,9 +263,9 @@ export default class AdmForms extends Vue {
 
 
     public getInvoiceInfo(saveRequired){
-        
+
         let sortedDates = [];
-        let location = [];
+        const location = this.booking.location? this.booking.location : this.courtLocations.filter(loc => loc.id==this.booking.location_id)[0];
 
         if(!this.booking.invoiceDate || !this.booking.invoiceNumber){
             let dates = this.booking.dates.filter(date => date.status=='Booked')
@@ -274,22 +275,18 @@ export default class AdmForms extends Vue {
 
         if(!this.booking.invoiceDate && sortedDates.length>0){
             const lenDates = sortedDates.length
-            const invoiceDate = sortedDates[lenDates-1]?.date?.slice(0,10)       
+            const invoiceDate = moment(sortedDates[lenDates-1]?.date).tz(location.timezone).format("YYYY-MM-DD")       
             this.booking.invoiceDate = invoiceDate 
             saveRequired = true;                   
         }
 
-        if((!this.booking.location_name || !this.booking.invoiceNumber) && this.booking.location_id){
-            location = this.courtLocations.filter(loc => loc.id==this.booking.location_id)
+        if(!this.booking.location_name){
+            this.booking.location_name = location.name;
         }
 
-        if(!this.booking.location_name && location.length==1){
-            this.booking.location_name = location[0].name;
-        }
-
-        if(!this.booking.invoiceNumber && sortedDates.length>0 && location.length==1){                        
-            const firstBookingDate = sortedDates[0]?.date?.slice(0,10)
-            this.createInvoiceNumber(location[0],firstBookingDate)
+        if(!this.booking.invoiceNumber && sortedDates.length>0){                        
+            const firstBookingDate =  moment(sortedDates[0]?.date).tz(location.timezone).format()
+            this.createInvoiceNumber(location,firstBookingDate)
             return false                 
         }
 
@@ -302,9 +299,9 @@ export default class AdmForms extends Vue {
     }
 
 
-    public createInvoiceNumber(location: locationsInfoType, date:string){
+    public createInvoiceNumber(location: locationShortInfoType, date:string){
         const locationCode = ''; //location.shortDescription
-        const firstBookingDate = moment(date).format("DDMMMYY").toUpperCase()        
+        const firstBookingDate = moment(date).tz(location.timezone).format("DDMMMYY").toUpperCase()        
         //__Name
         let name=''
         const first = this.booking.interpreter.firstName

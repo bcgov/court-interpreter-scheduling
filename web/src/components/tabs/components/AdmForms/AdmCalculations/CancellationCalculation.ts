@@ -10,10 +10,11 @@ import { totalInterpretingHoursInfoType } from "@/types/Bookings/json";
 export function cancellationCalculation(booking, gstRate?){
     //console.log(booking.dates)
 
+    const timezone = booking.location.timezone;
     const dates = booking.dates.map(date => date.date)
     const sortedDates = _.sortBy(dates)
     const assignmentStart =  sortedDates[0]
-    const assignmentDays = getAssignmentDays(dates);
+    const assignmentDays = getAssignmentDays(dates, timezone);
 
     const cancelledDates = []
     for(const record of booking.dates){
@@ -29,7 +30,7 @@ export function cancellationCalculation(booking, gstRate?){
         ) continue
         
         
-        const daysBetween = getDaysBetweenCancellationAndAssignment(assignmentStart,record.cancellationDate)
+        const daysBetween = getDaysBetweenCancellationAndAssignment(assignmentStart,record.cancellationDate, timezone)
         //console.log(daysBetween)
         if((assignmentDays.length>10 && daysBetween.length<3)||(assignmentDays.length<=10 && daysBetween.length<2)){
             cancelledDates.push(record)
@@ -39,7 +40,7 @@ export function cancellationCalculation(booking, gstRate?){
 
     //console.log(cancelledDates)
     if(cancelledDates.length>0){
-        const totalHours = getTotalHours(booking, cancelledDates)
+        const totalHours = getTotalHours(booking, cancelledDates, timezone)
         const totalCancellationFee = getTotalCancellations(totalHours, booking, gstRate)        
         //console.log(totalCancellationFee)
         //====
@@ -117,7 +118,7 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booki
 }
 
 
-function getTotalHours(booking, cancelledDates){
+function getTotalHours(booking, cancelledDates, timezone){
     const rates: rateJsonInfoType[] = store.state.Common.rates
 
     const totalHours: totalInterpretingHoursInfoType = {
@@ -152,7 +153,7 @@ function getTotalHours(booking, cancelledDates){
 
     for(const record of cancelledDates){
         if(record.status != 'Cancelled') continue
-        const recordDate = record.date.slice(0,10)
+        const recordDate = moment(record.date).tz(timezone).format('YYYY-MM-DD')
         const start = moment(record.startTime, "hh:mm A")
         const end = moment(record.finishTime, "hh:mm A")
         const mid = moment("01:00 PM", "hh:mm A")
@@ -244,24 +245,25 @@ function getTotalHours(booking, cancelledDates){
 }
 
 
-function getAssignmentDays(dates){
+function getAssignmentDays(dates, timezone){
     const assignmentDays=[]
     for(const day of dates){
-        if(!assignmentDays.includes(day.slice(0,10)))
-            assignmentDays.push(day.slice(0,10))
+        const dayTZ = moment(day).tz(timezone).format('YYYY-MM-DD')
+        if(!assignmentDays.includes(dayTZ))
+            assignmentDays.push(dayTZ)
     }
     //console.log(assignmentDays)
     return assignmentDays
 }
 
 
-function getDaysBetweenCancellationAndAssignment(assignmentStart, cancelDate){
+function getDaysBetweenCancellationAndAssignment(assignmentStart, cancelDate, timezone){
 
     const daysBetweenCancellationAndAssignment=[]
     const holidayList = getHolidays()
 
-    const assignmentStartDateObj = moment(assignmentStart) //('2022-04-20T09:30:00.000-08:00') //moment(dates[0])//this.combineDataTime(this.cancellationBooking.date, this.cancellationBooking.startTime)
-    const cancellationDateObj = moment(cancelDate) //('2022-04-14T10:00:00.000-08:00')
+    const assignmentStartDateObj = moment(assignmentStart).tz(timezone) //('2022-04-20T09:30:00.000-08:00') //moment(dates[0])//this.combineDataTime(this.cancellationBooking.date, this.cancellationBooking.startTime)
+    const cancellationDateObj = moment(cancelDate).tz(timezone) //('2022-04-14T10:00:00.000-08:00')
     
     const assignmentStartDate = assignmentStartDateObj.format("YYYY-MM-DD")    
     const daysDiff = assignmentStartDateObj.diff(cancellationDateObj, 'days')+1
@@ -311,9 +313,9 @@ function getTotalHoursKey(recordDate, rates, sortedRateNames, highestLanguageInd
     
     
     let key=higherRateLanguageName
-    
+    const higherRateDate = moment(higherRateLanguage.valueChangedDate).tz('America/Vancouver').format('YYYY-MM-DD')//higherRateLanguage.valueChangedDate.slice(0,10)
     if( (higherRateLanguage.previousValue != higherRateLanguage.value) &&
-        (recordDate < higherRateLanguage.valueChangedDate.slice(0,10))
+        (recordDate < higherRateDate)
     ){
         key='Old'+higherRateLanguageName                                   
     }
@@ -321,7 +323,8 @@ function getTotalHoursKey(recordDate, rates, sortedRateNames, highestLanguageInd
     return key
 }
 
-function combineDataTime(dateIso, timeAmPm){
-    const tz = moment(dateIso).format('Z')
-    return moment(dateIso.slice(0,10)+' '+timeAmPm+' '+tz, 'YYYY-MM-DD HH:mm A Z')
+function combineDataTime(dateIso, timeAmPm, timezone){
+    // const tz = moment(dateIso).format('Z')
+    const dateTZ = moment(dateIso).tz(timezone).format('YYYY-MM-DD')
+    return moment.tz(dateTZ+' '+timeAmPm, 'YYYY-MM-DD HH:mm A',timezone)
 }

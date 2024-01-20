@@ -70,7 +70,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import HourPicker from "./HourPicker.vue"
 import MinutePicker from "./MinutePicker.vue"
 import AmPmPicker from "./AmPmPicker.vue"
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { bookingTimeInfoType } from '@/types/Bookings/json';
 
 @Component({

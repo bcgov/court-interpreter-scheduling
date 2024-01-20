@@ -287,7 +287,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import CaseFields from '../CaseComponents/CaseFields.vue'
 
