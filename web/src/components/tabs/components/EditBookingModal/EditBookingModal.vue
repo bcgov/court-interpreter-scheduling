@@ -537,8 +537,8 @@ export default class EditBookingModal extends Vue {
 
             this.cancellationBooking.cancellationReason = this.cancelledBy+' ('+this.cancellationReason+')'
             this.cancellationBooking.cancellationComment = this.cancellationComment
-            this.cancellationBooking.cancellationDate = moment().format()
-            this.cancellationBooking.cancellationTime = moment().format("hh:mm A")
+            this.cancellationBooking.cancellationDate = moment.tz(this.registry.timezone).format()
+            this.cancellationBooking.cancellationTime = moment.tz(this.registry.timezone).format("hh:mm A")
             this.showCancelReasonWindow = false;
             this.extractBookingCards()
             

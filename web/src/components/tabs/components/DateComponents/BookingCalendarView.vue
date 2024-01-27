@@ -8,6 +8,7 @@
                         v-model="dates"
                         multiple
                         :events="currentBookingDates"
+                        :event-color="getEventColor"
                         color="success"
                         :allowed-dates="allowedDates"                         
                         :picker-date.sync="pickerDateL"                        
@@ -20,6 +21,7 @@
                         v-model="dates"
                         multiple
                         :events="currentBookingDates"
+                        :event-color="getEventColor"
                         color="success"
                         :allowed-dates="allowedDates"                         
                         :picker-date.sync="pickerDateM"                                
@@ -32,6 +34,7 @@
                         v-model="dates"
                         multiple
                         :events="currentBookingDates"
+                        :event-color="getEventColor"
                         color="success"
                         :allowed-dates="allowedDates"                             
                         :picker-date.sync="pickerDateR"                                
@@ -104,6 +107,7 @@ export default class BookingCalendarView extends Vue {
 
     dataReady=false
     conflictDates=[]
+    multiLocationDates=[]
 
     @Watch('pickerDateL')
     monthChange(newValue){
@@ -131,6 +135,13 @@ export default class BookingCalendarView extends Vue {
         }
    }
 
+    getEventColor (eventDate) {
+        if(this.multiLocationDates.includes(eventDate))
+            return 'secondary'
+        else
+            return 'warning'
+    }
+
     mounted(){
         this.dataReady=false
         this.extractInfo()
@@ -138,23 +149,42 @@ export default class BookingCalendarView extends Vue {
     }
 
     public extractInfo(){
-        this.conflictDates=[]       
+        this.conflictDates = []
+        this.multiLocationDates = []
+        const multipleLocationDates = {} as any     
         
         for(const booking of this.bookings){
             const timezone = booking.location?.timezone? booking.location.timezone: 'America/Vancouver';
             for(const bookingdate of booking.dates){
+                
+                if(bookingdate.status == statusOptions[2].value) continue;
+                
                 const conflictDate = moment(bookingdate.date).tz(timezone).format('YYYY-MM-DD');
-                if(!this.conflictDates.includes(conflictDate) && bookingdate.status != statusOptions[2].value)               
+                if(!this.conflictDates.includes(conflictDate))               
                     this.conflictDates.push(conflictDate)
+                
+                if(multipleLocationDates[conflictDate]){
+                    if(!multipleLocationDates[conflictDate].includes(booking.locationId))
+                        multipleLocationDates[conflictDate].push(booking.locationId)
+                }
+                else
+                    multipleLocationDates[conflictDate]=[booking.locationId]
             }
         } 
+
+        for(const date of Object.keys(multipleLocationDates)){
+            if(multipleLocationDates[date].length>1)
+            this.multiLocationDates.push(date)
+        } 
         
-        this.dates = this.conflictDates 
+        this.dates = this.conflictDates        
         this.currentBookingDates = this.bookingDates.map(date=>date.date.slice(0,10))
+        this.currentBookingDates.push(...this.multiLocationDates)
+        
         if(this.currentBookingDates.length>0){
             const sortedDates = this.currentBookingDates.sort()
             this.pickerDateL = sortedDates[0]
-        }
+        }        
     }
 
     public allowedDates(date){        
@@ -211,9 +241,9 @@ export default class BookingCalendarView extends Vue {
             }
         }
 
-        td>button.v-btn.v-btn--rounded.v-btn--active.theme--light.success{
+        td>button.v-btn.v-btn--rounded.v-btn--active.theme--light.success:not(:has(div.secondary)){
         
-            background: rgb(233, 108, 108) !important; 
+            background: rgb(245, 163, 21) !important; 
             color:white !important;
             pointer-events: auto !important; 
 
@@ -233,6 +263,31 @@ export default class BookingCalendarView extends Vue {
             }
             div.warning{
                 background-color:  rgb(56, 90, 171) !important;
+            }
+        }
+
+        td>button.v-btn.v-btn--rounded.v-btn--active.theme--light.success:has(div.secondary){
+        
+            background: rgb(237, 19, 19) !important; 
+            color:white !important;
+            pointer-events: auto !important; 
+
+            :hover::before{
+                content:"Multiple Locations"; 
+                position:absolute;
+                transform:translate(-10%,-120%);
+                margin-left:10px;
+                font-size: 10pt;                
+                width:11.5rem;
+                padding:5px;
+                border-radius:10px;
+                background:#000;
+                color: #fff;
+                text-align:center;
+                z-index: 1;
+            }
+            div.secondary{
+                background-color:  rgba(237, 19, 19, 0.3) !important;
             }
         }
        

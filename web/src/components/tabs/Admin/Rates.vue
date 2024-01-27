@@ -58,7 +58,7 @@
 <script lang="ts">
 import { Component, Vue} from 'vue-property-decorator';
 import { namespace } from "vuex-class";
-import moment from 'moment';
+import moment from 'moment-timezone';
 import "@/store/modules/common";
 const commonState = namespace("Common");
 
@@ -106,7 +106,10 @@ export default class Rates extends Vue {
 
                 this.allRates = response.data
                 this.UpdateRates(this.allRates)
-                this.allRates.forEach(rate=>rate.valueChangedDate=rate.valueChangedDate?.slice(0,10))
+                this.allRates.forEach(rate=>{                    
+                    const date =rate.valueChangedDate? moment(rate.valueChangedDate).tz('America/Vancouver').format('YYYY-MM-DD'): '';
+                    rate.valueChangedDate = date;                    
+                })
 
                 this.rates = getRatesIndices(this.allRates) 
                 this.enableSaveButton = false;
@@ -125,7 +128,7 @@ export default class Rates extends Vue {
     public saveChanges() {           
                 
         const allRates = JSON.parse(JSON.stringify(this.allRates))
-        allRates.forEach(rate=>rate.valueChangedDate=moment(rate.valueChangedDate).format())
+        allRates.forEach(rate=>rate.valueChangedDate=moment.tz(rate.valueChangedDate,'America/Vancouver').format())
         this.savingData = true;
         this.$http.put('/rate', allRates).then(res=>{
             if(res?.status==202){
