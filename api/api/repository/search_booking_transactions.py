@@ -7,7 +7,7 @@ from .user_transactions import check_user_roles
 from models.interpreter_model import InterpreterModel
 from models.booking_model import BookingCasesModel, BookingDatesModel, BookingModel
 from api.schemas.booking_schema import BookingSearchRequestSchema
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def search_booking(request: BookingSearchRequestSchema, db: Session, username):
@@ -77,7 +77,8 @@ def apply_dates(bookings, booking_ranges):
         not booking_ranges[0].startDate or
         not booking_ranges[0].endDate
     ):
-        return bookings
+        start = datetime.now()+ timedelta(days=-180) # only records from 6 months ago
+        return bookings.where(BookingDatesModel.date >= start)
 
     start_date = booking_ranges[0].startDate
     end_date = booking_ranges[0].endDate

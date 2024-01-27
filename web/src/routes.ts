@@ -7,6 +7,7 @@ import LanguagePage from "@/components/tabs/Admin/Language.vue"
 import UpdateGeoPage from "@/components/tabs/Admin/UpdateGeo.vue"
 import RequestAccessPage from "@/components/RequestAccessPage.vue"
 import Rates from "@/components/tabs/Admin/Rates.vue"
+import AuditBooking from "@/components/tabs/Admin/AuditBooking.vue"
 import { SessionManager } from "@/components/utils/utils";
 import VueResource from 'vue-resource';
 import store from "@/store";
@@ -61,6 +62,12 @@ const routes = [
       name: "rates",
       beforeEnter: authGuard,
       component: Rates
+    },
+    {
+      path: "/audit-booking",
+      name: "audit-booking",
+      beforeEnter: authGuard,
+      component: AuditBooking
     },
     {
       path: "/user-role",

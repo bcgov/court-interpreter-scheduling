@@ -242,3 +242,54 @@ class BookingInvoiceNumberResponseSchema(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True   
+
+#_______________________________
+#_______________________________
+#__________AUDIT________________
+#_______________________________
+class AuditBookingSchema(BaseModel):    
+    interpreter: InterpreterBookingResponseSchema
+    location_id: Optional[int]
+    location_name: Optional[str]
+    location: Optional[LocationShortSchema]
+    approver_name: Optional[str] = Field(alias="approverName")
+    interpreter_signed: Optional[bool] = Field(alias="interpreterSigned")
+    interpreter_signdate: Optional[str] = Field(alias="interpreterSigningDate")
+    qr_signed: Optional[bool] = Field(alias="qualifiedReceiverSigned")
+    qr_signdate: Optional[str] = Field(alias="qualifiedReceiverSigningDate")
+    fees_gst: Optional[float] = Field(alias="feesGST")
+    fees_total: Optional[float] = Field(alias="feesTotal")
+    expense_gst: Optional[float] = Field(alias="expenseGST")
+    expense_total: Optional[float] = Field(alias="expenseTotal")
+    invoice_total: Optional[float] = Field(alias="invoiceTotal")
+    invoice_date: Optional[str] = Field(alias="invoiceDate")
+    invoice_number: Optional[str] = Field(alias="invoiceNumber")
+    
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
+
+class AuditBookingDateSchema(BaseModel):
+    id: Optional[int]
+    date: Optional[datetime]
+    interpreter_id: Optional[int] = Field(alias="interpreterId")
+
+    start_time: Optional[str] = Field(alias="startTime")
+    finish_time: Optional[str] = Field(alias="finishTime")    
+    actual_start_time: Optional[str] = Field(alias="actualStartTime")
+    actual_finish_time: Optional[str] = Field(alias="actualFinishTime")
+    
+    approvers_initials: Optional[str] = Field(alias="approversInitials")
+    
+    comment: Optional[str]
+   
+    method_of_appearance: Optional[BookingMethodOfAppearanceEnum] = Field(alias="methodOfAppearance")
+    status: Optional[BookingStatusEnum]
+
+    booking: Optional[AuditBookingSchema]
+
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
