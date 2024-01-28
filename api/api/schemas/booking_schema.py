@@ -173,6 +173,7 @@ class ADMBookingResponseSchema(BookingResponseBase):
     created_at: Optional[datetime]
     updated_by: TruncatedUserIdBase
     adm_updated_by: Optional[TruncatedUserIdBase]
+    updated_at: Optional[datetime]
 
     form_sender: Optional[TruncatedUserIdBase] = Field(alias="formSender")
     form_sender_email: Optional[str] = Field(alias="formSenderEmail")

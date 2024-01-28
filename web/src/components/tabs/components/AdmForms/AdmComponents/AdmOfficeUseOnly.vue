@@ -97,6 +97,18 @@
                     </b-tr>
 
                     <b-tr>
+                        <b-td colspan="5" class="text-center border">$ {{subtotalCancellation}}</b-td>                        
+                        <b-td colspan="4" class="text-center border">$ {{cancellationGST}}</b-td>
+                        <b-td colspan="4" class="text-center border">N/A</b-td>
+                        <b-td colspan="4" class="text-center border">105</b-td>
+                        <b-td colspan="4" class="text-center border"><b-input v-model="resp2" @input="officeUseChanges=true;"/></b-td>
+                        <b-td colspan="4" class="text-center border">10710</b-td>
+                        <b-td colspan="4" class="text-center border">5542</b-td>                        
+                        <b-td colspan="5" class="text-center border"><b-input v-model="project2" @input="officeUseChanges=true;"/></b-td>
+                        <b-td colspan="16" class="text-center border"></b-td>
+                    </b-tr>
+
+                    <b-tr>
                         <b-th colspan="9" class="text-center border">Additional Instructions:</b-th>
                         <b-td colspan="41" class="p-1 border"><b-input v-model="additionalInstructions" @input="officeUseChanges=true;"/></b-td>
                     </b-tr>
@@ -146,11 +158,15 @@ export default class AdmOfficeUseOnly extends Vue {
     feesGST='0.00'
     subtotalExpenses='0.00'
     expensesGST='0.00'
+    subtotalCancellation='0.00'
+    cancellationGST='0.00'
 
     resp0=''
     resp1=''
+    resp2=''
     project0=''
     project1=''
+    project2=''
 
 
     officeUseChanges = false;
@@ -187,10 +203,15 @@ export default class AdmOfficeUseOnly extends Vue {
         this.payStubComment = this.booking?.admDetail?.officeUse?.payStubComment 
         this.additionalInstructions = this.booking?.admDetail?.officeUse?.additionalInstructions
 
+        this.subtotalCancellation = this.booking?.admDetail?.calculations?.cancellation?.subtotalFees?.toFixed(2)?? '0.00'
+        this.cancellationGST = this.booking?.admDetail?.calculations?.cancellation?.totalGst?.toFixed(2)?? '0.00'
+
         this.resp0 = this.booking?.admDetail?.officeUse?.resp0
         this.resp1 = this.booking?.admDetail?.officeUse?.resp1
+        this.resp2 = this.booking?.admDetail?.officeUse?.resp2
         this.project0 = this.booking?.admDetail?.officeUse?.project0? this.booking.admDetail.officeUse.project0:'1500000'
         this.project1 = this.booking?.admDetail?.officeUse?.project1? this.booking.admDetail.officeUse.project1:'1500000'
+        this.project2 = this.booking?.admDetail?.officeUse?.project2? this.booking.admDetail.officeUse.project2:'1500144'
     
     }
 
@@ -205,8 +226,10 @@ export default class AdmOfficeUseOnly extends Vue {
 
         officeUse.resp0 = this.resp0 
         officeUse.resp1 = this.resp1
+        officeUse.resp2 = this.resp2
         officeUse.project0 = this.project0
         officeUse.project1 = this.project1
+        officeUse.project2 = this.project2
 
         const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
         admDetail.officeUse = officeUse

@@ -95,7 +95,22 @@
                 <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
             </tr> 
 
-<!-- <Line 9 -Additional Instructions> -->
+<!-- <Line 9 -Cancellation> -->
+            <tr style="background:#EFEFEF;">
+                <td colspan="1" class="border-top text-right">$</td>
+                <td colspan="4" class="border-top border-right text-left"><div class="answer-record">{{subtotalCancellation}}</div></td>
+                <td colspan="1" class="border-top text-right">$</td>
+                <td colspan="3" class="border-top border-right text-left"><div class="answer-record">{{cancellationGST}}</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">N/A</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">105</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">{{resp2}}</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">10710</div></td>
+                <td colspan="4" class="border-top border-right text-center"><div class="answer-record">5542</div></td>
+                <td colspan="5" class="border-top border-right text-center"><div class="answer-record">{{project2}}</div></td>
+                <td colspan="16" class="border-top text-center"><div class="answer-record"></div></td>
+            </tr> 
+
+<!-- <Line 10 -Additional Instructions> -->
             <tr style="line-height:2.5rem; background:#F9F9F9;">
                 <td colspan="9" class="border-top border-right text-center">Additional Instructions:</td>
                 <td colspan="41" class="border-top text-left"><div class="answer-record ml-1">{{additionalInstructions}}</div></td>
@@ -136,11 +151,15 @@ export default class OfficeUseOnly extends Vue {
     feesGST='0.00'
     subtotalExpenses='0.00'
     expensesGST='0.00'
+    subtotalCancellation='0.00'
+    cancellationGST='0.00'
 
     resp0=''
     resp1=''
+    resp2=''
     project0=''
     project1=''
+    project2=''
 
     officeUseChanges = false;
 
@@ -167,6 +186,9 @@ export default class OfficeUseOnly extends Vue {
         this.subtotalExpenses = recordApproved? (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2): '0.00';
         this.expensesGST = recordApproved && this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';
 
+        this.subtotalCancellation = recordApproved? (this.booking?.admDetail?.calculations?.cancellation?.subtotalFees?.toFixed(2)?? '0.00'):'0.00'
+        this.cancellationGST = recordApproved? (this.booking?.admDetail?.calculations?.cancellation?.totalGst?.toFixed(2)?? '0.00'):'0.00'
+
         this.invoiceTotalAmount = recordApproved && this.booking.invoiceTotal? ('$ '+this.booking.invoiceTotal): '$ 0.00'
 
         this.addressVerified = this.booking?.admDetail?.officeUse?.addressVerified;
@@ -178,8 +200,10 @@ export default class OfficeUseOnly extends Vue {
 
         this.resp0 = this.booking?.admDetail?.officeUse?.resp0
         this.resp1 = this.booking?.admDetail?.officeUse?.resp1
+        this.resp2 = this.booking?.admDetail?.officeUse?.resp2
         this.project0 = this.booking?.admDetail?.officeUse?.project0? this.booking.admDetail.officeUse.project0:'1500000'
         this.project1 = this.booking?.admDetail?.officeUse?.project1? this.booking.admDetail.officeUse.project1:'1500000'
+        this.project2 = this.booking?.admDetail?.officeUse?.project2? this.booking.admDetail.officeUse.project2:'1500144'
 
     }
     
