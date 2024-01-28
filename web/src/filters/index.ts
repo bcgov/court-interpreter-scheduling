@@ -99,9 +99,13 @@ Vue.filter('beautify-date-blank', function(date){
 		return ' '
 })
 
-Vue.filter('beautify-date-weekday-time', function(date){
-	if(date)
-		return	moment(date).format('ddd MMM DD, YYYY HH:mm');
+Vue.filter('beautify-date-weekday-time', function(date, tz?){
+	if(date){
+		if(tz)
+			return	moment(date).tz(tz).format('ddd MMM DD, YYYY HH:mm');
+		else
+			return	moment(date).format('ddd MMM DD, YYYY HH:mm');
+	}
 	else
 		return ''
 })

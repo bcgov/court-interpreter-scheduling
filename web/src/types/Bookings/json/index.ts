@@ -68,6 +68,7 @@ export interface bookingSearchResultInfoType{ //OK
     schedulingClerk:string;
     created_at:string;
     createdDate?:string;
+    updated_at:string;
     updated_by:string;
     interpreter: bookingInterpreterInfoType;
     dates: bookingInfoType[];
@@ -213,8 +214,10 @@ export interface officeUseOnlyVars{
     additionalInstructions: string;
     resp0: string;
     resp1: string;
+    resp2: string;
     project0: string;
     project1: string;
+    project2: string;
 }
 
 export interface paymentDetailsVars{
