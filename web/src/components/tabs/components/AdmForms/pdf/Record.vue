@@ -99,7 +99,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingAdmRecordInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 
 import * as _ from 'underscore';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 @Component
 export default class Record extends Vue {
@@ -148,11 +148,12 @@ export default class Record extends Vue {
         this.slicedRecords =[]
         for(const date of this.booking.dates){
             const record: bookingAdmRecordInfoType = JSON.parse(JSON.stringify(date))
-           
+
             // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
             // record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             // record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
-            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()                      
+            const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
+            record.date = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()                      
             record.actualStartTimeState=null;            
             record.actualFinishTimeState=null;            
             record.approversInitialsState=null;            

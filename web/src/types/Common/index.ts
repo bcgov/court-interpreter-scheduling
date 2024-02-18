@@ -2,6 +2,7 @@ export interface locationShortInfoType {
     id: number;
     locationCode: string;
     name: string;
+    timezone: string;
     shortDescription: string;
 }
 

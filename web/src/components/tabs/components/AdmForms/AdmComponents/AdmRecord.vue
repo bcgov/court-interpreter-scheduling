@@ -116,7 +116,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 
 import { bookingAdmRecordInfoType, bookingInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
@@ -164,7 +164,8 @@ export default class AdmRecord extends Vue {
             // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;
             // record.reasonDesc=date.reason?.includes('OTHER__')? date.reason.replace('OTHER__','') :reasonCodeClass[date.reason];
             // record.courtClassDesc= date.courtClass?.includes('OTHER__')? (date.courtClass.replace('OTHER__','')+' (other)') : date.courtClass;
-            record.recordDate = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
+            record.recordDate = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.time = date.startTime + ' - '+ date.finishTime
             // record.federalYN = date.federal? 'Yes' : 'No'
             // record.bilingualYN = date.bilingual? 'Yes' : 'No'            

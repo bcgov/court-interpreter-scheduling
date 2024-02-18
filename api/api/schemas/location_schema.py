@@ -16,6 +16,7 @@ class LocationSchema(BaseModel):
     short_description: str = Field(alias="shortDescription")        
     latitude: Optional[float]
     longitude: Optional[float]
+    timezone: Optional[str] = Field()
     
     class Config():
         orm_mode = True
@@ -27,6 +28,7 @@ class LocationShortSchema(BaseModel):
     name: str
     location_code: str = Field(alias="locationCode")    
     short_description: str = Field(alias="shortDescription")
+    timezone: Optional[str] = Field()
     
     class Config():
         orm_mode = True

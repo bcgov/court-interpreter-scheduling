@@ -4,6 +4,7 @@
             
             <b-row class="m-0">
                 <h3 class="text-dark p-0 mt-n2 mb-0">Payment Details</h3>
+                <div class="ml-5 mt-n2 text-primary">Last ADM update by: <b>{{booking.adm_updated_by}}</b> on {{booking.updated_at | beautify-date-weekday-time(timezone)}}</div>
                 <b-button size="sm"             
                     v-if="paymentChanges"
                     @click="savePaymentDetailsChanges()"                                 
@@ -434,7 +435,7 @@ export default class AdmPaymentDetails extends Vue {
 
     languageItems = []
     courtFeeItems = []
-
+    timezone=''
     section_name="adm-payment"
 
     dataReady = false;
@@ -449,6 +450,7 @@ export default class AdmPaymentDetails extends Vue {
 
     mounted(){
         this.dataReady = false;
+        this.timezone = this.booking?.location?.timezone?? 'America/Vancouver'
         this.paymentChanges = false;
         this.extractFormInfo()
         this.dataReady = true;
@@ -518,7 +520,14 @@ export default class AdmPaymentDetails extends Vue {
 
         //_______cancellation
         if(Number(admDetail?.calculations?.cancellation?.totalFees) != Number(this.form.totalCancellationFees)){
-            admDetail.calculations.cancellation.totalFees = Number(this.form.totalCancellationFees)
+            const totalCancellation =  Number(this.form.totalCancellationFees);
+            const gstRate = this.form.gstNumber? Number(gst.gstRate) : 0;
+            const subtotal = totalCancellation/(1+gstRate);
+            const gstFee = subtotal*gstRate;
+            admDetail.calculations.cancellation.totalFees = totalCancellation;
+            admDetail.calculations.cancellation.subtotalFees = parseFloat(subtotal.toFixed(2));
+            admDetail.calculations.cancellation.totalGst = parseFloat(gstFee.toFixed(2));
+
         }else if(Number(tmpGST).toFixed(2) != Number(this.form.gstRate).toFixed(2)){        
             const cancellation = cancellationCalculation(this.booking, gst.gstRate) 
             admDetail.calculations.cancellation = cancellation

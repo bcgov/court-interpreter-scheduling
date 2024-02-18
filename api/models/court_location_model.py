@@ -20,8 +20,10 @@ class CourtLocationModel(Base):
     latitude = Column(Float, unique=False, index=False, nullable=True)
     longitude = Column(Float, unique=False, index=False, nullable=True)
     geo_service = Column(String, unique=False, index=False, nullable=True)
+    timezone = Column(String, unique=False, index=False, nullable=True)
         
     user = relationship ("UserModel", back_populates="location")
+    booking = relationship ("BookingModel", back_populates="location")
 
 
 

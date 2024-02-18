@@ -3,21 +3,27 @@
         <b-form-input
            :tabindex="type=='end'?4:1"
             @focus ="focus"
+            :class="selectedTime.focusHour?'focused':'unfocused'"
             v-model="selectedTime.hour"
             :formatter="hourFormatter"
             style="font-size:12pt; margin:0; padding:0.2rem; width:1.75rem; height:1.75rem;" /> 
         <b-card 
+            tabindex="-1"
             v-if="selectedTime.focusHour" 
-            style="margin:0.2rem 0.1rem; height:15.35rem; width:1.5rem;" no-body >                            
-            <b-button 
-                v-for="hour in hours" :key="hour" 
-                @click="clicked(hour)" 
-                style="font-size:8pt; margin:0.07rem 0.1rem; padding:0 0rem" 
-                variant="info" 
-                size="sm" 
-                :disabled="selectedTime.hour==hour">
-                    {{hour}}
-            </b-button>
+            style="margin:0.2rem 0.1rem; height:14.9rem; width:5.5rem;" no-body >
+            <b style="font-size:14pt; line-height:1.45rem; color:#552" class="text-center">Hour</b>
+            <b-row class="mx-1 mt-n1">                     
+                <b-button 
+                    tabindex="-1" 
+                    v-for="hour in hours" :key="hour" 
+                    @click="clicked(hour)" 
+                    style="font-size:15pt; margin:0.12rem 2%; padding:0 .24rem; width:46%" 
+                    variant="primary" 
+                    size="sm" 
+                    :disabled="selectedTime.hour==hour">
+                        <b>{{hour}}</b>
+                </b-button>               
+            </b-row>
         </b-card>
     </div>          
 </template>
@@ -63,3 +69,22 @@ export default class TimePicker extends Vue {
    
 }
 </script>
+
+<style scoped lang="scss">
+    .focused {
+        border: 2px solid #f0bc1e !important;
+        position:relative;
+        font-size: 18pt !important;
+        margin-top: -0.25rem !important;
+        width: 2.5rem !important;
+        height: 2rem !important;
+        box-shadow: 2px 2px 6px #f0bc1e !important;                
+    }
+    .unfocused {
+        cursor: pointer;
+    }
+    button.disabled {
+        color: rgb(255, 0, 0);
+        background: #f0bc1e;
+    }
+</style>

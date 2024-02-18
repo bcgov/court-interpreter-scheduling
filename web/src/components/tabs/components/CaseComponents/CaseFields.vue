@@ -324,8 +324,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import moment from 'moment';
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
 
 import {bookingCaseInfoType } from '@/types/Bookings/json';
 import {interpreterLanguageInfoType } from '@/types/Interpreters/json';

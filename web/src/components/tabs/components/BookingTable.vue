@@ -44,17 +44,17 @@
 
                     <template v-slot:cell(date)="data" >  
                         <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'date'+inx"
                             > 
-                            <b style="font-size:11pt;">{{dateInfo.date | beautify-date-weekday}}</b> 
+                            <b style="font-size:11pt;">{{dateInfo.date | beautify-date-weekday(data.item.timezone)}}</b> 
                             <span style="margin-left:0.5rem; font-size:11pt;">{{dateInfo.startTime}}-{{dateInfo.finishTime}}</span>                                                    
                         </div>
                     </template> 
 
                     <template v-slot:cell(file)="data" >                    
                         <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'file'+inx"
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="getCaseField(dateInfo.cases,'file')"
@@ -65,7 +65,7 @@
 
                     <template v-slot:cell(caseName)="data" >                    
                         <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'case'+inx"
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="getCaseField(dateInfo.cases,'caseName')"
@@ -76,7 +76,7 @@
 
                     <template v-slot:cell(language)="data" >                    
                         <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'language'+inx"
                             v-b-tooltip.hover.left.noninteractive.v-info
                             :title="getCaseLanguage(dateInfo.cases)"
@@ -87,7 +87,7 @@
 
                     <template v-slot:cell(status)="data" >
                          <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'status'+inx"
                             >                             
                             <b-badge v-if="dateInfo.status == 'Booked'" class="p-1" variant="success">Booked</b-badge> 
@@ -98,7 +98,7 @@
 
                     <template v-slot:cell(comment)="data" >                    
                         <div
-                            v-for="dateInfo,inx in sortByDate(data.item.dates)" 
+                            v-for="dateInfo,inx in sortByDate(data.item.dates, data.item.timezone)" 
                             :key="'comment'+inx"
                             > 
                             <span v-if="dateInfo.comment" v-b-tooltip.hover :title="dateInfo.comment" >{{dateInfo.comment|truncate-text(commentLength)}}</span>
@@ -234,6 +234,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch} from 'vue-property-decorator';
 import * as _ from 'underscore';
+import moment from 'moment-timezone';
 
 import EditBookingModal from "./EditBookingModal/EditBookingModal.vue"
 
@@ -317,7 +318,9 @@ export default class BookingTable extends Vue {
         this.dataReady = false;
         this.bookingItems = []
         for(const booking of this.bookings){
-            const dates = this.sortByDate(booking.dates)
+            const timezone = booking.location?.timezone?  booking.location.timezone : 'America/Vancouver'
+            booking['timezone'] = timezone
+            const dates = this.sortByDate(booking.dates, timezone)
             // console.log(dates)
             // booking['file'] = dates[0].file
             // booking['caseName'] = dates[0].caseName
@@ -383,10 +386,11 @@ export default class BookingTable extends Vue {
     }
 
 
-    public sortByDate(data){
+    public sortByDate(data, timezone){
         return _.sortBy(data, function(data){            
             const startTime = data.startTime
-            return (data.date.slice(0,10) + startTime.slice(6,8)+ startTime.slice(0,5))+data.status
+            const date = moment(data.date).tz(timezone).format('YYYY-MM-DD')
+            return (date + startTime.slice(6,8)+ startTime.slice(0,5))+data.status
         })
     }
     

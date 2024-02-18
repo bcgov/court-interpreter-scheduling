@@ -49,7 +49,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 import RecordDetails from "./RecordDetails.vue"
 
@@ -90,7 +90,8 @@ export default class AdmCancellationInformation extends Vue {
                 this.activeRecords.push(record)
                 continue            
             }
-            record.recordDate = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
+            record.recordDate = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)

@@ -1,5 +1,5 @@
 import store from "@/store";
-import moment from 'moment';
+import moment from 'moment-timezone';
 import * as _ from 'underscore';
 import { rateJsonInfoType } from '@/types/Common';
 import { totalInterpretingHoursInfoType } from "@/types/Bookings/json";
@@ -47,7 +47,7 @@ export function getTotalInterpretingHours(booking){
 
     for(const record of booking.dates){
         if(record.status != 'Booked') continue
-        const recordDate = record.date.slice(0,10)
+        const recordDate = moment(record.date).tz(booking.location.timezone).format('YYYY-MM-DD');
         const start = moment(record.actualStartTime, "hh:mm A")
         const end = moment(record.actualFinishTime, "hh:mm A")
         const mid = moment("01:00 PM", "hh:mm A")
@@ -155,9 +155,9 @@ function getTotalHoursKey(recordDate, rates, sortedRateNames, highestLanguageInd
     
     
     let key=higherRateLanguageName
-    
+    const higherRateDate = moment(higherRateLanguage.valueChangedDate).tz('America/Vancouver').format('YYYY-MM-DD')//higherRateLanguage.valueChangedDate.slice(0,10)
     if( (higherRateLanguage.previousValue != higherRateLanguage.value) &&
-        (recordDate < higherRateLanguage.valueChangedDate.slice(0,10))
+        (recordDate < higherRateDate)
     ){
         key='Old'+higherRateLanguageName                                   
     }

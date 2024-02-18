@@ -8,6 +8,7 @@ export interface locationsInfoType {
     locationCode: string;
     longitude: number;
     name: string;
+    timezone: string;
     postalCode: string|null;
     shortDescription: string;
     updatedAt: string;

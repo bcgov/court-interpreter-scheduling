@@ -77,7 +77,12 @@
             <b-row>
                 <b-col cols="4" style="margin-top:-1rem"> 
                     <div> Dates</div>                 
-                    <booking-date-picker :key="update" :bookingDates="bookingDates" @datesAdded="addBookingDates" @change="datePickerWindowChanged"/>
+                    <booking-date-picker 
+                        :key="update" 
+                        :bookingDates="bookingDates" 
+                        @datesAdded="addBookingDates" 
+                        @change="datePickerWindowChanged" 
+                        :locationTimezone="locationTimezone"/>
                 </b-col>
                 <b-col cols="4">
                     <b-card style="width: 13rem; margin:0.5rem auto 0 auto;" body-class="py-2">
@@ -85,10 +90,10 @@
                             <div class="h4 mx-2 mt-2 mb-0">
                                 View Type
                             </div>
-                            <b-button size="sm" class="mx-1" :variant="calendarView?'info':'primary'" @click="calendarView=false">
+                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="List View" class="mx-1 border" :variant="calendarView?'white':'primary'" @click="calendarView=false">
                                 <b-icon-list-ul font-scale="1.5" />
                             </b-button>
-                            <b-button size="sm" class="mx-1" :variant="calendarView?'primary':'info'" @click="calendarView=true">
+                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="Calendar View" class="mx-1 border" :variant="calendarView?'primary':'white'" @click="calendarView=true">
                                 <b-icon-calendar font-scale="1.5" />
                             </b-button>
                         </b-row>
@@ -114,7 +119,8 @@
                     class="date-card"
                     @remove="RemoveBookingDate" 
                     @bookingChanged="ChangeBookingDate" 
-                    v-for="bookingDate,inx in bookingDates" :key="inx" 
+                    v-for="bookingDate,inx in bookingDates" :key="inx"
+                    :locationTimezone="locationTimezone"
                     :bookingDate="bookingDate"/>
             </b-row> 
                 
@@ -190,6 +196,7 @@ export default class SearchInterpretersPage extends Vue {
     
     location = {} as locationsInfoType;
     limitDistance = true;
+    locationTimezone = 'America/Vancouver'
     
     language = '';    
     level: string[] = [];
@@ -226,6 +233,7 @@ export default class SearchInterpretersPage extends Vue {
     public extractInfo(){
         this.languageNames = this.languages.map( language => {return language.name});
         this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+        if(this.location.timezone) this.locationTimezone = this.location.timezone;
         this.dataReady = true;
     }
 
@@ -289,6 +297,7 @@ export default class SearchInterpretersPage extends Vue {
     public searchAgain(){
         this.interpreters =[]
         this.dataLoaded = false
+        if(this.location.timezone) this.locationTimezone = this.location.timezone;
         this.focusSearchButton()        
     }
 
@@ -318,7 +327,7 @@ export default class SearchInterpretersPage extends Vue {
      
         this.update++;
         this.searchAgain()
-        console.log(this.bookingDates)
+        // console.log(this.bookingDates)
     }
 
     public datePickerWindowChanged(open){

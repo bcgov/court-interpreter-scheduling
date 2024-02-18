@@ -91,7 +91,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingAdmCancellationInfoType, bookingSearchResultInfoType } from '@/types/Bookings/json';
 import * as _ from 'underscore';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 @Component
 export default class CancellationInfo extends Vue {
@@ -141,11 +141,11 @@ export default class CancellationInfo extends Vue {
             if(record.status!="Cancelled"){                
                 continue; 
             } 
-            
+            const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
             record.cancelledBy = date.cancellationReason.split('(')[0]
             record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
             record.cancellationFee = (bookingRecordsApproved && date.cancellationFee)? date.cancellationFee : '0.00'
-            record.date = moment(date.date.slice(0,10)+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
+            record.date = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
                    
             record.time = date.startTime + ' - '+ date.finishTime
             

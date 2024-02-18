@@ -1,5 +1,5 @@
 <template>
-    <b-card body-class="p-0" id="booking-date-container-picker"> 
+    <b-card body-class="p-0" id="booking-date-container-picker">
         <b-button 
             @click="openDatePickerWindow();"
             id="popover-button-variant-picker" 
@@ -44,9 +44,11 @@
                                     :key="updateTime"  
                                     :pickedTimes="pickedTimes" 
                                     @addTime="addTime"/>
-                                <div style="display:inline-block"                                 
+                                <div style="display:inline-block"                                                                               
                                     v-for="pickedtime,inx in pickedTimes" :key="'picked'+inx">
                                         <b-button 
+                                            v-b-tooltip.hover.noninteractive.v-warning
+                                            :title="pickedtime.start==''?'':'Click to REMOVE this booking time'"
                                             style="margin:0.2rem; padding:0.2rem;" 
                                             :variant="pickedtime.start==''?'primary':'time'" 
                                             size="sm" 
@@ -70,7 +72,16 @@
                     <b-button @click="focusSearchButton();onShow=false" class="border" variant="white">Cancel</b-button>
                 </b-col>
                 <b-col>
-                    <b-button @click="AddDates" :disabled="(dates.length<1)||(pickedTimes.length<2)" class="px-4" variant="success" style="float:right">Add</b-button>                    
+                    <div  style="float:right"
+                        v-b-tooltip.hover.left.v-warning
+                        :title="(dates.length<1)?'Please select a date':((pickedTimes.length<2)?'Please add a booking time':'')">
+                            <b-button                        
+                                @click="AddDates" 
+                                :disabled="(dates.length<1)||(pickedTimes.length<2)" 
+                                class="px-4" variant="success" 
+                                style="float:right">Add
+                            </b-button>
+                    </div>                   
                 </b-col>
             </b-row>
         </b-popover>
@@ -103,6 +114,9 @@ export default class BookingDatePicker extends Vue {
     @Prop({required: false, default: false})
     editDateMode!: boolean;
 
+    @Prop({required: true})
+    public locationTimezone!: string;
+
     onShow= false
     dates = []
     arrayEvents = []
@@ -134,7 +148,7 @@ export default class BookingDatePicker extends Vue {
         this.arrayEvents = []
 
         for(const bookingDate of this.bookingDates){
-            const date = bookingDate.date.slice(0,10)
+            const date = moment(bookingDate.date).tz(this.locationTimezone).format('YYYY-MM-DD')
             this.arrayEvents.push(date)           
         }
 
@@ -145,11 +159,11 @@ export default class BookingDatePicker extends Vue {
     public getDatesText(bookingDates){
         let datesText=""
         if(bookingDates.length==1){  
-            datesText =  moment(bookingDates[0].date).format("MMM DD YYYY")
+            datesText = moment.tz(bookingDates[0].date, this.locationTimezone).format("MMM DD YYYY")
         }else if(bookingDates.length>0){  
             datesText = 
-                moment(bookingDates[0].date).format("MMM DD, YYYY . . . ") +
-                moment(bookingDates[bookingDates.length-1].date).format("MMM DD, YYYY")
+                moment.tz(bookingDates[0].date, this.locationTimezone).format("MMM DD, YYYY . . . ") +
+                moment.tz(bookingDates[bookingDates.length-1].date, this.locationTimezone).format("MMM DD, YYYY")
         }
         this.pickedDates = datesText
        
@@ -170,7 +184,7 @@ export default class BookingDatePicker extends Vue {
 
         for(const selectedDate of this.dates){
             newBookingDates.push({                
-                date: moment(selectedDate).toISOString(),
+                date: moment.tz(selectedDate, this.locationTimezone).format(),
                 bookingTimes: JSON.parse(JSON.stringify(this.pickedTimes))
             })
         }

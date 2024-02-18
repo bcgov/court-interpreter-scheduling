@@ -1,5 +1,5 @@
 import store from "@/store";
-import moment from 'moment';
+import moment from 'moment-timezone';
 import * as _ from 'underscore';
 import { rateJsonInfoType } from '@/types/Common';
 import { totalInterpretingHoursInfoType, travelInformationInfoType } from "@/types/Bookings/json";
@@ -157,7 +157,8 @@ function getRates(ratesArray){
     for(const rate of ratesArray){
         rates[rate.name]= rate.value
         rates['Old'+rate.name] = rate.previousValue
-        rates['Date'+rate.name] = rate.valueChangedDate.slice(0,10) 
+        const rateChangeDate = moment(rate.valueChangedDate).tz('America/Vancouver').format('YYYY-MM-DD')//rate.valueChangedDate.slice(0,10)
+        rates['Date'+rate.name] =  rateChangeDate
     }
     //console.log(rates)
     return(rates)
