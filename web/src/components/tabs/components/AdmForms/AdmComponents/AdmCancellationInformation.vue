@@ -92,8 +92,8 @@ export default class AdmCancellationInformation extends Vue {
             }
             const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
             record.recordDate = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            record.cancelledBy = date.cancellationReason.split('(')[0]
-            record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
+            record.cancelledBy = date.cancellationReason?.split('(')[0]
+            record.cancelReason = date.cancellationReason?.split('(')[1].replace(')','')
             record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
             // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
