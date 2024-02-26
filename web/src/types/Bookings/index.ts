@@ -129,6 +129,8 @@ export interface paymentDetailsInfoType{
     feesGST: string;
     feesTotal: string;
 
+    travelStatus: string;
+
     travelKMsRate: string;
     travelTotalKMs: string;
     travelSubExp: string;

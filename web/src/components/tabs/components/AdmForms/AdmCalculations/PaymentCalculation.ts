@@ -50,6 +50,8 @@ export function paymentDetails(booking){
             }
         }  
            
+        form.travelStatus = travel.status;
+
         if(travel.status =='travel'){
             form.travelHrRate = maxLanguageRate.toFixed(2)
             form.travelTotalHrs = travel.totalHours? travel.totalHours.toFixed(1): '0.0'

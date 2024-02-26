@@ -115,7 +115,7 @@
                     </b-tr>
 <!-- <GST> -->
                     <b-tr>
-                        <b-th colspan="10" class="p-0"></b-th>                        
+                        <b-td colspan="10" class="p-0"><b-form-checkbox v-model="form.travelStatus" size="lg" @input="paymentChanges=true;" value="travel" unchecked-value="local"><b class="h4 text-primary">Travel Status</b></b-form-checkbox></b-td>                        
                         <b-th colspan="7" class="text-right">GST Number :</b-th>
                         <b-td colspan="12" class=""><underline-text :text="form.gstNumber"/></b-td>
                         <b-th colspan="7" class="text-right">                            
@@ -361,7 +361,7 @@
                         <b-th colspan="11" class=""></b-th>                      
                     </b-tr>
                     <b-tr>                       
-                        <b-td colspan="14" class=""></b-td>                       
+                        <b-td colspan="14" class=""><b-form-checkbox v-model="form.travelStatus" size="lg" @input="paymentChanges=true;" value="travel" unchecked-value="local"><b class="h4 text-primary">Travel Status</b></b-form-checkbox></b-td>
                         <b-th colspan="6" class="text-right">Checks Totals</b-th>                         
                         <b-th colspan="1" class=""></b-th>
                         <b-td colspan="5" class=""><underline-text :text="form.expPreGST"/></b-td>
@@ -493,7 +493,7 @@ export default class AdmPaymentDetails extends Vue {
         //_______travelInformation
         const travelInformation = {} as travelInformationInfoType;        
         travelInformation.startDate = admDetail?.calculations?.travelInformation?.startDate
-        travelInformation.status = admDetail?.calculations?.travelInformation?.status
+        travelInformation.status = this.form.travelStatus; //admDetail?.calculations?.travelInformation?.status
         travelInformation.totalHours = this.form.travelTotalHrs? parseFloat(this.form.travelTotalHrs) : 0
         travelInformation.totalKilometers = this.form.travelTotalKMs? parseFloat(this.form.travelTotalKMs): 0
         travelInformation.breakfast = this.form.breakfastTotalDays? parseFloat(this.form.breakfastTotalDays) : 0
