@@ -24,9 +24,10 @@ export function cancellationCalculation(booking, gstRate?){
         //console.log(record.date)
 
         if( record.status != 'Cancelled' ||
-            record.date <= record.cancellationDate ||
-            record.cancellationReason.includes('Interpreter') ||
-            record.cancellationReason.includes('no cancellation fee')
+            // record.date <= record.cancellationDate ||
+            !record.cancellationReason ||
+            record.cancellationReason?.includes('Interpreter') ||
+            record.cancellationReason?.includes('no cancellation fee')
         ) continue
         
         
