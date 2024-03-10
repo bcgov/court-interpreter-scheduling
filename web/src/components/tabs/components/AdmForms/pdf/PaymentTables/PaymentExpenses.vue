@@ -178,7 +178,7 @@
                 <td colspan="6" class="text-center">Total</td>
                 <th colspan="1" class=""></th>
                 <th colspan="2" class="border-left"></th> 
-                <td colspan="8" class="text-center" style="font-size:7.8pt;">Total Cancellation Fees</td>
+                <td colspan="8" class="text-center" style="font-size:7.8pt;"></td>
                 <th/>                        
             </tr>
             <tr>
@@ -193,8 +193,8 @@
                 <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
                 <td colspan="6" class="border-bottom"><div class="answer-payment">{{form.lodgingTotalExp}}</div></td>
                 <th colspan="1" class=""></th> 
-                <th colspan="2" class="border-left text-right">$</th> 
-                <td colspan="8" class="border-bottom"><div class="answer-payment">{{form.totalCancellationFees}}</div></td> 
+                <th colspan="2" class="border-left text-right"></th> 
+                <td colspan="8" class=""><div class="answer-payment"></div></td> 
                 <th/>                       
             </tr>
 

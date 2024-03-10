@@ -79,8 +79,8 @@
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="8" class=""><underline-text text=""/></b-td>                          
                     </b-tr>
-                    <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>
-                </b-tbody>  
+                    <b-tr><b-td colspan="50" class="spacer">.</b-td></b-tr>
+                </b-tbody> 
                 <b-tbody>   
 <!-- <spacer> -->                   
                     <!-- <b-tr><b-td colspan="50" class="text-white">.</b-td></b-tr>                     -->
@@ -106,6 +106,30 @@
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="8" class=""><underline-text :text="form.travelPayableFee"/></b-td>                          
                     </b-tr>
+                    <b-tr><b-td colspan="50" class="spacer">.</b-td></b-tr>
+<!-- <Cancellation Fees> -->
+                    <b-tr>
+                        <b-th colspan="10" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Rate</b-th>
+                        <b-th colspan="2" class=""></b-th>
+                        <b-th colspan="8" class="text-center">Total Hours</b-th>
+                        <b-th colspan="22" class=""></b-th>                                                
+                    </b-tr>
+                    <b-tr>
+                        <b-th colspan="8" class="">Cancellation Fees</b-th>
+                        <b-th colspan="2" class="text-right">$</b-th>
+                        <b-td colspan="8" class=""><underline-text :text="form.cancellationBestRate"/></b-td>
+                        <b-th colspan="2" class="text-center">x</b-th>
+                        <b-td colspan="8" class="">                            
+                            <b-input class="w-75 mx-auto mt-n2" v-model="form.cancellationTotalHours" :formatter="formatterDays" @input="paymentChanges=true;"/>
+                        </b-td>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="6" class=""><underline-text :text="form.cancellationSubtotalFees"/></b-td>
+                        <b-th colspan="4" class=""></b-th>
+                        <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
+                        <b-td colspan="8" class=""><underline-text :text="form.cancellationSubtotalFees"/></b-td>                          
+                    </b-tr>
+                    <b-tr><b-td colspan="50" class="spacer">.</b-td></b-tr>
 <!-- <Subtotal> -->
                     <b-tr>
                         <b-th colspan="32" class=""></b-th>                        
@@ -307,7 +331,7 @@
                         <b-th colspan="6" class="text-center">Total</b-th>
                         <b-th colspan="1" class=""></b-th>
                         <b-th colspan="2" class="border-left border-dark"></b-th> 
-                        <b-th colspan="8" class="text-center">Total Cancellation Fees</b-th>                        
+                        <b-th colspan="8" class="text-center"></b-th>                        
                     </b-tr>
                     <b-tr>
                         <b-th colspan="7" class="">Airfare/Ferry</b-th>
@@ -320,10 +344,8 @@
                         <b-th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></b-th> 
                         <b-td colspan="6" class=""><underline-text :text="form.ferryTotalExp"/></b-td> 
                         <b-th colspan="1" class=""></b-th>
-                        <b-th colspan="2" class="border-left border-dark text-right">$</b-th> 
-                        <b-td colspan="8" class=""><b-input class="w-75 mx-auto mt-n2" v-model="form.totalCancellationFees" :formatter="formatterExpense" @input="paymentChanges=true;"/>
-                            <!-- <underline-text :text="form.totalCancellationFees"/> -->
-                            </b-td>                        
+                        <b-th colspan="2" class="border-left border-dark text-right"></b-th> 
+                        <b-td colspan="8" class=""></b-td>       
                     </b-tr>
 <!-- <Miscellaneous> -->
                     <b-tr>                        
@@ -519,12 +541,16 @@ export default class AdmPaymentDetails extends Vue {
         }
 
         //_______cancellation
-        if(Number(admDetail?.calculations?.cancellation?.totalFees) != Number(this.form.totalCancellationFees)){
-            const totalCancellation =  Number(this.form.totalCancellationFees);
+        if(Number(admDetail?.calculations?.cancellation?.totalHours) != Number(this.form.cancellationTotalHours)){
+            const bestRate = admDetail?.calculations?.cancellation?.bestRate?? 0;
+            const totalCancelledHr = this.form.cancellationTotalHours?? 0;            
             const gstRate = this.form.gstNumber? Number(gst.gstRate) : 0;
-            const subtotal = totalCancellation/(1+gstRate);
-            const gstFee = subtotal*gstRate;
-            admDetail.calculations.cancellation.totalFees = totalCancellation;
+            const subtotal =  Number(bestRate)*Number(totalCancelledHr)
+            const gstFee = subtotal*gstRate+0.0001;
+            
+            const totalCancellation = (subtotal + gstRate);
+            admDetail.calculations.cancellation.totalHours = parseFloat(Number(this.form.cancellationTotalHours).toFixed(2));
+            admDetail.calculations.cancellation.totalFees =  parseFloat(totalCancellation.toFixed(2));
             admDetail.calculations.cancellation.subtotalFees = parseFloat(subtotal.toFixed(2));
             admDetail.calculations.cancellation.totalGst = parseFloat(gstFee.toFixed(2));
 
@@ -591,6 +617,10 @@ export default class AdmPaymentDetails extends Vue {
     .card{
         background: rgb(182, 210, 221);
         box-shadow: 2px 5px 5px 2px #DDD;
+    }
+
+    .spacer {
+        color: rgb(182, 210, 221) !important;
     }
     // th{
     //     border: 1px solid #000 !important;

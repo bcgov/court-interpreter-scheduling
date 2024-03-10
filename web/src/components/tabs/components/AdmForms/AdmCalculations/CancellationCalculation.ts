@@ -3,7 +3,7 @@ import { holidaysInfoType } from "@/types/Common";
 import moment from 'moment-timezone'
 import * as _ from 'underscore';
 import { rateJsonInfoType } from '@/types/Common';
-import { totalInterpretingHoursInfoType } from "@/types/Bookings/json";
+import { cancellationInfoType, totalInterpretingHoursInfoType } from "@/types/Bookings/json";
 
 
 
@@ -45,13 +45,15 @@ export function cancellationCalculation(booking, gstRate?){
         const totalCancellationFee = getTotalCancellations(totalHours, booking, gstRate)        
         //console.log(totalCancellationFee)
         //====
-        return { 
+        return {
+            totalHours: totalCancellationFee.totalHours,
+            bestRate: totalCancellationFee.bestRate,
             subtotalFees: totalCancellationFee.subtotal, 
             totalFees: totalCancellationFee.total, 
             totalGst: totalCancellationFee.gst
-        }        
+        } as cancellationInfoType    
     }else{
-        return { subtotalFees:0, totalFees:0, totalGst:0}
+        return {bestRate:0, totalHours:0, subtotalFees:0, totalFees:0, totalGst:0} as cancellationInfoType
     }
 }
 
@@ -87,13 +89,15 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booki
     const fifteendays = 15*5
 
     let cancellationFee = 0
-
-    if(totalCancelledHr<=twodays) cancellationFee = bestRate*totalCancelledHr
-    else if(totalCancelledHr>twodays && totalCancelledHr<=fivedays) cancellationFee = bestRate*10
-    else if(totalCancelledHr>fivedays && totalCancelledHr<=tendays) cancellationFee = bestRate*15
-    else if(totalCancelledHr>tendays && totalCancelledHr<=fifteendays) cancellationFee = bestRate*20
-    else if(totalCancelledHr>fifteendays) cancellationFee = bestRate*25
+    let totalCancelledHrMax = 0
+    if(totalCancelledHr<=twodays) totalCancelledHrMax = totalCancelledHr
+    else if(totalCancelledHr>twodays && totalCancelledHr<=fivedays) totalCancelledHrMax = 10
+    else if(totalCancelledHr>fivedays && totalCancelledHr<=tendays) totalCancelledHrMax = 15
+    else if(totalCancelledHr>tendays && totalCancelledHr<=fifteendays) totalCancelledHrMax = 20
+    else if(totalCancelledHr>fifteendays) totalCancelledHrMax = 25
     
+    cancellationFee = bestRate*totalCancelledHrMax
+
     const gstNumber = booking?.interpreter?.gst
     if(!gstRate)
         gstRate = (booking?.admDetail?.calculations?.gst?.gstRate)? booking.admDetail.calculations.gst.gstRate: '0.05'
@@ -102,6 +106,8 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booki
     const cancellationSubtotal = Number((cancellationFee).toFixed(2))
     if(gstNumber)
         return {
+            bestRate: bestRate,
+            totalHours: totalCancelledHrMax,
             subtotal: cancellationSubtotal,
             total: Number((
                     (cancellationSubtotal * Number(gstRate))+cancellationSubtotal+0.0001 
@@ -112,6 +118,8 @@ function getTotalCancellations(totalHours: totalInterpretingHoursInfoType, booki
         }
     else
         return {
+            bestRate: bestRate,
+            totalHours: totalCancelledHrMax,
             subtotal: cancellationSubtotal,
             total: cancellationSubtotal,
             gst: 0

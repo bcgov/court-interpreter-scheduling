@@ -278,6 +278,10 @@ export interface sentEmailContentInfoType {
 
 export interface cancellationInfoType {
     totalFees: number;
+    bestRate: number; 
+    totalHours: number;
+    subtotalFees: number;
+    totalGst: number;
 }
 
 export interface gstInfoType {
