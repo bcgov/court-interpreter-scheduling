@@ -59,9 +59,17 @@ export function paymentDetails(booking){
         }
         form.travelPayableFee = form.travelTotal? form.travelTotal : '0.00'
 
+        const cancellation = getCancellationFees(booking)
+        form.totalCancellationFees = cancellation.total;
+        form.cancellationBestRate = cancellation.bestRate;
+        form.cancellationSubtotalFees = cancellation.subtotal;
+        form.cancellationTotalGst = cancellation.gst;
+        form.cancellationTotalHours = cancellation.totalHours;
+
         form.feesSubtotal = (
             totalCourtHourFees +
-            Number(form.travelPayableFee)
+            Number(form.travelPayableFee) +
+            Number(form.cancellationSubtotalFees)
         ).toFixed(2);
 
         if(form.gstNumber){
@@ -142,12 +150,10 @@ export function paymentDetails(booking){
     form.expPayable = form.expPreGST? form.expPreGST : '0.00'
     form.GSTifApplic = form.expTotalGST? form.expTotalGST : '0.00'
     form.totalExpenses = form.expTotal? form.expTotal : '0.00'
-    form.totalCancellationFees = getCancellationFees(booking)
         
     form.totalPayable = (                
         Number(form.feesTotal) +
-        Number(form.totalExpenses) +
-        Number(form.totalCancellationFees)   
+        Number(form.totalExpenses)  
     ).toFixed(2);                
     
     //console.log(form)
@@ -167,7 +173,27 @@ function getRates(ratesArray){
 }
 
 function getCancellationFees(booking){
-    return booking.admDetail?.calculations?.cancellation?.totalFees? booking.admDetail?.calculations?.cancellation?.totalFees?.toFixed(2) : '0.00'
+    const cancellationFees = {
+        bestRate: '0.00',
+        totalHours: '0.00',
+        subtotal: '0.00',
+        total: '0.00',
+        gst: '0.00'
+    }
+    
+    cancellationFees.total = booking.admDetail?.calculations?.cancellation?.totalFees? 
+        (booking.admDetail?.calculations?.cancellation?.totalFees?.toFixed(2)) : '0.00';
+    cancellationFees.bestRate = booking.admDetail?.calculations?.cancellation?.bestRate? 
+        (booking.admDetail?.calculations?.cancellation?.bestRate?.toFixed(2)) : '0.00';
+    cancellationFees.totalHours = booking.admDetail?.calculations?.cancellation?.totalHours?
+        (booking.admDetail?.calculations?.cancellation?.totalHours?.toFixed(1)) : '0.0';
+    cancellationFees.gst = booking.admDetail?.calculations?.cancellation?.totalGst?
+        (booking.admDetail?.calculations?.cancellation?.totalGst?.toFixed(2)) : '0.00';
+    cancellationFees.subtotal = booking.admDetail?.calculations?.cancellation?.subtotalFees?
+        (booking.admDetail?.calculations?.cancellation?.subtotalFees?.toFixed(2)) : '0.00';
+
+    return cancellationFees
+
 //     let cancellationFee = 0.0
 //     for(const date of booking.dates){
 //         if(date.status=='Cancelled' && date.cancellationFee)

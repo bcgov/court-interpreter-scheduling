@@ -91,6 +91,40 @@
                 <th/>
             </tr>
 <!-- <spacer> -->
+            <b-tr style="height:.3rem;line-height:.3rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>
+            <b-tr style="height:.5rem;line-height:.5rem;" ><b-td colspan="50" class="text-white">.</b-td></b-tr>
+                
+
+<!-- <Cancellation Fees> -->
+            <tr>
+                <th/>
+                <th colspan="13" style="font-size:11pt;" class=""></th>
+                <th colspan="1" class=""></th>
+                <td colspan="7" class="text-center">Rate</td>
+                <th colspan="2" class=""></th>
+                <td colspan="6" class="text-center">Total Hours</td>
+                <th colspan="2" class=""></th>
+                <th colspan="7" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class=""></th>
+                <th colspan="8" class="text-center"></th>                                                 
+                <th />
+            </tr>
+            <tr>
+                <th/>
+                <th colspan="13" class="">Cancellation Fees</th>
+                <th colspan="1" class="text-right">$</th>
+                <td colspan="7" class="border-bottom"><div class="answer-payment">{{form.cancellationBestRate}}</div></td>
+                <th colspan="2" class="text-center">x</th>
+                <td colspan="6" class="border-bottom"><div class="answer-payment">{{form.cancellationTotalHours}}</div></td>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="7" class="border-bottom"><div class="answer-payment">{{form.cancellationSubtotalFees}}</div></td>
+                <th colspan="2" class=""></th>
+                <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
+                <td colspan="8" class="border-bottom"><div class="answer-payment">{{form.cancellationSubtotalFees}}</div></td>                          
+                <th/>
+            </tr>
+<!-- <spacer> -->
                 <tr><td class="text-white">.</td></tr>
 <!-- <Subtotal> -->
             <tr>

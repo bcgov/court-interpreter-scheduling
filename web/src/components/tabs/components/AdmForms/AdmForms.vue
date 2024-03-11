@@ -396,7 +396,9 @@ export default class AdmForms extends Vue {
     public calculations(){
         const calculations = {} as calculationVars;
         calculations.cancellation = cancellationCalculation(this.booking)
-        calculations.totalInterpretingHours = getTotalInterpretingHours(this.booking)
+        const interpretingHours = getTotalInterpretingHours(this.booking);
+        calculations.totalInterpretingHours = interpretingHours.totalHours;
+        calculations.dailyInterpretingHours = interpretingHours.dailyInterpretingHours;
         calculations.travelInformation = travelInformation(this.booking)
 
         const admDetail = this.booking.admDetail? JSON.parse(JSON.stringify(this.booking.admDetail)) :{}
