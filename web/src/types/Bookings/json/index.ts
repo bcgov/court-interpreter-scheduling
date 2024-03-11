@@ -236,6 +236,7 @@ export interface paymentDetailsVars{
 
 export interface calculationVars{    
     totalInterpretingHours: totalInterpretingHoursInfoType;
+    dailyInterpretingHours: dailyInterpretingHoursInfoType[];
     travelInformation: travelInformationInfoType;
     cancellation: cancellationInfoType;
     gst: gstInfoType;
@@ -288,7 +289,15 @@ export interface gstInfoType {
     gstRate: number;
 }
 
-
+export interface dailyInterpretingHoursInfoType {
+    date: string;
+    totalHours: number;
+    actualHours: number;
+    totalSessions: number;
+    language: string;
+    rate: number;
+    total: number;
+}
 
 // export interface bookingDateInfoType {
 //     id: number;

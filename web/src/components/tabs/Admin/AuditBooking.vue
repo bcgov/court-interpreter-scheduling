@@ -47,12 +47,26 @@ export default class AuditBooking extends Vue {
 
     bookingsSameLocation = []
     bookingsDiffLocations = []
+    multipleSessionBookingsOverpaid = []
     dataReady = false;
     tabIndex = 0
 
     mounted(){
         this.dataReady = false;
-        this.loadSameBookingsSameLocation()
+        this.loadMultipleSessionBookingOverpaid()
+    }
+
+    public loadMultipleSessionBookingOverpaid(){
+        this.$http.get('/audit/multiple-session-booking-overpaid')
+        .then((response) => {            
+            if(response?.data){                 
+                console.log(response?.data)
+                this.multipleSessionBookingsOverpaid = this.extractMultipleSessionOverpaid(response?.data)                
+            }
+            this.loadSameBookingsSameLocation()
+        },(err) => {
+            console.log(err)            
+        });
     }
 
     public loadSameBookingsSameLocation(){
@@ -107,6 +121,10 @@ export default class AuditBooking extends Vue {
         for (const key of Object.keys(bookings))
             allBookings.push(bookings[key])
         return allBookings
+    }
+
+    extractMultipleSessionOverpaid(bookings){
+        return []
     }
 
     tabClass(idx) {

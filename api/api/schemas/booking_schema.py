@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List, Dict
 from api.schemas.location_schema import LocationShortSchema
 
-from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema, InterpreterADMBookingResponseSchema
+from api.schemas.interpreter_schema import InterpreterBase, InterpreterBookingResponseSchema, InterpreterADMBookingResponseSchema, InterpreterBookingResponseShortSchema
 from models.booking_enums import BookingPeriodEnum, BookingStatusEnum, BookingRequestedByEnum, BookingMethodOfAppearanceEnum, BookingInterpretForEnum
 from api.schemas.custom_type import TruncatedUserIdBase, JsonBase
 from api.schemas.language_schema import InterpreterLanguageSchema
@@ -249,7 +249,7 @@ class BookingInvoiceNumberResponseSchema(BaseModel):
 #__________AUDIT________________
 #_______________________________
 class AuditBookingSchema(BaseModel):    
-    interpreter: InterpreterBookingResponseSchema
+    interpreter: InterpreterBookingResponseShortSchema
     location_id: Optional[int]
     location_name: Optional[str]
     location: Optional[LocationShortSchema]
@@ -293,4 +293,12 @@ class AuditBookingDateSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
+class BookingDateSchemaShort(BookingDateSchema):
+    cases: Optional[List] = Field( exclude=True )
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
 
+class AuditMultipleSessionBooking(AuditBookingSchema):
+    adm_detail: Optional[JsonBase] = Field(alias="admDetail")
+    dates: List[BookingDateSchemaShort]

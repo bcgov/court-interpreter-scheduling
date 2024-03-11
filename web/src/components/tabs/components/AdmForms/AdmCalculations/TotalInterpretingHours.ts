@@ -2,7 +2,7 @@ import store from "@/store";
 import moment from 'moment-timezone';
 import * as _ from 'underscore';
 import { rateJsonInfoType } from '@/types/Common';
-import { totalInterpretingHoursInfoType } from "@/types/Bookings/json";
+import { dailyInterpretingHoursInfoType, totalInterpretingHoursInfoType } from "@/types/Bookings/json";
 
 // // "[{\"language_id\": 5, \"language\": \"ASL\", \"level\": 2, \"effective_date\": \"2022-08-08\", \"disabled\": false},{\"language_id\": 5, \"language\": \"ASL\", \"level\": 1, \"effective_date\": \"2022-01-08\", \"disabled\": false}]"
 // "[{\"language_id\": 4, \"language\": \"Arabic\", \"level\": 2, \"prvlevel\": 3, \"effective_date\": \"2022-11-03\", \"disabled\": false}]"
@@ -32,6 +32,8 @@ export function getTotalInterpretingHours(booking){
         OldCART : 0
     }
 
+    const dailyInterpretingHours: dailyInterpretingHoursInfoType[] = []
+
     const MAX_INX= 1000
 
     const sortedRateNames = _.chain(rates).sortBy('name').reverse().sortBy('value').reverse().value().map(rate=>{return rate.name})
@@ -43,7 +45,7 @@ export function getTotalInterpretingHours(booking){
     //console.log(languageHistory)
     
     const sessionHours = { }
-    const recordDateTemplate = {Morning:0, Afternoon:0, minLevelMorning:MAX_INX, minLevelAfternoon:MAX_INX}
+    const recordDateTemplate = {Morning:0, Afternoon:0, dayTotalHours:0, totalSessions:0, minLevelMorning:MAX_INX, minLevelAfternoon:MAX_INX}
 
     for(const record of booking.dates){
         if(record.status != 'Booked') continue
@@ -95,18 +97,26 @@ export function getTotalInterpretingHours(booking){
         // console.log(start.format())    
         // console.log(end.format())
         // console.log(sessionDuration(start, end))
-        if(end<=mid){ //'Morning'           
-            sessionHours[recordDate].Morning += sessionDuration(start, end)
-            sessionHours[recordDate].minLevelMorning = Math.min(sessionHours[recordDate].minLevelMorning, highestLanguageIndex)
-        }else if(start>=mid){ //'Afternoon'
-            sessionHours[recordDate].Afternoon += sessionDuration(start, end)
-            sessionHours[recordDate].minLevelAfternoon = Math.min(sessionHours[recordDate].minLevelAfternoon, highestLanguageIndex)
-        }else if(start<mid && end>mid){ //'FullDay'           
-            sessionHours[recordDate].Morning += sessionDuration(start, mid)
-            sessionHours[recordDate].Afternoon += sessionDuration(mid, end)            
-            sessionHours[recordDate].minLevelMorning   = Math.min(sessionHours[recordDate].minLevelMorning,   highestLanguageIndex)
-            sessionHours[recordDate].minLevelAfternoon = Math.min(sessionHours[recordDate].minLevelAfternoon, highestLanguageIndex)
-        }
+        // if(end<=mid){ //'Morning' 
+        const sessionDurationHours = sessionDuration(start, end)
+        const sessionMinHours = Math.max(2.5,sessionDurationHours);
+        // console.log(sessionMinHours)
+        // console.log(Math.ceil(sessionMinHours*2)/2)
+        sessionHours[recordDate].Morning += Math.ceil(sessionMinHours*2)/2
+        sessionHours[recordDate].minLevelMorning = Math.min(sessionHours[recordDate].minLevelMorning, highestLanguageIndex)
+        if(!sessionHours[recordDate]?.dayTotalHours) sessionHours[recordDate].dayTotalHours=0;
+        sessionHours[recordDate].dayTotalHours += sessionDurationHours;
+        if(!sessionHours[recordDate].totalSessions) sessionHours[recordDate].totalSessions=0;
+        sessionHours[recordDate].totalSessions +=1;
+        // }else if(start>=mid){ //'Afternoon'
+        //     sessionHours[recordDate].Afternoon += sessionDuration(start, end)
+        //     sessionHours[recordDate].minLevelAfternoon = Math.min(sessionHours[recordDate].minLevelAfternoon, highestLanguageIndex)
+        // }else if(start<mid && end>mid){ //'FullDay'           
+        //     sessionHours[recordDate].Morning += sessionDuration(start, mid)
+        //     sessionHours[recordDate].Afternoon += sessionDuration(mid, end)            
+        //     sessionHours[recordDate].minLevelMorning   = Math.min(sessionHours[recordDate].minLevelMorning,   highestLanguageIndex)
+        //     sessionHours[recordDate].minLevelAfternoon = Math.min(sessionHours[recordDate].minLevelAfternoon, highestLanguageIndex)
+        // }
 
         
     }
@@ -115,11 +125,24 @@ export function getTotalInterpretingHours(booking){
     
     for (const recordDate of Object.keys(sessionHours))
     {
-        // console.log(recordDate)
+        // console.log(recordDate)         
         if(sessionHours[recordDate].Morning >0 && sessionHours[recordDate].minLevelMorning<MAX_INX){
             const keyMorning = getTotalHoursKey(recordDate, rates, sortedRateNames, sessionHours[recordDate].minLevelMorning)
             const morningHours = Math.max(2.5, sessionHours[recordDate].Morning)
             totalHours[keyMorning] = totalHours[keyMorning] + Math.ceil(morningHours*2)/2
+            if(morningHours > Math.max(5, sessionHours[recordDate].dayTotalHours)){                
+                const langRate = rates.find(rate => keyMorning?.includes(rate.name));
+                const rate = keyMorning?.includes('Old')? langRate?.previousValue : langRate?.value            
+                dailyInterpretingHours.push({              
+                    date: recordDate,
+                    totalHours: sessionHours[recordDate].Morning,
+                    actualHours: Number(sessionHours[recordDate].dayTotalHours.toFixed(2)),
+                    totalSessions: sessionHours[recordDate].totalSessions,
+                    language: keyMorning,
+                    rate: rate,
+                    total: Number((Number(rate)*sessionHours[recordDate].Morning).toFixed(2))
+                })                
+            }
         }
         if(sessionHours[recordDate].Afternoon >0 && sessionHours[recordDate].minLevelAfternoon<MAX_INX){
             const keyAfternoon = getTotalHoursKey(recordDate, rates, sortedRateNames, sessionHours[recordDate].minLevelAfternoon)
@@ -135,7 +158,7 @@ export function getTotalInterpretingHours(booking){
 
     } 
     // console.log(totalHours)
-    return totalHours
+    return {totalHours, dailyInterpretingHours: dailyInterpretingHours.length>0? dailyInterpretingHours: null}
 }
 
 

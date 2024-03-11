@@ -108,3 +108,11 @@ class InterpreterGeoStatusSchema(BaseModel):
     class Config():
         orm_mode = True
         allow_population_by_field_name = True
+
+class InterpreterBookingResponseShortSchema(BaseModel):
+    id: Optional[int] 
+    last_name: Optional[str] = Field(alias="lastName")
+    first_name: Optional[str] = Field(alias="firstName")
+    class Config():
+        orm_mode = True
+        allow_population_by_field_name = True
