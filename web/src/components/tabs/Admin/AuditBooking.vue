@@ -24,6 +24,15 @@
                         <audit-booking-table :bookings="bookingsSameLocation" name="same-location" />
                     </b-card>
                 </b-tab>
+
+                <b-tab title="Multiple Sessions" :title-link-class="tabClass(2)">
+                    <b-card no-body border-variant="white" bg-variant="white" v-if="!multipleSessionBookingsOverpaid.length">
+                        <span class="text-muted ml-4 my-5">No records found for multiple sessions.</span>
+                    </b-card>
+                    <b-card v-else class="home-content border-white mt-4 p-0" body-class="pt-0 px-0" >
+                        <multiple-session-booking-table :bookings="multipleSessionBookingsOverpaid" />
+                    </b-card>
+                </b-tab>
                 
             </b-tabs>
         </div>
@@ -34,11 +43,12 @@
 import { Component, Vue} from 'vue-property-decorator';
 import moment from 'moment-timezone';
 import AuditBookingTable from './components/AuditBookingTable.vue'
-
+import MultipleSessionBookingTable from './components/MultipleSessionBookingTable.vue'
 
 @Component({
     components:{        
-        AuditBookingTable
+        AuditBookingTable,
+        MultipleSessionBookingTable
     }
 })
 export default class AuditBooking extends Vue {
@@ -61,7 +71,7 @@ export default class AuditBooking extends Vue {
         .then((response) => {            
             if(response?.data){                 
                 console.log(response?.data)
-                this.multipleSessionBookingsOverpaid = this.extractMultipleSessionOverpaid(response?.data)                
+                this.multipleSessionBookingsOverpaid = response?.data               
             }
             this.loadSameBookingsSameLocation()
         },(err) => {
@@ -123,9 +133,6 @@ export default class AuditBooking extends Vue {
         return allBookings
     }
 
-    extractMultipleSessionOverpaid(bookings){
-        return []
-    }
 
     tabClass(idx) {
         if (this.tabIndex === idx)

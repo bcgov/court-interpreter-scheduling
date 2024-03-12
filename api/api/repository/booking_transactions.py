@@ -101,10 +101,9 @@ def update_adm_booking_in_db(id: int, request:ADMBookingRequestSchema, db: Sessi
     booking_dates = booking_request['dates']
     del booking_request['dates']
 
-    if ('adm_detail' in booking_request and
-        'calculations' in booking_request['adm_detail'] and
-        'dailyInterpretingHours' in booking_request['adm_detail']['calculations'] and 
-        booking_request['adm_detail']['calculations']['dailyInterpretingHours'] is not None
+    if (booking_request.get('adm_detail') and
+        booking_request['adm_detail'].get('calculations') and 
+        booking_request['adm_detail']['calculations'].get('dailyInterpretingHours')
     ):
         booking_request['adm_audit_flag'] = True
         # print(booking_request['adm_detail']['calculations']['dailyInterpretingHours'])
