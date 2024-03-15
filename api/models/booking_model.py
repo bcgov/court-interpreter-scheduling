@@ -32,6 +32,7 @@ class BookingModel(Base):
     invoice_number = Column(String, unique=False, index=False, nullable=True)
     adm_detail = Column(String, unique=False, index=False, nullable=True)
     adm_updated_by = Column(String, unique=False, index=False, nullable=True)
+    adm_audit_flag = Column(Boolean, nullable=True, default=False)
 
     form_sender = Column(String, unique=False, index=False, nullable=True)
     form_sender_email = Column(String, unique=False, index=False, nullable=True)

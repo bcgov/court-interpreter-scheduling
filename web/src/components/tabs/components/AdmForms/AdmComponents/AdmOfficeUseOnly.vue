@@ -12,7 +12,7 @@
             </b-row>
             <b-table-simple class="bg-white" borderless>
                 <b-thead>
-                    <b-tr  style="background:rgb(182, 210, 221);">
+                    <b-tr  style="background:rgb(182, 210, 221);border: 1px solid rgb(182, 210, 221);">
                         <b-td v-for="inx in Array(50)" :key="inx" class="" style="width:2%;" />                                               
                     </b-tr>
                 </b-thead>                               
@@ -187,9 +187,22 @@ export default class AdmOfficeUseOnly extends Vue {
 
         this.invoiceDate = this.booking.invoiceDate
         this.invoiceNumber = this.booking.invoiceNumber
+        
+        if(!this.booking.feesTotal)
+            this.subtotalFees = '0.00';
+        else if(this.booking?.admDetail?.calculations?.cancellation?.subtotalFees)
+            this.subtotalFees = (Number(this.booking.feesTotal-this.booking.feesGST)-
+                Number(this.booking?.admDetail?.calculations?.cancellation?.subtotalFees)).toFixed(2);
+        else
+            this.subtotalFees = (this.booking.feesTotal-this.booking.feesGST).toFixed(2);
 
-        this.subtotalFees = (this.booking.feesTotal-this.booking.feesGST).toFixed(2);
-        this.feesGST = this.booking.feesGST? this.booking.feesGST.toFixed(2): '0.00';
+        if(!this.booking.feesGST)
+            this.feesGST = '0.00';
+        else if(this.booking?.admDetail?.calculations?.cancellation?.totalGst)
+            this.feesGST = (Number(this.booking.feesGST)-
+                Number(this.booking?.admDetail?.calculations?.cancellation?.totalGst)).toFixed(2);
+        else
+            this.feesGST = this.booking.feesGST.toFixed(2);
 
         this.subtotalExpenses = (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2);
         this.expensesGST = this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';

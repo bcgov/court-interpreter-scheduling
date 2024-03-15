@@ -95,3 +95,23 @@ def check_same_dates_in_multiple_booking_diff_location(db:Session):
         BookingDatesModel.status==BookingStatusEnum.BOOKED).all()
     
     return audited_booking_date_query
+
+
+def multiple_session_booking_overpaid(db:Session):
+
+    booking_query = db.query(BookingModel).join(BookingDatesModel).filter(
+        BookingModel.adm_audit_flag==True).all()
+    
+    for booking in booking_query:
+        adm_detail = json.loads(booking.adm_detail)
+        if ('calculations' in adm_detail and
+            'dailyInterpretingHours' in adm_detail['calculations'] and 
+            adm_detail['calculations']['dailyInterpretingHours'] is not None
+        ):
+            booking.adm_detail=json.dumps(adm_detail['calculations']['dailyInterpretingHours'])
+            # print(adm_detail['calculations']['dailyInterpretingHours'])
+            # print(booking.dates)
+
+    return booking_query
+
+   

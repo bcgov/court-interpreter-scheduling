@@ -12,7 +12,7 @@
             <tr>                    
                 <td colspan="9"  style="background:#F4F1FF;" class="border-top border-right text-right">Supplier Name</td>
                 <td colspan="16" style="background:#EFEFEF;" class="border-top border-right"><div class="answer-record ml-1">{{interpreterName}}</div></td>
-                <td colspan="9"  style="background:#F4F1FF;" class="border-top border-right text-right">Supplier # -Site #</td>
+                <td colspan="9"  style="background:#F4F1FF;" class="border-top border-right text-right">Supplier # - Site #</td>
                 <td colspan="16" style="background:#EFEFEF;" class="border-top"><div class="answer-record ml-1">{{supplierNo}} - {{siteNo}}</div></td>                                                                                        
             </tr>
 
@@ -180,8 +180,23 @@ export default class OfficeUseOnly extends Vue {
         this.invoiceDate = this.booking.invoiceDate
         this.invoiceNumber = this.booking.invoiceNumber
 
-        this.subtotalFees = recordApproved? (this.booking.feesTotal-this.booking.feesGST).toFixed(2): '0.00';
-        this.feesGST = recordApproved && this.booking.feesGST? this.booking.feesGST.toFixed(2): '0.00';
+        if(!recordApproved)
+            this.subtotalFees ='0.00';
+        else if(this.booking?.admDetail?.calculations?.cancellation?.subtotalFees)
+            this.subtotalFees = (Number(this.booking.feesTotal-this.booking.feesGST)-
+                Number(this.booking?.admDetail?.calculations?.cancellation?.subtotalFees)).toFixed(2);
+        else
+            this.subtotalFees = (this.booking.feesTotal-this.booking.feesGST).toFixed(2);
+
+
+        if(!recordApproved || !this.booking.feesGST)
+            this.feesGST = '0.00';
+        else if(this.booking?.admDetail?.calculations?.cancellation?.totalGst)
+            this.feesGST = (Number(this.booking.feesGST)-
+                Number(this.booking?.admDetail?.calculations?.cancellation?.totalGst)).toFixed(2);
+        else
+            this.feesGST = this.booking.feesGST.toFixed(2);       
+        
 
         this.subtotalExpenses = recordApproved? (this.booking.expenseTotal - this.booking.expenseGST).toFixed(2): '0.00';
         this.expensesGST = recordApproved && this.booking.expenseGST? this.booking.expenseGST.toFixed(2): '0.00';

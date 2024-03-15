@@ -121,6 +121,12 @@ export interface paymentDetailsInfoType{
     travelTotal: string;
     travelPayableFee: string;
 
+    totalCancellationFees: string;    
+    cancellationBestRate: string;
+    cancellationTotalHours: string;
+    cancellationSubtotalFees: string;
+    cancellationTotalGst: string;
+
     feesSubtotal: string;
 
     gstNumber: string;
@@ -173,7 +179,6 @@ export interface paymentDetailsInfoType{
     expPayable: string;
     GSTifApplic: string;
     totalExpenses: string;
-    totalCancellationFees: string;
     totalPayable: string;
     
     totalPaidByCourt: string;
