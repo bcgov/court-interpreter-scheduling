@@ -147,6 +147,17 @@ export enum reasonCodeClass {
     'DA'='Divorce Act',
     'FSC'='Family settlement conference',
     'JSL'='Jury selection',
+    'APP'='Application',
+    'SNT'='Sentencing',
+    'PTC'='Pre-trial Conference',
+    'REG'='Registry Appearance',
+    'VD'='Voire DIre',
+    'PSR'='Pre-sentence Report',
+    'PSB'='Pre-sentence Report and Psychiatric/Psychological Report',
+    'IGP'='Intention to enter a guilty plea',
+    'ARB'='Application to Revoke Bail',
+    'AHR'='Arraignment',
+    'APW'='Application for Warrant',
     'OTHER'='Other'   
 }
 export const reasonCodeClassOptions = [
@@ -162,7 +173,18 @@ export const reasonCodeClassOptions = [
     {text: 'DA-Divorce Act',               value: "DA"},
     {text: 'FSC-Family settlement conference', value: "FSC"},
     {text: 'JSL-Jury selection',           value: "JSL"},
-    {text: 'Other',                        value: "OTHER"}    
+    {text: 'APP-Application',              value: "APP"},
+    {text: 'SNT-Sentencing',               value: "SNT"},
+    {text: 'PTC-Pre-trial Conference',     value: "PTC"},
+    {text: 'REG-Registry Appearance',      value: "REG"},
+    {text: 'VD-Voire DIre',                value: "VD"},
+    {text: 'PSR-Pre-sentence Report',      value: "PSR"},
+    {text: 'PSB-Pre-sentence Report and Psychiatric/Psychological Report', value: "PSB"},
+    {text: 'IGP-Intention to enter a guilty plea', value: "IGP"},
+    {text: 'ARB-Application to Revoke Bail', value: "ARB"},
+    {text: 'AHR-Arraignment',               value: "AHR"},
+    {text: 'APW-Application for Warrant',   value: "APW"},
+    {text: 'Other',                         value: "OTHER"}    
 ]
 
 export enum bookingInterpretationMode {
