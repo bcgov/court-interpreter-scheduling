@@ -24,7 +24,6 @@
             sort-by="date"
             small
             sort-icon-left
-            :sort-compare="sortCompare"
             :currentPage="currentPage"
             :perPage="itemsPerPage"                                
             responsive="sm">
@@ -156,19 +155,6 @@ export default class MultipleSessionBookingTable extends Vue {
 
     public sortByDate(data){
         return _.sortBy(data, 'dateSort')
-    }
-    
-    public sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
-        const a = aRow[0][key]
-        const b = bRow[0][key]
-        if (
-            (typeof a === 'number' && typeof b === 'number') ||
-            (a instanceof Date && b instanceof Date)
-        ) {            
-            return a < b ? -1 : a > b ? 1 : 0
-        } else {           
-            return this.toStringFunction(a).localeCompare(this.toStringFunction(b), compareLocale, compareOptions)
-        }
     }
 
     public toStringFunction(value) {
