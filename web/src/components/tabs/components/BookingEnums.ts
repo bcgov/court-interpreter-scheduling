@@ -28,12 +28,16 @@ export const bookingMethodOfAppearanceOptions = [
 export enum bookingInterpretFor {
     'Witness'='Witness', 
     'Party'='Party', 
-    'Accused'='Accused'
+    'Accused'='Accused',
+    'Disputant'='Disputant',
+    'Applicant'='Applicant'
 }
 export const interpretForOptions = [
     {text: 'Witness',       value: bookingInterpretFor.Witness}, 
     {text: 'Party',         value: bookingInterpretFor.Party},
-    {text: 'Accused',       value: bookingInterpretFor.Accused}
+    {text: 'Accused',       value: bookingInterpretFor.Accused},
+    {text: 'Disputant',     value: bookingInterpretFor.Disputant},
+    {text: 'Applicant',     value: bookingInterpretFor.Applicant},
 ]
 
 
@@ -42,14 +46,18 @@ export enum bookingRequest {
     'Crown'='Crown', 
     'Applicant'='Applicant', 
     'Defence'='Defence', 
-    'Respondent'='Respondent'
+    'Respondent'='Respondent',
+    'Accused'='Accused',
+    'Disputant'='Disputant'
 }
 export const requestOptions = [
     {text: 'Court',         value: bookingRequest.Court}, 
     {text: 'Crown',         value: bookingRequest.Crown},
     {text: 'Applicant',     value: bookingRequest.Applicant},
     {text: 'Defence',       value: bookingRequest.Defence},
-    {text: 'Respondent',    value: bookingRequest.Respondent}
+    {text: 'Respondent',    value: bookingRequest.Respondent},
+    {text: 'Accused',       value: bookingRequest.Accused},
+    {text: 'Disputant',         value: bookingRequest.Disputant},
 ]
 
 

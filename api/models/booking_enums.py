@@ -28,3 +28,5 @@ class BookingRequestedByEnum(str, enum.Enum):
     APPLICANT = 'Applicant'
     DEFENCE = 'Defence'
     RESPONDENT = 'Respondent'
+    ACCUSED = 'Accused',
+    DISPUTANT = 'Disputant'
