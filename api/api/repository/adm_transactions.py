@@ -94,20 +94,58 @@ def get_adm322_pdf(request: PdfSchema, db: Session, username , email=None):
     db.commit()
     
     if email =='true':
-        # print('__EMAIL_FORM__')
-        return send_adm_form(db, username, booking_id, pdf_content,  updated_by, pdf_type, interpreter_name, interpreter_email)
+        # print('__EMAIL_FORM__')        
+        body = request.body
+        to = request.to
+        title = request.title
+        return send_adm_form(
+            body,
+            to,
+            title,
+            db, 
+            username, 
+            booking_id, 
+            pdf_content,  
+            updated_by, 
+            pdf_type, 
+            interpreter_name, 
+            interpreter_email
+        )
     else:
         return create_pdf_response(pdf_content, "Adm322.pdf")           
         
    
 
 
-def send_adm_form(db: Session, username, booking_id, pdf_content,  updated_by, type, interpreter_name, interpreter_email):
-    
+def send_adm_form(
+        body,
+        to,
+        title,
+        db: Session, 
+        username, 
+        booking_id, 
+        pdf_content,  
+        updated_by, 
+        type, 
+        interpreter_name, 
+        interpreter_email
+):
+
     pdf_type = type[8:]
     # print(pdf_type)
 
-    email = EmailService().email_adm(db, username, pdf_content, pdf_type, interpreter_name, interpreter_email)
+    email = EmailService().email_adm(
+        body,
+        to,
+        title,
+        db, 
+        username, 
+        pdf_content, 
+        pdf_type, 
+        interpreter_name, 
+        interpreter_email
+    )
+
     email["attachments"]="PDF Attached"    
     email["type"] = pdf_type
     email["to"] = (','.join(email["to"]))

@@ -118,7 +118,7 @@ class EmailService():
 
 
 #___Email_Adm    
-    def email_adm(self, db: Session, username, pdf_content, type, interpreter_name, interpreter_email):
+    def email_adm(self, body, to, title, db: Session, username, pdf_content, type, interpreter_name, interpreter_email):
         current_user = db.query(UserModel).filter( UserModel.username==username).first()    
         if not current_user:
             raise HTTPException(status_code=404, detail=f"User is not available.")
@@ -130,11 +130,23 @@ class EmailService():
         self.recipient_name = interpreter_name
 
         #TODO for PROD
-        if(settings.ADM_PRODUCTION_ENV == 'true'):           
-            self.recipients_email = interpreter_email
+        if(settings.ADM_PRODUCTION_ENV == 'true'):
+            if to:
+                self.recipients_email = to
+            else:           
+                self.recipients_email = interpreter_email
         
-        self.get_adm_email_body(type)        
-        return self.send_request(f"Court Interpreter's ADM {type.capitalize()}", pdf_content, type)
+        if title:
+            email_title = title
+        else:
+            email_title = f"Court Interpreter's ADM {type.capitalize()}"
+
+        if body:
+            self.email_body = body
+        else:
+            self.get_adm_email_body(type)
+ 
+        return self.send_request(email_title, pdf_content, type)
 
 
     def get_adm_email_body(self, type):

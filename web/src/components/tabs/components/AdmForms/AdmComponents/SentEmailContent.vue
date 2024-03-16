@@ -3,8 +3,8 @@
         <div class="ml-4"><h3>{{emailContent.subject}}</h3></div>
         <div class="ml-4"><b>From: </b> {{emailContent.from}}</div>
         <div class="ml-4 mt-2"><b>To: </b> {{emailContent.to}}</div>
-        <div style="margin-top:2rem; white-space: pre-wrap;" >{{emailContent.body}}</div>
-        <div class="text-center h4 mt-5 text-danger">{{emailContent.attachments}}</div>     
+        <div style="margin:2rem; white-space: pre-wrap;" >{{emailContent.body}}</div>
+        <div class="text-center h4 text-danger">{{emailContent.attachments}}</div>     
     </div> 
 </template>
 
