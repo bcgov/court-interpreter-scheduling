@@ -620,7 +620,7 @@ export default class EditBookingFields extends Vue {
             this.errorMsg=''
             return null
         }else{            
-            this.errorMsg='Invalid Time Format!  Valid format is \"nn:nn AM/PM\".  e.g. 12:00 PM'
+            this.errorMsg='Invalid Time Format!  Valid format is \"hh:mm AM/PM\".  e.g. 12:00 PM'
             return false        
         }
     }

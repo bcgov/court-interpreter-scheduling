@@ -195,8 +195,7 @@ export default class BookingsPage extends Vue {
    
     mounted() {  
         this.dataReady = false;
-        const today = moment().format('YYYY-MM-DD');
-        this.dates = {startDate:moment(today).toISOString(), endDate:moment(today).toISOString()};
+        this.dates = {startDate:moment().toISOString(), endDate:moment().toISOString()};
         this.extractInfo();
         this.focusSearchButton()
     }
@@ -210,9 +209,9 @@ export default class BookingsPage extends Vue {
         this.dataLoaded = true;
         this.searching = true;
         this.bookings = [];
-
-        const startDate = moment(this.dates.startDate).startOf('day')
-        const endDate = moment(this.dates.endDate).endOf('day')
+        const timezone = this.location?.timezone?? 'America/Vancouver' 
+        const startDate = moment(this.dates.startDate).tz(timezone).startOf('day')
+        const endDate = moment(this.dates.endDate).tz(timezone).endOf('day')
 
         const body = {
             "file":this.courtFileNumber?this.courtFileNumber:'',
