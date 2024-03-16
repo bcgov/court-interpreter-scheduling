@@ -100,9 +100,9 @@
             <template v-slot:modal-title>
                 <h2 class="my-2">Reason For Cancellation</h2>
             </template>
-            <b-row class="my-4">
-                <b-col cols="1" />
-                <b-col cols="6" >
+            <b-row class="my-4">  
+                <div style="width:3%;" />            
+                <div style="width:62%;" >
                     <b-form-group                        
                         label="Cancelled by:" 
                         class="labels">
@@ -112,13 +112,15 @@
                             @change="cancellationReason='';cancelledByStates=null;"
                             v-model="cancelledBy"> 
                             <b-form-radio value="Interpreter">Interpreter</b-form-radio> 
-                            <b-form-radio value="Court">Court</b-form-radio> 
+                            <b-form-radio value="Court">Court</b-form-radio>
+                            <b-form-radio value="Crown">Crown</b-form-radio>
+                            <b-form-radio value="Counsel">Counsel</b-form-radio>
                             <b-form-radio value="Registry Clerk">Registry Clerk</b-form-radio>                                
                         </b-form-radio-group> 
                     </b-form-group>
-                </b-col>
+                </div>
                 
-                <b-col cols="4" v-if="cancelledBy=='Interpreter'">
+                <div style="width:32%" v-if="cancelledBy=='Interpreter'">
                     <b-form-group                                                
                         label="Reason:" 
                         class="labels">
@@ -128,8 +130,8 @@
                             v-model="cancellationReason">                                    
                         </b-form-select> 
                     </b-form-group>
-                </b-col>
-                <b-col cols="4" v-if="cancelledBy=='Court'">
+                </div>
+                <div style="width:32%" v-if="cancelledBy=='Court' || cancelledBy=='Counsel' || cancelledBy=='Crown'">
                     <b-form-group                         
                         label="Reason" 
                         class="labels">
@@ -139,8 +141,8 @@
                             v-model="cancellationReason">                                    
                         </b-form-select> 
                     </b-form-group>
-                </b-col>
-                <b-col cols="4" v-if="cancelledBy=='Registry Clerk'">
+                </div>
+                <div style="width:32%" v-if="cancelledBy=='Registry Clerk'">
                     <b-form-group                         
                         label="Reason" 
                         class="labels">
@@ -150,7 +152,7 @@
                             v-model="cancellationReason">                                    
                         </b-form-select> 
                     </b-form-group>
-                </b-col>
+                </div>
             </b-row>
             <b-row class="mt-n4 mb-4" v-if="cancelledBy">
                 <b-col cols="1" />
@@ -264,7 +266,7 @@ export default class EditBookingModal extends Vue {
     cancellationReason = ''
     cancellationComment = ''
     interpreterCancellationOptions = ['Sick', 'No Show', 'Other appointment']
-    courtCancellationOptions = [ 'Adjourned',  'Re-scheduled', 'Scheduling Error', 'File ended']
+    courtCancellationOptions = [ 'Adjourned',  'Re-scheduled', 'Scheduling Error', 'File ended', 'Assignment concluded'];
     clerkCancellationOptions = [ 'Booking error, no cancellation fee',  'Booking error, cancellation fee due'];
 
     statusOptions
@@ -754,6 +756,12 @@ export default class EditBookingModal extends Vue {
         font-weight: 600;
         color: rgb(63, 98, 133);
         
+    }
+
+    @media (min-width: 992px){
+        ::v-deep .modal-lg{            
+            max-width: 900px !important;
+        }
     }
 
     .date-card-container{
