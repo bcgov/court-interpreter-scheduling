@@ -210,6 +210,11 @@ Vue.filter('verifyPhone', function(phone){
 	return phoneFormat.test(phone?.trim())
 })
 
+Vue.filter('verifyEmail', function(email){
+	const emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;
+	return emailFormat.test(email)
+})
+
 Vue.filter('beautify-phone-no', function(num){
 	if(num?.trim().length==12)
 		return	'('+num.slice(0,3)+') '+num.slice(4,7)+'-'+num.slice(8,12);
