@@ -31,6 +31,7 @@ export interface bookingCaseStatesInfoType {
     methodOfAppearance: null | boolean;    
     bilingual: null | boolean;
     interpretationMode: null | boolean;
+    antcpStartTime: null | boolean;
 }
 
 export interface paymentDetailsInfoType{

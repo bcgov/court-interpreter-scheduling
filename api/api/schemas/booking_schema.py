@@ -36,7 +36,8 @@ class BookingCasesResponseSchema(BaseModel):
     remote_location_id: Optional[int] = Field(alias="remoteLocationId")
     van_registry: Optional[str] = Field(alias="vanRegistry")
     van_location_id: Optional[int] = Field(alias="vanLocationId") 
-   
+    anticipated_start_time: Optional[str] = Field(alias="antcpStartTime")
+
     requested_by: Optional[BookingRequestedByEnum] = Field(alias="requestedBy")
     method_of_appearance: Optional[BookingMethodOfAppearanceEnum] = Field(alias="methodOfAppearance")
     

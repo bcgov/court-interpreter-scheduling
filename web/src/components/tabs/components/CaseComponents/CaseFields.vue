@@ -319,7 +319,24 @@
                 </b-form-group>       
             </b-col>
         </b-row>
-
+<!-- <ROW - 5> -->
+        <b-row style="margin:0 -0.5rem 0.75rem -0.5rem;">
+            <b-col cols="3" >
+                <b-form-group
+                    class="labels"                
+                    label="Anticipated Start Time" 
+                    label-for="antcp-start-time">
+                    <b-form-input 
+                        id="antcp-start-time"
+                        :formatter="startTimeFormatter"
+                        :disabled="disableEdit" 
+                        :state="caseStates.antcpStartTime"                                        
+                        v-model="bookingCase.antcpStartTime">
+                    </b-form-input>
+                    <div class="mt-1 text-danger" v-if="timeErrorMsg">{{timeErrorMsg}}</div>
+                </b-form-group>
+            </b-col>
+        </b-row>
     </div>   
 </template>
 
@@ -362,7 +379,7 @@ export default class CaseFields extends Vue {
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
-    
+    timeErrorMsg = ''
     dataReady = false   
     updateCaseFrame=0
     remoteLocation=false
@@ -457,6 +474,24 @@ export default class CaseFields extends Vue {
             }
         }
     }  
+
+    public startTimeFormatter(time){ 
+        time = time.toUpperCase()
+        this.caseStates.antcpStartTime = this.timeValid(time)        
+        return time
+    }   
+
+    public timeValid(time){        
+        const timeFormat =/^(1[0-2]|[0][0-9]):([0-5][0-9])([ ]?)([AP]M|[ap]m)$/; 
+
+        if(!time || (time && timeFormat.test(time))){ 
+            this.timeErrorMsg=''
+            return null
+        }else{            
+            this.timeErrorMsg='Valid format: \"hh:mm AM/PM\"  (e.g. 12:00 PM)'
+            return false        
+        }
+    }
     
 }
 

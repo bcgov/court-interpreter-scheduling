@@ -56,7 +56,7 @@
                         <td class="m-0 p-0" colspan="11">
                             <b-table
                                 class="mt-1 mb-0 border"
-                                style="font-size:6pt;"
+                                style="font-size:8pt;"
                                 :items="record.cases"
                                 :fields="caseFields"
                                 small
@@ -68,9 +68,9 @@
                                 <template v-slot:cell(caseName)="data" >
                                     {{data.value |truncate-text(10, true)}}
                                 </template>
-                                <template v-slot:cell(courtClass)="data" >
+                                <!-- <template v-slot:cell(courtClass)="data" >
                                     {{data.value |truncate-text(20, true)}}
-                                </template>
+                                </template> -->
                                 <template v-slot:cell(prosecutor)="data" >
                                     {{data.value |truncate-text(20, true)}}
                                 </template>
@@ -116,15 +116,12 @@ export default class Record extends Vue {
         {key:'caseName',       label:'Case Name',    thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         {key:'room',           label:'Room',         thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         {key:'language',       label:'Language',     thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
-        {key:'interpretFor',   label:'Intpr. For',   thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
-        {key:'caseType',       label:'Type',         thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
-        {key:'courtLevel',     label:'Court Level',  thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
-        {key:'courtClass',     label:'Court Class',  thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
-        {key:'requestedBy',    label:'Req. By',      thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},      
+        {key:'interpretFor',   label:'Intpr. For',   thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},       
         {key:'reason',         label:'Rsn.',         thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},      
         {key:'methodOfAppearance',label:'Appearance',thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},        
         {key:'federal',        label:'Fed.',         thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         {key:'prosecutor',     label:'Prosecutor',   thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
+        {key:'antcpStartTime', label:'Start Time',   thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         {key:'interpretationMode',label:'Bilingual', thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         {key:'remoteRegistry', label:'Remote',       thClass:'bg-light align-middle text-center m-0 p-0', tdClass:'align-middle text-center m-0 p-0'},
         

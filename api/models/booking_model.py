@@ -129,6 +129,7 @@ class BookingCasesModel(Base):
     bilingual = Column(Boolean, default=False, index=False, nullable=True)
     interpretation_mode = Column(String, unique=False, index=False, nullable=True)
        
+    anticipated_start_time = Column(String, unique=False, index=False, nullable=True)
     
     method_of_appearance = Column(
         ENUM(BookingMethodOfAppearanceEnum, name='booking_method_of_appearance', values_callable=lambda obj: [e.value for e in obj]),
