@@ -41,13 +41,14 @@
                 <button-bar :pdfType="pdfType" position="top" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
                 <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
                     <adm-header :booking="booking" class="court-header"/>
-                    <interpreter-info :booking="booking"/>
+                    <interpreter-info :booking="booking" :rowNumber="1"/>
                     <scheduling-info :booking="booking" />
                     <record :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
                     <cancellation-info :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
                     <payment-details :booking="booking" :form="paymentDetailsForm"/>
                     <authorizations :booking="booking"/>
                     <office-use-only :booking="booking"/>
+                    <interpreter-info :booking="booking" :rowNumber="7" class="mt-2"/>
                 </b-card>
                 <button-bar :pdfType="pdfType" position="bottom" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
             </b-modal>
@@ -329,14 +330,14 @@ export default class AdmForms extends Vue {
             if(response.data){
                 // console.log(response.data)
                 if(response.data.length>0){
-                    const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split('#')[1]))
+                    const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split(/#|-/)[1]))
                     const maxIndex = Math.max(...currentIndices)
                     // console.log(currentIndices)
                     // console.log(maxIndex)
-                    this.booking.invoiceNumber = invoiceNumber+'#'+(maxIndex+1)
+                    this.booking.invoiceNumber = invoiceNumber+'-'+(maxIndex+1)
                 }
                 else{
-                    this.booking.invoiceNumber = invoiceNumber+'#1'
+                    this.booking.invoiceNumber = invoiceNumber+'-1'
                 }
                 this.saveBooking(this.booking)               
             }
