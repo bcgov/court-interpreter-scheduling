@@ -4,7 +4,7 @@ import * as _ from 'underscore';
 import { locationsInfoType } from '@/types/Common/json';
 import { bookingSearchResultInfoType, courtsDistanceInfoType, travelInformationInfoType } from "@/types/Bookings/json";
 
-export function travelInformation(booking: bookingSearchResultInfoType){
+export function travelInformation(booking: bookingSearchResultInfoType, travelStatus?){
     //console.log(booking)
     const timezone = booking.location.timezone;
 
@@ -15,7 +15,7 @@ export function travelInformation(booking: bookingSearchResultInfoType){
 
         const travel = interpreterHomeToCourtHouseDistance(location[0], booking.interpreter.courts)        
 
-        if (travel.status){
+        if (travel.status || travelStatus==true){
 
             const bookingDates = booking.dates.filter(date => date.status=='Booked' && date.methodOfAppearance=='In-Person' )            
             

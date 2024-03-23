@@ -344,7 +344,9 @@ export default class InterpreterBookingModal extends Vue {
             target[0].booking.methodOfAppearance = JSON.parse(JSON.stringify(source[0].booking.methodOfAppearance));
             target[0].booking.comment = JSON.parse(JSON.stringify(source[0].booking.comment));
             target[0].booking.cases = JSON.parse(JSON.stringify(source[0].booking.cases));            
-            
+            for(const caseItem of target[0].booking.cases ){
+                caseItem.antcpStartTime = target[0].time?.start?? ''
+            }
             this.updateTabs++;
         }
         
@@ -383,6 +385,9 @@ export default class InterpreterBookingModal extends Vue {
             }
             if(sourceCases.length>0){
                 target.booking.cases = JSON.parse(JSON.stringify(sourceCases));
+                for(const caseItem of target.booking.cases ){
+                    caseItem.antcpStartTime = target.time?.start?? ''
+                }
             }            
         }
         this.updatedBookingInfo++

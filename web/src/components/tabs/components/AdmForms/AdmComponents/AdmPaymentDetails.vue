@@ -435,7 +435,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as _ from 'underscore';
-
+import * as TravelInfo from '../AdmCalculations/TravelInfo'
 import {bookingSearchResultInfoType, gstInfoType, paymentDetailsVars, totalInterpretingHoursInfoType, travelInformationInfoType} from '@/types/Bookings/json';
 import UnderlineText from "./UnderlineText.vue"
 import {paymentDetailsInfoType} from '@/types/Bookings';
@@ -513,8 +513,10 @@ export default class AdmPaymentDetails extends Vue {
         admDetail.paymentDetail = paymentDetail
         
         //_______travelInformation
-        const travelInformation = {} as travelInformationInfoType;        
-        travelInformation.startDate = admDetail?.calculations?.travelInformation?.startDate
+        const travelInformation = {} as travelInformationInfoType;
+        const currentTravelStartDate = admDetail?.calculations?.travelInformation?.startDate;
+        const newTravelStartDate = TravelInfo.travelInformation(this.booking,true).startDate;
+        travelInformation.startDate = currentTravelStartDate?? newTravelStartDate;
         travelInformation.status = this.form.travelStatus; //admDetail?.calculations?.travelInformation?.status
         travelInformation.totalHours = this.form.travelTotalHrs? parseFloat(this.form.travelTotalHrs) : 0
         travelInformation.totalKilometers = this.form.travelTotalKMs? parseFloat(this.form.travelTotalKMs): 0

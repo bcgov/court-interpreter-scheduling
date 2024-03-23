@@ -15,6 +15,9 @@ class BookingInterpretForEnum(str, enum.Enum):
     WITNESS = 'Witness'
     PARTY = 'Party'
     ACCUSED = 'Accused'
+    DISPUTANT = 'Disputant'
+    APPLICANT = 'Applicant'
+    RESPONDENT = 'Respondent'
 
 class BookingMethodOfAppearanceEnum(str, enum.Enum):
     IN_PERSON = 'In-Person'
@@ -28,3 +31,5 @@ class BookingRequestedByEnum(str, enum.Enum):
     APPLICANT = 'Applicant'
     DEFENCE = 'Defence'
     RESPONDENT = 'Respondent'
+    ACCUSED = 'Accused',
+    DISPUTANT = 'Disputant'

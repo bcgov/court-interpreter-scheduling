@@ -59,7 +59,8 @@ export default class RecordDetails extends Vue {
         {key:'methodOfAppearance',label:'Appearance',thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},        
         {key:'federal',        label:'Fed.',         thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'prosecutor',     label:'Prosecutor',   thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
-        {key:'interpretationMode',label:'Bilingual', thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'antcpStartTime', label:'Start Time',   thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
+        {key:'interpretationMode',label:'Bi',        thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
         {key:'remoteRegistry', label:'Remote',       thClass:'bg-primary text-white align-middle text-center', tdClass:'align-middle text-center'},
     ]
    

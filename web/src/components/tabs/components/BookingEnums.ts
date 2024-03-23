@@ -28,12 +28,18 @@ export const bookingMethodOfAppearanceOptions = [
 export enum bookingInterpretFor {
     'Witness'='Witness', 
     'Party'='Party', 
-    'Accused'='Accused'
+    'Accused'='Accused',
+    'Disputant'='Disputant',
+    'Applicant'='Applicant',
+    'Respondent'='Respondent'
 }
 export const interpretForOptions = [
     {text: 'Witness',       value: bookingInterpretFor.Witness}, 
     {text: 'Party',         value: bookingInterpretFor.Party},
-    {text: 'Accused',       value: bookingInterpretFor.Accused}
+    {text: 'Accused',       value: bookingInterpretFor.Accused},
+    {text: 'Disputant',     value: bookingInterpretFor.Disputant},
+    {text: 'Applicant',     value: bookingInterpretFor.Applicant},
+    {text: 'Respondent',    value: bookingInterpretFor.Respondent},
 ]
 
 
@@ -42,14 +48,18 @@ export enum bookingRequest {
     'Crown'='Crown', 
     'Applicant'='Applicant', 
     'Defence'='Defence', 
-    'Respondent'='Respondent'
+    'Respondent'='Respondent',
+    'Accused'='Accused',
+    'Disputant'='Disputant'
 }
 export const requestOptions = [
     {text: 'Court',         value: bookingRequest.Court}, 
     {text: 'Crown',         value: bookingRequest.Crown},
     {text: 'Applicant',     value: bookingRequest.Applicant},
     {text: 'Defence',       value: bookingRequest.Defence},
-    {text: 'Respondent',    value: bookingRequest.Respondent}
+    {text: 'Respondent',    value: bookingRequest.Respondent},
+    {text: 'Accused',       value: bookingRequest.Accused},
+    {text: 'Disputant',         value: bookingRequest.Disputant},
 ]
 
 
@@ -147,6 +157,18 @@ export enum reasonCodeClass {
     'DA'='Divorce Act',
     'FSC'='Family settlement conference',
     'JSL'='Jury selection',
+    'APP'='Application',
+    'SNT'='Sentencing',
+    'PTC'='Pre-trial Conference',
+    'REG'='Registry Appearance',
+    'VD'='Voire DIre',
+    'PSR'='Pre-sentence Report',
+    'PSB'='Pre-sentence Report and Psychiatric/Psychological Report',
+    'IGP'='Intention to enter a guilty plea',
+    'ARB'='Application to Revoke Bail',
+    'AHR'='Arraignment',
+    'APW'='Application for Warrant',
+    'FTJ'='For Trial by Jury',
     'OTHER'='Other'   
 }
 export const reasonCodeClassOptions = [
@@ -162,7 +184,19 @@ export const reasonCodeClassOptions = [
     {text: 'DA-Divorce Act',               value: "DA"},
     {text: 'FSC-Family settlement conference', value: "FSC"},
     {text: 'JSL-Jury selection',           value: "JSL"},
-    {text: 'Other',                        value: "OTHER"}    
+    {text: 'APP-Application',              value: "APP"},
+    {text: 'SNT-Sentencing',               value: "SNT"},
+    {text: 'PTC-Pre-trial Conference',     value: "PTC"},
+    {text: 'REG-Registry Appearance',      value: "REG"},
+    {text: 'VD-Voire DIre',                value: "VD"},
+    {text: 'PSR-Pre-sentence Report',      value: "PSR"},
+    {text: 'PSB-Pre-sentence Report and Psychiatric/Psychological Report', value: "PSB"},
+    {text: 'IGP-Intention to enter a guilty plea', value: "IGP"},
+    {text: 'ARB-Application to Revoke Bail', value: "ARB"},
+    {text: 'AHR-Arraignment',               value: "AHR"},
+    {text: 'APW-Application for Warrant',   value: "APW"},
+    {text: 'FTJ-For Trial by Jury',         value: "FTJ"},
+    {text: 'Other',                         value: "OTHER"}    
 ]
 
 export enum bookingInterpretationMode {

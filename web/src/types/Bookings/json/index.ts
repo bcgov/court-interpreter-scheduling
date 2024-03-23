@@ -34,7 +34,7 @@ export interface bookingCaseInfoType { //OK
 
     requestedBy: string;
     methodOfAppearance: string;
-    
+    antcpStartTime: string;
 }
 
 export interface bookingInfoType { //OK

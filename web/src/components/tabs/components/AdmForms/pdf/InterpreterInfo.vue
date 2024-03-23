@@ -1,9 +1,9 @@
 <template>
     <div v-if="dataReady" class="margintop0p5">       
-        <b-row class="m-0 p0">
+        <b-row class="m-0 p-0">
                 <table class="flexsize border border-dark m-0 p-0">
                     <tr style="font-size:9pt; " class="m-0 p-0">
-                        <td class="m-0 p-0"><div style="font-size:12pt;" class="ml-1 font-weight-bold">1 Interpreter Information</div></td>                        
+                        <td class="m-0 p-0"><div style="font-size:12pt;" class="ml-1 font-weight-bold">{{rowNumber}} Interpreter Information</div></td>                        
                     </tr> 
                     <tr style="font-size:7pt; line-height:1.25rem;" >
                         <td style="width:60%;"><b class="ml-1">Name/Agency</b> (must be the same name that appears on Interpreter Contract)</td>                                              
@@ -38,7 +38,7 @@
                         <td />
                         <td />
                         <td />
-                        <td colspan="3" ><div class="answer" v-html="email">{{email}}</div> </td>                        
+                        <td colspan="3" ><div class="answer" v-html="email"></div> </td>                        
                     </tr>
                 </table>
         </b-row>           
@@ -55,6 +55,9 @@ export default class InterpreterInfo extends Vue {
     
     @Prop({required: true})
     booking!: bookingSearchResultInfoType;
+    
+    @Prop({required: true})
+    rowNumber!: number
 
     dataReady = false;
     interpreterName = ""

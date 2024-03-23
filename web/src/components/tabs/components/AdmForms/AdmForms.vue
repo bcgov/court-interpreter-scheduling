@@ -37,23 +37,28 @@
                 </div>
             </div>
 
-            <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer>
+            <b-modal size="xl" v-model="showPrintWindow" hide-header hide-footer no-close-on-backdrop>
                 <button-bar :pdfType="pdfType" position="top" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
                 <b-card id="print" style="border:1px solid; border-radius:5px;" bg-variant="white" class="my-4 container" no-body>   
                     <adm-header :booking="booking" class="court-header"/>
-                    <interpreter-info :booking="booking"/>
+                    <interpreter-info :booking="booking" :rowNumber="1"/>
                     <scheduling-info :booking="booking" />
                     <record :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
                     <cancellation-info :booking="booking" :lastPageAdmItemsNum="lastPageAdmItemsNum"/>
                     <payment-details :booking="booking" :form="paymentDetailsForm"/>
                     <authorizations :booking="booking"/>
                     <office-use-only :booking="booking"/>
+                    <interpreter-info :booking="booking" :rowNumber="7" class="mt-2"/>
                 </b-card>
                 <button-bar :pdfType="pdfType" position="bottom" :printingPDF="printingPDF" @savePrint="savePrint" @closePrint="showPrintWindow=false" />
             </b-modal>
 
-            <b-modal size="xl" v-model="showSentEmail" title-class="h1 text-success" ok-only title="Email Sent Successfully">
-                <sent-email-content :emailContent="emailContent" />                
+            <b-modal size="xl" v-model="showEmailContent" hide-header-close no-close-on-backdrop title-class="h1 text-primary" :title="'Email '+pdfType" hide-footer>
+                <email-modal-content :pdfType="pdfType" :booking="booking" :emailContent="emailContent" @close="showEmailContent=false" @sendEmail="printEmail"/>                             
+            </b-modal> 
+
+            <b-modal size="xl" v-model="showSentEmail" title-class="h1 text-dark" no-close-on-backdrop ok-only title="Email Sent Successfully" >
+                <sent-email-content :emailContent="sentEmailContent" />                
             </b-modal> 
 
         </div>   
@@ -103,6 +108,7 @@ import {cancellationCalculation} from './AdmCalculations/CancellationCalculation
 import {paymentDetailsInfoType} from '@/types/Bookings';
 import { locationsInfoType } from '@/types/Common/json';
 import { locationShortInfoType } from '@/types/Common';
+import EmailModalContent from './Email/EmailModalContent.vue'
 
 
 @Component({
@@ -119,6 +125,7 @@ import { locationShortInfoType } from '@/types/Common';
         AdmSentInvoiceInfo,
         ButtonBar,
         SentEmailContent,
+        EmailModalContent,
 
         AdmHeader,
         InterpreterInfo,
@@ -160,8 +167,10 @@ export default class AdmForms extends Vue {
     showPrintWindow = false
     bookingRecordsApproved = false;
     sectionName=''
+    sentEmailContent = {} as sentEmailContentInfoType
     emailContent = {} as sentEmailContentInfoType
     showSentEmail = false
+    showEmailContent = false;
     disablePrint=false
     savingData = false;
 
@@ -329,14 +338,14 @@ export default class AdmForms extends Vue {
             if(response.data){
                 // console.log(response.data)
                 if(response.data.length>0){
-                    const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split('#')[1]))
+                    const currentIndices = response.data.map(booking => Number(booking.invoiceNumber?.split(/#|-/)[1]))
                     const maxIndex = Math.max(...currentIndices)
                     // console.log(currentIndices)
                     // console.log(maxIndex)
-                    this.booking.invoiceNumber = invoiceNumber+'#'+(maxIndex+1)
+                    this.booking.invoiceNumber = invoiceNumber+'-'+(maxIndex+1)
                 }
                 else{
-                    this.booking.invoiceNumber = invoiceNumber+'#1'
+                    this.booking.invoiceNumber = invoiceNumber+'-1'
                 }
                 this.saveBooking(this.booking)               
             }
@@ -438,7 +447,12 @@ export default class AdmForms extends Vue {
     }    
 
     public savePrint(email) {
+        if(!email) this.printEmail(email)
+        else this.showEmailContent = true;
+    }
 
+    public printEmail(email){
+        this.showEmailContent = false
         this.showSentEmail = false
         this.printingPDF=true;
         const el= document.getElementById("print");
@@ -449,7 +463,10 @@ export default class AdmForms extends Vue {
 
         const body = {
             'html':pdfhtml,
-            'booking_id':this.bookingId
+            'booking_id':this.bookingId,
+            'body':this.emailContent?.body??'',
+            'to':(this.emailContent?.to? this.emailContent.to.replace(/\s+/g,''):''),
+            'title':this.emailContent?.subject??''
         }      
         
         const options = {
@@ -473,7 +490,7 @@ export default class AdmForms extends Vue {
                 const reader = new FileReader();
                 reader.readAsText(res.data)
                 reader.onload = ()=> {
-                    this.emailContent=JSON.parse(String(reader.result))
+                    this.sentEmailContent=JSON.parse(String(reader.result))
                     // console.log(this.emailContent)
                     this.showSentEmail = true
                 }

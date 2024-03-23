@@ -108,7 +108,7 @@
 <!-- <TABS> -->
         <div class="text-primary h3 mb-2" >Booking Details: <b-button :disabled="disableEdit" class="float-right" size="sm" @click="addBookingCase()" variant="select"><b-icon-clipboard-plus /> Add</b-button></div>
         <b-tabs  v-model="caseTabIndex" pills card :key="updateTab" class="case-tab-header">            
-            <b-tab no-body v-for="caseTab,inx in booking.cases" :key="'case-'+ inx" title-link-class="text-center case-tab-class">
+            <b-tab :title-link-attributes="{'href':'javascript:void(0);'}" no-body v-for="caseTab,inx in booking.cases" :key="'case-'+ inx" title-link-class="text-center case-tab-class">
                 <template #title>
                     <b-row class="m-0">
                         <b-col cols="2" class="m-0 p-0">
@@ -539,6 +539,7 @@ export default class EditBookingFields extends Vue {
         newcase.prosecutor = ''
         newcase.remoteRegistry = '';
         newcase.remoteLocationId = null;
+        newcase.antcpStartTime = this.booking.startTime
         return newcase
     }
 
@@ -620,7 +621,7 @@ export default class EditBookingFields extends Vue {
             this.errorMsg=''
             return null
         }else{            
-            this.errorMsg='Invalid Time Format!  Valid format is \"nn:nn AM/PM\".  e.g. 12:00 PM'
+            this.errorMsg='Invalid Time Format!  Valid format is \"hh:mm AM/PM\".  e.g. 12:00 PM'
             return false        
         }
     }
