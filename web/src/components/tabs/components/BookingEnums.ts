@@ -30,7 +30,8 @@ export enum bookingInterpretFor {
     'Party'='Party', 
     'Accused'='Accused',
     'Disputant'='Disputant',
-    'Applicant'='Applicant'
+    'Applicant'='Applicant',
+    'Respondent'='Respondent'
 }
 export const interpretForOptions = [
     {text: 'Witness',       value: bookingInterpretFor.Witness}, 
@@ -38,6 +39,7 @@ export const interpretForOptions = [
     {text: 'Accused',       value: bookingInterpretFor.Accused},
     {text: 'Disputant',     value: bookingInterpretFor.Disputant},
     {text: 'Applicant',     value: bookingInterpretFor.Applicant},
+    {text: 'Respondent',    value: bookingInterpretFor.Respondent},
 ]
 
 
@@ -166,6 +168,7 @@ export enum reasonCodeClass {
     'ARB'='Application to Revoke Bail',
     'AHR'='Arraignment',
     'APW'='Application for Warrant',
+    'FTJ'='For Trial by Jury',
     'OTHER'='Other'   
 }
 export const reasonCodeClassOptions = [
@@ -192,6 +195,7 @@ export const reasonCodeClassOptions = [
     {text: 'ARB-Application to Revoke Bail', value: "ARB"},
     {text: 'AHR-Arraignment',               value: "AHR"},
     {text: 'APW-Application for Warrant',   value: "APW"},
+    {text: 'FTJ-For Trial by Jury',         value: "FTJ"},
     {text: 'Other',                         value: "OTHER"}    
 ]
 

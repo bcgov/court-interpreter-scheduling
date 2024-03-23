@@ -444,6 +444,7 @@ export default class InterpreterBookingFields extends Vue {
         newcase.prosecutor = ''
         newcase.remoteRegistry = '';
         newcase.remoteLocationId = null;
+        newcase.antcpStartTime = this.booking.startTime
         return newcase
     }
 

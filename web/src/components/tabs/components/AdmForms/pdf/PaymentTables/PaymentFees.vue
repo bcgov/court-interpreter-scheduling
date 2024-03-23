@@ -144,7 +144,7 @@
                 <th colspan="8" class=""></th>                        
                 <th colspan="10" class="text-right">GST Number :</th>
                 <td colspan="12" class="border-bottom"><div class="answer-payment">{{form.gstNumber}}</div></td>
-                <th colspan="6" class="text-center">{{(Number(form.gstRate)*100).toFixed(0)}} % (rate)</th>
+                <th colspan="6" class="text-center">{{gstRate}} % (rate)</th>
                 <th colspan="2" class="text-right">GST</th>
                 <th colspan="2" class=""></th>
                 <th colspan="2" class="text-right"><div class="float-left">=</div><div class="float-right">$</div></th> 
@@ -187,6 +187,7 @@ export default class PaymentFees extends Vue {
     dataReady = false;
     languageItems = []
     courtFeeItems = []
+    gstRate = ''
 
     mounted(){        
         this.dataReady = false;
@@ -196,7 +197,8 @@ export default class PaymentFees extends Vue {
 
     public extractFormInfo(){
         this.languageItems = languageItems
-        this.courtFeeItems = courtFeeItems               
+        this.courtFeeItems = courtFeeItems    
+        this.gstRate = this.form.gstRate? ((Number(this.form.gstRate)*100).toFixed(0)) : ''
     }
 
     public getLanguageHrDetail(lang){

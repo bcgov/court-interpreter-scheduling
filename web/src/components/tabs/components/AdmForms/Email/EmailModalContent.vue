@@ -81,7 +81,7 @@ export default class EmailModalContent extends Vue {
 
     public getAdmEmailBody(){
         let body = ''
-        if(this.pdfType=='invoice')
+        if(this.pdfType=='Invoice')
             body = `Please find the attachment, a copy of the Invoice for your court interpreting session.\nIf you see any issues in the information, please let me know through email at '${this.userEmail}'.`
         else{
             body = `Please find attached, a copy of the invoice as a confirmation for your booking.\nIf you have any questions or concerns, please contact me at '${this.userEmail}'.`
