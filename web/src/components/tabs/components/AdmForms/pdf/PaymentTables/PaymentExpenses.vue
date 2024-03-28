@@ -25,7 +25,7 @@
                 <td colspan="5" class="text-center">Rate</td>                
                 <td colspan="7" class="text-center">Total Kilometers</td>
                 <td colspan="1" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>
+                <td colspan="5" class="text-center">Subtotal</td>
                 <th colspan="1" class=""></th>
                 <th colspan="4" class=""></th>                                                 
                 <th colspan="2" class=""></th>                        
@@ -62,7 +62,7 @@
                 <th colspan="1" class=""></th>
                 <td colspan="5" class="text-center">Total Days</td>
                 <td colspan="2" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>
+                <td colspan="5" class="text-center">Subtotal</td>
                 <th colspan="1" class=""></th>
                 <th colspan="4" class=""></th>                                                 
                 <th colspan="2" class=""></th>                        
@@ -99,7 +99,7 @@
                 <th colspan="1" class=""></th>
                 <td colspan="5" class="text-center">Total Days</td>
                 <td colspan="2" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>
+                <td colspan="5" class="text-center">Subtotal</td>
                 <th colspan="1" class=""></th>
                 <th colspan="4" class=""></th>                                                 
                 <th colspan="2" class=""></th>                        
@@ -136,7 +136,7 @@
                 <th colspan="1" class=""></th>
                 <td colspan="5" class="text-center">Total Days</td>
                 <td colspan="2" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>
+                <td colspan="5" class="text-center">Subtotal</td>
                 <th colspan="1" class=""></th>
                 <th colspan="4" class=""></th>                                                 
                 <th colspan="2" class=""></th>                        
@@ -171,7 +171,7 @@
                 <th colspan="8" class=""></th>
                 <td colspan="11" class="text-center">Total Pre GST</td>
                 <th colspan="2" class=""></th>                   
-                <td colspan="5" class="text-center">Sutotal</td>
+                <td colspan="5" class="text-center">Subtotal</td>
                 <th colspan="1" class=""></th>
                 <td colspan="4" class="text-center">GST</td>                                                 
                 <th colspan="2" class=""></th>                        
@@ -202,7 +202,7 @@
             <tr style="line-height:1.6rem;">
                 <th/>          
                 <td colspan="21" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>                                                 
+                <td colspan="5" class="text-center">Subtotal</td>                                                 
                 <th colspan="1" class=""></th> 
                 <td colspan="4" class="text-center">GST</td>
                 <th colspan="2" class=""></th>      
@@ -233,7 +233,7 @@
             <tr style="line-height:1.6rem;">
                 <th/>          
                 <td colspan="21" class=""></td>                        
-                <td colspan="5" class="text-center">Sutotal</td>                                                 
+                <td colspan="5" class="text-center">Subtotal</td>                                                 
                 <th colspan="1" class=""></th> 
                 <td colspan="4" class="text-center">GST</td>
                 <th colspan="2" class=""></th>      
