@@ -86,7 +86,7 @@ build-web() {
     -e  PUBLIC_URL=${DEFAULT_BASE_URL}\
     -e  VUE_APP_RUN_IN_DOCKER=${VUE_APP_RUN_IN_DOCKER}\
     '../web' \
-    'centos/nodejs-10-centos7:10' \
+    'centos/nodejs-12-centos7:12' \
     ${COMPOSE_PROJECT_NAME}'-web-artifacts'
   echo -e "===================================================================================================="
 
@@ -144,6 +144,12 @@ build-pdf() {
 }
 
 configureEnvironment () {
+  
+  if [ -f .env ]; then
+    echo -e "\nLoading environment variables from .env ...\n"
+    source .env
+  fi
+
   for arg in $@; do
     case "$arg" in
       *=*)
