@@ -18,10 +18,10 @@
                     <b-col>
                         <custom-pagination
                             :key="'pagination-top-'+paginationKey"                                         
-                            :pages="[3,6,10]"
-                            :totalRows="filteredInterpreters.length"
-                            :initCurrentPage="currentPage"
-                            :initItemPerPage="itemsPerPage"
+                            :pages="[3, 6, 10]"
+                            :totalRows="totalRecords"
+                            :initCurrentPage="initCurrentPage"
+                            :initItemPerPage="initItemsPerPage"
                             @paginationChanged="paginationChanged"/>
                     </b-col>
                 </b-row>
@@ -66,10 +66,10 @@
                     <b-col class="float-right">       
                         <custom-pagination
                             :key="'pagination-bottom-'+paginationKey"                                         
-                            :pages="[3,6,10]"
-                            :totalRows="filteredInterpreters.length"
-                            :initCurrentPage="currentPage"
-                            :initItemPerPage="itemsPerPage"
+                            :pages="[3, 6, 10]"
+                            :totalRows="totalRecords"
+                            :initCurrentPage="initCurrentPage"
+                            :initItemPerPage="initItemsPerPage"
                             @paginationChanged="paginationChanged"/>
                     </b-col>
                 </b-row>
@@ -132,6 +132,15 @@ export default class SearchInterpretersCalendarTable extends Vue {
         {key:'calendar',      label:'',  sortable:false, cellStyle:'', tdClass:'align-middle border-top'},
     ]; 
     
+    @Prop({required: true})
+    public totalRecords!: number;
+
+    @Prop({default: 1})
+    initCurrentPage!: number;
+
+    @Prop({default: 3})
+    initItemsPerPage!: number;
+
     currentPage = 1;
     itemsPerPage = 3;// Default
     paginationKey = 0;
@@ -148,9 +157,11 @@ export default class SearchInterpretersCalendarTable extends Vue {
     }
 
     public paginationChanged(currentPage, itemsPerPage){
-        this.currentPage = currentPage
-        this.itemsPerPage = itemsPerPage
-        this.paginationKey++
+        this.currentPage = currentPage;
+        this.itemsPerPage = itemsPerPage;
+        this.paginationKey++;
+
+        this.$emit('paginationChanged', currentPage, itemsPerPage);
     }
     
     get currentPageInterpreters(){

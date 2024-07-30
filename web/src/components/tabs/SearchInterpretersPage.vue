@@ -90,10 +90,10 @@
                             <div class="h4 mx-2 mt-2 mb-0">
                                 View Type
                             </div>
-                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="List View" class="mx-1 border" :variant="calendarView?'white':'primary'" @click="calendarView=false">
+                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="List View" class="mx-1 border" :variant="calendarView?'white':'primary'" @click="calendarView=false; find(1)">
                                 <b-icon-list-ul font-scale="1.5" />
                             </b-button>
-                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="Calendar View" class="mx-1 border" :variant="calendarView?'primary':'white'" @click="calendarView=true">
+                            <b-button size="sm" v-b-tooltip.hover.noninteractive.v-court title="Calendar View" class="mx-1 border" :variant="calendarView?'primary':'white'" @click="calendarView=true; find(1)">
                                 <b-icon-calendar font-scale="1.5" />
                             </b-button>
                         </b-row>
@@ -106,7 +106,7 @@
                         :disabled="searching||disableSearch"
                         v-on:keyup.enter="find()"
                         variant="primary"
-                        @click="find()"
+                        @click="find(1)"
                         ><spinner color="#FFF" v-if="searching" style="margin:0; padding: 0; height:2rem; transform:translate(0px,-24px);"/>
                         <span style="font-size: 20px;" v-else>Search</span>
                     </b-button>
@@ -133,7 +133,11 @@
             :searching="searching" 
             :searchLocation="location"
             :language="language" 
-            :bookingDates="bookingDates" />
+            :bookingDates="bookingDates"
+            :totalRecords="totalRecords"
+            :initCurrentPage="initPage"
+            :initItemsPerPage="tableLimit"
+            @paginationChanged="find" />
 
         <search-interpreters-calendar-table
             v-if="dataLoaded && calendarView" 
@@ -141,7 +145,11 @@
             :searching="searching" 
             :searchLocation="location"
             :language="language" 
-            :bookingDates="bookingDates" />
+            :bookingDates="bookingDates"
+            :totalRecords="totalRecords"
+            :initCurrentPage="initPage"
+            :initItemsPerPage="calendarLimit"
+            @paginationChanged="find" />
 
         
 
@@ -215,6 +223,10 @@ export default class SearchInterpretersPage extends Vue {
 
     calendarView = false;
     
+    totalRecords = 0;
+    tableLimit = 10;
+    calendarLimit = 3;
+    initPage = 1;
 
     @Watch('userLocation')
     defaultLocationChanged(){
@@ -238,7 +250,16 @@ export default class SearchInterpretersPage extends Vue {
     }
 
 
-    public find(){
+    public find(page?: number, limit?: number){
+        if (limit) {
+            if (this.calendarView) this.calendarLimit = limit;
+            else this.tableLimit = limit;
+        }
+
+        const queryLimit = limit ?? (this.calendarView ? this.calendarLimit : this.tableLimit);
+        const queryPage = page ?? 1;
+
+        this.initPage = queryPage;
        
         this.locationState = this.location?.id?true:false;
 
@@ -256,13 +277,17 @@ export default class SearchInterpretersPage extends Vue {
                 "active":true,
                 "city":'',
                 "dates":this.bookingDates,
-                "location":this.location?this.location:null                
+                "location":this.location?this.location:null,
+                "limit": queryLimit,
+                "page": queryPage                
             }
 
             this.$http.post('/interpreter/search', body)
-            .then((response) => {            
-                if(response?.data){
-                    this.extractInterpreterDetails(response.data);                    
+            .then((response) => {         
+                if (response.data?.total) this.totalRecords = response.data.total;
+
+                if(response?.data?.items){
+                    this.extractInterpreterDetails(response.data.items);                    
                 }
                 this.searching = false;
                 

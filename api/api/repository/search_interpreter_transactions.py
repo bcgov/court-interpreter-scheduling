@@ -6,8 +6,9 @@ from models.court_location_model import CourtDistanceModel
 from models.interpreter_model import InterpreterModel
 from models.language_model import InterpreterLanguageModel
 from models.booking_model import BookingDatesModel, BookingModel
-from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema
+from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema, InterpreterSearchResponseSchema
 from datetime import datetime
+from api.schemas.pagination_schema import PaginatedResponse
 
 from api.repository.user_transactions import check_user_roles
 
@@ -29,9 +30,26 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = apply_keyword(interpreter, request.keywords)
     interpreter = apply_distance(interpreter, request.distanceLimit, request.location)
 
+    total_count_of_filtered_interpreters = interpreter.count();
+
+    # apply pagination
+    interpreter = apply_pagination(interpreter, request.limit, request.page)
+
     all_interpreters = add_court_info(interpreter.all(), request.location, db)
 
-    return all_interpreters
+    return PaginatedResponse(
+        total=total_count_of_filtered_interpreters, 
+        items=[InterpreterSearchResponseSchema.from_orm(interpreter) for interpreter in all_interpreters],
+        page=request.page,
+        limit=request.limit 
+    )
+
+def apply_pagination(interpreter, limit, page): 
+    if limit is not None and page is not None: 
+        offset = (page - 1) * limit
+        return interpreter.offset(offset).limit(limit)
+    else: 
+        return interpreter 
 
 
 def apply_city(interpreter, city):
@@ -192,12 +210,16 @@ def apply_dates(interpreters, booking_dates, db):
 def add_court_info(interpreters, location, db):
 
     if location is not None and location.id is not None:
-        for interpreter in interpreters:
-            court = db.query(CourtDistanceModel).filter(
-                    CourtDistanceModel.court_id==location.id,
-                    CourtDistanceModel.interpreter_id==interpreter.id
-                ).first()
-            if court is not None:
-                interpreter.court_distance=court.distance
-                interpreter.court=court
-    return interpreters
+        interpreters_dict = dict((interpreter.id, interpreter) for interpreter in interpreters)
+        
+        courtsdistances = db.query(CourtDistanceModel).filter(
+            CourtDistanceModel.court_id==location.id,
+            CourtDistanceModel.interpreter_id.in_(list(interpreters_dict.keys()))
+        ).all()
+
+        for court in courtsdistances:
+            if court is not None and court.interpreter_id is not None:
+                interpreters_dict[court.interpreter_id].court_distance=court.distance
+                interpreters_dict[court.interpreter_id].court=court
+
+    return list(interpreters_dict.values())
