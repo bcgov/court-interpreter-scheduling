@@ -1,4 +1,5 @@
 from typing import List
+from api.schemas.pagination_schema import PaginatedResponse
 from fastapi import APIRouter, status, HTTPException, Depends, Request
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTasks
@@ -28,7 +29,7 @@ router = APIRouter(
 
 
 
-@router.post('/search', status_code=status.HTTP_200_OK, response_model=List[InterpreterSearchResponseSchema])
+@router.post('/search', status_code=status.HTTP_200_OK, response_model=PaginatedResponse[InterpreterSearchResponseSchema])
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
     return search_Interpreter(request, db, user['username'])
 

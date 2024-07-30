@@ -11,10 +11,10 @@
             <b-card v-else class="home-content border-white p-0" body-class="pt-0">
                 <custom-pagination
                     :key="'pagination-top-'+paginationKey"                                         
-                    :pages="[10,20,30]"
-                    :totalRows="interpreters.length"
-                    :initCurrentPage="currentPage"
-                    :initItemPerPage="itemsPerPage"
+                    :pages="[10, 20, 30]"
+                    :totalRows="totalRecords"
+                    :initCurrentPage="initCurrentPage"
+                    :initItemPerPage="initItemsPerPage"
                     @paginationChanged="paginationChanged"/> 
                     
                 <b-table
@@ -22,9 +22,7 @@
                     :fields="interpreterFields"
                     class="border-info"
                     sort-icon-left                                    
-                    small
-                    :currentPage="currentPage"
-                    :perPage="itemsPerPage"
+                    small                    
                     responsive="sm">
 
                     <template v-slot:head(email)="data" >                                            
@@ -154,10 +152,10 @@
 
                 <custom-pagination
                     :key="'pagination-bottom-'+paginationKey"                                           
-                    :pages="[10,20,30]"
-                    :totalRows="interpreters.length"
-                    :initCurrentPage="currentPage"
-                    :initItemPerPage="itemsPerPage"
+                    :pages="[10, 20, 30]"
+                    :totalRows="totalRecords"
+                    :initCurrentPage="initCurrentPage"
+                    :initItemPerPage="initItemsPerPage"
                     @paginationChanged="paginationChanged"/>                
             
             </b-card>
@@ -246,6 +244,15 @@ export default class SearchInterpretersTable extends Vue {
     interpreter = {} as interpreterInfoType;       
     expandedInterpreter = {} as interpreterInfoType;
     
+    @Prop({required: true})
+    public totalRecords!: number;
+
+    @Prop({default: 1})
+    initCurrentPage!: number;
+
+    @Prop({default: 10})
+    initItemsPerPage!: number;
+
     currentPage = 1;
     itemsPerPage = 10;// Default
     paginationKey = 0;
@@ -305,9 +312,11 @@ export default class SearchInterpretersTable extends Vue {
     }
 
     public paginationChanged(currentPage, itemsPerPage){
-        this.currentPage = currentPage
-        this.itemsPerPage = itemsPerPage
+        this.currentPage = currentPage;
+        this.itemsPerPage = itemsPerPage;
         this.paginationKey++;
+        
+        this.$emit('paginationChanged', currentPage, itemsPerPage);
     }
 
 }

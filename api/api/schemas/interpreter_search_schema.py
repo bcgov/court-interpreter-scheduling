@@ -31,6 +31,9 @@ class InterpreterSearchRequestSchema(BaseModel):
     courtAddr: Optional[str]
     distanceLimit: Optional[bool]
     location: Optional[LocationSchema]
+    limit: Optional[int]
+    page: Optional[int]
+
 
 
 class InterpreterSearchResponseSchema(InterpreterBase):    
