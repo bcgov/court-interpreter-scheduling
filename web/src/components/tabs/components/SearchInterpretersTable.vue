@@ -144,9 +144,9 @@
                         </b-button>
                         
                     </template>
-                    <template v-slot:row-details>
+                    <template v-slot:row-details="data">
                         <b-card bg-variant="inactive" class="mb-3" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
-                            <interpreter-details :interpreterDirectory="false" :interpreterDetails="expandedInterpreter" />
+                            <interpreter-details :interpreterDirectory="false" :interpreterDetails="data.item" />
                         </b-card>
                     </template>
                     
