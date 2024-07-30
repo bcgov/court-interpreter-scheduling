@@ -139,20 +139,20 @@ def seed_interpreter_spoken():
                 data[int(key)][item['comment']] = name[key]
             
             #CONTRACT
-            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'YES'):
+            elif (item['label'] =='CONTRACT' and name[key] is not None and name[key].upper().strip() == 'YES'):
                 data[int(key)][item['field']] = True
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'NO'):                
+            elif (item['label'] =='CONTRACT' and name[key] is not None and name[key].upper().strip() == 'NO'):                
                 data[int(key)][item['field']] = False
                 data[int(key)][item['comment']] = None
             elif (item['label'] =='CONTRACT'):
                 data[int(key)][item['field']] = False
-                if 'NO,' in name[key].upper().strip():
+                if name[key] is not None and 'NO,' in name[key].upper().strip():
                     comment = name[key].replace('NO,', '')
                     comment = comment.replace('No,', '')
                     comment = comment.replace('no,', '')
                     data[int(key)][item['comment']] = comment
-                elif 'YES,' in name[key].upper().strip():
+                elif name[key] is not None and 'YES,' in name[key].upper().strip():
                     comment = name[key].replace('YES,', '')
                     comment = comment.replace('Yes,', '')
                     comment = comment.replace('yes,', '')
@@ -204,10 +204,10 @@ def seed_interpreter_visual():
             # print(key)
             #LEVEL
             if item['label'] =='Level':
-                data.append({item['field']:name[key].strip(), item['field2']:None, item['field3']:None, item['field4']:'System'})
+                data.append({item['field']: name[key].strip() if isinstance(name[key], str) else name[key], item['field2']:None, item['field3']:None, item['field4']:'System'})
 
             #SUPPLIER #
-            elif item['label'] =='SUPPLIER #' and not isinstance(name[key], int) and name[key] is not None and 'site' in name[key].lower():
+            elif item['label'] =='SUPPLIER #' and not isinstance(name[key], int) and name[key] is not None and 'site' in str(name[key]).lower():
                 words = name[key].lower().split('site') 
                 words[0]=words[0].replace(",","") 
                 data[int(key)][item['field']] = words[0].strip()
@@ -223,35 +223,35 @@ def seed_interpreter_visual():
                 data[int(key)][item['field']] = False                
             
             #CITY
-            elif (item['label'] =='CITY'):
+            elif (item['label'] =='CITY') and name[key] is not None:
                 splited_text = name[key].split(',')
                 data[int(key)][item['field']] = splited_text[0].strip()
                 data[int(key)][item['state']] = splited_text[1].strip()
 
             #FIRST_NAME
-            elif (item['label'] =='FIRST NAME' and ' ' in name[key].strip()):
+            elif (item['label'] =='FIRST NAME' and name[key] is not None and ' ' in name[key].strip()):
                 splited_text = name[key].split(' ')
                 data[int(key)][item['field']] = splited_text[0].capitalize().strip()+' '+splited_text[1].capitalize().strip()
-            elif (item['label'] =='FIRST NAME'):
+            elif (item['label'] =='FIRST NAME') and name[key] is not None:
                 data[int(key)][item['field']] = name[key].capitalize().strip()
 
             #LAST_NAME
-            elif (item['label'] =='LAST NAME' and '-' in name[key]):
+            elif (item['label'] =='LAST NAME' and name[key] is not None and '-' in name[key]):
                 splited_text = name[key].split('-')
                 data[int(key)][item['field']] = splited_text[0].capitalize().strip()+'-'+splited_text[1].capitalize().strip()
-            elif (item['label'] =='LAST NAME'):
-                data[int(key)][item['field']] = name[key].capitalize().strip()
+            elif (item['label'] =='LAST NAME') and name[key] is not None:
+                data[int(key)][item['field']] = name[key].capitalize().strip() 
             
             #CONTRACT
-            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'YES'):
+            elif (item['label'] =='CONTRACT' and name[key] is not None and name[key].upper().strip() == 'YES'):
                 data[int(key)][item['field']] = True
                 data[int(key)][item['comment']] = None
-            elif (item['label'] =='CONTRACT' and name[key].upper().strip() == 'NO'):                
+            elif (item['label'] =='CONTRACT' and name[key] is not None and name[key].upper().strip() == 'NO'):                
                 data[int(key)][item['field']] = False
                 data[int(key)][item['comment']] = None
             elif (item['label'] =='CONTRACT'):
                 data[int(key)][item['field']] = False
-                if 'NO,' in name[key].upper().strip():
+                if name[key] is not None and 'NO,' in name[key].upper().strip():
                     comment = name[key].replace('NO,', '')
                     comment = comment.replace('No,', '')
                     comment = comment.replace('no,', '')
@@ -271,7 +271,7 @@ def seed_interpreter_visual():
 
 def seed_languages():
     filepath = os.getcwd()+'/alembic/seeds/Languages.xlsx'
-    excel_data_fragment = pandas.read_excel(filepath, sheet_name='Sheet1', engine='openpyxl')
+    excel_data_fragment = pandas.read_excel(filepath, sheet_name='Sheet4', engine='openpyxl')
     json_str = excel_data_fragment.to_json()
     json_content = json.loads(json_str)
     name = json_content['name']
@@ -295,8 +295,13 @@ def make_relations(interpreter_table, language_table, interpreter_language_table
     for interpreter in combined_interpreters:
         # print(languages_data)
         # print(interpreter['language'].upper())
-        id_langguage=[lang for lang in languages_data if lang['name'].upper() == interpreter['language'].upper().strip()][0]['id']
+        id_languages=[lang for lang in languages_data if lang['name'].upper() == interpreter['language'].upper().strip()]
         
+        if len(id_languages) > 0 and id_languages[0]['id'] is not None:
+            id_langguage = id_languages[0]['id']
+        else: 
+            break
+
         same_interpreter = [inter for inter in interpreters if (
             inter['first_name'].upper().strip() == interpreter['first_name'].upper().strip() and
             inter['last_name'].upper().strip() == interpreter['last_name'].upper().strip()            
