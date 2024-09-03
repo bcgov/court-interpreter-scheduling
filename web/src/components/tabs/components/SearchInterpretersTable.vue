@@ -32,7 +32,7 @@
                             @click="copyEmails();" 
                             class="text-white bg-transparent border-primary ml-2"
                             v-b-tooltip.hover.top.noninteractive
-                            title="Copy emails to clipboard" 
+                            title="Copy emails on this page to clipboard" 
                             ><i class="fa fa-clone"></i>
                         </b-button>
 
@@ -135,7 +135,7 @@
                         <b-button 
                             style="font-size:20px; border: none;" 
                             size="sm" 
-                            @click="openDetails(data.item); data.toggleDetails();" 
+                            @click="data.toggleDetails();" 
                             class="text-primary bg-transparent">
                             <b-icon-caret-right-fill v-if="!data.item['_showDetails']"></b-icon-caret-right-fill>
                             <b-icon-caret-down-fill v-if="data.item['_showDetails']"></b-icon-caret-down-fill>                                                       
@@ -242,7 +242,6 @@ export default class SearchInterpretersTable extends Vue {
     showBookingWindow = false;
 
     interpreter = {} as interpreterInfoType;       
-    expandedInterpreter = {} as interpreterInfoType;
     
     @Prop({required: true})
     public totalRecords!: number;
@@ -280,17 +279,12 @@ export default class SearchInterpretersTable extends Vue {
 
         let inputField =document.createElement('input');
         document.body.appendChild(inputField)
-        inputField.value =emailList.toString();
+        inputField.value =emailList.join(';');
         inputField.select();
         document.execCommand('copy',false);
         inputField.remove();
     }    
 
-    public openDetails(newExpandedInterpreter: interpreterInfoType){
-        this.expandedInterpreter = newExpandedInterpreter;
-    }
-        
-    
     public closeBookingWindow(){
         this.showBookingWindow = false; 
     }

@@ -4,17 +4,12 @@
         <loading-spinner color="#000" v-if="searching" waitingText="Loading Results ..." />
         <div v-else> 
 
-
             <b-card no-body border-variant="white" bg-variant="white" v-if="!interpreters.length">
                 <span class="text-muted ml-4 mb-5">No records found.</span>
             </b-card>      
 
-            <b-card v-else class="home-content border-white p-0" body-class="pt-0">
-                 <b-row>
-                    <b-col cols="3" class="mt-0">
-                        <b>Filter by Interpreter's Name:</b>
-                        <b-input  placeholder="First Name / Last Name" @input="filterInterpreter()" v-model="filterTerms" />
-                    </b-col>
+            <b-card v-else class="home-content border-white p-0" body-class="pt-0">   
+                <b-row>
                     <b-col>
                         <custom-pagination
                             :key="'pagination-top-'+paginationKey"                                         
@@ -25,10 +20,10 @@
                             @paginationChanged="paginationChanged"/>
                     </b-col>
                 </b-row>
-                <div v-if="filteredInterpreters.length==0" class="h3 text-info my-5"> No records matching interpreter's name filter.</div>
+                <div v-if="interpreters.length==0" class="h3 text-info my-5"> No records matching interpreter's name filter.</div>
                 <b-table
                     :key="'pagination-table-'+paginationKey"
-                    :items="currentPageInterpreters"
+                    :items="interpreters"
                     :fields="interpreterFields"
                     borderless
                     thead-class="d-none"
@@ -80,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as _ from 'underscore';
 
 import InterpreterDetailsCard from "./InterpreterDetailsCard.vue"
@@ -123,10 +118,6 @@ export default class SearchInterpretersCalendarTable extends Vue {
     @commonState.State
     public userLocation!: locationsInfoType;
 
-    filteredInterpreters: interpreterInfoType[]=[];
-    filterTerms = ''
-
-
     interpreterFields = [        
         {key:'interpreter',   label:'',  sortable:false, cellStyle:'', tdClass:'align-top border-top'},        
         {key:'calendar',      label:'',  sortable:false, cellStyle:'', tdClass:'align-middle border-top'},
@@ -145,16 +136,7 @@ export default class SearchInterpretersCalendarTable extends Vue {
     itemsPerPage = 3;// Default
     paginationKey = 0;
 
-    @Watch('searching')
-    applyFilter(){
-        this.filterTerms=''
-        if(!this.searching)
-            this.filterInterpreter()
-    }
-
-    mounted(){
-        this.applyFilter()
-    }
+    mounted(){ }
 
     public paginationChanged(currentPage, itemsPerPage){
         this.currentPage = currentPage;
@@ -162,23 +144,6 @@ export default class SearchInterpretersCalendarTable extends Vue {
         this.paginationKey++;
 
         this.$emit('paginationChanged', currentPage, itemsPerPage);
-    }
-    
-    get currentPageInterpreters(){
-        return this.filteredInterpreters.slice((this.itemsPerPage)*(this.currentPage-1), (this.itemsPerPage)*(this.currentPage-1) + this.itemsPerPage);
-    }
-
-    filterInterpreter(){
-        this.currentPage = 1
-        const terms = this.filterTerms?.replace(/,/g,' ').replace(/\s+/g,' ').split(' ');
-        this.filteredInterpreters = this.interpreters.filter(inter => {
-            return (
-                (!terms[0] || inter.lastName.toLowerCase().includes(terms[0]) || inter.firstName.toLowerCase().includes(terms[0])) &&
-                (!terms[1] || inter.lastName.toLowerCase().includes(terms[1]) || inter.firstName.toLowerCase().includes(terms[1])) &&
-                (!terms[2] || inter.lastName.toLowerCase().includes(terms[2]) || inter.firstName.toLowerCase().includes(terms[2]))
-            )
-        })
-        this.paginationKey++
     }
 
 }

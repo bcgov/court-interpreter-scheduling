@@ -30,12 +30,20 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = apply_keyword(interpreter, request.keywords)
     interpreter = apply_distance(interpreter, request.distanceLimit, request.location)
 
+    interpreter = interpreter.distinct(InterpreterModel.id)
+
+    # Get Total count of filtered interpreters before pagination
     total_count_of_filtered_interpreters = interpreter.count();
 
+    # apply sorting
+    # interpreter = apply_sorting(interpreter, request.sort)
     # apply pagination
     interpreter = apply_pagination(interpreter, request.limit, request.page)
 
-    all_interpreters = add_court_info(interpreter.all(), request.location, db)
+    # run query to get data
+    all_interpreters = interpreter.all();
+
+    all_interpreters = add_court_info(all_interpreters, request.location, db)
 
     return PaginatedResponse(
         total=total_count_of_filtered_interpreters, 
@@ -51,6 +59,12 @@ def apply_pagination(interpreter, limit, page):
     else: 
         return interpreter 
 
+# def apply_sorting(interpreter, sort_field):
+#     print(sort_field) 
+#     if sort_field is not None: 
+#         return interpreter.order_by(sort_field)
+#     else: 
+#         return interpreter.order_by(InterpreterModel.last_name, InterpreterModel.id) 
 
 def apply_city(interpreter, city):
     if city is not None and len(city)>0:
@@ -222,4 +236,6 @@ def add_court_info(interpreters, location, db):
                 interpreters_dict[court.interpreter_id].court_distance=court.distance
                 interpreters_dict[court.interpreter_id].court=court
 
-    return list(interpreters_dict.values())
+        return list(interpreters_dict.values())
+    else: 
+        return interpreters

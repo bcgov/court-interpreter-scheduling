@@ -34,7 +34,7 @@ def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= De
     return search_Interpreter(request, db, user['username'])
 
 
-@router.post('/search-full-detail', status_code=status.HTTP_200_OK, response_model=List[InterpreterGetAdminResponseSchema])
+@router.post('/search-full-detail', status_code=status.HTTP_200_OK, response_model=PaginatedResponse[InterpreterGetAdminResponseSchema])
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(admin_user)):
     return search_Interpreter(request, db, user['username'])
 
