@@ -139,6 +139,12 @@
             :initItemsPerPage="tableLimit"
             @paginationChanged="find" />
 
+        <b-row v-if="calendarView">
+            <b-col cols="3" class="mt-0">
+                <b>Filter by Interpreter's Name:</b>
+                <b-input id="filter-interpreter-by-name" placeholder="First Name / Last Name" @input="debounceInput" v-model="filterTerms" />
+            </b-col>
+        </b-row>
         <search-interpreters-calendar-table
             v-if="dataLoaded && calendarView" 
             :interpreters="interpreters" 
@@ -149,7 +155,8 @@
             :totalRecords="totalRecords"
             :initCurrentPage="initPage"
             :initItemsPerPage="calendarLimit"
-            @paginationChanged="find" />
+            @paginationChanged="find"
+            @filterChanged="find" />
 
         
 
@@ -228,6 +235,12 @@ export default class SearchInterpretersPage extends Vue {
     calendarLimit = 3;
     initPage = 1;
 
+    filterTerms = '';
+
+    debounceInput = _.debounce((event) => {
+        this.find(1, this.calendarLimit, {name: event});
+    }, 500);
+
     @Watch('userLocation')
     defaultLocationChanged(){
         this.extractInfo();
@@ -250,7 +263,7 @@ export default class SearchInterpretersPage extends Vue {
     }
 
 
-    public find(page?: number, limit?: number){
+    public find(page?: number, limit?: number, filter?: any){
         if (limit) {
             if (this.calendarView) this.calendarLimit = limit;
             else this.tableLimit = limit;
@@ -278,6 +291,7 @@ export default class SearchInterpretersPage extends Vue {
                 "city":'',
                 "dates":this.bookingDates,
                 "location":this.location?this.location:null,
+                "name": filter?.name ?? '',
                 "limit": queryLimit,
                 "page": queryPage                
             }

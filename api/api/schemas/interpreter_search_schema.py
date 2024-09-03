@@ -33,6 +33,7 @@ class InterpreterSearchRequestSchema(BaseModel):
     location: Optional[LocationSchema]
     limit: Optional[int]
     page: Optional[int]
+    # sort: Optional[str]
 
 
 

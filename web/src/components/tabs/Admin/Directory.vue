@@ -149,10 +149,10 @@
                 <custom-pagination  
                     :key="'pagination-top-'+paginationKey"                                       
                     :pages="[10,20,30]"
-                    :totalRows="interpreters.length"
+                    :totalRows="totalRecords"
                     :initCurrentPage="currentPage"
                     :initItemPerPage="itemsPerPage"
-                    @paginationChanged="paginationChanged"/>
+                    @paginationChanged="find"/>
 
                 <b-table
                     :items="interpreters"
@@ -160,8 +160,6 @@
                     class="border-info" 
                     sort-icon-left                                   
                     small
-                    :currentPage="currentPage"
-                    :perPage="itemsPerPage"
                     responsive="sm">
 
                     <template v-slot:head(email)="data" >                    
@@ -171,7 +169,7 @@
                             @click="copyEmails();" 
                             class="text-white bg-transparent border-primary ml-2"
                             v-b-tooltip.hover.top.noninteractive
-                            title="Copy emails to clipboard" 
+                            title="Copy emails on this page to clipboard" 
                             ><i class="fa fa-clone"></i>
                         </b-button>
 
@@ -242,16 +240,16 @@
                         <b-button 
                             style="font-size:20px; border: none;" 
                             size="sm" 
-                            @click="openDetails(data.item); data.toggleDetails();" 
+                            @click="data.toggleDetails();" 
                             class="text-primary bg-transparent">
                             <b-icon-caret-right-fill v-if="!data.item['_showDetails']"></b-icon-caret-right-fill>
                             <b-icon-caret-down-fill v-if="data.item['_showDetails']"></b-icon-caret-down-fill>                                                       
                         </b-button>
                         
                     </template>
-                    <template v-slot:row-details>
+                    <template v-slot:row-details="data">
                         <b-card bg-variant="primary" border-variant="white" body-class="px-1 pt-0 pb-1">                                                     
-                            <interpreter-details :interpreterDirectory="true" :interpreterDetails="expandedInterpreter" />
+                            <interpreter-details :interpreterDirectory="true" :interpreterDetails="data.item" />
                         </b-card>
                     </template>
                     
@@ -260,10 +258,10 @@
                 <custom-pagination
                     :key="'pagination-bottom-'+paginationKey"                                         
                     :pages="[10,20,30]"
-                    :totalRows="interpreters.length"
+                    :totalRows="totalRecords"
                     :initCurrentPage="currentPage"
                     :initItemPerPage="itemsPerPage"
-                    @paginationChanged="paginationChanged"/>
+                    @paginationChanged="find"/>
             
             </b-card>
         </div>
@@ -768,8 +766,7 @@ export default class DirectoryPage extends Vue {
     crcExpiryDate: dateRangeInfoType = {startDate:null, endDate:null};
 
     interpreters: interpreterInfoType[] = [];
-    expandedInterpreter = {} as interpreterInfoType;
-
+    
     languageNames: string[] = [];
     
     lastMonth=''
@@ -848,6 +845,7 @@ export default class DirectoryPage extends Vue {
     currentPage = 1;
     itemsPerPage = 10;// Default
     paginationKey = 0
+    totalRecords = 0;
    
     mounted() {  
         this.dataLoaded = false;
@@ -866,12 +864,20 @@ export default class DirectoryPage extends Vue {
         this.find()
     }
 
-    public find(){
+    public find(page?: number, limit?: number){
+        page = page ?? 1;
+        limit = limit ?? this.itemsPerPage;
+
         this.dataLoaded = true;
         this.searching = true;
         this.interpreters = [];
         const language = this.languages.filter(lang => lang.name==this.language);
+
         this.currentPage = 1;
+
+        this.currentPage = page;
+        this.itemsPerPage = limit;
+        this.paginationKey++;
         
         const body = {
             "name":this.name,
@@ -880,17 +886,23 @@ export default class DirectoryPage extends Vue {
             "level":this.level,
             "city":'',//this.userLocation?.city?this.userLocation.city:'',
             "keywords":this.keyword,
-            "criminalRecordCheck":this.crcExpiryDate                
+            "criminalRecordCheck":this.crcExpiryDate,
+            "page": page,
+            "limit": limit               
         }
 
+        this.interpreters = [];
+
         this.$http.post('/interpreter/search-full-detail', body)
-        .then((response) => {            
-            if(response?.data){ 
-                // console.log(response.data)
-                this.interpreters = _.sortBy(response.data,'lastName');
+        .then((response) => {   
+            if (response.data?.total) this.totalRecords = response.data.total;
+            
+            if(response?.data) { 
+                this.interpreters = _.sortBy(response.data.items,'lastName');
             }    
-                this.searching = false; 
-                this.dataReady = true;           
+
+            this.searching = false; 
+            this.dataReady = true;           
             
         },(err) => {
             this.searching = false; 
@@ -912,7 +924,7 @@ export default class DirectoryPage extends Vue {
 
         let inputField =document.createElement('input');
         document.body.appendChild(inputField)
-        inputField.value =emailList.toString();
+        inputField.value =emailList.join(';');
         inputField.select();
         document.execCommand('copy',false);
         inputField.remove();
@@ -958,10 +970,6 @@ export default class DirectoryPage extends Vue {
         });
     }
 
-    public openDetails(newExpandedInterpreter: interpreterInfoType){
-        this.expandedInterpreter = newExpandedInterpreter;
-    }
-    
     public saveNewInterpreter(){
         if (this.checkInterpreterStates()){ 
             this.savingData = true;
