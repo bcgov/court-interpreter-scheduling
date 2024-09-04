@@ -28,7 +28,7 @@ services:
   api:
     image: "${COMPOSE_PROJECT_NAME}-api"
     environment:
-      - DATABASE_SERVICE_NAME=${DATABASE_SERVICE_NAME}      
+      - DATABASE_SERVICE_NAME=${DATABASE_SERVICE_NAME}
       - DATABASE_ENGINE=${DATABASE_ENGINE}
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
@@ -62,9 +62,9 @@ services:
       - PDF_SERVICE_URL=${PDF_SERVICE_URL}
       - ADM_RECIPIENT_EMAILS=${ADM_RECIPIENT_EMAILS}
       - APP_RUN_IN_DOCKER=${APP_RUN_IN_DOCKER}
-      
+
     volumes:
-      - ../api/api:/opt/app-root/src/api
+      - "${LOCAL_WORKSPACE_FOLDER-..}/api/api:/opt/app-root/src/api"
     ports:
       - "${API_HTTP_PORT}:8080"
     depends_on:
