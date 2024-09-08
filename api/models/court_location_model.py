@@ -31,8 +31,8 @@ class CourtDistanceModel(Base):
     __tablename__ = 'court_distance'
 
     id = Column(Integer, primary_key=True, index=True)
-    court_id = Column(Integer, ForeignKey('court_location.id', ondelete="CASCADE"))
-    interpreter_id = Column(Integer, ForeignKey('interpreter.id', ondelete="CASCADE"))
+    court_id = Column(Integer, ForeignKey('court_location.id', ondelete="CASCADE"), index=True)
+    interpreter_id = Column(Integer, ForeignKey('interpreter.id', ondelete="CASCADE"), index=True)
 
     court_code = Column(String, unique=False)
 
