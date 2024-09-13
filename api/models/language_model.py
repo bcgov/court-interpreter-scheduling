@@ -7,10 +7,10 @@ from sqlalchemy.orm import relationship
 class InterpreterLanguageModel(Base):
     __tablename__ = 'interpreter_language'
     id = Column(Integer, primary_key=True, index=True)
-    language_id = Column(Integer, ForeignKey('language.id', ondelete="CASCADE"))
-    interpreter_id = Column(Integer, ForeignKey('interpreter.id', ondelete="CASCADE"))
+    language_id = Column(Integer, ForeignKey('language.id', ondelete="CASCADE"), index=True)
+    interpreter_id = Column(Integer, ForeignKey('interpreter.id', ondelete="CASCADE"), index=True)
 
-    level = Column(Integer, unique=False) 
+    level = Column(Integer, unique=False, index=True) 
     language = Column(String, unique=False)
     comment_on_level = Column(String, unique=False)
 
