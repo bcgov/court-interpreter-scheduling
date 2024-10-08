@@ -14,7 +14,7 @@ from api.repository.user_transactions import check_user_roles
 
 from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
-def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, username):
+def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, username, response_schema):
 
     if not check_user_roles(['cis-admin','super-admin'],username,db):
         request.active = True
@@ -33,7 +33,7 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = interpreter.distinct(InterpreterModel.id)
 
     # Get Total count of filtered interpreters before pagination
-    total_count_of_filtered_interpreters = interpreter.count();
+    total_count_of_filtered_interpreters = interpreter.count()
 
     # apply sorting
     # interpreter = apply_sorting(interpreter, request.sort)
@@ -41,15 +41,15 @@ def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, use
     interpreter = apply_pagination(interpreter, request.limit, request.page)
 
     # run query to get data
-    all_interpreters = interpreter.all();
+    all_interpreters = interpreter.all()
 
     all_interpreters = add_court_info(all_interpreters, request.location, db)
 
     return PaginatedResponse(
-        total=total_count_of_filtered_interpreters, 
-        items=[InterpreterSearchResponseSchema.from_orm(interpreter) for interpreter in all_interpreters],
+        total=total_count_of_filtered_interpreters,
+        items=[response_schema.from_orm(interpreter) for interpreter in all_interpreters],
         page=request.page,
-        limit=request.limit 
+        limit=request.limit
     )
 
 def apply_pagination(interpreter, limit, page): 
