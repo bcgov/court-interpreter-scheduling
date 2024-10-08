@@ -31,12 +31,12 @@ router = APIRouter(
 
 @router.post('/search', status_code=status.HTTP_200_OK, response_model=PaginatedResponse[InterpreterSearchResponseSchema])
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(user_in_role)):
-    return search_Interpreter(request, db, user['username'])
+    return search_Interpreter(request, db, user['username'], InterpreterSearchResponseSchema)
 
 
 @router.post('/search-full-detail', status_code=status.HTTP_200_OK, response_model=PaginatedResponse[InterpreterGetAdminResponseSchema])
 def search_Interpreters(request: InterpreterSearchRequestSchema, db: Session= Depends(get_db_session), user = Depends(admin_user)):
-    return search_Interpreter(request, db, user['username'])
+    return search_Interpreter(request, db, user['username'], InterpreterGetAdminResponseSchema)
 
 
 @router.get('', status_code=status.HTTP_200_OK, response_model=List[InterpreterGetAdminResponseSchema])
