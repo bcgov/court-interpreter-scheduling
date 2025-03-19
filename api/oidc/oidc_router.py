@@ -46,7 +46,7 @@ router = APIRouter(
 
 
 def logout_request(callback_uri):
-    return RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}&client_id={client_id}")
+    return RedirectResponse(f"{oidc.logout_uri}?post_logout_redirect_uri={callback_uri}&kc_idp_hint={hint}&client_id={client_id}")
 
 
 @router.get('/login/session/cb')
