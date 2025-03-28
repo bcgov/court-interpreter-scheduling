@@ -1,4 +1,7 @@
-from typing import List
+from http.client import HTTPException
+from typing import List, Optional
+from api.schemas.file_search_schema import FileSearchResponseSchema, FileSearchRequestSchema
+from jc_interface.jc_calls import JcInterfaceCalls
 from fastapi import APIRouter, Depends
 from core.multi_database_middleware import get_db_session
 from sqlalchemy.orm import Session
@@ -7,6 +10,8 @@ from api.schemas.user_schema import LocationSchema, UserSchema
 from models.court_location_model import CourtLocationModel
 
 
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/api/v1",
@@ -19,6 +24,19 @@ def get_all_locations(db: Session= Depends(get_db_session), user: UserSchema = D
     
     locations = db.query(CourtLocationModel).all()
     return locations
-   
-   
 
+def get_jc_interface():
+    return JcInterfaceCalls()
+
+@router.post('/files/search', response_model=FileSearchResponseSchema)
+def get_criminal_files(
+    request: FileSearchRequestSchema,
+    jc_interface: JcInterfaceCalls = Depends(get_jc_interface)
+):
+    try:
+        query_params = request.query.dict() if request.query else {}
+        logger.info(f"Query params: {query_params}")
+        logger.info(f"Query params: {query_params}")
+        return jc_interface.get_file_search(is_criminal=request.is_criminal, query_params=query_params)
+    except HTTPException as e:
+        raise e
