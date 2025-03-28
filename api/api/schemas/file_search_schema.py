@@ -130,3 +130,52 @@ class FileSearchResponseSchema(BaseModel):
 
     class Config:
         orm_mode = True
+class AppearanceDetailQueryParams(BaseModel):
+    futureYN: Optional[str] = None
+
+class AppearanceDetailRequestSchema(BaseModel):
+    query: Optional[AppearanceDetailQueryParams]
+    # mdocJustinNo for criminal, physicalFileId for civil
+    file_id: Optional[str] = None
+    is_criminal: bool = False
+    class Config:
+        orm_mode = True
+
+class AppearanceDetail(BaseModel):
+    historyYN: Optional[str] = None
+    appearanceId: Optional[str] = None
+    appearanceDt: Optional[str] = None
+    appearanceTm: Optional[str] = None
+    appearanceReasonCd: Optional[str] = None
+    courtAgencyId: Optional[str] = None
+    courtRoomCd: Optional[str] = None
+    judgeFullNm: Optional[str] = None
+    judgeInitials: Optional[str] = None
+    counselFullNm: Optional[str] = None
+    estimatedTimeHour: Optional[int] = None
+    estimatedTimeMin: Optional[int] = None
+    partOfTrialYN: Optional[str] = None
+    appearanceStatusCd: Optional[str] = None
+    partId: Optional[str] = None
+    profSeqNo: Optional[str] = None
+    lastNm: Optional[str] = None
+    givenNm: Optional[str] = None
+    orgNm: Optional[str] = None
+    appearanceResultCd: Optional[str] = None
+    appearanceCcn: Optional[str] = None
+    supplementalEquipmentTxt: Optional[str] = None
+    securityRestrictionTxt: Optional[str] = None
+    outOfTownJudgeTxt: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class AppearanceDetailResponseSchema(BaseModel):
+    responseCd: Optional[str] = None
+    responseMessageTxt: Optional[str] = None
+    futureRecCount: Optional[str] = None
+    historyRecCount: Optional[str] = None
+    apprDetail: List[AppearanceDetail]
+
+    class Config:
+        orm_mode = True

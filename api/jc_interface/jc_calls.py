@@ -91,7 +91,7 @@ class JcInterfaceCalls:
             HTTPException: If the API request fails
         """
         session = Session()
-        session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_USERNAME, settings.JC_INTERFACE_API_PASSWORD)
+        session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_FILE_USERNAME, settings.JC_INTERFACE_API_FILE_PASSWORD)
         
         session.headers.update({
             "requestAgencyIdentifierId": self.REQUEST_AGENCY_ID,
@@ -107,7 +107,7 @@ class JcInterfaceCalls:
         })
 
         file_type = "criminal" if is_criminal else "civil"
-        base_url = f"{settings.JC_INTERFACE_API_BASE_URL}/files/{file_type}"
+        base_url = f"{settings.JC_INTERFACE_API_FILE_URL}/files/{file_type}"
         
         if search_params:
             query_string = "&".join(
@@ -118,8 +118,6 @@ class JcInterfaceCalls:
             if query_string:
                 base_url += f"?{query_string}"
                 
-        logger.info(f"jc_interface - URL: {base_url}")
-        
         response = session.get(base_url, timeout=5)
         response_data = response.json()
         
@@ -130,7 +128,47 @@ class JcInterfaceCalls:
                 if "courtClassCd" in file:
                     file["courtClassCd"] = CourtClass.to_display_name(file["courtClassCd"])
         
-        logger.info(f"jc_interface - Response: {response_data}")
+        return response_data
+    
+    def get_file_appearances(self, is_criminal: bool, file_id: str, query_params: dict) -> dict:
+        """
+        Search for appearances of a file in the JC Interface system.
+        
+        Args:
+            is_criminal (bool): Whether to search criminal or civil files
+            file_id (str): The mdocJustinNo to search for appearances
+            query_params (dict): Search parameters for the file search
+            
+        Returns:
+            dict: JSON response from the API
+            
+        Raises:
+            HTTPException: If the API request fails
+        """
+        session = Session()
+        session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_FILE_USERNAME, settings.JC_INTERFACE_API_FILE_PASSWORD)
+        
+        session.headers.update({
+            "requestAgencyIdentifierId": self.REQUEST_AGENCY_ID,
+            "requestPartId": self.REQUEST_PART_ID,
+            "applicationCd": self.APPLICATION_CD
+        })
+        
+        search_params = query_params.copy()
+        file_type = "criminal" if is_criminal else "civil"
+        base_url = f"{settings.JC_INTERFACE_API_FILE_URL}/files/{file_type}/{file_id}/appearances"
+        
+        if search_params:
+            query_string = "&".join(
+                f"{key}={value}" 
+                for key, value in search_params.items() 
+                if value is not None and value != "" and str(value).strip()
+            )
+            if query_string:
+                base_url += f"?{query_string}"
+                
+        response = session.get(base_url, timeout=5)
+        response_data = response.json()
         return response_data
 
     def _get_api(self, url, headers, params=None):

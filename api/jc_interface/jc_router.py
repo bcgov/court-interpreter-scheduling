@@ -1,6 +1,6 @@
 from http.client import HTTPException
 from typing import List, Optional
-from api.schemas.file_search_schema import FileSearchResponseSchema, FileSearchRequestSchema
+from api.schemas.file_search_schema import FileSearchResponseSchema, FileSearchRequestSchema, AppearanceDetailRequestSchema, AppearanceDetailResponseSchema
 from jc_interface.jc_calls import JcInterfaceCalls
 from fastapi import APIRouter, Depends
 from core.multi_database_middleware import get_db_session
@@ -35,8 +35,16 @@ def get_criminal_files(
 ):
     try:
         query_params = request.query.dict() if request.query else {}
-        logger.info(f"Query params: {query_params}")
-        logger.info(f"Query params: {query_params}")
         return jc_interface.get_file_search(is_criminal=request.is_criminal, query_params=query_params)
+    except HTTPException as e:
+        raise e
+@router.post('/files/appearance', response_model=AppearanceDetailResponseSchema)
+def get_file_appearances(
+    request: AppearanceDetailRequestSchema,
+    jc_interface: JcInterfaceCalls = Depends(get_jc_interface)
+):
+    try:
+        query_params = request.query.dict() if request.query else {}
+        return jc_interface.get_file_appearances(is_criminal=request.is_criminal, file_id=request.file_id, query_params=query_params)
     except HTTPException as e:
         raise e
