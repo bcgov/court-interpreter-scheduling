@@ -46,6 +46,13 @@
 
         <b-row class="mt-5 mb-2 pt-1  border-top">
             <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
+            <b-button 
+                v-if="allowBooking"                    
+                :disabled="isSearching"
+                variant=secondary
+                @click="clearForm">
+                <b-icon-x-circle class="mr-2" /> Clear Form
+            </b-button>
             <b-button class="mx-1"
                 v-if="allowBooking"
                 :disabled="isSearching"
@@ -54,7 +61,7 @@
                 <div class="d-flex align-items-center">
                     <dvi class="loading-circle mr-2" v-if="isSearching"></dvi>
                     <b-icon-search v-else class="mr-2" />
-                    <span>Search</span>
+                    <span>Search Appearances</span>
                 </div>
             </b-button>
             <b-button 
@@ -87,56 +94,106 @@
             
         <b-modal class="custom-modal-height" size="xl" v-model="showSearchResults" id="bv-modal-search-results" header-class="bg-white text-primary" centered>            
             <template v-slot:modal-title>
-                <h2 class="my-2">Search Results</h2>
-                <p>Select a file:</p>
+                <h2 class="my-2" v-if="!showAppearances">Search Results</h2>
+                <h2 class="my-2" v-else>Appearances</h2>
+                <p v-if="!showAppearances">Step 1: Select a file:</p>
+                <p v-else>Step 2: Select an appearance:</p>
             </template>
 
-            <div v-for="file in searchResults" :key="file.physicalFileId" class="card mt-2 mx-4 p-3">
-                <label class="d-flex align-items-center" style="cursor: pointer;">
-                    <b-form-radio 
-                        v-model="selectedFile" 
-                        :value="file" 
-                        name="file-selection" 
-                        @change="handleFileSelection(file)" 
-                        class="mr-3">
-                    </b-form-radio>
-                    <b-col cols="5">
-                        <div>
-                            <strong>Court File Number:</strong> {{ file.fileNumberTxt }}
-                        </div>
-                        <div>
-                            <strong>Court Level:</strong> {{ file.courtLevelCd }}
-                        </div>
-                        <div>
-                            <strong>Court Class:</strong> {{ file.courtClassCd }}
-                        </div>
-                        <div>
-                            <strong>Court Location:</strong> {{ HomeAgencyNameByCode(file.fileHomeAgencyId) }}
-                        </div>
-                        <div>
-                            <strong>Next Appearance Date:</strong> {{ formatDate(file.nextApprDt) }}
-                        </div>
-                    </b-col>
-                    <b-col cols="6">
-                        <div>
-                            <strong>Participant(s):</strong>
-                            <div v-for="participant in file.participant" :key="participant.fullNm" style="font-size: 0.83rem;">
-                                <div>- <strong>Full Name:</strong> {{ participant.fullNm }}</div>
-                                <div v-for="charge in participant.charge" :key="charge.sectionTxt">
-                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Section:</strong> {{ charge.sectionTxt }}</div>
-                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Description:</strong> {{ charge.sectionDscTxt }}</div>
-                                    <div v-if="participant.charge.length > 1 && participant.charge.indexOf(charge) !== participant.charge.length - 1">
-                                        <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0; margin-right: 15rem; margin-left: 1rem;" />
+            <!-- Back Button for Appearances -->
+            <b-button v-if="showAppearances" variant="outline-primary" class="mb-3" @click="showAppearances = false">
+                Back to Files
+            </b-button>
+
+            <!-- Files Card -->
+            <div class="scrollable-content">
+            <div v-if="!showAppearances">
+                <div v-for="file in searchResults" :key="file.physicalFileId" class="card mt-2 mx-4 p-3">
+                    <label class="d-flex align-items-center" style="cursor: pointer;">
+                        <b-form-radio 
+                            v-model="selectedFile" 
+                            :value="file" 
+                            name="file-selection" 
+                            @change="handleFileSelection(file)" 
+                            class="mr-3">
+                        </b-form-radio>
+                        <b-col cols="5">
+                            <div>
+                                <strong>Court File Number:</strong> {{ file.fileNumberTxt }}
+                            </div>
+                            <div>
+                                <strong>Court Level:</strong> {{ file.courtLevelCd }}
+                            </div>
+                            <div>
+                                <strong>Court Class:</strong> {{ file.courtClassCd }}
+                            </div>
+                            <div>
+                                <strong>Court Location:</strong> {{ HomeAgencyNameByCode(file.fileHomeAgencyId) }}
+                            </div>
+                            <div>
+                                <strong>Next Appearance Date:</strong> {{ formatDate(file.nextApprDt) }}
+                            </div>
+                        </b-col>
+                        <b-col cols="6">
+                            <div>
+                                <strong>Participant(s):</strong>
+                                <div v-for="participant in file.participant" :key="participant.fullNm" style="font-size: 0.83rem;">
+                                    <div>- <strong>Full Name:</strong> {{ participant.fullNm }}</div>
+                                    <div v-for="charge in participant.charge" :key="charge.sectionTxt">
+                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Section:</strong> {{ charge.sectionTxt }}</div>
+                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Description:</strong> {{ charge.sectionDscTxt }}</div>
+                                        <div v-if="participant.charge.length > 1 && participant.charge.indexOf(charge) !== participant.charge.length - 1">
+                                            <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0; margin-right: 15rem; margin-left: 1rem;" />
+                                        </div>
+                                    </div>
+                                    <div v-if="file.participant.length > 1 && file.participant.indexOf(participant) !== file.participant.length - 1">
+                                            <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0;" />
                                     </div>
                                 </div>
-                                <div v-if="file.participant.length > 1 && file.participant.indexOf(participant) !== file.participant.length - 1">
-                                        <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0;" />
-                                </div>
                             </div>
-                        </div>
-                    </b-col>
-                </label>
+                        </b-col>
+                    </label>
+                </div>
             </div>
+
+            <!-- Appearances Card -->
+            <div v-if="showAppearances">
+                <h3 v-if="appearanceResults.length === 0" class="text-center text-muted">No appearances found for the selected file.</h3>
+                <div v-for="appearance in appearanceResults" :key="appearance.appearanceId" class="card mt-2 mx-4 p-3">
+                    <label class="d-flex align-items-center" style="cursor: pointer;">
+                        <b-form-radio 
+                            v-model="selectedAppearance" 
+                            :value="appearance" 
+                            name="appearance-selection"
+                            @change="handleAppearanceSelection(appearance)" 
+                            class="mr-3">
+                        </b-form-radio>
+                        <b-col>
+                            <div>
+                                <strong>Appearance Date:</strong> {{ formatDate(appearance.appearanceDt) }}
+                            </div>
+                            <div>
+                                <strong>Appearance Time:</strong> {{ formatTime(appearance.appearanceTm) }}
+                            </div>
+                            <div>
+                                <strong>Court Room:</strong> {{ appearance.courtRoomCd }}
+                            </div>
+                            <div>
+                                <strong>Location:</strong> {{ HomeAgencyNameByCode(appearance.courtAgencyId) }}
+                            </div>
+                        </b-col>
+                        <b-col>
+                            <div>
+                                <strong>Reason:</strong> {{ appearance.appearanceReasonCd }}
+                            </div>
+                            <div>
+                                <strong>Judge Full Name:</strong> {{ appearance.judgeFullNm }}
+                            </div>
+                        </b-col>
+                    </label>
+                </div>
+            </div>
+        </div>
 
             <template v-slot:modal-header-close>                 
                  <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="$bvModal.hide('bv-modal-search-results')"
@@ -144,8 +201,14 @@
             </template>
 
             <template v-slot:modal-footer>
-                <b-button variant="success" :disabled="!selectedFile" @click="updateCase">
+                <b-button v-if="showAppearances" variant="success" :disabled="!selectedFile" @click="updateCase">
                     <b-icon-pencil-fill class="mr-2" /> Fill Case
+                </b-button>
+                <b-button v-if="!showAppearances" variant="primary" :disabled="!selectedFile" @click="searchAppearances">
+                    <div class="d-flex align-items-center">
+                        <dvi class="loading-circle mr-2" v-if="isSearching"></dvi>
+                        <span>Next</span>
+                    </div>
                 </b-button>
             </template>
         </b-modal>
@@ -218,11 +281,14 @@ export default class InterpreterBookingModal extends Vue {
     bookingMethodOfAppearanceOptions
 
     searchResults = [];
+    appearanceResults = [];
     showSearchResults = false;
     isSearching = false;
 
     selectedCaseIndex = 0;
     selectedFile = null;
+    showAppearances = false;
+    selectedAppearance = null;
 
     created(){
         this.statusOptions=statusOptions 
@@ -487,11 +553,13 @@ export default class InterpreterBookingModal extends Vue {
     searchFiles() {
         this.errorMsg=''
         this.selectedFile = null;
+        this.selectedAppearance = null;
+        this.showAppearances = false;
         this.isSearching = true;
         const currentTab = this.allBookingDatesTimes[this.tabIndex];
         const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
         console.log(currentTab);
-        const fileHomeAgencyId = currentCase.remoteLocationId > 0 ? this.courtLocations.find(loc => loc.id === currentCase.remoteLocationId).locationCode : this.registry.code;
+        const fileHomeAgencyId = this.registry.code;
 
         let errors = [];
 
@@ -511,8 +579,9 @@ export default class InterpreterBookingModal extends Vue {
             return;
         }
         const isCriminal = currentCase.caseType === 'Criminal';
+        const sanitizedFileNumber = currentCase.file.replace(/^[A-Za-z]+-/, '');
         const queryParams = {
-            fileNumberTxt: currentCase.file,
+            fileNumberTxt: sanitizedFileNumber,
             courtClassCd: currentCase.courtClass,
             courtLevelCd: currentCase.courtLevel,
             fileHomeAgencyId: fileHomeAgencyId
@@ -542,8 +611,47 @@ export default class InterpreterBookingModal extends Vue {
             });
     }
 
+    searchAppearances(){
+        this.errorMsg='';
+        this.isSearching = true;
+        this.selectedAppearance = null;
+        this.showAppearances = false;
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+        const isCriminal = currentCase.caseType === 'Criminal';
+        const queryParams = {
+            futureYN: 'Y'
+        };
+        this.$http.post(`/files/appearance`, { 
+                is_criminal: isCriminal,
+                file_id: isCriminal? this.selectedFile.mdocJustinNo : this.selectedFile.physicalFileId,
+                query: queryParams,
+            })
+            .then((response) => {
+                console.log(response);
+                this.isSearching = false;
+                if (response.data.apprDetail.length > 0) {
+                    this.appearanceResults = response.data.apprDetail;
+                    this.showAppearances = true;
+                }
+                else if (response.data.apprDetail.length === 0) {
+                    this.appearanceResults = [];
+                    this.showAppearances = true;
+                }
+                
+            },(err) => {
+                this.isSearching = false;
+                console.log(err);
+                this.errorMsg = err.response?.data?.detail || 'An error occurred';
+                this.showSearchResults = false;
+            });
+    }
+
     handleFileSelection(file) {
         this.selectedFile = file;
+    }
+    handleAppearanceSelection(appearance) {
+        this.selectedAppearance = appearance;
     }
 
     updateCase() {
@@ -554,9 +662,28 @@ export default class InterpreterBookingModal extends Vue {
             currentCase.file = this.selectedFile.fileNumberTxt;
             currentCase.courtClass = this.selectedFile.courtClassCd;
             currentCase.courtLevel = this.selectedFile.courtLevelCd;
+            if (this.selectedAppearance){
+                currentCase.room = this.selectedAppearance.courtRoomCd;
+                currentCase.reason = this.selectedAppearance.appearanceReasonCd;
+            }
             // Close the modal after updating
             this.showSearchResults = false;
         }
+    }
+    clearForm() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+
+        currentCase.file = '';
+        currentCase.courtClass = '';
+        currentCase.courtLevel = '';
+        currentCase.room = '';
+        currentCase.reason = '';
+        currentCase.caseType = '';
+        this.selectedFile = '';
+        this.selectedAppearance = '';
+
+        this.errorMsg = '';
     }
 
     HomeAgencyNameByCode(code) {
@@ -566,7 +693,11 @@ export default class InterpreterBookingModal extends Vue {
 
     formatDate(dateString) {
         if (!dateString) return '';
-        return moment(dateString).format('YYYY-MM-DD HH:mm');
+        return moment(dateString).format('YYYY-MM-DD');
+    }
+    formatTime(dateString) {
+        if (!dateString) return '';
+        return moment(dateString).format('HH:mm');
     }
     updateRegistry(newRegistryId) {
         const location = this.courtLocations.find(loc => loc.id === newRegistryId);
@@ -583,8 +714,9 @@ export default class InterpreterBookingModal extends Vue {
 
 <style lang="scss" scoped >
     .custom-modal-height .modal-content {
-        max-height: 60vh; /* 60% of the viewport height */
-        overflow-y: auto; /* Enable scrolling if content exceeds max height */
+        height: 85vh;
+        max-height: 85vh; 
+        overflow-y: auto; 
     }
     ::v-deep .create-tab-class{
         margin:0.2rem 0.25rem;
@@ -600,12 +732,12 @@ export default class InterpreterBookingModal extends Vue {
         max-height: 11.5rem;        
     }
     .loading-circle {
-        border: 2px solid #f3f3f3; /* Light gray background */
-        border-top: 2px solid #007bff; /* Blue color for the top border */
-        border-radius: 50%; /* Makes it a circle */
-        width: 1.3rem; /* Width of the circle */
-        height: 1.3rem; /* Height of the circle */
-        animation: spin 1s linear infinite; /* Spin animation */
+        border: 2px solid #f3f3f3; 
+        border-top: 2px solid #007bff;
+        border-radius: 50%; 
+        width: 1.2rem;
+        height: 1.2rem; 
+        animation: spin 1s linear infinite; 
     }
 
     @keyframes spin {
@@ -615,5 +747,13 @@ export default class InterpreterBookingModal extends Vue {
         100% {
             transform: rotate(360deg);
         }
+    }
+
+    .scrollable-content {
+        height: 65vh;
+        overflow-y: auto; 
+        overflow-x: hidden;
+        padding-right: 1rem;
+        box-sizing: border-box; 
     }
 </style>
