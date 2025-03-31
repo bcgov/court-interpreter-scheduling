@@ -233,7 +233,6 @@ export default class BookingsPage extends Vue {
         
     }  
 
-
     public loadCourtLocations(){
         this.$http.get('/location')
         .then((response) => {            
