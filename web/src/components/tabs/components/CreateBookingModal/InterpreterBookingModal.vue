@@ -59,7 +59,7 @@
                 variant="primary" 
                 @click="searchFiles">
                 <div class="d-flex align-items-center">
-                    <dvi class="loading-circle mr-2" v-if="isSearching"></dvi>
+                    <dvi class="loading-circle mr-2" v-if="isSearching && !showSearchResults"></dvi>
                     <b-icon-search v-else class="mr-2" />
                     <span>Search Appearances</span>
                 </div>
@@ -136,10 +136,11 @@
                         </b-col>
                         <b-col cols="6">
                             <div>
-                                <strong>Participant(s):</strong>
+                                <strong v-if="!isCriminal">Participant(s):</strong> <strong v-if="isCriminal">Accused:</strong>
                                 <div v-for="participant in file.participant" :key="participant.fullNm" style="font-size: 0.83rem;">
                                     <div>- <strong>Full Name:</strong> {{ participant.fullNm }}</div>
-                                    <div v-for="charge in participant.charge" :key="charge.sectionTxt">
+                                    <div v-if="isCriminal">- <strong>Charge(s):</strong></div>
+                                    <div v-if="isCriminal" v-for="charge in participant.charge" :key="charge.sectionTxt">
                                         <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Section:</strong> {{ charge.sectionTxt }}</div>
                                         <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Description:</strong> {{ charge.sectionDscTxt }}</div>
                                         <div v-if="participant.charge.length > 1 && participant.charge.indexOf(charge) !== participant.charge.length - 1">
@@ -286,6 +287,7 @@ export default class InterpreterBookingModal extends Vue {
     isSearching = false;
 
     selectedCaseIndex = 0;
+    isCriminal = false;
     selectedFile = null;
     showAppearances = false;
     selectedAppearance = null;
@@ -558,6 +560,7 @@ export default class InterpreterBookingModal extends Vue {
         this.isSearching = true;
         const currentTab = this.allBookingDatesTimes[this.tabIndex];
         const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+        this.isCriminal = currentCase.caseType === 'Criminal';
         console.log(currentTab);
         const fileHomeAgencyId = this.registry.code;
 
@@ -666,7 +669,9 @@ export default class InterpreterBookingModal extends Vue {
                 currentCase.room = this.selectedAppearance.courtRoomCd;
                 currentCase.reason = this.selectedAppearance.appearanceReasonCd;
             }
-            // Close the modal after updating
+            if (this.selectedFile.participant.length > 0) {
+                currentCase.caseName = this.selectedFile.participant.map(p => p.fullNm).join('; ');
+            }
             this.showSearchResults = false;
         }
     }
@@ -680,9 +685,9 @@ export default class InterpreterBookingModal extends Vue {
         currentCase.room = '';
         currentCase.reason = '';
         currentCase.caseType = '';
+        currentCase.caseName = '';
         this.selectedFile = '';
         this.selectedAppearance = '';
-
         this.errorMsg = '';
     }
 
