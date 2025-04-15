@@ -559,6 +559,7 @@ export default class InterpreterBookingModal extends Vue {
         const currentTab = this.allBookingDatesTimes[this.tabIndex];
         const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
         this.isCriminal = currentCase.caseType === 'Criminal';
+
         const fileHomeAgencyId = this.registry.code;
 
         let errors = [];
