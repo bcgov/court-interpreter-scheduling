@@ -303,8 +303,6 @@ export default class InterpreterBookingModal extends Vue {
         this.errorMsg=''
         this.savingData = false;
         this.interpreterDataReady = false; 
-        //console.log(this.interpreter)
-        //console.log(this.bookingDates)
         this.registry = {id:this.searchLocation.id, name:this.searchLocation.name, timezone:this.searchLocation.timezone, code:this.searchLocation.locationCode};
         this.extractBookingDates()
         this.extractBlockDates(this.interpreter.id)
@@ -561,7 +559,7 @@ export default class InterpreterBookingModal extends Vue {
         const currentTab = this.allBookingDatesTimes[this.tabIndex];
         const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
         this.isCriminal = currentCase.caseType === 'Criminal';
-        console.log(currentTab);
+
         const fileHomeAgencyId = this.registry.code;
 
         let errors = [];
@@ -595,7 +593,6 @@ export default class InterpreterBookingModal extends Vue {
                 query: queryParams,
             })
             .then((response) => {
-                console.log(response);
                 this.isSearching = false;
                 if (response.data.fileDetail.length > 0) {
                     this.searchResults = response.data.fileDetail;
@@ -608,7 +605,6 @@ export default class InterpreterBookingModal extends Vue {
                 
             },(err) => {
                 this.isSearching = false;
-                console.log(err);
                 this.errorMsg = err.response?.data?.detail || 'An error occurred';
                 this.showSearchResults = false;
             });
@@ -631,7 +627,6 @@ export default class InterpreterBookingModal extends Vue {
                 query: queryParams,
             })
             .then((response) => {
-                console.log(response);
                 this.isSearching = false;
                 if (response.data.apprDetail.length > 0) {
                     this.appearanceResults = response.data.apprDetail;
@@ -644,7 +639,6 @@ export default class InterpreterBookingModal extends Vue {
                 
             },(err) => {
                 this.isSearching = false;
-                console.log(err);
                 this.errorMsg = err.response?.data?.detail || 'An error occurred';
                 this.showSearchResults = false;
             });

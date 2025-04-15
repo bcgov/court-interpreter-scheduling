@@ -22,23 +22,24 @@ def update_courts_info_in_db(db: Session):
     geo_status = db.query(GeoStatusModel).where(GeoStatusModel.name=='locations')
 
 
-    for inx, location in enumerate(jc_locations):        
-        
+    for inx, location in enumerate(jc_locations):
         if location["shortDesc"].isnumeric() and len(location["shortDesc"]):        
             # logger.info(location)            
        
-            court_address = {'address_line1':"", 'address_line2':"", 'postal_code':"", 'city':"", 'province':""} 
-
-            efiling_location = [loc for loc in efiling_locations if (loc["short_description"]==location["shortDesc"]and str(loc["location_code"])==location["code"] )]
-            if len(efiling_location)==1:
-                court_address['address_line1'] = efiling_location[0]['address_line1']                
+            court_address = {'address_line1': "", 'address_line2': "", 'postal_code': "", 'city': "", 'province': ""}
+            efiling_location = [
+                loc for loc in efiling_locations
+                if loc["short_description"] == location["shortDesc"]
+            ]
+            if len(efiling_location) == 1:
+                court_address['address_line1'] = efiling_location[0]['address_line1']
                 court_address['address_line2'] = efiling_location[0]['address_line2']
                 court_address['postal_code'] = efiling_location[0]['postal_code']
                 court_address['city'] = efiling_location[0]['city']
-                court_address['province'] = efiling_location[0]['province']                
+                court_address['province'] = efiling_location[0]['province']
             else:
                 court_address = other_courts_addresses(location["code"], location["shortDesc"])
-            # print(court_address)
+
             if not court_address:
                 continue
              
@@ -71,7 +72,7 @@ def update_courts_info_in_db(db: Session):
                     timezone = get_timezone(court_address['city']),
                     geo_service = None
                 )
-                db.add(adding_location)                
+                db.add(adding_location)
                 try:
                     db.commit()
                 except exc.SQLAlchemyError as e:                                        
@@ -81,10 +82,12 @@ def update_courts_info_in_db(db: Session):
 
             else:
                 court_info = location_query.first()
+                new_code = location["code"]
+                old_code = court_info.location_code
                 new_address = get_clean_address(court_address['address_line1'], court_address['address_line2'], court_address['city'], court_address['postal_code'], court_address['province'])                
                 old_address = get_clean_address(court_info.address_line1, court_info.address_line2, court_info.city, court_info.postal_code, court_info.province)
                 geo_service = court_info.geo_service
-                if new_address != old_address : 
+                if new_address != old_address or new_code != old_code: 
                     geo_service = "UPDATE"
                     print("______________________________")
                 location_query.update({ 
@@ -113,7 +116,7 @@ def update_courts_info_in_db(db: Session):
         "updated_at":datetime.now(), 
         "update_service": "UPDATE", 
         "next_update_at":next_update
-    })          
+    })
     db.commit()
 
 
