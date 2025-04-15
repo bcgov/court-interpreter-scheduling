@@ -37,6 +37,8 @@ if createOperation; then
   readParameter "JC_INTERFACE_API_FILE_URL - Please provide it" JC_INTERFACE_API_FILE_URL "" "false"
   readParameter "JC_INTERFACE_API_FILE_USERNAME - Please provide it" JC_INTERFACE_API_FILE_USERNAME "" "false"
   readParameter "JC_INTERFACE_API_FILE_PASSWORD - Please provide it" JC_INTERFACE_API_FILE_PASSWORD "" "false"
+  readParameter "JC_INTERFACE_FILE_AGENCY_ID - Please provide it" JC_INTERFACE_FILE_AGENCY_ID "" "false"
+  readParameter "JC_INTERFACE_FILE_PART_ID - Please provide it" JC_INTERFACE_FILE_PART_ID "" "false"
 
   readParameter "GOOGLE_MAP_URL - Please provide it" GOOGLE_MAP_URL "" "false"
   readParameter "OPENROAD_MAP_URL - Please provide it" OPENROAD_MAP_URL "" "false"
@@ -72,6 +74,8 @@ else
   writeParameter "JC_INTERFACE_API_FILE_URL" "prompt_skipped" "false"
   writeParameter "JC_INTERFACE_API_FILE_USERNAME" "prompt_skipped" "false"
   writeParameter "JC_INTERFACE_API_FILE_PASSWORD" "prompt_skipped" "false"
+  writeParameter "JC_INTERFACE_FILE_AGENCY_ID" "prompt_skipped" "false"
+  writeParameter "JC_INTERFACE_FILE_PART_ID" "prompt_skipped" "false"
 
   writeParameter "GOOGLE_MAP_URL" "prompt_skipped" "false"
   writeParameter "OPENROAD_MAP_URL" "prompt_skipped" "false"

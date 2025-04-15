@@ -21,11 +21,9 @@ class JcInterfaceCalls:
         self.token_realm = settings.EFILING_HUB_KEYCLOAK_REALM
         self.api_base_url = settings.EFILING_HUB_API_BASE_URL
         self.access_token = None
+        
 
-    REQUEST_AGENCY_ID = "19700.0734"
-    REQUEST_PART_ID = "117036.0734"
-    APPLICATION_CD = "A2A"
-    
+    JC_INTERFACE_APPLICATION_CD = "A2A"
     # List of file permission codes
     FILE_PERMISSION_CODES = [
         "A", "Y", "T", "F", "C", "M", "L", "R", "B", "D", "E", "G", "H", 
@@ -94,9 +92,9 @@ class JcInterfaceCalls:
         session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_FILE_USERNAME, settings.JC_INTERFACE_API_FILE_PASSWORD)
         
         session.headers.update({
-            "requestAgencyIdentifierId": self.REQUEST_AGENCY_ID,
-            "requestPartId": self.REQUEST_PART_ID,
-            "applicationCd": self.APPLICATION_CD
+            "requestAgencyIdentifierId": settings.JC_INTERFACE_FILE_AGENCY_ID,
+            "requestPartId": settings.JC_INTERFACE_FILE_PART_ID,
+            "applicationCd": self.JC_INTERFACE_APPLICATION_CD
         })
         
         search_params = query_params.copy()
@@ -149,9 +147,9 @@ class JcInterfaceCalls:
         session.auth = HTTPBasicAuth(settings.JC_INTERFACE_API_FILE_USERNAME, settings.JC_INTERFACE_API_FILE_PASSWORD)
         
         session.headers.update({
-            "requestAgencyIdentifierId": self.REQUEST_AGENCY_ID,
-            "requestPartId": self.REQUEST_PART_ID,
-            "applicationCd": self.APPLICATION_CD
+            "requestAgencyIdentifierId": settings.JC_INTERFACE_FILE_AGENCY_ID,
+            "requestPartId": settings.JC_INTERFACE_FILE_PART_ID,
+            "applicationCd": self.JC_INTERFACE_APPLICATION_CD
         })
         
         search_params = query_params.copy()
