@@ -122,10 +122,14 @@ services:
       - POSTGRESQL_ADMIN_PASSWORD=${POSTGRESQL_ADMIN_PASSWORD}
     ports:
       - 5432:5432
-    # volumes:
-    # - data:/var/lib/pgsql/data
+    volumes:
+      - data:/var/lib/pgsql/data
 
   pdf:
     image: bcgovimages/weasyprint
     ports:
       - 8083:5001
+
+volumes:
+  data:
+    driver: local
