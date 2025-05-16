@@ -13,6 +13,8 @@ from core import JWTtoken
 
 import base64
 import hashlib
+import jwt
+from datetime import datetime
 
 from models.user_model import UserModel
 from models.oidc_model import OidcUserModel
@@ -45,8 +47,11 @@ router = APIRouter(
 )
 
 
-def logout_request(callback_uri):
-    return RedirectResponse(f"{oidc.logout_uri}?post_logout_redirect_uri={callback_uri}&kc_idp_hint={hint}&client_id={client_id}")
+def logout_request(callback_uri, id_token=None):
+    logout_url = f"{oidc.logout_uri}?post_logout_redirect_uri={callback_uri}&client_id={client_id}"
+    if id_token:
+       logout_url += f"&id_token_hint={id_token}"
+    return RedirectResponse(logout_url)
 
 
 @router.get('/login/session/cb')
@@ -64,17 +69,14 @@ async def oidc_login_callback(request: Request, db: Session = Depends(get_db_ses
     request.session.clear()
     
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"
-    oidc_userinfo, oidc_refresh_token = oidc.authenticate(code, callback_uri, include_user_info=True)
+    auth_result = oidc.authenticate(code, callback_uri, include_user_info=True)
     
-    # _____________________________
-    # print("_________OIDC_AUTH____________")
-    # print(oidc_userinfo)    
-    # print(oidc_refresh_token)
-    
-    request.session["oidc_refresh_token"] = oidc_refresh_token
-    request.session["oidc_user_email"] = oidc_userinfo['email']
-    
-    #___________GOTO the Frontend Route__________
+    # Store tokens in the session
+    request.session["oidc_refresh_token"] = auth_result["refresh_token"]
+    request.session["oidc_user_email"] = auth_result["user_info"]["email"]
+    request.session["oidc_id_token"] = auth_result["id_token"]  # Store id_token
+
+    # Redirect to frontend route
     if ("x-forwarded-host" not in request.headers 
         and "host" in request.headers
         and "localhost:" in request.headers['host']
@@ -95,13 +97,14 @@ def web_login_callback(request: Request):
     # _____________________________
     # print("______Clear_Session_____")
     # print(callback_uri)
-    
+    id_token = request.session.get("oidc_id_token")  # Retrieve id_token from session
+    # logger.info("/login ====> oidc_id_token: %s", id_token)
     request.session["oidc_refresh_token"] = None
     request.session["oidc_auth_state"] = None 
     request.session["oidc_user_email"] = None 
     request.session.clear()
     
-    return logout_request(callback_uri) #RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
+    return logout_request(callback_uri, id_token) #RedirectResponse(f"{oidc.logout_uri}?redirect_uri={callback_uri}")
 
 
 
@@ -139,10 +142,12 @@ def web_logout_user(request: Request):
     request.session["oidc_user_email"] = None 
     request.session["oidc_refresh_token"] = None
     request.session["oidc_auth_state"] = None
+    
+    id_token = request.session.get("oidc_id_token")  # Retrieve id_token from session
     request.session.clear()
     
     callback_uri = f"{getBaseUrl(request)}{request.url.path}"+"/cb"
-    return logout_request(callback_uri) #RedirectResponse(f"{oidc.logout_uri.replace('/court-services-jag/','/standard/')}?redirect_uri={callback_uri}")
+    return logout_request(callback_uri, id_token=id_token)  # Pass id_token to logout_request
 
 
 
@@ -169,10 +174,13 @@ def oidc_logout_done(request: Request):
 
 @router.get('/token')
 def token_user(request: Request, db: Session = Depends(get_db_session)):
-    
-    login_response = {"access_token": None, "token_type": "bearer", "login_url":getLoginUrl(request), "logout_url":getLogoutUrl(request)}
-    
-    # print("________REFRESH__TOKEN______")
+    login_response = {
+        "access_token": None,
+        "token_type": "bearer",
+        "login_url": getLoginUrl(request),
+        "logout_url": getLogoutUrl(request),
+        "expires_at": None  # Add expires_at to the response
+    }
     
     if("oidc_refresh_token" in request.session and request.session["oidc_refresh_token"] is not None):
         
@@ -183,7 +191,6 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
         try:
             response = oidc.get_refresh_token(oidc_refresh_token)
         except:
-            # print("________TOKEN___NOT___VALID_____________")
             return login_response
         
         oidc_userinfo = oidc.get_user_info(response['access_token'])
@@ -197,9 +204,25 @@ def token_user(request: Request, db: Session = Depends(get_db_session)):
         # _____________________________
 
         oidc_user = oidc_user_repository(oidc_userinfo, oidc_user_roles, db)
-        access_token = JWTtoken.create_access_token(data={"sub": oidc_user.user.email, "username": oidc_user.user.username})
-       
-        return {"access_token": access_token, "token_type": "bearer", "login_url":None, "logout_url":getLogoutUrl(request)}
+        access_token = JWTtoken.create_access_token(data={
+            "sub": oidc_user.user.email,
+            "username": oidc_user.user.username
+        })
+
+        try:
+            decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+            exp_timestamp = decoded_token.get("exp")  # Extract the "exp" field
+            expires_at = datetime.utcfromtimestamp(exp_timestamp).isoformat() if exp_timestamp else None
+        except jwt.DecodeError:
+            expires_at = None
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "login_url": None,
+            "logout_url": getLogoutUrl(request),
+            "expires_at": expires_at  # Include the expiration time as ISO 8601
+        }
     else:
         return login_response
 

@@ -8,7 +8,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 class Common extends VuexModule {
 
     public token = '';
-    public tokenExpiry: Date = new Date();
+    public tokenExpiry: Date | null = null;
 	public logoutUrl = "";
     public userName = ""
     public userEmail = ""	

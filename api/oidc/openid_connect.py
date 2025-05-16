@@ -62,12 +62,12 @@ class OpenIDConnect:
         #End Check Token Validity
 
         if not include_user_info:
-            return auth_token.get("refresh_token")
-    
+            return {"refresh_token": auth_token.get("refresh_token"), "id_token": id_token}
+
         user_info = self.get_user_info(auth_token.get("access_token"))
         self.validate_sub_matching(validated_token, user_info)
-    
-        return user_info, auth_token.get("refresh_token")
+
+        return {"user_info": user_info, "refresh_token": auth_token.get("refresh_token"), "id_token": id_token}
 
     def get_auth_redirect_uri(self, callback_uri, session_key):
         return "{}?kc_idp_hint={}&response_type=code&scope={}&client_id={}&redirect_uri={}&state={}".format( 
