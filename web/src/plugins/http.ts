@@ -14,7 +14,7 @@ const refreshAuthLogic = failedRequest => axios.get('/token').then(response => {
     }
     store.commit('Common/setToken',response.data.access_token);
     store.commit('Common/setLogoutUrl',response.data.logout_url)
-    // store.commit('CommonInformation/setTokenExpiry',response.data.expires_at);
+    store.commit('Common/setTokenExpiry', new Date(response.data.expires_at));
     if (failedRequest != null)
         failedRequest.response.config.headers['Authorization'] = 'Bearer ' + response.data.access_token;
     return Promise.resolve();
@@ -26,17 +26,14 @@ const options: AxiosAuthRefreshOptions = {
     statusCodes: [ 401, 403]
 }
 
-function successInterceptor(config: AxiosRequestConfig) {
-    // async 
-
-    //     if (!config.url?.endsWith('/token') && new Date() > new Date(store.state.CommonInformation.tokenExpiry))
-    //     {
-    //         console.log("Refreshing token, without 401.");
-    //         await refreshAuthLogic(null);
-    //     }
+async function successInterceptor(config: AxiosRequestConfig) {
+    const tokenExpiry = store.state.Common?.tokenExpiry;
+    if (tokenExpiry && new Date() > new Date(tokenExpiry)) {
+        console.log("Token expired. Refreshing...");
+        await refreshAuthLogic(null);
+    }
     const token = store.state.Common.token;    
     config.headers['Authorization'] = 'Bearer ' + token; 
-  
     return config;
 }
 
