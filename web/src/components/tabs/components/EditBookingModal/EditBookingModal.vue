@@ -65,6 +65,7 @@
                     @copy="openCopyWindow"
                     @checkStates="checkBookingStates(false)"
                     @export="exportTabData($event,tab)"
+                    @caseIndexChanged="updateSelectedCaseIndex"
                     :id="'tab-'+inx"
                     :tabIndex="tabIndex"
                     :tabName="tab.name"                  
@@ -86,6 +87,20 @@
 
         <b-row class="mt-5 mb-2 pt-1  border-top">
             <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel Changes</b-button>
+            <b-button 
+                class="mx-1"
+                variant="outline-secondary" 
+                @click="clearForm">
+                <b-icon-eraser class="mr-2"/>Clear Form
+            </b-button>
+            <b-button class="mx-1"
+                variant="primary" 
+                @click="searchFiles">
+                <div class="d-flex align-items-center">
+                    <b-icon-search class="mr-2" />
+                    <span>Search Appearances</span>
+                </div>
+            </b-button>
             <b-button                     
                 variant="success"                 
                 @click="saveBooking"> 
@@ -188,6 +203,17 @@
             </div>
         </b-modal>            
             
+        <!-- Search Appearance Modal -->
+        <search-appearance-modal 
+            :visible="showSearchResults"
+            :file-originating-location="getSelectedLocation()"
+            :case-type="getCurrentCaseType()"
+            :file-number="getCurrentFileNumber()"
+            :court-class="getCurrentCourtClass()"
+            :court-level="getCurrentCourtLevel()"
+            @case-filled="handleCaseFilled"
+            @close="showSearchResults = false" />
+            
     </b-card>   
 </template>
 
@@ -204,6 +230,7 @@ import { bookingStatesInfoType } from '@/types/Bookings';
 import DateCard from "../DateComponents/DateCard.vue"
 import BookingDatePicker from "../DateComponents/BookingDatePicker.vue"
 import EditBookingFields from "./EditBookingFields.vue"
+import SearchAppearanceModal from "../SearchAppearanceModal/SearchAppearanceModal.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
@@ -216,6 +243,7 @@ const commonState = namespace("Common");
         EditBookingFields,
         DateCard,
         BookingDatePicker,
+        SearchAppearanceModal,
         Spinner,
     }
 })
@@ -236,7 +264,7 @@ export default class EditBookingModal extends Vue {
     @commonState.State
     public courtLocations!: locationsInfoType[];
 
-    registry = {id:0, name:'', timezone:''};
+    registry = {id:0, name:'', timezone:'', code:''};
 
     updatedBookingInfo = 0;
     interpreterDataReady = false;
@@ -273,6 +301,10 @@ export default class EditBookingModal extends Vue {
     requestOptions
     bookingMethodOfAppearanceOptions
 
+    showSearchResults = false;
+    selectedCaseIndex = 0;
+    tabCaseIndexes = {}; // Track selected case index for each tab
+
     created(){
         this.statusOptions=statusOptions 
         this.requestOptions=requestOptions
@@ -283,6 +315,9 @@ export default class EditBookingModal extends Vue {
     tabChanged(value){
         if(value==0){            
             this.updateCards++;
+        } else {
+            // When switching to a date tab, restore the selected case index for that tab
+            this.selectedCaseIndex = this.tabCaseIndexes[value] || 0;
         }
     }
    
@@ -293,7 +328,7 @@ export default class EditBookingModal extends Vue {
         //console.log(this.interpreter)
         //console.log(this.bookingDates)
         const location = this.courtLocations.filter(loc => loc.id==this.registryLocationId)
-        this.registry = {id:this.registryLocationId, name:location[0].name, timezone:location[0].timezone};
+        this.registry = {id:this.registryLocationId, name:location[0].name, timezone:location[0].timezone, code: location[0].locationCode};
         this.extractBookingDates()
         this.interpreterDataReady = true;
     }
@@ -729,8 +764,100 @@ export default class EditBookingModal extends Vue {
         this.updatedBookingInfo++
     }
 
+    // Search Appearance Modal Methods
+    updateSelectedCaseIndex(index) {
+        this.selectedCaseIndex = index;
+        // Store the selected case index for the current tab
+        if (this.tabIndex > 0) {
+            this.tabCaseIndexes[this.tabIndex] = index;
+        }
+    }
 
-   
+    getCurrentCaseType() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1]; // tabIndex is 1-based for edit modal
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.caseType || 'Criminal'; // Default to Criminal
+    }
+
+    getCurrentFileNumber() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.file || '';
+    }
+
+    getCurrentCourtClass() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.courtClass || '';
+    }
+
+    getCurrentCourtLevel() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.courtLevel || '';
+    }
+
+    getSelectedLocation() {
+        return this.courtLocations.find(loc => loc.id === this.registry.id) || this.courtLocations[0];
+    }
+
+    handleCaseFilled(filledData) {
+        if (this.tabIndex === 0) return; // Skip if on "Edit Dates" tab
+        
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
+        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+        console.log('currentTab', currentTab);
+        console.log('currentCase', currentCase);
+        // Update the current case with the filled data
+        currentCase.file = filledData.file;
+        currentCase.courtClass = filledData.courtClass;
+        currentCase.courtLevel = filledData.courtLevel;
+        currentCase.caseName = filledData.caseName;
+        currentCase.room = filledData.room;
+        currentCase.reason = filledData.reason;
+        
+        // Set case type from the search if not already set
+        if (filledData.caseType && !currentCase.caseType) {
+            currentCase.caseType = filledData.caseType;
+        }
+        
+        this.showSearchResults = false;
+    }
+
+    searchFiles() {
+        this.errorMsg = '';
+        this.showSearchResults = true;
+    }
+
+    clearForm() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
+        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+        console.log('currentTab', currentTab);
+        console.log('Tab booking and Cases', currentTab.booking, currentTab.booking.cases);
+        console.log('currentCase', currentCase);
+        console.log('selectedCaseIndex', this.selectedCaseIndex);
+        
+        currentCase.file = '';
+        currentCase.courtClass = '';
+        currentCase.courtLevel = '';
+        currentCase.room = '';
+        currentCase.reason = '';
+        currentCase.caseType = '';
+        currentCase.caseName = '';
+        this.errorMsg = '';
+    }
+
+    updateRegistry(newRegistryId) {
+        const location = this.courtLocations.find(loc => loc.id === newRegistryId);
+        if (location) {
+            this.registry = {
+                id: location.id,
+                code: location.locationCode,
+                name: location.name,
+                timezone: location.timezone
+            };
+        }
+    }
 }
 
 </script>

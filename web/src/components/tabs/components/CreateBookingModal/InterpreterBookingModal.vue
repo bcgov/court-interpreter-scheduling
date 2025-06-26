@@ -48,28 +48,23 @@
             <b-button class="mr-auto" variant="dark" @click="closeBookingWindow">Cancel</b-button>
             <b-button 
                 v-if="allowBooking"                    
-                :disabled="isSearching"
-                variant=secondary
+                variant=outline-secondary
                 @click="clearForm">
-                <b-icon-x-circle class="mr-2" /> Clear Form
+                <b-icon-eraser class="mr-2" /> Clear Form
             </b-button>
             <b-button class="mx-1"
                 v-if="allowBooking"
-                :disabled="isSearching"
                 variant="primary" 
                 @click="searchFiles">
                 <div class="d-flex align-items-center">
-                    <dvi class="loading-circle mr-2" v-if="isSearching && !showSearchResults"></dvi>
-                    <b-icon-search v-else class="mr-2" />
+                    <b-icon-search class="mr-2" />
                     <span>Search Appearances</span>
                 </div>
             </b-button>
             <b-button 
                 v-if="allowBooking"                    
-                :disabled="isSearching"
                 variant="success" 
                 @click="saveNewBooking">
-                
                     <spinner color="#FFF" v-if="savingData" style="margin:0; padding: 0; max-height:2px; transform:translate(0px,-25px);"/>
                     <span v-else> 
                         <b-icon-calendar-check-fill class="mr-2"/> 
@@ -92,127 +87,17 @@
             </div>
         </b-modal>           
             
-        <b-modal class="custom-modal-height" size="xl" v-model="showSearchResults" id="bv-modal-search-results" header-class="bg-white text-primary" centered>            
-            <template v-slot:modal-title>
-                <h2 class="my-2" v-if="!showAppearances">Search Results</h2>
-                <h2 class="my-2" v-else>Appearances</h2>
-                <p v-if="!showAppearances">Step 1: Select a file:</p>
-                <p v-else>Step 2: Select an appearance:</p>
-            </template>
-
-            <!-- Back Button for Appearances -->
-            <b-button v-if="showAppearances" variant="outline-primary" class="mb-3" @click="showAppearances = false">
-                Back to Files
-            </b-button>
-
-            <!-- Files Card -->
-            <div class="scrollable-content">
-            <div v-if="!showAppearances">
-                <div v-for="file in searchResults" :key="file.physicalFileId" class="card mt-2 mx-4 p-3">
-                    <label class="d-flex align-items-center" style="cursor: pointer;">
-                        <b-form-radio 
-                            v-model="selectedFile" 
-                            :value="file" 
-                            name="file-selection" 
-                            @change="handleFileSelection(file)" 
-                            class="mr-3">
-                        </b-form-radio>
-                        <b-col cols="5">
-                            <div>
-                                <strong>Court File Number:</strong> {{ file.fileNumberTxt }}
-                            </div>
-                            <div>
-                                <strong>Court Level:</strong> {{ file.courtLevelCd }}
-                            </div>
-                            <div>
-                                <strong>Court Class:</strong> {{ file.courtClassCd }}
-                            </div>
-                            <div>
-                                <strong>Court Location:</strong> {{ HomeAgencyNameByCode(file.fileHomeAgencyId) }}
-                            </div>
-                            <div>
-                                <strong>Next Appearance Date:</strong> {{ formatDate(file.nextApprDt) }}
-                            </div>
-                        </b-col>
-                        <b-col cols="6">
-                            <div>
-                                <strong v-if="!isCriminal">Participant(s):</strong> <strong v-if="isCriminal">Accused:</strong>
-                                <div v-for="participant in file.participant" :key="participant.fullNm" style="font-size: 0.83rem;">
-                                    <div>- <strong>Full Name:</strong> {{ participant.fullNm }}</div>
-                                    <div v-if="isCriminal">- <strong>Charge(s):</strong></div>
-                                    <div v-if="isCriminal" v-for="charge in participant.charge" :key="charge.sectionTxt">
-                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Section:</strong> {{ charge.sectionTxt }}</div>
-                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Description:</strong> {{ charge.sectionDscTxt }}</div>
-                                        <div v-if="participant.charge.length > 1 && participant.charge.indexOf(charge) !== participant.charge.length - 1">
-                                            <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0; margin-right: 15rem; margin-left: 1rem;" />
-                                        </div>
-                                    </div>
-                                    <div v-if="file.participant.length > 1 && file.participant.indexOf(participant) !== file.participant.length - 1">
-                                            <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0;" />
-                                    </div>
-                                </div>
-                            </div>
-                        </b-col>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Appearances Card -->
-            <div v-if="showAppearances">
-                <h3 v-if="appearanceResults.length === 0" class="text-center text-muted">No appearances found for the selected file.</h3>
-                <div v-for="appearance in appearanceResults" :key="appearance.appearanceId" class="card mt-2 mx-4 p-3">
-                    <label class="d-flex align-items-center" style="cursor: pointer;">
-                        <b-form-radio 
-                            v-model="selectedAppearance" 
-                            :value="appearance" 
-                            name="appearance-selection"
-                            @change="handleAppearanceSelection(appearance)" 
-                            class="mr-3">
-                        </b-form-radio>
-                        <b-col>
-                            <div>
-                                <strong>Appearance Date:</strong> {{ formatDate(appearance.appearanceDt) }}
-                            </div>
-                            <div>
-                                <strong>Appearance Time:</strong> {{ formatTime(appearance.appearanceTm) }}
-                            </div>
-                            <div>
-                                <strong>Court Room:</strong> {{ appearance.courtRoomCd }}
-                            </div>
-                            <div>
-                                <strong>Location:</strong> {{ HomeAgencyNameByCode(appearance.courtAgencyId) }}
-                            </div>
-                        </b-col>
-                        <b-col>
-                            <div>
-                                <strong>Reason:</strong> {{ appearance.appearanceReasonCd }}
-                            </div>
-                            <div>
-                                <strong>Judge Full Name:</strong> {{ appearance.judgeFullNm }}
-                            </div>
-                        </b-col>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-            <template v-slot:modal-header-close>                 
-                 <b-button variant="outline-white" style="padding-bottom:0;" class="text-primary close-button" @click="$bvModal.hide('bv-modal-search-results')"
-                 >&times;</b-button>
-            </template>
-
-            <template v-slot:modal-footer>
-                <b-button v-if="showAppearances" variant="success" :disabled="!selectedFile" @click="updateCase">
-                    <b-icon-pencil-fill class="mr-2" /> Fill Case
-                </b-button>
-                <b-button v-if="!showAppearances" variant="primary" :disabled="!selectedFile" @click="searchAppearances">
-                    <div class="d-flex align-items-center">
-                        <dvi class="loading-circle mr-2" v-if="isSearching"></dvi>
-                        <span>Next</span>
-                    </div>
-                </b-button>
-            </template>
-        </b-modal>
+        <!-- Search Appearance Modal -->
+        <search-appearance-modal 
+            :visible="showSearchResults"
+            :file-originating-location="getSelectedLocation()"
+            :case-type="getCurrentCaseType()"
+            :file-number="getCurrentFileNumber()"
+            :court-class="getCurrentCourtClass()"
+            :court-level="getCurrentCourtLevel()"
+            @case-filled="handleCaseFilled"
+            @close="showSearchResults = false" />
+            
             
     </b-card> 
 </div>  
@@ -220,7 +105,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import moment from 'moment-timezone'
 
 import { bookingDateTimesInfoType, bookingInfoType } from '@/types/Bookings/json';
@@ -231,6 +116,7 @@ import { bookingStatesInfoType} from '@/types/Bookings';
 import { courtBookingDateTimesConflict, bookedDateTimesTZ} from '@/components/utils/BookingDateFunctions/BookingDatesFunctions';
 
 import InterpreterBookingFields from "./InterpreterBookingFields.vue"
+import SearchAppearanceModal from "../SearchAppearanceModal/SearchAppearanceModal.vue"
 import {statusOptions, requestOptions, bookingMethodOfAppearanceOptions} from '../BookingEnums'
 import { locationsInfoType } from '@/types/Common/json';
 
@@ -241,7 +127,8 @@ const commonState = namespace("Common");
 @Component({
     components:{  
        Spinner,     
-       InterpreterBookingFields
+       InterpreterBookingFields,
+       SearchAppearanceModal
     }
 })
 export default class InterpreterBookingModal extends Vue {
@@ -281,21 +168,20 @@ export default class InterpreterBookingModal extends Vue {
     requestOptions
     bookingMethodOfAppearanceOptions
 
-    searchResults = [];
-    appearanceResults = [];
     showSearchResults = false;
-    isSearching = false;
-
     selectedCaseIndex = 0;
-    isCriminal = false;
-    selectedFile = null;
-    showAppearances = false;
-    selectedAppearance = null;
+    tabCaseIndexes = {}; // Track selected case index for each tab
 
     created(){
         this.statusOptions=statusOptions 
         this.requestOptions=requestOptions
         this.bookingMethodOfAppearanceOptions=bookingMethodOfAppearanceOptions
+    }
+
+    @Watch('tabIndex')
+    tabChanged(value){
+        // When switching to a date tab, restore the selected case index for that tab
+        this.selectedCaseIndex = this.tabCaseIndexes[value] || 0;
     }
 
    
@@ -548,126 +434,60 @@ export default class InterpreterBookingModal extends Vue {
 
     updateSelectedCaseIndex(index) {
         this.selectedCaseIndex = index;
+        // Store the selected case index for the current tab
+        this.tabCaseIndexes[this.tabIndex] = index;
+    }
+
+    getCurrentCaseType() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.caseType || 'Criminal'; // Default to Criminal
+    }
+
+    getCurrentFileNumber() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.file || '';
+    }
+
+    getCurrentCourtClass() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.courtClass || '';
+    }
+
+    getCurrentCourtLevel() {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab?.booking?.cases?.[this.selectedCaseIndex];
+        return currentCase?.courtLevel || '';
+    }
+
+    getSelectedLocation() {
+        return this.courtLocations.find(loc => loc.locationCode === this.registry.code) || this.searchLocation;
+    }
+
+    handleCaseFilled(filledData) {
+        const currentTab = this.allBookingDatesTimes[this.tabIndex];
+        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
+        
+        // Update the current case with the filled data
+        currentCase.file = filledData.file;
+        currentCase.courtClass = filledData.courtClass;
+        currentCase.courtLevel = filledData.courtLevel;
+        currentCase.caseName = filledData.caseName;
+        currentCase.room = filledData.room;
+        currentCase.reason = filledData.reason;
+        // Set case type from the search if not already set
+        if (filledData.caseType && !currentCase.caseType) {
+            currentCase.caseType = filledData.caseType;
+        }
+        
+        this.showSearchResults = false;
     }
 
     searchFiles() {
-        this.errorMsg=''
-        this.selectedFile = null;
-        this.selectedAppearance = null;
-        this.showAppearances = false;
-        this.isSearching = true;
-        const currentTab = this.allBookingDatesTimes[this.tabIndex];
-        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
-        this.isCriminal = currentCase.caseType === 'Criminal';
-
-        const fileHomeAgencyId = this.registry.code;
-
-        let errors = [];
-
-        if (!currentCase.caseType) {
-            errors.push('Case Type is required for searching');
-        }
-        if (!currentCase.file) {
-            errors.push('File number is required for searching');
-        }
-        if (!fileHomeAgencyId) {
-            errors.push('Court Location is required for searching');
-        }
-
-        if (errors.length > 0) {
-            this.errorMsg = errors.join('\n'); 
-            this.isSearching = false;
-            return;
-        }
-        const isCriminal = currentCase.caseType === 'Criminal';
-        const sanitizedFileNumber = currentCase.file.replace(/^[A-Za-z]+-/, '');
-        const queryParams = {
-            fileNumberTxt: sanitizedFileNumber,
-            courtClassCd: currentCase.courtClass,
-            courtLevelCd: currentCase.courtLevel,
-            fileHomeAgencyId: fileHomeAgencyId
-        };
-        
-        this.$http.post(`/files/search`, { 
-                is_criminal: isCriminal,
-                query: queryParams,
-            })
-            .then((response) => {
-                this.isSearching = false;
-                if (response.data.fileDetail.length > 0) {
-                    this.searchResults = response.data.fileDetail;
-                    this.showSearchResults = true;            
-                }
-                else if (response.data.fileDetail.length === 0) {
-                    this.errorMsg = 'No files found';
-                    this.showSearchResults = false;
-                }
-                
-            },(err) => {
-                this.isSearching = false;
-                this.errorMsg = err.response?.data?.detail || 'An error occurred';
-                this.showSearchResults = false;
-            });
-    }
-
-    searchAppearances(){
-        this.errorMsg='';
-        this.isSearching = true;
-        this.selectedAppearance = null;
-        this.showAppearances = false;
-        const currentTab = this.allBookingDatesTimes[this.tabIndex];
-        const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
-        const isCriminal = currentCase.caseType === 'Criminal';
-        const queryParams = {
-            futureYN: 'Y'
-        };
-        this.$http.post(`/files/appearance`, { 
-                is_criminal: isCriminal,
-                file_id: isCriminal? this.selectedFile.mdocJustinNo : this.selectedFile.physicalFileId,
-                query: queryParams,
-            })
-            .then((response) => {
-                this.isSearching = false;
-                if (response.data.apprDetail.length > 0) {
-                    this.appearanceResults = response.data.apprDetail;
-                    this.showAppearances = true;
-                }
-                else if (response.data.apprDetail.length === 0) {
-                    this.appearanceResults = [];
-                    this.showAppearances = true;
-                }
-                
-            },(err) => {
-                this.isSearching = false;
-                this.errorMsg = err.response?.data?.detail || 'An error occurred';
-                this.showSearchResults = false;
-            });
-    }
-
-    handleFileSelection(file) {
-        this.selectedFile = file;
-    }
-    handleAppearanceSelection(appearance) {
-        this.selectedAppearance = appearance;
-    }
-
-    updateCase() {
-        if (this.selectedFile) {
-            const currentTab = this.allBookingDatesTimes[this.tabIndex];
-            const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
-            // Update the current case with the selected file's information
-            currentCase.file = this.selectedFile.fileNumberTxt;
-            currentCase.courtClass = this.selectedFile.courtClassCd;
-            currentCase.courtLevel = this.selectedFile.courtLevelCd;
-            if (this.selectedAppearance){
-                currentCase.room = this.selectedAppearance.courtRoomCd;
-                currentCase.reason = this.selectedAppearance.appearanceReasonCd;
-            }
-            if (this.selectedFile.participant.length > 0) {
-                currentCase.caseName = this.selectedFile.participant.map(p => p.fullNm).join('; ');
-            }
-            this.showSearchResults = false;
-        }
+        this.errorMsg = '';
+        this.showSearchResults = true;
     }
     clearForm() {
         const currentTab = this.allBookingDatesTimes[this.tabIndex];
@@ -680,31 +500,18 @@ export default class InterpreterBookingModal extends Vue {
         currentCase.reason = '';
         currentCase.caseType = '';
         currentCase.caseName = '';
-        this.selectedFile = '';
-        this.selectedAppearance = '';
         this.errorMsg = '';
     }
 
-    HomeAgencyNameByCode(code) {
-        const location = this.courtLocations.find(loc => loc.locationCode === code);
-        return location ? location.name : '';
-    }
-
-    formatDate(dateString) {
-        if (!dateString) return '';
-        return moment(dateString).format('YYYY-MM-DD');
-    }
-    formatTime(dateString) {
-        if (!dateString) return '';
-        return moment(dateString).format('HH:mm');
-    }
     updateRegistry(newRegistryId) {
         const location = this.courtLocations.find(loc => loc.id === newRegistryId);
         if (location) {
-            this.registry.id = location.id;
-            this.registry.code = location.locationCode;
-            this.registry.name = location.name;
-            this.registry.timezone = location.timezone;
+            this.registry = {
+                id: location.id,
+                code: location.locationCode,
+                name: location.name,
+                timezone: location.timezone
+            };
         }
     }
 }
@@ -712,11 +519,6 @@ export default class InterpreterBookingModal extends Vue {
 </script>
 
 <style lang="scss" scoped >
-    .custom-modal-height .modal-content {
-        height: 85vh;
-        max-height: 85vh; 
-        overflow-y: auto; 
-    }
     ::v-deep .create-tab-class{
         margin:0.2rem 0.25rem;
         padding: 0.2rem 0.2rem;
@@ -746,13 +548,5 @@ export default class InterpreterBookingModal extends Vue {
         100% {
             transform: rotate(360deg);
         }
-    }
-
-    .scrollable-content {
-        height: 65vh;
-        overflow-y: auto; 
-        overflow-x: hidden;
-        padding-right: 1rem;
-        box-sizing: border-box; 
     }
 </style>
