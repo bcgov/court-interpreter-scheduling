@@ -273,19 +273,21 @@
                 </b-form-group>
             </b-col>
             <b-col cols="4" >
-                <b-form-group class="m-0 p-0" >
-                    <b-form-checkbox
+                <b-form-group 
+                    class="labels mt-1 p-0"               
+                    label="Appearance Location" 
+                    label-for="remote-location" >
+                    <!-- <b-form-checkbox
                         :disabled="disableEdit"
                         class="title-label"
                         v-model="remoteLocation" 
                         @change="addRemoteLocation"
                         > Remote Court Location
-                    </b-form-checkbox>
+                    </b-form-checkbox> -->
                     <b-form-select 
-                        id="remote-location"
+                        id="remote-location"         
                         :disabled="disableEdit"                                                 
                         @change="changeRemoteLocation"
-                        v-if="remoteLocation"
                         :state="caseStates.remoteLocation"
                         v-model="bookingCase.remoteLocationId"> 
                         <b-form-select-option
@@ -415,7 +417,10 @@ export default class CaseFields extends Vue {
         this.vanCourtLocations = this.courtLocations.filter(court => court.shortDescription=="2040" || court.shortDescription=="2042")        
 
         this.remoteLocation = (this.bookingCase.remoteLocationId && this.bookingCase.remoteLocationId !=this.registry.id) ? true: false
-        this.dataReady = true        
+        this.dataReady = true
+        if (!this.bookingCase.remoteLocationId && !this.disableEdit) {
+            this.bookingCase.remoteLocationId = this.registry.id
+        }
     }
 
     public addRemoteLocation(checked){

@@ -24,7 +24,49 @@
                 <div v-show="showFilters">
                     <b-form @submit.prevent="performSearch">
                         <b-row>
-                            <b-col cols="4">
+                            
+                            <b-col cols="3">
+                                <b-form-group
+                                    label="Search Mode"
+                                    class="labels">
+                                    <b-form-radio-group
+                                        v-model="filterSearchMode"
+                                        :options="searchModeOptions"
+                                        class="w-100">
+                                    </b-form-radio-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="3">
+                                <b-form-group v-if="filterSearchMode === 'FILENO'"
+                                    :label="'Court File Number'"
+                                    :label-for="'file-number'"
+                                    class="labels">
+                                    <b-form-input
+                                        :id="'file-number'"
+                                        v-model="filterFileNumber"
+                                        :state="validationStates.fileNumber"
+                                        :placeholder="'Enter file number'">
+                                    </b-form-input>
+                                    <b-form-invalid-feedback v-if="validationStates.fileNumber === false">
+                                        File number is required
+                                    </b-form-invalid-feedback>
+                                </b-form-group>
+                                <b-form-group v-if="filterSearchMode === 'PARTNAME'"
+                                    :label="'Last Name'"
+                                    :label-for="'Last Name'"
+                                    class="labels">
+                                    <b-form-input
+                                        :id="'lastname'"
+                                        v-model="filterSurname"
+                                        :state="validationStates.surname"
+                                        :placeholder="'Enter Last Name'">
+                                    </b-form-input>
+                                    <b-form-invalid-feedback v-if="filterSearchMode === 'PARTNAME'">
+                                        Last Name is required
+                                    </b-form-invalid-feedback>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="3">
                                 <b-form-group 
                                     label="File Originating Location" 
                                     label-for="location"
@@ -35,12 +77,12 @@
                                         :state="validationStates.location"
                                         :options="[{text: 'Select Location', value: null}, ...sortedCourtLocations.map(loc => ({text: loc.name, value: loc}))]">
                                     </b-form-select>
-                                    <b-form-invalid-feedback v-if="validationStates.location === false">
+                                    <b-form-invalid-feedback v-if="filterSearchMode === 'FILENO' && validationStates.location === false">
                                         File Originating Location is required
                                     </b-form-invalid-feedback>
                                 </b-form-group>
                             </b-col>
-                            <b-col cols="4">
+                            <b-col cols="3">
                                 <b-form-group
                                     label="Case Type"
                                     class="labels">
@@ -53,22 +95,6 @@
                                     </b-form-radio-group>
                                     <b-form-invalid-feedback v-if="validationStates.caseType === false">
                                         Case Type is required
-                                    </b-form-invalid-feedback>
-                                </b-form-group>
-                            </b-col>
-                            <b-col cols="4">
-                                <b-form-group
-                                    label="Court File Number"
-                                    label-for="file-number"
-                                    class="labels">
-                                    <b-form-input
-                                        id="file-number"
-                                        v-model="filterFileNumber"
-                                        :state="validationStates.fileNumber"
-                                        placeholder="Enter file number">
-                                    </b-form-input>
-                                    <b-form-invalid-feedback v-if="validationStates.fileNumber === false">
-                                        File number is required
                                     </b-form-invalid-feedback>
                                 </b-form-group>
                             </b-col>
@@ -315,12 +341,19 @@ export default class SearchAppearanceModal extends Vue {
     filterLocation = null;
     filterCaseType = 'Criminal'; // Default to Criminal
     filterFileNumber = '';
+    filterSurname = '';
+    filterSearchMode = 'FILENO'; // Default to File Number search
     filterCourtLevel = '';
     filterCourtClass = '';
     
-    // UI state
-    showFilters = true;// Options for dropdowns/radios
+    showFilters = true;
+
+    
     caseTypeOptions = caseTypeOptions;
+    searchModeOptions = [
+        { text: 'By File Number', value: 'FILENO' },
+        { text: 'By Last Name', value: 'PARTNAME' }
+    ];
     courtLevelOptions = [
         { text: 'All', value: '' },
         ...courtLevelOptions
@@ -335,7 +368,6 @@ export default class SearchAppearanceModal extends Vue {
     ];
 
     created() {
-        // Ensure the default options include "All" option
         this.courtLevelOptions = [
             { text: 'All', value: '' },
             ...courtLevelOptions
@@ -354,7 +386,8 @@ export default class SearchAppearanceModal extends Vue {
     validationStates = {
         location: null,
         caseType: null,
-        fileNumber: null
+        fileNumber: null,
+        surname: null
     };
 
     // Modal state
@@ -377,7 +410,6 @@ export default class SearchAppearanceModal extends Vue {
         }
     }
 
-    // Computed properties
     get currentCourtClassOptions() {
         if (this.filterCaseType === 'Criminal') {
             return this.criminalCourtClassOptions;
@@ -389,7 +421,7 @@ export default class SearchAppearanceModal extends Vue {
 
     get sortedCourtLocations() {
         return this.courtLocations.slice().sort((a, b) => a.name.localeCompare(b.name));
-    }    // Methods
+    }  
     toggleFilters() {
         this.showFilters = !this.showFilters;
     }
@@ -397,42 +429,46 @@ export default class SearchAppearanceModal extends Vue {
     initializeFilters() {
         // Initialize filters from props or defaults
         this.filterLocation = null;
-        this.filterCaseType = this.caseType || 'Criminal'; // Default to Criminal if not provided
+        this.filterCaseType = this.caseType || 'Criminal'; 
         this.filterFileNumber = this.fileNumber;
         this.filterCourtLevel = this.courtLevel;
         this.filterCourtClass = this.courtClass;
         
-        // Reset validation states
         this.validationStates = {
             location: null,
             caseType: null,
-            fileNumber: null
+            fileNumber: null,
+            surname: null
         };
     }
 
     validateFilters() {
         let isValid = true;
-        
-        // Reset validation states
         this.validationStates = {
             location: null,
             caseType: null,
-            fileNumber: null
+            fileNumber: null,
+            surname: null
         };
 
-        // Validate required fields
-        if (!this.filterLocation) {
-            this.validationStates.location = false;
-            isValid = false;
+        if (this.filterSearchMode === 'FILENO') {
+            if (!this.filterLocation) {
+                this.validationStates.location = false;
+                isValid = false;
+            }
+            if (!this.filterFileNumber || this.filterFileNumber.trim() === '') {
+                this.validationStates.fileNumber = false;
+                isValid = false;
+            }
         }
-
+        if (this.filterSearchMode === 'PARTNAME') {
+            if (!this.filterSurname || this.filterSurname.trim() === '') {
+            this.validationStates.surname = false;
+            isValid = false;
+            }
+        }
         if (!this.filterCaseType) {
             this.validationStates.caseType = false;
-            isValid = false;
-        }
-
-        if (!this.filterFileNumber || this.filterFileNumber.trim() === '') {
-            this.validationStates.fileNumber = false;
             isValid = false;
         }
 
@@ -462,12 +498,14 @@ export default class SearchAppearanceModal extends Vue {
         this.filterCourtLevel = '';
         this.filterCourtClass = '';
         this.filterFileNumber = '';
+        this.filterSurname = '';
         
         // Reset validation states
         this.validationStates = {
             location: null,
             caseType: null,
-            fileNumber: null
+            fileNumber: null,
+            surname: null
         };
         
         this.errorMsg = '';
@@ -505,14 +543,21 @@ export default class SearchAppearanceModal extends Vue {
         this.errorMsg = '';
         this.isCriminal = this.filterCaseType === 'Criminal';
         
-        const sanitizedFileNumber = this.filterFileNumber.replace(/\D/g, '');
-        const queryParams = {
-            fileNumberTxt: sanitizedFileNumber,
+        // const sanitizedFileNumber = this.filterFileNumber.replace(/\D/g, '');
+        const queryParams: any = {
             courtClassCd: this.filterCourtClass,
             courtLevelCd: this.filterCourtLevel,
-            fileHomeAgencyId: this.filterLocation.locationCode
+            searchMode: this.filterSearchMode
         };
-        
+        if (this.filterLocation && this.filterLocation.locationCode) {
+            queryParams.fileHomeAgencyId = this.filterLocation.locationCode;
+        }
+        if (this.filterSearchMode === 'PARTNAME') {
+            queryParams.lastNm = this.filterSurname;
+        }
+        if (this.filterSearchMode === 'FILENO') {
+            queryParams.fileNumberTxt = this.filterFileNumber;
+        }
         this.$http.post(`/files/search`, { 
             is_criminal: this.isCriminal,
             query: queryParams,

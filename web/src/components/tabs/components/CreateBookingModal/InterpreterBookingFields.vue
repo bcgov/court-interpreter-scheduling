@@ -38,7 +38,8 @@
                         id="location"                                                   
                         style="display:inline"                      
                         v-model="registry.id"
-                        @change="updateRegistry"> 
+                        @change="updateRegistry"
+                        :disabled="true"> 
                         <b-form-select-option
                             v-for="courtLocation,inx in courtLocations" 
                             :key="inx"
