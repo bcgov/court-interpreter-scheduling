@@ -107,7 +107,7 @@
 
 <!-- <TABS> -->
         <div class="text-primary h3 mb-2" >Booking Details: <b-button :disabled="disableEdit" class="float-right" size="sm" @click="addBookingCase()" variant="select"><b-icon-clipboard-plus /> Add</b-button></div>
-        <b-tabs  v-model="caseTabIndex" pills card :key="updateTab" class="case-tab-header">            
+        <b-tabs  v-model="caseTabIndex" pills card :key="updateTab" class="case-tab-header" @input="emitCaseIndex">            
             <b-tab :title-link-attributes="{'href':'javascript:void(0);'}" no-body v-for="caseTab,inx in booking.cases" :key="'case-'+ inx" title-link-class="text-center case-tab-class">
                 <template #title>
                     <b-row class="m-0">
@@ -676,6 +676,9 @@ export default class EditBookingFields extends Vue {
 
     public openCopy(){
         this.$emit('copy', this.tabName)
+    }
+    public emitCaseIndex() {
+        this.$emit('caseIndexChanged', this.caseTabIndex);
     }
 
     public toggleAllExportItems(checked){
