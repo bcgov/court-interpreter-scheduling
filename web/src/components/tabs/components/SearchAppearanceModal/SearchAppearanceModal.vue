@@ -46,13 +46,10 @@
                                             Last Name is required
                                         </b-form-invalid-feedback>
                                     </b-form-group>
-                                    <b-form-group :label="'First Name'" :label-for="'firstname'" class="labels mt-2">
+                                    <b-form-group :label="'First Name (Optional)'" :label-for="'firstname'" class="labels mt-2">
                                         <b-form-input :id="'firstname'" v-model="filterGivenName"
-                                            :state="validationStates.givenName" :placeholder="'Enter First Name'">
+                                            :placeholder="'Enter First Name'">
                                         </b-form-input>
-                                        <b-form-invalid-feedback v-if="validationStates.givenName === false">
-                                            First Name is required
-                                        </b-form-invalid-feedback>
                                     </b-form-group>
                                 </div>
 
@@ -505,10 +502,6 @@ export default class SearchAppearanceModal extends Vue {
         else if (this.filterSearchMode === 'PARTNAME') {
             if (!this.filterSurname || this.filterSurname.trim() === '') {
                 this.validationStates.surname = false;
-                isValid = false;
-            }
-            if (!this.filterGivenName || this.filterGivenName.trim() === '') {
-                this.validationStates.givenName = false;
                 isValid = false;
             }
         }
