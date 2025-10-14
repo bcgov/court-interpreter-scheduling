@@ -126,7 +126,6 @@ class JcInterfaceCalls:
         )
 
         search_params = query_params.copy()
-        logger.info(f"jc_interface - Query params: {search_params}")
 
         if (
             "fileNumberTxt" in search_params
@@ -147,6 +146,7 @@ class JcInterfaceCalls:
 
         file_type = "criminal" if is_criminal else "civil"
         base_url = f"{settings.JC_INTERFACE_API_FILE_URL}/files/{file_type}"
+        logger.info(f"jc_interface - Query params: {search_params}, base_url: {base_url}")
 
         if search_params:
             query_string = "&".join(
@@ -157,8 +157,22 @@ class JcInterfaceCalls:
             if query_string:
                 base_url += f"?{query_string}"
 
-        response = session.get(base_url, timeout=5)
-        response_data = response.json()
+        try:
+            response = session.get(base_url, timeout=5)
+            response.raise_for_status()
+            response_data = response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"jc_interface - Request error for URL: {base_url}, Error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Unable to connect to JC Interface service for file search."
+            )
+        except (ValueError, json.JSONDecodeError) as e:
+            logger.error(f"jc_interface - Invalid JSON response from URL: {base_url}, Response: {response.text}, Error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Invalid response format from JC Interface service."
+            )
 
         if "fileDetail" in response_data:
 
@@ -236,8 +250,22 @@ class JcInterfaceCalls:
             if query_string:
                 base_url += f"?{query_string}"
 
-        response = session.get(base_url, timeout=5)
-        response_data = response.json()
+        try:
+            response = session.get(base_url, timeout=5)
+            response.raise_for_status()
+            response_data = response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"jc_interface - Request error for URL: {base_url}, Error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Unable to connect to JC Interface service for file appearances."
+            )
+        except (ValueError, json.JSONDecodeError) as e:
+            logger.error(f"jc_interface - Invalid JSON response from URL: {base_url}, Response: {response.text}, Error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Invalid response format from JC Interface service."
+            )
 
         if "appearanceDetail" in response_data and isinstance(
             response_data["appearanceDetail"], list
