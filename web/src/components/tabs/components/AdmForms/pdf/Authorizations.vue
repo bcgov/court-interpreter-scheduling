@@ -120,7 +120,7 @@ export default class Authorizations extends Vue {
         this.qualifiedReceiverSigned = recordApproved && this.booking.qualifiedReceiverSigned
         this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
         this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
-        this.qualifiedReceiverNote = this.booking.qualifiedReceiverNote 
+        this.qualifiedReceiverNote = this.qualifiedReceiverSigned? this.booking.qualifiedReceiverNote:''
     }
 
     public getDate(dateType, type){

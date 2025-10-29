@@ -164,7 +164,7 @@ export default class AdmAuthorizations extends Vue {
         this.qualifiedReceiverSigned = this.booking.qualifiedReceiverSigned
         this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
         this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
-        this.qualifiedReceiverNote = this.booking.qualifiedReceiverNote   
+        this.qualifiedReceiverNote = this.qualifiedReceiverSigned? this.booking.qualifiedReceiverNote:''
         this.maxDate = moment().add(3,'year').format("YYYY-MM-DD")
     }
 
@@ -186,7 +186,7 @@ export default class AdmAuthorizations extends Vue {
                 this.qualifiedReceiverName = this.booking.approverName
                 // Only set default note if it's empty or null
                 if(!this.qualifiedReceiverNote || this.qualifiedReceiverNote.trim() === ''){
-                    this.qualifiedReceiverNote = `Direct invoice: As QR, I confirm that the services provided have been reviewed and properly received. The supporting documentation has been verified, ensuring that the services ordered are correct.  Following this verification, I recommend the payment of the invoice. Please process.`
+                    this.qualifiedReceiverNote = `Direct invoice: As QR, I confirm that the services provided have been reviewed and properly received. The supporting documentation has been verified, ensuring that the services ordered are correct. Following this verification, I recommend the payment of the invoice. Please process.`
                 }
             }
             else{
