@@ -23,6 +23,7 @@ class BookingModel(Base):
     interpreter_signdate = Column(String, unique=False, index=False, nullable=True)
     qr_signed = Column(Boolean, nullable=True, default=False)    
     qr_signdate = Column(String, unique=False, index=False, nullable=True)
+    qr_signed_note = Column(String, unique=False, index=False, nullable=True)
     fees_gst = Column(Float, unique=False, index=False, nullable=True)
     fees_total = Column(Float, unique=False, index=False, nullable=True)
     expense_gst = Column(Float, unique=False, index=False, nullable=True)

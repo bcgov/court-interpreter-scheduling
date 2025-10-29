@@ -38,7 +38,7 @@
 
 <!-- <Line 4> -->
             <tr style="line-height:0.85rem;">
-                <td colspan="9" style="background:#F4F1FF;" class="border-top border-right text-right">Qualified Receiver Name<div style="font-size:6pt;">( must match Approver Name)</div></td>
+                <td colspan="9" style="background:#F4F1FF;" class="border-top border-right text-right">Qualified Receiver Name<div v-if="false" style=" font-size:6pt;">( must match Approver Name)</div></td>
                 <td colspan="16" class="border-top border-right"><div class="answer-record ml-1">{{qualifiedReceiverName}}</div></td>
                 <td colspan="9" style="background:#F4F1FF;" class="border-top border-right text-right">Invoice Total Amount</td>
                 <td colspan="16" style="background:#EFEFEF;" class="border-top"><div class="answer-record ml-1">{{invoiceTotalAmount}}</div></td>
@@ -122,8 +122,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class OfficeUseOnly extends Vue {

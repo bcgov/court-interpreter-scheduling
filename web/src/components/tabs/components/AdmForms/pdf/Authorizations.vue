@@ -57,7 +57,9 @@
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
-                    <td class="border-bottom"></td>                                              
+                    <td class="">
+                        {{qualifiedReceiverNote}}
+                    </td>                                       
                     <td class="border-bottom"></td>
                     <td class="border-bottom"></td>
                     <td class="border-bottom"></td>
@@ -85,8 +87,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Authorizations extends Vue {
@@ -100,6 +102,7 @@ export default class Authorizations extends Vue {
     interpreterSigningDate = ""
     qualifiedReceiverSigned = false
     qualifiedReceiverName = ""
+    qualifiedReceiverNote = ""
     qualifiedReceiverSigningDate =""
 
     mounted(){        
@@ -117,6 +120,7 @@ export default class Authorizations extends Vue {
         this.qualifiedReceiverSigned = recordApproved && this.booking.qualifiedReceiverSigned
         this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
         this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
+        this.qualifiedReceiverNote = this.qualifiedReceiverSigned? this.booking.qualifiedReceiverNote:''
     }
 
     public getDate(dateType, type){
