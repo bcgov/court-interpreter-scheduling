@@ -96,18 +96,30 @@
                         v-model="qualifiedReceiverName">
                     </b-form-input>
                 </b-form-group>
+                <b-form-group
+                    class="labels"
+                    label="Qualified Receiver Approval Note">
+                    <b-form-textarea
+                        size="sm"
+                        v-model="qualifiedReceiverNote"
+                        @input="dateChanged=true;"
+                        :disabled="!qualifiedReceiverSigned"
+                        rows="5"
+                        style="font-size:9.75pt;"
+                    ></b-form-textarea>
+                </b-form-group>
             </b-col>            
         </b-row>              
     </b-card>    
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import moment from 'moment-timezone'
 import { bookingSearchResultInfoType } from '@/types/Bookings/json';
+import moment from 'moment-timezone';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-import { namespace } from "vuex-class";   
 import "@/store/modules/common";
+import { namespace } from "vuex-class";
 const commonState = namespace("Common");
 
 @Component
@@ -132,6 +144,7 @@ export default class AdmAuthorizations extends Vue {
     interpreterSigningDate = ""
     qualifiedReceiverSigned = false
     qualifiedReceiverName = ""
+    qualifiedReceiverNote = ""
     qualifiedReceiverSigningDate =""
     
         
@@ -151,6 +164,7 @@ export default class AdmAuthorizations extends Vue {
         this.qualifiedReceiverSigned = this.booking.qualifiedReceiverSigned
         this.qualifiedReceiverSigningDate =this.qualifiedReceiverSigned? this.booking.qualifiedReceiverSigningDate :''
         this.qualifiedReceiverName = this.qualifiedReceiverSigned? this.booking.approverName:''
+        this.qualifiedReceiverNote = this.booking.qualifiedReceiverNote   
         this.maxDate = moment().add(3,'year').format("YYYY-MM-DD")
     }
 
@@ -170,10 +184,15 @@ export default class AdmAuthorizations extends Vue {
             if(checked){
                 this.qualifiedReceiverSigningDate = moment().format("YYYY-MM-DD")
                 this.qualifiedReceiverName = this.booking.approverName
+                // Only set default note if it's empty or null
+                if(!this.qualifiedReceiverNote || this.qualifiedReceiverNote.trim() === ''){
+                    this.qualifiedReceiverNote = `Direct invoice: As QR, I confirm that the services provided have been reviewed and properly received. The supporting documentation has been verified, ensuring that the services ordered are correct.  Following this verification, I recommend the payment of the invoice. Please process.`
+                }
             }
             else{
                 this.qualifiedReceiverSigningDate =''
                 this.qualifiedReceiverName =''
+                this.qualifiedReceiverNote =''
             }
         }        
         this.update++
@@ -188,7 +207,8 @@ export default class AdmAuthorizations extends Vue {
             {name:'interpreterSigned', value:this.interpreterSigned},    
             {name:'interpreterSigningDate', value:this.interpreterSigningDate},
             {name:'qualifiedReceiverSigned', value:this.qualifiedReceiverSigned},            
-            {name:'qualifiedReceiverSigningDate', value:this.qualifiedReceiverSigningDate}
+            {name:'qualifiedReceiverSigningDate', value:this.qualifiedReceiverSigningDate},
+            {name:'qualifiedReceiverNote', value:this.qualifiedReceiverNote}
         ]
         this.$emit('saveAuthorizations',authorizationChanges, this.section_name)
     }

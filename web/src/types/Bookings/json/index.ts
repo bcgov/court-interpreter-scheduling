@@ -82,6 +82,7 @@ export interface bookingSearchResultInfoType{ //OK
     interpreterSigningDate?: string;
     qualifiedReceiverSigned?: boolean;    
     qualifiedReceiverSigningDate?: string;
+    qualifiedReceiverNote?: string;
     feesGST: number;
     feesTotal: number;
     expenseGST: number;
