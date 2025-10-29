@@ -1,0 +1,41 @@
+{
+	"name": "Vue.js Frontend Development",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	"forwardPorts": [8080],
+	"portsAttributes": {
+		"4200": {
+			"label": "Vue Dev Server",
+			"onAutoForward": "openBrowser"
+		}
+	},
+	"postCreateCommand": "cd web && npm install && chmod +x ../.devcontainer/test-api-connection.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"octref.vetur",
+				"ms-vscode.vscode-typescript-next",
+				"esbenp.prettier-vscode",
+				"ms-vscode.vscode-eslint"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	},
+	"containerEnv": {
+		"NODE_ENV": "development",
+		"VUE_APP_RUN_IN_DOCKER": "true",
+		"DISPLAY": ":0"
+	},
+	"workspaceFolder": "/workspace",
+	"remoteUser": "node",
+	"runArgs": [
+		"--init",
+		"--security-opt", "seccomp=unconfined"
+	],
+	"shutdownAction": "stopContainer",
+	"mounts": []
+}

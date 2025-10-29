@@ -50,7 +50,7 @@ exit 1
 # -----------------------------------------------------------------------------------------------------------------
 # Default Settings: 
 # -----------------------------------------------------------------------------------------------------------------
-DEFAULT_CONTAINERS="db api schema-spy web pdf"
+DEFAULT_CONTAINERS="db api web pdf"
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:
 # -----------------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ configureEnvironment () {
   export API_URL=${API_URL-http://api:8080/api}
   export WEB_BASE_HREF=${DEFAULT_BASE_URL}
   export PUBLIC_URL=${DEFAULT_BASE_URL}
-  export IpFilterRules='#allow all; deny all;'
+  export IpFilterRules='allow all;'
   export RealIpFrom='127.0.0.0/16'
 }
 
