@@ -116,16 +116,30 @@ objects:
         role: ${ROLE}
         env: ${TAG_NAME}
     stringData:
-      oidc-rp-provider-endpoint: ${OIDC_RP_PROVIDER_ENDPOINT}
-      oidc-rp-client-secret: ${OIDC_RP_CLIENT_SECRET}
-      oidc-rp-host: ${OIDC_RP_HOST}
-      encryption-key: ${DATA_SECURITY_KEY}
+      OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET}
+      DATA_SECURITY_KEY: ${DATA_SECURITY_KEY}
       efiling-auth-url: ${EFILING_HUB_KEYCLOAK_BASE_URL}
       efiling-auth-realm: ${EFILING_HUB_KEYCLOAK_REALM}
       efiling-client-id: ${EFILING_HUB_KEYCLOAK_CLIENT_ID}
       efiling-client-secret: ${EFILING_HUB_KEYCLOAK_SECRET}
       efiling-base-url: ${EFILING_HUB_API_BASE_URL}
-      siteminder-logoff-url: ${SITEMINDER_LOGOFF_URL}
+      JC_INTERFACE_API_LOCATION_URL: ${JC_INTERFACE_API_LOCATION_URL}
+      JC_INTERFACE_API_USERNAME: ${JC_INTERFACE_API_USERNAME}
+      JC_INTERFACE_API_PASSWORD: ${JC_INTERFACE_API_PASSWORD}
+      OIDC_RP_PROVIDER_REALM: ${OIDC_RP_PROVIDER_REALM}
+      OIDC_RP_PROVIDER_URL: ${OIDC_RP_PROVIDER_URL}
+      OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID}
+      GOOGLE_MAP_URL: ${GOOGLE_MAP_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      EMAIL_SERVICE_CLIENT_ID: ${EMAIL_SERVICE_CLIENT_ID}
+      EMAIL_SERVICE_CLIENT_SECRET: ${EMAIL_SERVICE_CLIENT_SECRET}
+      CHES_EMAIL_URL: ${CHES_EMAIL_URL}
+      CHES_AUTH_URL: ${CHES_AUTH_URL}
+      JC_INTERFACE_API_FILE_URL: ${JC_INTERFACE_API_FILE_URL}
+      JC_INTERFACE_API_FILE_USERNAME: ${JC_INTERFACE_API_FILE_USERNAME}
+      JC_INTERFACE_API_FILE_PASSWORD: ${JC_INTERFACE_API_FILE_PASSWORD}
+      JC_INTERFACE_FILE_PART_ID: ${JC_INTERFACE_FILE_PART_ID}
+      JC_INTERFACE_FILE_AGENCY_ID: ${JC_INTERFACE_FILE_AGENCY_ID}
     type: Opaque
 
   - kind: DeploymentConfig
@@ -175,14 +189,16 @@ objects:
                 initialDelaySeconds: 3
                 timeoutSeconds: 30
                 httpGet:
-                  path: /health/
+                  path: /api/v1/health
                   port: 8080
+                  scheme: HTTP
               livenessProbe:
                 initialDelaySeconds: 120
                 timeoutSeconds: 30
                 httpGet:
-                  path: /health/
+                  path: /api/v1/health
                   port: 8080
+                  scheme: HTTP
               lifecycle:
                 preStop:
                   exec:
@@ -209,26 +225,21 @@ objects:
                     secretKeyRef:
                       name: ${DATABASE_DEPLOYMENT_NAME}
                       key: database-password
-                - name: APP_CONFIG
-                  value: ${APP_CONFIG}
-                - name: DJANGO_SECRET_KEY
-                  value: ${DJANGO_SECRET_KEY}
-                - name: DJANGO_DEBUG
-                  value: ${DJANGO_DEBUG}
+                - name: DB_SERVICE_HOST
+                  value: ${DB_SERVICE_HOST}
+                - name: DB_SERVICE_PORT
+                  value: ${DB_SERVICE_PORT}
+                - name: ADM_RECIPIENT_EMAILS
+                  value: ${ADM_RECIPIENT_EMAILS}
                 - name: PDF_SERVICE_URL
                   value: ${PDF_SERVICE_URL}
                 - name: EFILING_ENABLED
                   value: ${EFILING_ENABLED}
-                - name: OIDC_RP_PROVIDER_ENDPOINT
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: oidc-rp-provider-endpoint
                 - name: OIDC_RP_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}
-                      key: oidc-rp-client-secret
+                      key: OIDC_RP_CLIENT_SECRET
                 - name: OIDC_RP_KC_IDP_HINT
                   value: ${OIDC_RP_KC_IDP_HINT}
 
@@ -236,7 +247,7 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}
-                      key: encryption-key
+                      key: DATA_SECURITY_KEY
 
                 - name: EFILING_HUB_KEYCLOAK_BASE_URL
                   valueFrom:
@@ -264,18 +275,103 @@ objects:
                       name: ${NAME}
                       key: efiling-base-url
 
-                - name: SITEMINDER_LOGOFF_URL
+                - name: JC_INTERFACE_API_LOCATION_URL
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}
-                      key: siteminder-logoff-url
+                      key: JC_INTERFACE_API_LOCATION_URL
+                - name: JC_INTERFACE_API_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_API_USERNAME
+                - name: JC_INTERFACE_API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_API_PASSWORD
+                - name: DEFAULT_BASE_URL
+                  value: ${DEFAULT_BASE_URL}
+                - name: OPENROAD_MAP_URL
+                  value: ${OPENROAD_MAP_URL}
+                - name: URL_SCHEME
+                  value: ${URL_SCHEME}
+                - name: OIDC_RP_PROVIDER_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: OIDC_RP_PROVIDER_REALM
+                - name: OIDC_RP_PROVIDER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: OIDC_RP_PROVIDER_URL
+                - name: OIDC_RP_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: OIDC_RP_CLIENT_ID
+                - name: GOOGLE_MAP_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: GOOGLE_MAP_URL
+                - name: JWT_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JWT_SECRET_KEY
+                - name: EMAIL_SERVICE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: EMAIL_SERVICE_CLIENT_ID
+                - name: EMAIL_SERVICE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: EMAIL_SERVICE_CLIENT_SECRET
+                - name: CHES_EMAIL_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: CHES_EMAIL_URL
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: CHES_AUTH_URL
+                - name: RECIPIENT_EMAILS
+                  value: ${RECIPIENT_EMAILS}
+                - name: JC_INTERFACE_API_FILE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_API_FILE_URL
+                - name: JC_INTERFACE_API_FILE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_API_FILE_USERNAME
+                - name: JC_INTERFACE_API_FILE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_API_FILE_PASSWORD
+                - name: JC_INTERFACE_FILE_PART_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_FILE_PART_ID
+                - name: JC_INTERFACE_FILE_AGENCY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: JC_INTERFACE_FILE_AGENCY_ID
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
 
   - kind: HorizontalPodAutoscaler
     apiVersion: autoscaling/v1
@@ -332,19 +428,6 @@ parameters:
     required: true
     description: "Database engine: postgresql, mysql, or sqlite (default)."
     value: postgresql
-  - name: APP_CONFIG
-    displayName: Application Configuration File Path
-    description: Relative path to Gunicorn configuration file (optional).
-  - name: DJANGO_SECRET_KEY
-    displayName: Django Secret Key
-    description: Set this to a long random string.
-    generate: expression
-    from: "[\\w]{50}"
-  - name: DJANGO_DEBUG
-    displayName: Django Debug
-    description: If Django is in debug mode
-    required: true
-    value: "False"
   - name: PDF_SERVICE_URL
     displayName: PDF Service URL
     description: Internal URL to the PDF service.
@@ -361,16 +444,6 @@ parameters:
     required: true
     value: db
 
-  - name: OIDC_RP_PROVIDER_ENDPOINT
-    displayName: OIDC RP Provider Endpoint
-    description: OIDC RP Provider Endpoint.
-    required: false
-    value:
-  - name: OIDC_RP_HOST
-    displayName: OIDC RP Hostname
-    description: OIDC RP Hostname.  The api-deploy.overrides.sh will parse this from the supplied OIDC_RP_PROVIDER_ENDPOINT, and fetch it from a secret for updates.
-    required: false
-    value:
   - name: OIDC_RP_CLIENT_SECRET
     displayName: OIDC RP Client Secret
     description: OIDC RP Client Secret
@@ -387,7 +460,6 @@ parameters:
     description: The Encryption Key for the environment.
     generate: expression
     from: "[a-zA-Z0-9]{32}"
-
   - name: EFILING_ENABLED
     displayName: EFILING Enable
     description: EFILING Enable
@@ -418,12 +490,127 @@ parameters:
     description: EFILING base url
     required: false
     value:
-
-  - name: SITEMINDER_LOGOFF_URL
-    displayName: Siteminder Logoff URL
-    description: Siteminder Logoff URL
+  - name: JC_INTERFACE_API_LOCATION_URL
+    displayName: JC INTERFACE API LOCATION URL
+    description: JC INTERFACE API LOCATION URL
     required: false
-    value: 
+    value:
+  - name: JC_INTERFACE_API_USERNAME
+    displayName: JC INTERFACE API USERNAME
+    description: JC INTERFACE API USERNAME
+    required: false
+    value:
+  - name: JC_INTERFACE_API_PASSWORD
+    displayName: JC INTERFACE API PASSWORD
+    description: JC INTERFACE API PASSWORD
+    required: false
+    value:
+  - name: DEFAULT_BASE_URL
+    displayName: DEFAULT BASE URL
+    description: DEFAULT BASE URL
+    required: false
+    value:
+  - name: OPENROAD_MAP_URL
+    displayName: OPENROAD MAP URL
+    description: OPENROAD MAP URL
+    required: false
+    value:
+  - name: OIDC_RP_PROVIDER_REALM
+    displayName: OIDC RP PROVIDER REALM
+    description: OIDC RP PROVIDER REALM
+    required: false
+    value:
+  - name: OIDC_RP_PROVIDER_URL
+    displayName: OIDC RP PROVIDER URL
+    description: OIDC RP PROVIDER URL
+    required: false
+    value:
+  - name: OIDC_RP_CLIENT_ID
+    displayName: OIDC RP CLIENT ID
+    description: OIDC RP CLIENT ID
+    required: false
+    value:
+  - name: GOOGLE_MAP_URL
+    displayName: GOOGLE MAP URL
+    description: GOOGLE MAP URL
+    required: false
+    value:
+  - name: JWT_SECRET_KEY
+    displayName: JWT SECRET KEY
+    description: JWT SECRET KEY
+    required: false
+    value:
+  - name: EMAIL_SERVICE_CLIENT_ID
+    displayName: EMAIL SERVICE CLIENT ID
+    description: EMAIL SERVICE CLIENT ID
+    required: false
+    value:
+  - name: EMAIL_SERVICE_CLIENT_SECRET
+    displayName: EMAIL SERVICE CLIENT SECRET
+    description: EMAIL SERVICE CLIENT SECRET
+    required: false
+    value:
+  - name: CHES_EMAIL_URL
+    displayName: CHES EMAIL URL
+    description: CHES EMAIL URL
+    required: false
+    value:
+  - name: CHES_AUTH_URL
+    displayName: CHES AUTH URL
+    description: CHES AUTH URL
+    required: false
+    value:
+  - name: RECIPIENT_EMAILS
+    displayName: RECIPIENT EMAILS
+    description: RECIPIENT EMAILS
+    required: false
+    value:
+  - name: URL_SCHEME
+    displayName: URL Scheme
+    description: URL Scheme
+    required: false
+    value: https
+  - name: DB_SERVICE_HOST
+    displayName: Database Service Host
+    description: Database Service Host
+    required: false
+    value: db
+  - name: DB_SERVICE_PORT
+    displayName: Database Service Port
+    description: Database Service Port
+    required: false
+    value: "5432"
+  - name: ADM_RECIPIENT_EMAILS
+    displayName: Admin Recipient Emails
+    description: Admin Recipient Emails
+    required: false
+    value: marzieh.mehrnejad@quartech.com
+  - name: JC_INTERFACE_API_FILE_URL
+    displayName: JC Interface API File URL
+    description: JC Interface API File URL
+    required: false
+    value:
+  - name: JC_INTERFACE_API_FILE_USERNAME
+    displayName: JC Interface API File Username
+    description: JC Interface API File Username
+    required: false
+    value:
+  - name: JC_INTERFACE_API_FILE_PASSWORD
+    displayName: JC Interface API File Password
+    description: JC Interface API File Password
+    required: false
+    value:
+  - name: JC_INTERFACE_FILE_PART_ID
+    displayName: JC Interface File Part ID
+    description: JC Interface File Part ID
+    required: false
+    value:
+  - name: JC_INTERFACE_FILE_AGENCY_ID
+    displayName: JC Interface File Agency ID
+    description: JC Interface File Agency ID
+    required: false
+    value:
+
   - name: MIN_REPLICAS
     displayName: Minimum Replicas
     description: The minimum number of pods to have running.
@@ -440,18 +627,8 @@ parameters:
     description: The resources CPU request (in cores) for this build.
     required: true
     value: 10m
-  - name: CPU_LIMIT
-    displayName: Resources CPU Limit
-    description: The resources CPU limit (in cores) for this build.
-    required: true
-    value: 500m
   - name: MEMORY_REQUEST
     displayName: Resources Memory Request
     description: The resources Memory request (in Mi, Gi, etc) for this build.
     required: true
     value: 10Mi
-  - name: MEMORY_LIMIT
-    displayName: Resources Memory Limit
-    description: The resources Memory limit (in Mi, Gi, etc) for this build.
-    required: true
-    value: 1Gi
