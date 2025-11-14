@@ -1,0 +1,184 @@
+kind: List
+apiVersion: v1
+metadata: {}
+items:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web-allow-ingress
+      name: web-allow-ingress
+    spec:
+      description: |
+        Allow traffic from routes into the web container(s).
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      podSelector:
+        matchLabels:
+          app: court-interpreter-scheduling
+          env: dev
+          role: web
+      policyTypes:
+        - Ingress
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web
+        role: web
+      name: web
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: web
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: court-interpreter-scheduling
+            env: dev
+            name: web
+            role: web
+          name: web
+        spec:
+          containers:
+            - env:
+                - name: PUBLIC_URL
+                  value: /court-interpreter-scheduling/
+                - name: RealIpFrom
+                  value: 172.51.0.0/16
+                - name: AdditionalRealIpFromRules
+                  value: ""
+                - name: WEB_BASE_HREF
+                  value: /court-interpreter-scheduling/
+                - name: IpFilterRules
+                  value: ""
+                - name: API_URL
+                  value: http://api:8080/api
+                - name: API_SERVICE_NAME
+                  value: api
+                - name: API_PATH
+                  value: /api
+              image: web
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /nginx_status
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 60
+              name: web
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /nginx_status
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 60
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 10Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - web
+            from:
+              kind: ImageStreamTag
+              name: web:dev
+              namespace: 1a7b16-tools
+          type: ImageChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web
+        role: web
+      name: web
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        name: web
+      sessionAffinity: None
+      type: ClusterIP
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      annotations:
+        haproxy.router.openshift.io/ip_whitelist: ""
+        haproxy.router.openshift.io/timeout: 35s
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web
+        role: web
+      name: web
+    spec:
+      host: court-interpreter-scheduling-dev.silver.devops.gov.bc.ca
+      port:
+        targetPort: 8080-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: web
+        weight: 100
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web
+        role: web
+      name: web
+    spec:
+      maxReplicas: 6
+      minReplicas: 3
+      scaleTargetRef:
+        kind: DeploymentConfig
+        name: web

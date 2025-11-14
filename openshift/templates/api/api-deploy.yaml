@@ -1,103 +1,55 @@
 ---
-kind: Template
 apiVersion: v1
+kind: Template
 metadata:
-  name: ${NAME}-deployment-template
   annotations:
-    description:
-      Deployment template for a fastapi server connected to a PostGreSQL
-      database.
-    tags: fastapi
+    description: Deployment template for a fastapi server connected to a PostGreSQL database.
     iconClass: icon-python
+    tags: fastapi
+  name: ${NAME}-deployment-template
 objects:
-  - kind: NetworkPolicy
-    apiVersion: networking.k8s.io/v1
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
     metadata:
-      name: ${NAME}
       labels:
-        name: ${NAME}
         app: ${APP_NAME}
         env: ${TAG_NAME}
+        name: ${NAME}
+      name: ${NAME}
     spec:
       description: |
         Allow the front-end application to access the API.
       ingress:
         - from:
-            - podSelector:
+            - namespaceSelector:
                 matchLabels:
-                  role: web
+                  environment: ${TAG_NAME}
+                  name: ${NAMESPACE_NAME}
+              podSelector:
+                matchLabels:
                   app: ${APP_NAME}
                   env: ${TAG_NAME}
-              namespaceSelector:
-                matchLabels:
-                  name: ${NAMESPACE_NAME}
-                  environment: ${TAG_NAME}
+                  role: web
           ports:
-            - protocol: TCP
-              port: 8080
+            - port: 8080
+              protocol: TCP
       podSelector:
         matchLabels:
-          role: ${ROLE}
           app: ${APP_NAME}
           env: ${TAG_NAME}
-
-  # - kind: ExternalNetwork
-  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   metadata:
-  #     name: ${NAME}
-  #     network: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       network: ${NAME}
-  #       app: ${APP_NAME}
-  #       env: ${TAG_NAME}
-  #   spec:
-  #     description: |
-  #       Define the network parameters for accessing remote resources.
-  #     entries:
-  #       - ${OIDC_RP_HOST}
-  #     servicePorts:
-  #       - tcp/443
-
-  # - kind: NetworkSecurityPolicy
-  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   metadata:
-  #     name: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       app: ${APP_NAME}
-  #       env: ${TAG_NAME}
-  #   spec:
-  #     description: |
-  #       Allow the application's API to talk to either the database or pdf microservice, plus a defined set of external resources.
-  #     source:
-  #       - - role=${ROLE}
-  #         - app=${APP_NAME}
-  #         - env=${TAG_NAME}
-  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-  #     destination:
-  #       - - role=db
-  #         - app=${APP_NAME}
-  #         - env=${TAG_NAME}
-  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-  #       - - role=pdf
-  #         - app=${APP_NAME}
-  #         - env=${TAG_NAME}
-  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-  #       - - ext:name=${NAME}
-
-  - kind: Service
-    apiVersion: v1
+          role: ${ROLE}
+  - apiVersion: v1
+    kind: Service
     metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
       annotations:
         description: Exposes and load balances the application pods
-        service.alpha.openshift.io/dependencies: "[{name: ${DATABASE_SERVICE_NAME}, kind: Service}]"
+        service.alpha.openshift.io/dependencies: '[{name: ${DATABASE_SERVICE_NAME}, kind: Service}]'
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
     spec:
       ports:
         - name: 8080-tcp
@@ -105,530 +57,575 @@ objects:
           targetPort: 8080
       selector:
         name: ${NAME}
-
-  - kind: Secret
-    apiVersion: v1
+  - apiVersion: v1
+    kind: Secret
     metadata:
-      name: ${NAME}
       labels:
-        name: ${NAME}
         app: ${APP_NAME}
-        role: ${ROLE}
         env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
     stringData:
-      OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET}
+      CHES_AUTH_URL: ${CHES_AUTH_URL}
+      CHES_EMAIL_URL: ${CHES_EMAIL_URL}
       DATA_SECURITY_KEY: ${DATA_SECURITY_KEY}
-      efiling-auth-url: ${EFILING_HUB_KEYCLOAK_BASE_URL}
-      efiling-auth-realm: ${EFILING_HUB_KEYCLOAK_REALM}
-      efiling-client-id: ${EFILING_HUB_KEYCLOAK_CLIENT_ID}
-      efiling-client-secret: ${EFILING_HUB_KEYCLOAK_SECRET}
-      efiling-base-url: ${EFILING_HUB_API_BASE_URL}
-      JC_INTERFACE_API_LOCATION_URL: ${JC_INTERFACE_API_LOCATION_URL}
-      JC_INTERFACE_API_USERNAME: ${JC_INTERFACE_API_USERNAME}
-      JC_INTERFACE_API_PASSWORD: ${JC_INTERFACE_API_PASSWORD}
-      OIDC_RP_PROVIDER_REALM: ${OIDC_RP_PROVIDER_REALM}
-      OIDC_RP_PROVIDER_URL: ${OIDC_RP_PROVIDER_URL}
-      OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID}
-      GOOGLE_MAP_URL: ${GOOGLE_MAP_URL}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       EMAIL_SERVICE_CLIENT_ID: ${EMAIL_SERVICE_CLIENT_ID}
       EMAIL_SERVICE_CLIENT_SECRET: ${EMAIL_SERVICE_CLIENT_SECRET}
-      CHES_EMAIL_URL: ${CHES_EMAIL_URL}
-      CHES_AUTH_URL: ${CHES_AUTH_URL}
+      GOOGLE_MAP_URL: ${GOOGLE_MAP_URL}
+      JC_INTERFACE_API_FILE_PASSWORD: ${JC_INTERFACE_API_FILE_PASSWORD}
       JC_INTERFACE_API_FILE_URL: ${JC_INTERFACE_API_FILE_URL}
       JC_INTERFACE_API_FILE_USERNAME: ${JC_INTERFACE_API_FILE_USERNAME}
-      JC_INTERFACE_API_FILE_PASSWORD: ${JC_INTERFACE_API_FILE_PASSWORD}
-      JC_INTERFACE_FILE_PART_ID: ${JC_INTERFACE_FILE_PART_ID}
+      JC_INTERFACE_API_LOCATION_URL: ${JC_INTERFACE_API_LOCATION_URL}
+      JC_INTERFACE_API_PASSWORD: ${JC_INTERFACE_API_PASSWORD}
+      JC_INTERFACE_API_USERNAME: ${JC_INTERFACE_API_USERNAME}
       JC_INTERFACE_FILE_AGENCY_ID: ${JC_INTERFACE_FILE_AGENCY_ID}
+      JC_INTERFACE_FILE_PART_ID: ${JC_INTERFACE_FILE_PART_ID}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID}
+      OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET}
+      OIDC_RP_PROVIDER_REALM: ${OIDC_RP_PROVIDER_REALM}
+      OIDC_RP_PROVIDER_URL: ${OIDC_RP_PROVIDER_URL}
+      efiling-auth-realm: ${EFILING_HUB_KEYCLOAK_REALM}
+      efiling-auth-url: ${EFILING_HUB_KEYCLOAK_BASE_URL}
+      efiling-base-url: ${EFILING_HUB_API_BASE_URL}
+      efiling-client-id: ${EFILING_HUB_KEYCLOAK_CLIENT_ID}
+      efiling-client-secret: ${EFILING_HUB_KEYCLOAK_SECRET}
     type: Opaque
-
-  - kind: DeploymentConfig
-    apiVersion: v1
+  - apiVersion: v1
+    kind: DeploymentConfig
     metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
       annotations:
         description: Defines how to deploy the application server
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
     spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: ${NAME}
       strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
         type: Rolling
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: ${APP_NAME}
+            env: ${TAG_NAME}
+            name: ${NAME}
+            role: ${ROLE}
+          name: ${NAME}
+        spec:
+          containers:
+            - env:
+                - name: DEFAULT_BASE_URL
+                  value: /court-interpreter-scheduling
+                - name: URL_SCHEME
+                  value: ${URL_SCHEME}
+                - name: OIDC_RP_PROVIDER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_PROVIDER_URL
+                      name: ${NAME}
+                - name: OIDC_RP_PROVIDER_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_PROVIDER_REALM
+                      name: ${NAME}
+                - name: OIDC_RP_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_CLIENT_ID
+                      name: ${NAME}
+                - name: OIDC_RP_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_CLIENT_SECRET
+                      name: ${NAME}
+                - name: OIDC_RP_KC_IDP_HINT
+                  value: ${OIDC_RP_KC_IDP_HINT}
+                - name: JWT_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: JWT_SECRET_KEY
+                      name: ${NAME}
+                - name: DATABASE_ENGINE
+                  value: ${DATABASE_ENGINE}
+                - name: DATABASE_SERVICE_NAME
+                  value: ${DATABASE_SERVICE_NAME}
+                - name: DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                - name: DB_SERVICE_HOST
+                  value: ${DB_SERVICE_HOST}
+                - name: DB_SERVICE_PORT
+                  value: ${DB_SERVICE_PORT}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                - name: JC_INTERFACE_API_LOCATION_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_LOCATION_URL
+                      name: ${NAME}
+                - name: JC_INTERFACE_API_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_USERNAME
+                      name: ${NAME}
+                - name: JC_INTERFACE_API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_PASSWORD
+                      name: ${NAME}
+                - name: OPENROAD_MAP_URL
+                  value: ${OPENROAD_MAP_URL}
+                - name: GOOGLE_MAP_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: GOOGLE_MAP_URL
+                      name: ${NAME}
+                - name: EFILING_HUB_API_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-base-url
+                      name: ${NAME}
+                - name: EFILING_HUB_KEYCLOAK_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-client-id
+                      name: ${NAME}
+                - name: EFILING_HUB_KEYCLOAK_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-auth-url
+                      name: ${NAME}
+                - name: EFILING_HUB_KEYCLOAK_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-client-secret
+                      name: ${NAME}
+                - name: EFILING_HUB_KEYCLOAK_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-auth-realm
+                      name: ${NAME}
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: CHES_AUTH_URL
+                      name: ${NAME}
+                - name: CHES_EMAIL_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: CHES_EMAIL_URL
+                      name: ${NAME}
+                - name: EMAIL_SERVICE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: EMAIL_SERVICE_CLIENT_ID
+                      name: ${NAME}
+                - name: EMAIL_SERVICE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: EMAIL_SERVICE_CLIENT_SECRET
+                      name: ${NAME}
+                - name: RECIPIENT_EMAILS
+                  value: ${RECIPIENT_EMAILS}
+                - name: PDF_SERVICE_URL
+                  value: ${PDF_SERVICE_URL}
+                - name: ADM_RECIPIENT_EMAILS
+                  value: ${ADM_RECIPIENT_EMAILS}
+                - name: DATA_SECURITY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: DATA_SECURITY_KEY
+                      name: ${NAME}
+                - name: JC_INTERFACE_API_FILE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_URL
+                      name: ${NAME}
+                - name: JC_INTERFACE_API_FILE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_USERNAME
+                      name: ${NAME}
+                - name: JC_INTERFACE_API_FILE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_PASSWORD
+                      name: ${NAME}
+                - name: JC_INTERFACE_FILE_PART_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_FILE_PART_ID
+                      name: ${NAME}
+                - name: JC_INTERFACE_FILE_AGENCY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_FILE_AGENCY_ID
+                      name: ${NAME}
+                - name: EFILING_ENABLED
+                  value: ${EFILING_ENABLED}
+              image: null
+              imagePullPolicy: IfNotPresent
+              lifecycle:
+                postStart:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - '-c'
+                      - alembic upgrade head
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /api/v1/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 120
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+              name: ${NAME}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /api/v1/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
       triggers:
-        - type: ImageChange
-          imageChangeParams:
+        - imageChangeParams:
             automatic: true
             containerNames:
               - ${NAME}
             from:
               kind: ImageStreamTag
-              namespace: ${IMAGE_NAMESPACE}
               name: ${NAME}:${TAG_NAME}
+              namespace: ${IMAGE_NAMESPACE}
+          type: ImageChange
         - type: ConfigChange
-      replicas: 1
-      selector:
-        name: ${NAME}
-      template:
-        metadata:
-          name: ${NAME}
-          labels:
-            name: ${NAME}
-            app: ${APP_NAME}
-            role: ${ROLE}
-            env: ${TAG_NAME}
-        spec:
-          containers:
-            - name: ${NAME}
-              image:
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-              readinessProbe:
-                initialDelaySeconds: 3
-                timeoutSeconds: 30
-                httpGet:
-                  path: /api/v1/health
-                  port: 8080
-                  scheme: HTTP
-              livenessProbe:
-                initialDelaySeconds: 120
-                timeoutSeconds: 30
-                httpGet:
-                  path: /api/v1/health
-                  port: 8080
-                  scheme: HTTP
-              lifecycle:
-                preStop:
-                  exec:
-                    command:
-                      - /bin/sleep
-                      - '20'
-              env:
-                - name: DATABASE_SERVICE_NAME
-                  value: ${DATABASE_SERVICE_NAME}
-                - name: DATABASE_ENGINE
-                  value: ${DATABASE_ENGINE}
-                - name: DATABASE_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${DATABASE_DEPLOYMENT_NAME}
-                      key: database-name
-                - name: DATABASE_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${DATABASE_DEPLOYMENT_NAME}
-                      key: database-user
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${DATABASE_DEPLOYMENT_NAME}
-                      key: database-password
-                - name: DB_SERVICE_HOST
-                  value: ${DB_SERVICE_HOST}
-                - name: DB_SERVICE_PORT
-                  value: ${DB_SERVICE_PORT}
-                - name: ADM_RECIPIENT_EMAILS
-                  value: ${ADM_RECIPIENT_EMAILS}
-                - name: PDF_SERVICE_URL
-                  value: ${PDF_SERVICE_URL}
-                - name: EFILING_ENABLED
-                  value: ${EFILING_ENABLED}
-                - name: OIDC_RP_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: OIDC_RP_CLIENT_SECRET
-                - name: OIDC_RP_KC_IDP_HINT
-                  value: ${OIDC_RP_KC_IDP_HINT}
-
-                - name: DATA_SECURITY_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: DATA_SECURITY_KEY
-
-                - name: EFILING_HUB_KEYCLOAK_BASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: efiling-auth-url
-                - name: EFILING_HUB_KEYCLOAK_REALM
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: efiling-auth-realm
-                - name: EFILING_HUB_KEYCLOAK_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: efiling-client-id
-                - name: EFILING_HUB_KEYCLOAK_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: efiling-client-secret
-                - name: EFILING_HUB_API_BASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: efiling-base-url
-
-                - name: JC_INTERFACE_API_LOCATION_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_LOCATION_URL
-                - name: JC_INTERFACE_API_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_USERNAME
-                - name: JC_INTERFACE_API_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_PASSWORD
-                - name: DEFAULT_BASE_URL
-                  value: ${DEFAULT_BASE_URL}
-                - name: OPENROAD_MAP_URL
-                  value: ${OPENROAD_MAP_URL}
-                - name: URL_SCHEME
-                  value: ${URL_SCHEME}
-                - name: OIDC_RP_PROVIDER_REALM
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: OIDC_RP_PROVIDER_REALM
-                - name: OIDC_RP_PROVIDER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: OIDC_RP_PROVIDER_URL
-                - name: OIDC_RP_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: OIDC_RP_CLIENT_ID
-                - name: GOOGLE_MAP_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: GOOGLE_MAP_URL
-                - name: JWT_SECRET_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JWT_SECRET_KEY
-                - name: EMAIL_SERVICE_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: EMAIL_SERVICE_CLIENT_ID
-                - name: EMAIL_SERVICE_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: EMAIL_SERVICE_CLIENT_SECRET
-                - name: CHES_EMAIL_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: CHES_EMAIL_URL
-                - name: CHES_AUTH_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: CHES_AUTH_URL
-                - name: RECIPIENT_EMAILS
-                  value: ${RECIPIENT_EMAILS}
-                - name: JC_INTERFACE_API_FILE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_FILE_URL
-                - name: JC_INTERFACE_API_FILE_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_FILE_USERNAME
-                - name: JC_INTERFACE_API_FILE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_API_FILE_PASSWORD
-                - name: JC_INTERFACE_FILE_PART_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_FILE_PART_ID
-                - name: JC_INTERFACE_FILE_AGENCY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}
-                      key: JC_INTERFACE_FILE_AGENCY_ID
-              resources:
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
-
-  - kind: HorizontalPodAutoscaler
-    apiVersion: autoscaling/v1
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
     metadata:
-      name: ${NAME}
       labels:
-        name: ${NAME}
         app: ${APP_NAME}
-        role: ${ROLE}
         env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
     spec:
+      maxReplicas: ${{MAX_REPLICAS}}
+      minReplicas: ${{MIN_REPLICAS}}
       scaleTargetRef:
         kind: DeploymentConfig
         name: ${NAME}
-      minReplicas: ${{MIN_REPLICAS}}
-      maxReplicas: ${{MAX_REPLICAS}}
-
 parameters:
-  - name: NAME
+  - description: The name assigned to all of the OpenShift resources associated to the server instance.
     displayName: Name
-    description: The name assigned to all of the OpenShift resources associated to the server instance.
+    name: NAME
     required: true
     value: api
-
-  - name: APP_NAME
+  - description: App Name
     displayName: App Name
-    description: App Name
+    name: APP_NAME
     required: true
     value: court-interpreter-scheduling
-  - name: ROLE
+  - description: Role
     displayName: Role
-    description: Role
+    name: ROLE
     required: true
     value: api
-
-  - name: NAMESPACE_NAME
+  - description: The base namespace name for the project.
     displayName: Namespace Name
-    description: The base namespace name for the project.
+    name: NAMESPACE_NAME
     required: true
     value: 1a7b16
-
-  - name: IMAGE_NAMESPACE
+  - description: The namespace of the OpenShift project containing the imagestream for the application.
     displayName: Image Namespace
+    name: IMAGE_NAMESPACE
     required: true
-    description: The namespace of the OpenShift project containing the imagestream for the application.
     value: 1a7b16-tools
-  - name: DATABASE_SERVICE_NAME
+  - description: The name of the database server/service.
     displayName: Database Service Name
-    description: The name of the database server/service.
+    name: DATABASE_SERVICE_NAME
     required: true
     value: db
-  - name: DATABASE_ENGINE
+  - description: 'Database engine: postgresql, mysql, or sqlite (default).'
     displayName: Database Engine
+    name: DATABASE_ENGINE
     required: true
-    description: "Database engine: postgresql, mysql, or sqlite (default)."
     value: postgresql
-  - name: PDF_SERVICE_URL
+  - description: Internal URL to the PDF service.
     displayName: PDF Service URL
-    description: Internal URL to the PDF service.
+    name: PDF_SERVICE_URL
     required: true
     value: http://pdf:5001
-  - name: TAG_NAME
+  - description: The TAG name for this environment, e.g., dev, test, prod
     displayName: Environment TAG name
-    description: The TAG name for this environment, e.g., dev, test, prod
-    value: dev
+    name: TAG_NAME
     required: true
-  - name: DATABASE_DEPLOYMENT_NAME
+    value: dev
+  - description: The name associated to the database deployment resources.  In particular, this is used to wire up the credentials associated to the database.
     displayName: Database Deployment Name
-    description: The name associated to the database deployment resources.  In particular, this is used to wire up the credentials associated to the database.
+    name: DATABASE_DEPLOYMENT_NAME
     required: true
     value: db
-
-  - name: OIDC_RP_CLIENT_SECRET
+  - description: OIDC RP Client Secret
     displayName: OIDC RP Client Secret
-    description: OIDC RP Client Secret
+    name: OIDC_RP_CLIENT_SECRET
     required: false
-    value:
-  - name: OIDC_RP_KC_IDP_HINT
+    value: null
+  - description: OIDC RP KeyCloak IDP Hint
     displayName: OIDC RP KeyCloak IDP Hint
-    description: OIDC RP KeyCloak IDP Hint
+    name: OIDC_RP_KC_IDP_HINT
     required: false
     value: bceid
-
-  - name: DATA_SECURITY_KEY
+  - description: The Encryption Key for the environment.
     displayName: Data Security (Encryption) Key
-    description: The Encryption Key for the environment.
+    from: '[a-zA-Z0-9]{32}'
     generate: expression
-    from: "[a-zA-Z0-9]{32}"
-  - name: EFILING_ENABLED
+    name: DATA_SECURITY_KEY
+  - description: EFILING Enable
     displayName: EFILING Enable
-    description: EFILING Enable
+    name: EFILING_ENABLED
     required: false
-    value: "false"
-  - name: EFILING_HUB_KEYCLOAK_BASE_URL
+    value: 'false'
+  - description: EFILING authentication url
     displayName: EFILING authentication url
-    description: EFILING authentication url
+    name: EFILING_HUB_KEYCLOAK_BASE_URL
     required: false
-    value:
-  - name: EFILING_HUB_KEYCLOAK_REALM
+    value: null
+  - description: EFILING Authentication Realm
     displayName: EFILING Authentication Realm
-    description: EFILING Authentication Realm
+    name: EFILING_HUB_KEYCLOAK_REALM
     required: false
-    value:
-  - name: EFILING_HUB_KEYCLOAK_CLIENT_ID
+    value: null
+  - description: EFILING Service Client Id
     displayName: EFILING Service Client Id
-    description: EFILING Service Client Id
+    name: EFILING_HUB_KEYCLOAK_CLIENT_ID
     required: false
-    value:
-  - name: EFILING_HUB_KEYCLOAK_SECRET
+    value: null
+  - description: EFILING Service Client Secret
     displayName: EFILING Service Client Secret
-    description: EFILING Service Client Secret
+    name: EFILING_HUB_KEYCLOAK_SECRET
     required: false
-    value:
-  - name: EFILING_HUB_API_BASE_URL
+    value: null
+  - description: EFILING base url
     displayName: EFILING base url
-    description: EFILING base url
+    name: EFILING_HUB_API_BASE_URL
     required: false
-    value:
-  - name: JC_INTERFACE_API_LOCATION_URL
+    value: null
+  - description: JC INTERFACE API LOCATION URL
     displayName: JC INTERFACE API LOCATION URL
-    description: JC INTERFACE API LOCATION URL
+    name: JC_INTERFACE_API_LOCATION_URL
     required: false
-    value:
-  - name: JC_INTERFACE_API_USERNAME
+    value: null
+  - description: JC INTERFACE API USERNAME
     displayName: JC INTERFACE API USERNAME
-    description: JC INTERFACE API USERNAME
+    name: JC_INTERFACE_API_USERNAME
     required: false
-    value:
-  - name: JC_INTERFACE_API_PASSWORD
+    value: null
+  - description: JC INTERFACE API PASSWORD
     displayName: JC INTERFACE API PASSWORD
-    description: JC INTERFACE API PASSWORD
+    name: JC_INTERFACE_API_PASSWORD
     required: false
-    value:
-  - name: DEFAULT_BASE_URL
+    value: null
+  - description: DEFAULT BASE URL
     displayName: DEFAULT BASE URL
-    description: DEFAULT BASE URL
+    name: DEFAULT_BASE_URL
     required: false
-    value:
-  - name: OPENROAD_MAP_URL
+    value: null
+  - description: OPENROAD MAP URL
     displayName: OPENROAD MAP URL
-    description: OPENROAD MAP URL
+    name: OPENROAD_MAP_URL
     required: false
-    value:
-  - name: OIDC_RP_PROVIDER_REALM
+    value: null
+  - description: OIDC RP PROVIDER REALM
     displayName: OIDC RP PROVIDER REALM
-    description: OIDC RP PROVIDER REALM
+    name: OIDC_RP_PROVIDER_REALM
     required: false
-    value:
-  - name: OIDC_RP_PROVIDER_URL
+    value: null
+  - description: OIDC RP PROVIDER URL
     displayName: OIDC RP PROVIDER URL
-    description: OIDC RP PROVIDER URL
+    name: OIDC_RP_PROVIDER_URL
     required: false
-    value:
-  - name: OIDC_RP_CLIENT_ID
+    value: null
+  - description: OIDC RP CLIENT ID
     displayName: OIDC RP CLIENT ID
-    description: OIDC RP CLIENT ID
+    name: OIDC_RP_CLIENT_ID
     required: false
-    value:
-  - name: GOOGLE_MAP_URL
+    value: null
+  - description: GOOGLE MAP URL
     displayName: GOOGLE MAP URL
-    description: GOOGLE MAP URL
+    name: GOOGLE_MAP_URL
     required: false
-    value:
-  - name: JWT_SECRET_KEY
+    value: null
+  - description: JWT SECRET KEY
     displayName: JWT SECRET KEY
-    description: JWT SECRET KEY
+    name: JWT_SECRET_KEY
     required: false
-    value:
-  - name: EMAIL_SERVICE_CLIENT_ID
+    value: null
+  - description: EMAIL SERVICE CLIENT ID
     displayName: EMAIL SERVICE CLIENT ID
-    description: EMAIL SERVICE CLIENT ID
+    name: EMAIL_SERVICE_CLIENT_ID
     required: false
-    value:
-  - name: EMAIL_SERVICE_CLIENT_SECRET
+    value: null
+  - description: EMAIL SERVICE CLIENT SECRET
     displayName: EMAIL SERVICE CLIENT SECRET
-    description: EMAIL SERVICE CLIENT SECRET
+    name: EMAIL_SERVICE_CLIENT_SECRET
     required: false
-    value:
-  - name: CHES_EMAIL_URL
+    value: null
+  - description: CHES EMAIL URL
     displayName: CHES EMAIL URL
-    description: CHES EMAIL URL
+    name: CHES_EMAIL_URL
     required: false
-    value:
-  - name: CHES_AUTH_URL
+    value: null
+  - description: CHES AUTH URL
     displayName: CHES AUTH URL
-    description: CHES AUTH URL
+    name: CHES_AUTH_URL
     required: false
-    value:
-  - name: RECIPIENT_EMAILS
+    value: null
+  - description: RECIPIENT EMAILS
     displayName: RECIPIENT EMAILS
-    description: RECIPIENT EMAILS
+    name: RECIPIENT_EMAILS
     required: false
-    value:
-  - name: URL_SCHEME
+    value: null
+  - description: URL Scheme
     displayName: URL Scheme
-    description: URL Scheme
+    name: URL_SCHEME
     required: false
     value: https
-  - name: DB_SERVICE_HOST
+  - description: Database Service Host
     displayName: Database Service Host
-    description: Database Service Host
+    name: DB_SERVICE_HOST
     required: false
     value: db
-  - name: DB_SERVICE_PORT
+  - description: Database Service Port
     displayName: Database Service Port
-    description: Database Service Port
+    name: DB_SERVICE_PORT
     required: false
-    value: "5432"
-  - name: ADM_RECIPIENT_EMAILS
+    value: '5432'
+  - description: Admin Recipient Emails
     displayName: Admin Recipient Emails
-    description: Admin Recipient Emails
+    name: ADM_RECIPIENT_EMAILS
     required: false
     value: marzieh.mehrnejad@quartech.com
-  - name: JC_INTERFACE_API_FILE_URL
+  - description: JC Interface API File URL
     displayName: JC Interface API File URL
-    description: JC Interface API File URL
+    name: JC_INTERFACE_API_FILE_URL
     required: false
-    value:
-  - name: JC_INTERFACE_API_FILE_USERNAME
+    value: null
+  - description: JC Interface API File Username
     displayName: JC Interface API File Username
-    description: JC Interface API File Username
+    name: JC_INTERFACE_API_FILE_USERNAME
     required: false
-    value:
-  - name: JC_INTERFACE_API_FILE_PASSWORD
+    value: null
+  - description: JC Interface API File Password
     displayName: JC Interface API File Password
-    description: JC Interface API File Password
+    name: JC_INTERFACE_API_FILE_PASSWORD
     required: false
-    value:
-  - name: JC_INTERFACE_FILE_PART_ID
+    value: null
+  - description: JC Interface File Part ID
     displayName: JC Interface File Part ID
-    description: JC Interface File Part ID
+    name: JC_INTERFACE_FILE_PART_ID
     required: false
-    value:
-  - name: JC_INTERFACE_FILE_AGENCY_ID
+    value: null
+  - description: JC Interface File Agency ID
     displayName: JC Interface File Agency ID
-    description: JC Interface File Agency ID
+    name: JC_INTERFACE_FILE_AGENCY_ID
     required: false
-    value:
-
-  - name: MIN_REPLICAS
+    value: null
+  - description: The minimum number of pods to have running.
     displayName: Minimum Replicas
-    description: The minimum number of pods to have running.
+    name: MIN_REPLICAS
     required: true
-    value: "3"
-  - name: MAX_REPLICAS
+    value: '3'
+  - description: The maximum number of pods to have running.
     displayName: Maximum Replicas
-    description: The maximum number of pods to have running.
+    name: MAX_REPLICAS
     required: true
-    value: "6"
-
-  - name: CPU_REQUEST
+    value: '6'
+  - description: The resources CPU request (in cores) for this build.
     displayName: Resources CPU Request
-    description: The resources CPU request (in cores) for this build.
+    name: CPU_REQUEST
     required: true
     value: 10m
-  - name: MEMORY_REQUEST
+  - description: The resources Memory request (in Mi, Gi, etc) for this build.
     displayName: Resources Memory Request
-    description: The resources Memory request (in Mi, Gi, etc) for this build.
+    name: MEMORY_REQUEST
     required: true
-    value: 10Mi
+    value: 10Miity.devops.gov.bc.ca/v1alpha1
+  #     network: ${NAME}
+  #     labels:
+  #       name: ${NAME}
+  #       network: ${NAME}
+  #       - - role=pdf
+  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
+  #     destination:
+  #       - - role=db
+  # - kind: NetworkSecurityPolicy
+  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
+  #   metadata:
+  #     name: ${NAME}
+  #     labels:
+  #       name: ${NAME}
+  #       appe: ${NAME}
+  #       n:twork  ${NAME}
+  #   $   - - role=pdf
+  #         - {namespace=${NAMESPACE_NAME}-$ATAG_PP_NA
+  #     destination:ME}
+  #       - - role=db
+  # - kied: Nnv: ${SecurityPolicy
+  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
+  #   metadata:
+  #     name: ${NAME}
+  #     labels:
+  #       nameTAG_NAME}
+  #   spec:
+  #     description: |
+  #       Define the network parameters for accessing remote resources.
+  #     entries:
+  #       - ${OIDC_RP_HOST}
+  #     servicePorts:
+  #       - tcp/443

@@ -1,0 +1,321 @@
+kind: List
+apiVersion: v1
+metadata: {}
+items:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: api
+      name: api
+    spec:
+      description: |
+        Allow the front-end application to access the API.
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: dev
+                  name: 1a7b16
+              podSelector:
+                matchLabels:
+                  app: court-interpreter-scheduling
+                  env: dev
+                  role: web
+          ports:
+            - port: 8080
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: court-interpreter-scheduling
+          env: dev
+          role: api
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        description: Exposes and load balances the application pods
+        service.alpha.openshift.io/dependencies: '[{name: db, kind: Service}]'
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: api
+        role: api
+      name: api
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          targetPort: 8080
+      selector:
+        name: api
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        description: Defines how to deploy the application server
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: api
+        role: api
+      name: api
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: api
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: court-interpreter-scheduling
+            env: dev
+            name: api
+            role: api
+          name: api
+        spec:
+          containers:
+            - env:
+                - name: DEFAULT_BASE_URL
+                  value: /court-interpreter-scheduling
+                - name: URL_SCHEME
+                  value: https
+                - name: OIDC_RP_PROVIDER_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_PROVIDER_URL
+                      name: api
+                - name: OIDC_RP_PROVIDER_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_PROVIDER_REALM
+                      name: api
+                - name: OIDC_RP_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_CLIENT_ID
+                      name: api
+                - name: OIDC_RP_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: OIDC_RP_CLIENT_SECRET
+                      name: api
+                - name: OIDC_RP_KC_IDP_HINT
+                  value: kc-idir
+                - name: JWT_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: JWT_SECRET_KEY
+                      name: api
+                - name: DATABASE_ENGINE
+                  value: postgres
+                - name: DATABASE_SERVICE_NAME
+                  value: db
+                - name: DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: db
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: db
+                - name: DB_SERVICE_HOST
+                  value: db
+                - name: DB_SERVICE_PORT
+                  value: "5432"
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: db
+                - name: JC_INTERFACE_API_LOCATION_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_LOCATION_URL
+                      name: api
+                - name: JC_INTERFACE_API_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_USERNAME
+                      name: api
+                - name: JC_INTERFACE_API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_PASSWORD
+                      name: api
+                - name: OPENROAD_MAP_URL
+                  value: ""
+                - name: GOOGLE_MAP_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: GOOGLE_MAP_URL
+                      name: api
+                - name: EFILING_HUB_API_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-base-url
+                      name: api
+                - name: EFILING_HUB_KEYCLOAK_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-client-id
+                      name: api
+                - name: EFILING_HUB_KEYCLOAK_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-auth-url
+                      name: api
+                - name: EFILING_HUB_KEYCLOAK_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-client-secret
+                      name: api
+                - name: EFILING_HUB_KEYCLOAK_REALM
+                  valueFrom:
+                    secretKeyRef:
+                      key: efiling-auth-realm
+                      name: api
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: CHES_AUTH_URL
+                      name: api
+                - name: CHES_EMAIL_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: CHES_EMAIL_URL
+                      name: api
+                - name: EMAIL_SERVICE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: EMAIL_SERVICE_CLIENT_ID
+                      name: api
+                - name: EMAIL_SERVICE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: EMAIL_SERVICE_CLIENT_SECRET
+                      name: api
+                - name: RECIPIENT_EMAILS
+                  value: ""
+                - name: PDF_SERVICE_URL
+                  value: http://pdf:5001
+                - name: ADM_RECIPIENT_EMAILS
+                  value: ""
+                - name: DATA_SECURITY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: DATA_SECURITY_KEY
+                      name: api
+                - name: JC_INTERFACE_API_FILE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_URL
+                      name: api
+                - name: JC_INTERFACE_API_FILE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_USERNAME
+                      name: api
+                - name: JC_INTERFACE_API_FILE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_API_FILE_PASSWORD
+                      name: api
+                - name: JC_INTERFACE_FILE_PART_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_FILE_PART_ID
+                      name: api
+                - name: JC_INTERFACE_FILE_AGENCY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: JC_INTERFACE_FILE_AGENCY_ID
+                      name: api
+                - name: EFILING_ENABLED
+                  value: "false"
+              image: null
+              imagePullPolicy: IfNotPresent
+              lifecycle:
+                postStart:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - alembic upgrade head
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /api/v1/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 120
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+              name: api
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /api/v1/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 30
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 10Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - api
+            from:
+              kind: ImageStreamTag
+              name: api:dev
+              namespace: 1a7b16-tools
+          type: ImageChange
+        - type: ConfigChange
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: api
+        role: api
+      name: api
+    spec:
+      maxReplicas: 6
+      minReplicas: 3
+      scaleTargetRef:
+        kind: DeploymentConfig
+        name: api

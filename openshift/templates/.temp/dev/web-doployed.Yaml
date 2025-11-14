@@ -1,0 +1,321 @@
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: '2021-12-08T03:55:48Z'
+  generation: 126
+  labels:
+    app: court-interpreter-scheduling
+    env: dev
+    name: web
+    role: web
+  managedFields:
+    - apiVersion: apps.openshift.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+            f:env: {}
+            f:name: {}
+            f:role: {}
+        f:spec:
+          f:replicas: {}
+          f:revisionHistoryLimit: {}
+          f:selector:
+            .: {}
+            f:name: {}
+          f:strategy:
+            f:activeDeadlineSeconds: {}
+            f:rollingParams:
+              .: {}
+              f:intervalSeconds: {}
+              f:maxSurge: {}
+              f:maxUnavailable: {}
+              f:timeoutSeconds: {}
+              f:updatePeriodSeconds: {}
+            f:type: {}
+          f:template:
+            .: {}
+            f:metadata:
+              .: {}
+              f:creationTimestamp: {}
+              f:labels:
+                .: {}
+                f:app: {}
+                f:env: {}
+                f:name: {}
+                f:role: {}
+              f:name: {}
+            f:spec:
+              .: {}
+              f:containers:
+                .: {}
+                k:{"name":"web"}:
+                  .: {}
+                  f:env:
+                    .: {}
+                    k:{"name":"API_PATH"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"API_SERVICE_NAME"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"API_URL"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"AdditionalRealIpFromRules"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"IpFilterRules"}:
+                      .: {}
+                      f:name: {}
+                    k:{"name":"PUBLIC_URL"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"RealIpFrom"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"WEB_BASE_HREF"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                  f:imagePullPolicy: {}
+                  f:livenessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:initialDelaySeconds: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:name: {}
+                  f:ports:
+                    .: {}
+                    k:{"containerPort":8080,"protocol":"TCP"}:
+                      .: {}
+                      f:containerPort: {}
+                      f:protocol: {}
+                  f:readinessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:initialDelaySeconds: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:resources:
+                    .: {}
+                    f:limits:
+                      .: {}
+                      f:cpu: {}
+                      f:memory: {}
+                    f:requests:
+                      .: {}
+                      f:cpu: {}
+                      f:memory: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+              f:dnsPolicy: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:terminationGracePeriodSeconds: {}
+      manager: Mozilla
+      operation: Update
+      time: '2021-12-08T16:19:59Z'
+    - apiVersion: apps.openshift.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          f:template:
+            f:spec:
+              f:containers:
+                k:{"name":"web"}:
+                  f:image: {}
+          f:triggers: {}
+        f:status:
+          f:conditions:
+            .: {}
+            k:{"type":"Available"}:
+              .: {}
+              f:type: {}
+            k:{"type":"Progressing"}:
+              .: {}
+              f:type: {}
+          f:details: {}
+      manager: openshift-controller-manager
+      operation: Update
+      time: '2025-10-29T19:34:19Z'
+    - apiVersion: apps.openshift.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:availableReplicas: {}
+          f:conditions:
+            k:{"type":"Available"}:
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:status: {}
+            k:{"type":"Progressing"}:
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+          f:details:
+            f:causes: {}
+            f:message: {}
+          f:latestVersion: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:unavailableReplicas: {}
+          f:updatedReplicas: {}
+      manager: openshift-controller-manager
+      operation: Update
+      subresource: status
+      time: '2025-10-29T19:34:46Z'
+  name: web
+  namespace: 1a7b16-dev
+  resourceVersion: '16853803486'
+  uid: fe255ef1-5149-4f88-bb10-c4bd7202a4c1
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    name: web
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: court-interpreter-scheduling
+        env: dev
+        name: web
+        role: web
+      name: web
+    spec:
+      containers:
+        - env:
+            - name: PUBLIC_URL
+              value: /court-interpreter-scheduling/
+            - name: RealIpFrom
+              value: 172.51.0.0/16
+            - name: AdditionalRealIpFromRules
+              value: set_real_ip_from 10.97.86.1;
+            - name: WEB_BASE_HREF
+              value: /court-interpreter-scheduling/
+            - name: IpFilterRules
+            - name: API_URL
+              value: http://api:8080/api
+            - name: API_SERVICE_NAME
+              value: api
+            - name: API_PATH
+              value: /api
+          image: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/web@sha256:6236e80bfad38d12ce88cb54cb27fd642a94b02f380702728fe3ac7fd91aa193
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx_status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+          name: web
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx_status
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - web
+        from:
+          kind: ImageStreamTag
+          name: web:dev
+          namespace: 1a7b16-tools
+        lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/web@sha256:6236e80bfad38d12ce88cb54cb27fd642a94b02f380702728fe3ac7fd91aa193
+      type: ImageChange
+status:
+  availableReplicas: 1
+  conditions:
+    - lastTransitionTime: '2025-09-07T23:07:22Z'
+      lastUpdateTime: '2025-09-07T23:07:22Z'
+      message: Deployment config has minimum availability.
+      status: 'True'
+      type: Available
+    - lastTransitionTime: '2025-10-29T19:34:42Z'
+      lastUpdateTime: '2025-10-29T19:34:46Z'
+      message: replication controller "web-119" successfully rolled out
+      reason: NewReplicationControllerAvailable
+      status: 'True'
+      type: Progressing
+  details:
+    causes:
+      - imageTrigger:
+          from:
+            kind: DockerImage
+            name: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/web@sha256:6236e80bfad38d12ce88cb54cb27fd642a94b02f380702728fe3ac7fd91aa193
+        type: ImageChange
+    message: image change
+  latestVersion: 119
+  observedGeneration: 126
+  readyReplicas: 1
+  replicas: 1
+  unavailableReplicas: 0
+  updatedReplicas: 1

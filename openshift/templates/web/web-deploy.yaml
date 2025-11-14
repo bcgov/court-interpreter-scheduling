@@ -7,15 +7,14 @@ metadata:
     tags: vue,nginx
   name: vue-on-nginx
 objects:
-
-  - kind: NetworkPolicy
-    apiVersion: networking.k8s.io/v1
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
     metadata:
-      name: ${NAME}-allow-ingress
       labels:
-        name: ${NAME}-allow-ingress
         app: ${APP_NAME}
         env: ${TAG_NAME}
+        name: ${NAME}-allow-ingress
+      name: ${NAME}-allow-ingress
     spec:
       description: |
         Allow traffic from routes into the ${ROLE} container(s).
@@ -26,12 +25,282 @@ objects:
                   network.openshift.io/policy-group: ingress
       podSelector:
         matchLabels:
-          role: ${ROLE}
           app: ${APP_NAME}
           env: ${TAG_NAME}
+          role: ${ROLE}
       policyTypes:
         - Ingress
-
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: ${NAME}
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: ${APP_NAME}
+            env: ${TAG_NAME}
+            name: ${NAME}
+            role: ${ROLE}
+          name: ${NAME}
+        spec:
+          containers:
+            - env:
+                - name: PUBLIC_URL
+                  value: ${PUBLIC_URL}
+                - name: RealIpFrom
+                  value: ${REAL_IP_FROM}
+                - name: AdditionalRealIpFromRules
+                  value: ${AdditionalRealIpFromRules}
+                - name: WEB_BASE_HREF
+                  value: ${WEB_BASE_HREF}
+                - name: IpFilterRules
+                  value: ${IpFilterRules}
+                - name: API_URL
+                  value: ${API_URL}
+                - name: API_SERVICE_NAME
+                  value: ${API_SERVICE_NAME}
+                - name: API_PATH
+                  value: ${API_PATH}
+              image: ${NAME}
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /nginx_status
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 60
+              name: ${NAME}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /nginx_status
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 60
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${TAG_NAME}
+              namespace: ${IMAGE_NAMESPACE}
+          type: ImageChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        name: ${NAME}
+      sessionAffinity: None
+      type: ClusterIP
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        haproxy.router.openshift.io/ip_whitelist: ${ALLOW_LIST}
+        haproxy.router.openshift.io/timeout: ${ROUTE_TIMEOUT}
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    spec:
+      host: ${APPLICATION_DOMAIN}
+      port:
+        targetPort: 8080-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: ${NAME}
+        weight: 100
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    spec:
+      maxReplicas: ${{MAX_REPLICAS}}
+      minReplicas: ${{MIN_REPLICAS}}
+      scaleTargetRef:
+        kind: DeploymentConfig
+        name: ${NAME}
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    stringData:
+      allow-list: ${ALLOW_LIST}
+    type: Opaque
+parameters:
+  - description: The name assigned to all of the openshift objects defined in this template. It is also the name of runtime image you want.
+    displayName: Name
+    name: NAME
+    required: true
+    value: web
+  - description: App Name
+    displayName: App Name
+    name: APP_NAME
+    required: true
+    value: court-interpreter-scheduling
+  - description: The application host path (Web Base Href).
+    displayName: Web Base Href
+    name: WEB_BASE_HREF
+    required: true
+    value: /court-interpreter-scheduling/
+  - description: Role
+    displayName: Role
+    name: ROLE
+    required: true
+    value: web
+  - description: The base namespace name for the project.
+    displayName: Namespace Name
+    name: NAMESPACE_NAME
+    required: true
+    value: 1a7b16
+  - description: The namespace where to get the above image name
+    displayName: Image Namespace
+    name: IMAGE_NAMESPACE
+    required: true
+    value: 1a7b16-tools
+  - description: OpenShift cluster private IP range in CIDR notation, used by Nginx ngx_http_realip_module.
+    displayName: OpenShift Cluster IP Range
+    name: REAL_IP_FROM
+    required: true
+    value: 172.51.0.0/16
+  - description: The default URL to use when proxying requests to the application's API.  The value here will be overridden if a API_SERVICE_NAME is defined.
+    displayName: API URL
+    name: API_URL
+    required: true
+    value: http://api:8080/api
+  - description: The name of the service endpoint for the API.  Used to wire up to an API endpoint within the same project; overriding the URL defined by API_URL.
+    displayName: API Service Name
+    name: API_SERVICE_NAME
+    required: false
+    value: api
+  - description: The root path for the API.  Used in conjunction with API_SERVICE_NAME.
+    displayName: API Path
+    name: API_PATH
+    required: true
+    value: /api
+  - description: The application host path (Web Base Href).
+    displayName: Web Base Href
+    name: PUBLIC_URL
+    required: false
+    value: /court-interpreter-scheduling/
+  - description: Additional known and trusted reverse proxy ips conforming to nginx set_real_ip_from directive syntax. Multiple directives are allowed, separated by semicolon.
+    displayName: Additional real_ip_from Rules
+    name: AdditionalRealIpFromRules
+  - description: Nginx ngx_http_access_module ip filter rules
+    displayName: Ip Filter Rules
+    name: IpFilterRules
+    value: null
+  - description: The endpoint used for routing access to the application.
+    displayName: Application Domain
+    name: APPLICATION_DOMAIN
+    value: court-interpreter-scheduling-dev.silver.devops.gov.bc.ca
+  - description: The allow list containing all of the trusted source IPs.
+    displayName: Allow List
+    name: ALLOW_LIST
+    required: false
+  - description: The timeout for the route.
+    displayName: Route Timeout
+    name: ROUTE_TIMEOUT
+    required: false
+    value: 35s
+  - description: The TAG name for this environment, e.g., dev, test, prod
+    displayName: Env TAG name
+    name: TAG_NAME
+    value: dev
+  - description: The minimum number of pods to have running.
+    displayName: Minimum Replicas
+    name: MIN_REPLICAS
+    required: true
+    value: '3'
+  - description: The maximum number of pods to have running.
+    displayName: Maximum Replicas
+    name: MAX_REPLICAS
+    required: true
+    value: '6'
+  - description: The resources CPU request (in cores) for this build.
+    displayName: Resources CPU Request
+    name: CPU_REQUEST
+    required: true
+    value: 10m
+  - description: The resources Memory request (in Mi, Gi, etc) for this build.
+    displayName: Resources Memory Request
+    name: MEMORY_REQUEST
+    required: true
+    value: 10Mi
+  #     destination:
+  #       - - role=api
   # - kind: NetworkSecurityPolicy
   #   apiVersion: security.devops.gov.bc.ca/v1alpha1
   #   metadata:
@@ -48,298 +317,3 @@ objects:
   #         - app=${APP_NAME}
   #         - env=${TAG_NAME}
   #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-  #     destination:
-  #       - - role=api
-  #         - app=${APP_NAME}
-  #         - env=${TAG_NAME}
-  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-
-  - kind: DeploymentConfig
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      replicas: 2
-      selector:
-        name: ${NAME}
-      strategy:
-        rollingParams:
-          intervalSeconds: 1
-          maxSurge: 25%
-          maxUnavailable: 25%
-          timeoutSeconds: 600
-          updatePeriodSeconds: 1
-        type: Rolling
-      template:
-        metadata:
-          name: ${NAME}
-          labels:
-            name: ${NAME}
-            app: ${APP_NAME}
-            role: ${ROLE}
-            env: ${TAG_NAME}
-        spec:
-          containers:
-            - image: ${NAME}
-              imagePullPolicy: Always
-              name: ${NAME}
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-              env:
-                - name: WEB_BASE_HREF
-                  value: ${WEB_BASE_HREF}
-                - name: API_URL
-                  value: ${API_URL}
-                - name: API_SERVICE_NAME
-                  value: ${API_SERVICE_NAME}
-                - name: API_PATH
-                  value: ${API_PATH}
-                - name: PUBLIC_URL
-                  value: ${PUBLIC_URL}
-                - name: RealIpFrom
-                  value: ${REAL_IP_FROM}
-                - name: AdditionalRealIpFromRules
-                  value: ${AdditionalRealIpFromRules}
-                - name: IpFilterRules
-                  value: ${IpFilterRules}
-              resources:
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
-              livenessProbe:
-                httpGet:
-                  path: /nginx_status
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 30
-                timeoutSeconds: 60
-                periodSeconds: 10
-                successThreshold: 1
-                failureThreshold: 3
-              readinessProbe:
-                httpGet:
-                  path: /nginx_status
-                  port: 8080
-                  scheme: HTTP
-                initialDelaySeconds: 10
-                timeoutSeconds: 60
-                periodSeconds: 10
-                successThreshold: 1
-                failureThreshold: 3
-              lifecycle:
-                preStop:
-                  exec:
-                    command:
-                      - /bin/sleep
-                      - '20'
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-      test: false
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              namespace: ${IMAGE_NAMESPACE}
-              name: ${NAME}:${TAG_NAME}
-
-  - kind: Service
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      ports:
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-      selector:
-        name: ${NAME}
-      sessionAffinity: None
-      type: ClusterIP
-
-  - kind: Route
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-      annotations:
-        haproxy.router.openshift.io/ip_whitelist: ${ALLOW_LIST}
-        haproxy.router.openshift.io/timeout: ${ROUTE_TIMEOUT}
-    spec:
-      host: ${APPLICATION_DOMAIN}
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      port:
-        targetPort: 8080-tcp
-      to:
-        kind: Service
-        name: ${NAME}
-        weight: 100
-
-  - kind: HorizontalPodAutoscaler
-    apiVersion: autoscaling/v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    spec:
-      scaleTargetRef:
-        kind: DeploymentConfig
-        name: ${NAME}
-      minReplicas: ${{MIN_REPLICAS}}
-      maxReplicas: ${{MAX_REPLICAS}}
-
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: ${NAME}
-      labels:
-        name: ${NAME}
-        app: ${APP_NAME}
-        role: ${ROLE}
-        env: ${TAG_NAME}
-    stringData:
-      allow-list: ${ALLOW_LIST}
-    type: Opaque
-
-parameters:
-  - description: The name assigned to all of the openshift objects defined in this template. It is also the name of runtime image you want.
-    displayName: Name
-    name: NAME
-    required: true
-    value: web
-
-  - name: APP_NAME
-    displayName: App Name
-    description: App Name
-    required: true
-    value: court-interpreter-scheduling
-
-  - name: WEB_BASE_HREF
-    displayName: Web Base Href
-    description: The application host path (Web Base Href).
-    required: true
-    value: /court-interpreter-scheduling/
-  - name: ROLE
-    displayName: Role
-    description: Role
-    required: true
-    value: web
-
-  - name: NAMESPACE_NAME
-    displayName: Namespace Name
-    description: The base namespace name for the project.
-    required: true
-    value: 1a7b16
-
-  - description: The namespace where to get the above image name
-    displayName: Image Namespace
-    name: IMAGE_NAMESPACE
-    required: true
-    value: 1a7b16-tools
-  - description:
-      OpenShift cluster private IP range in CIDR notation, used by Nginx
-      ngx_http_realip_module.
-    displayName: OpenShift Cluster IP Range
-    name: REAL_IP_FROM
-    required: true
-    value: 172.51.0.0/16
-  - description:
-      The default URL to use when proxying requests to the application's
-      API.  The value here will be overridden if a API_SERVICE_NAME is defined.
-    displayName: API URL
-    name: API_URL
-    required: true
-    value: http://api:8080/api
-  - description:
-      The name of the service endpoint for the API.  Used to wire up to an
-      API endpoint within the same project; overriding the URL defined by API_URL.
-    displayName: API Service Name
-    name: API_SERVICE_NAME
-    required: false
-    value: api
-  - description: The root path for the API.  Used in conjunction with API_SERVICE_NAME.
-    displayName: API Path
-    name: API_PATH
-    required: true
-    value: /api
-  - name: PUBLIC_URL
-    displayName: Web Base Href
-    description: The application host path (Web Base Href).
-    required: false
-    value: /court-interpreter-scheduling/
-  - description:
-      Additional known and trusted reverse proxy ips conforming to nginx
-      set_real_ip_from directive syntax. Multiple directives are allowed, separated
-      by semicolon.
-    displayName: Additional real_ip_from Rules
-    name: AdditionalRealIpFromRules
-  - description: Nginx ngx_http_access_module ip filter rules
-    displayName: Ip Filter Rules
-    name: IpFilterRules
-    value:
-  - description: The endpoint used for routing access to the application.
-    displayName: Application Domain
-    name: APPLICATION_DOMAIN
-    value: court-interpreter-scheduling-dev.silver.devops.gov.bc.ca
-  - name: ALLOW_LIST
-    displayName: Allow List
-    description: The allow list containing all of the trusted source IPs.
-    required: false
-  - name: ROUTE_TIMEOUT
-    displayName: Route Timeout
-    description: The timeout for the route.
-    required: false
-    value: 35s
-  - description: The TAG name for this environment, e.g., dev, test, prod
-    displayName: Env TAG name
-    name: TAG_NAME
-    value: dev
-
-  - name: MIN_REPLICAS
-    displayName: Minimum Replicas
-    description: The minimum number of pods to have running.
-    required: true
-    value: "3"
-  - name: MAX_REPLICAS
-    displayName: Maximum Replicas
-    description: The maximum number of pods to have running.
-    required: true
-    value: "6"
-
-  - name: CPU_REQUEST
-    displayName: Resources CPU Request
-    description: The resources CPU request (in cores) for this build.
-    required: true
-    value: 10m
-  - name: MEMORY_REQUEST
-    displayName: Resources Memory Request
-    description: The resources Memory request (in Mi, Gi, etc) for this build.
-    required: true
-    value: 10Mi
