@@ -2,17 +2,14 @@
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
-  creationTimestamp: '2021-12-08T02:28:53Z'
-  generation: 179
+  annotations:
+    description: Defines how to deploy the application server
   labels:
     app: court-interpreter-scheduling
     env: dev
     name: api
     role: api
   name: api
-  namespace: 1a7b16-dev
-  resourceVersion: '16853751986'
-  uid: efa7f022-a1ec-46a8-a4d8-e7fff6551457
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -110,7 +107,10 @@ spec:
                   key: JC_INTERFACE_API_PASSWORD
                   name: api
             - name: OPENROAD_MAP_URL
-              value: https://nominatim.openstreetmap.org/search/{}?format=json&limit=3
+              valueFrom:
+                secretKeyRef:
+                  key: OPENROAD_MAP_URL
+                  name: api
             - name: GOOGLE_MAP_URL
               valueFrom:
                 secretKeyRef:
@@ -162,11 +162,17 @@ spec:
                   key: EMAIL_SERVICE_CLIENT_SECRET
                   name: api
             - name: RECIPIENT_EMAILS
-              value: marzieh.mehrnejad@quartech.com,AskCIP@gov.bc.ca
+              valueFrom:
+                secretKeyRef:
+                  key: RECIPIENT_EMAILS
+                  name: api
             - name: PDF_SERVICE_URL
               value: http://pdf:5001
             - name: ADM_RECIPIENT_EMAILS
-              value: marzieh.mehrnejad@quartech.com
+              valueFrom:
+                secretKeyRef:
+                  key: ADM_RECIPIENT_EMAILS
+                  name: api
             - name: DATA_SECURITY_KEY
               valueFrom:
                 secretKeyRef:
@@ -197,7 +203,7 @@ spec:
                 secretKeyRef:
                   key: JC_INTERFACE_FILE_AGENCY_ID
                   name: api
-          image: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/api@sha256:24af13fd1847e4fc336e80b411335da68a8727e3f86040df1fcf0065d2c5f786
+          image: null
           imagePullPolicy: IfNotPresent
           lifecycle:
             postStart:
@@ -231,9 +237,6 @@ spec:
             successThreshold: 1
             timeoutSeconds: 30
           resources:
-            limits:
-              cpu: 500m
-              memory: 1Gi
             requests:
               cpu: 10m
               memory: 10Mi
@@ -254,6 +257,5 @@ spec:
           kind: ImageStreamTag
           name: api:dev
           namespace: 1a7b16-tools
-        lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/api@sha256:24af13fd1847e4fc336e80b411335da68a8727e3f86040df1fcf0065d2c5f786
       type: ImageChange
     - type: ConfigChange

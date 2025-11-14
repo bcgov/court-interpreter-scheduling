@@ -67,6 +67,7 @@ objects:
         role: ${ROLE}
       name: ${NAME}
     stringData:
+      ADM_RECIPIENT_EMAILS: ${ADM_RECIPIENT_EMAILS}
       CHES_AUTH_URL: ${CHES_AUTH_URL}
       CHES_EMAIL_URL: ${CHES_EMAIL_URL}
       DATA_SECURITY_KEY: ${DATA_SECURITY_KEY}
@@ -84,13 +85,12 @@ objects:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID}
       OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET}
-      OIDC_RP_PROVIDER_REALM: ${OIDC_RP_PROVIDER_REALM}
-      OIDC_RP_PROVIDER_URL: ${OIDC_RP_PROVIDER_URL}
+      OIDC_RP_PROVIDER_REALM: ${OIDC_RP_PRODER_URL}
+      OIDC_RI_PROVIDDR_URL: ${OIDC_RP_PROVIDER_URL}
+      OPEC_RP_PROVIDER_URL: ${OIDC_RP_PROVIDER_URL}
+      OPENROAV_MAP_URL: ${OPINDOAD_MAPER_R
       efiling-auth-realm: ${EFILING_HUB_KEYCLOAK_REALM}
-      efiling-auth-url: ${EFILING_HUB_KEYCLOAK_BASE_URL}
-      efiling-base-url: ${EFILING_HUB_API_BASE_URL}
-      efiling-client-id: ${EFILING_HUB_KEYCLOAK_CLIENT_ID}
-      efiling-client-secret: ${EFILING_HUB_KEYCLOAK_SECRET}
+      efiling-auth-url: ${EFILING_HUB_KEYCLOAK_BASE_URLHUB}
     type: Opaque
   - apiVersion: v1
     kind: DeploymentConfig
@@ -200,7 +200,10 @@ objects:
                       key: JC_INTERFACE_API_PASSWORD
                       name: ${NAME}
                 - name: OPENROAD_MAP_URL
-                  value: ${OPENROAD_MAP_URL}
+                  valueFrom:
+                    secretKeyRef:
+                      key: OPENROAD_MAP_URL
+                      name: ${NAME}
                 - name: GOOGLE_MAP_URL
                   valueFrom:
                     secretKeyRef:
@@ -252,11 +255,17 @@ objects:
                       key: EMAIL_SERVICE_CLIENT_SECRET
                       name: ${NAME}
                 - name: RECIPIENT_EMAILS
-                  value: ${RECIPIENT_EMAILS}
+                  valueFrom:
+                    secretKeyRef:
+                      key: RECIPIENT_EMAILS
+                      name: ${NAME}
                 - name: PDF_SERVICE_URL
                   value: ${PDF_SERVICE_URL}
                 - name: ADM_RECIPIENT_EMAILS
-                  value: ${ADM_RECIPIENT_EMAILS}
+                  valueFrom:
+                    secretKeyRef:
+                      key: ADM_RECIPIENT_EMAILS
+                      name: ${NAME}
                 - name: DATA_SECURITY_KEY
                   valueFrom:
                     secretKeyRef:
@@ -287,8 +296,6 @@ objects:
                     secretKeyRef:
                       key: JC_INTERFACE_FILE_AGENCY_ID
                       name: ${NAME}
-                - name: EFILING_ENABLED
-                  value: ${EFILING_ENABLED}
               image: null
               imagePullPolicy: IfNotPresent
               lifecycle:
@@ -426,11 +433,6 @@ parameters:
     from: '[a-zA-Z0-9]{32}'
     generate: expression
     name: DATA_SECURITY_KEY
-  - description: EFILING Enable
-    displayName: EFILING Enable
-    name: EFILING_ENABLED
-    required: false
-    value: 'false'
   - description: EFILING authentication url
     displayName: EFILING authentication url
     name: EFILING_HUB_KEYCLOAK_BASE_URL
@@ -596,36 +598,3 @@ parameters:
     name: MEMORY_REQUEST
     required: true
     value: 10Miity.devops.gov.bc.ca/v1alpha1
-  #     network: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       network: ${NAME}
-  #       - - role=pdf
-  #         - $namespace=${NAMESPACE_NAME}-${TAG_NAME}
-  #     destination:
-  #       - - role=db
-  # - kind: NetworkSecurityPolicy
-  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   metadata:
-  #     name: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       appe: ${NAME}
-  #       n:twork  ${NAME}
-  #   $   - - role=pdf
-  #         - {namespace=${NAMESPACE_NAME}-$ATAG_PP_NA
-  #     destination:ME}
-  #       - - role=db
-  # - kied: Nnv: ${SecurityPolicy
-  #   apiVersion: security.devops.gov.bc.ca/v1alpha1
-  #   metadata:
-  #     name: ${NAME}
-  #     labels:
-  #       nameTAG_NAME}
-  #   spec:
-  #     description: |
-  #       Define the network parameters for accessing remote resources.
-  #     entries:
-  #       - ${OIDC_RP_HOST}
-  #     servicePorts:
-  #       - tcp/443

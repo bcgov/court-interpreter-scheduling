@@ -48,6 +48,7 @@ if createOperation; then
   readParameter "EMAIL_SERVICE_CLIENT_ID - Please provide it" EMAIL_SERVICE_CLIENT_ID "" "false"
   readParameter "EMAIL_SERVICE_CLIENT_SECRET - Please provide it" EMAIL_SERVICE_CLIENT_SECRET "" "false"
   readParameter "RECIPIENT_EMAILS - Please provide it" RECIPIENT_EMAILS "" "false"
+  readParameter "ADM_RECIPIENT_EMAILS - Please provide it" ADM_RECIPIENT_EMAILS "" "false"
 
   readParameter "SITEMINDER_LOGOFF_URL - Please provide the SiteMinder Logoff URL for the application environment.  The default is a blank string." SITEMINDER_LOGOFF_URL "" "false"
 else
@@ -85,6 +86,7 @@ else
   writeParameter "EMAIL_SERVICE_CLIENT_ID" "prompt_skipped" "false"
   writeParameter "EMAIL_SERVICE_CLIENT_SECRET" "prompt_skipped" "false"
   writeParameter "RECIPIENT_EMAILS" "prompt_skipped" "false"
+  writeParameter "ADM_RECIPIENT_EMAILS" "prompt_skipped" "false"
 
   writeParameter "SITEMINDER_LOGOFF_URL" "prompt_skipped" "false"
 

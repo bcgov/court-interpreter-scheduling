@@ -2,17 +2,12 @@
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
-  creationTimestamp: '2021-12-08T03:55:48Z'
-  generation: 126
   labels:
     app: court-interpreter-scheduling
     env: dev
     name: web
     role: web
   name: web
-  namespace: 1a7b16-dev
-  resourceVersion: '16853803486'
-  uid: fe255ef1-5149-4f88-bb10-c4bd7202a4c1
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -30,7 +25,6 @@ spec:
     type: Rolling
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: court-interpreter-scheduling
         env: dev
@@ -45,17 +39,18 @@ spec:
             - name: RealIpFrom
               value: 172.51.0.0/16
             - name: AdditionalRealIpFromRules
-              value: set_real_ip_from 10.97.86.1;
+              value: ''
             - name: WEB_BASE_HREF
               value: /court-interpreter-scheduling/
             - name: IpFilterRules
+              value: ''
             - name: API_URL
               value: http://api:8080/api
             - name: API_SERVICE_NAME
               value: api
             - name: API_PATH
               value: /api
-          image: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/web@sha256:6236e80bfad38d12ce88cb54cb27fd642a94b02f380702728fe3ac7fd91aa193
+          image: web
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -82,9 +77,6 @@ spec:
             successThreshold: 1
             timeoutSeconds: 60
           resources:
-            limits:
-              cpu: 250m
-              memory: 256Mi
             requests:
               cpu: 10m
               memory: 10Mi
@@ -106,5 +98,4 @@ spec:
           kind: ImageStreamTag
           name: web:dev
           namespace: 1a7b16-tools
-        lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/1a7b16-tools/web@sha256:6236e80bfad38d12ce88cb54cb27fd642a94b02f380702728fe3ac7fd91aa193
       type: ImageChange
