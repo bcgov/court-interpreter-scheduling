@@ -16,10 +16,14 @@ fi
 
 if createOperation; then
   readParameter "ALLOW_LIST - Please enter the list of trusted IP addresses that should be allowed to access the application's route (as a space delimited list of IP addresses):" "ALLOW_LIST" "" "false"
+  readParameter "RealIpFrom - Please provide it" RealIpFrom "" "false"
+  readParameter "AdditionalRealIpFromRules - Please provide it" AdditionalRealIpFromRules "" "false"
 else
   # Get ALLOW_LIST from secret
   printStatusMsg "Getting allow list from secret ...\n"
   writeParameter "ALLOW_LIST" "$(getSecret "${NAME}" "allow-list")" "false"
+  writeParameter "RealIpFrom" "prompt_skipped" "false"
+  writeParameter "RealIpFrom" "prompt_skipped" "false"
 fi
 
 SPECIALDEPLOYPARMS="--param-file=${_overrideParamFile}"

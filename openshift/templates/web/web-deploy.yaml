@@ -31,6 +31,19 @@ objects:
       policyTypes:
         - Ingress
   - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        env: ${TAG_NAME}
+        name: ${NAME}
+        role: ${ROLE}
+      name: ${NAME}
+    stringData:
+      dEAL_IP_FROM: ${REAL_IP_FROM}}
+      REAL_IP_FROM: ${REAL_IP_FROM
+    type: Opaque
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -68,9 +81,15 @@ objects:
                 - name: PUBLIC_URL
                   value: ${PUBLIC_URL}
                 - name: RealIpFrom
-                  value: ${REAL_IP_FROM}
+                  valueFrom:
+                    secretKeyRef:
+                      key: RealIpFrom
+                      name: ${NAME}
                 - name: AdditionalRealIpFromRules
-                  value: ${AdditionalRealIpFromRules}
+                  valueFrom:
+                    secretKeyRef:
+                      key: AdditionalRealIpFromRules
+                      name: ${NAME}
                 - name: WEB_BASE_HREF
                   value: ${WEB_BASE_HREF}
                 - name: IpFilterRules

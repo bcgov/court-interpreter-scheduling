@@ -37,9 +37,15 @@ spec:
             - name: PUBLIC_URL
               value: /court-interpreter-scheduling/
             - name: RealIpFrom
-              value: 172.51.0.0/16
+              valueFrom:
+                secretKeyRef:
+                  key: RealIpFrom
+                  name: web
             - name: AdditionalRealIpFromRules
-              value: ''
+              valueFrom:
+                secretKeyRef:
+                  key: AdditionalRealIpFromRules
+                  name: web
             - name: WEB_BASE_HREF
               value: /court-interpreter-scheduling/
             - name: IpFilterRules
