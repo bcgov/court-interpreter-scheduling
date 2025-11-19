@@ -31,19 +31,6 @@ objects:
       policyTypes:
         - Ingress
   - apiVersion: v1
-    kind: Secret
-    metadata:
-      labels:
-        app: ${APP_NAME}
-        env: ${TAG_NAME}
-        name: ${NAME}
-        role: ${ROLE}
-      name: ${NAME}
-    stringData:
-      dEAL_IP_FROM: ${REAL_IP_FROM}}
-      REAL_IP_FROM: ${REAL_IP_FROM
-    type: Opaque
-  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -83,7 +70,7 @@ objects:
                 - name: RealIpFrom
                   valueFrom:
                     secretKeyRef:
-                      key: RealIpFrom
+                      key: REAL_IP_FROM
                       name: ${NAME}
                 - name: AdditionalRealIpFromRules
                   valueFrom:
@@ -172,7 +159,6 @@ objects:
     kind: Route
     metadata:
       annotations:
-        haproxy.router.openshift.io/ip_whitelist: ${ALLOW_LIST}
         haproxy.router.openshift.io/timeout: ${ROUTE_TIMEOUT}
       labels:
         app: ${APP_NAME}
@@ -216,6 +202,8 @@ objects:
         role: ${ROLE}
       name: ${NAME}
     stringData:
+      AdditionalRealIpFromRules: ${AdditionalRealIpFromRules}
+      REAL_IP_FROM: ${REAL_IP_FROM}
       allow-list: ${ALLOW_LIST}
     type: Opaque
 parameters:
@@ -284,7 +272,7 @@ parameters:
   - description: The endpoint used for routing access to the application.
     displayName: Application Domain
     name: APPLICATION_DOMAIN
-    value: court-interpreter-scheduling-dev.silver.devops.gov.bc.ca
+    value: court-interpreter-scheduling-dev.silver.devops.bcgov
   - description: The allow list containing all of the trusted source IPs.
     displayName: Allow List
     name: ALLOW_LIST
