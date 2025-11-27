@@ -364,6 +364,7 @@ objects:
       maxReplicas: ${{MAX_REPLICAS}}
       minReplicas: ${{MIN_REPLICAS}}
       scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
         name: ${NAME}
 parameters:

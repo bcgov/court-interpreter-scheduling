@@ -16,7 +16,6 @@
 # AdditionalRealIpFromRules=
 # IpFilterRules=
 APPLICATION_DOMAIN=court-interpreter-scheduling-prod.silver.devops.gov.bc.ca
-# ALLOW_LIST=
 TAG_NAME=prod
 # MIN_REPLICAS=3
 # MAX_REPLICAS=6

@@ -16,7 +16,6 @@ PUBLIC_URL=/court-interpreter-scheduling/
 AdditionalRealIpFromRules=
 IpFilterRules=
 APPLICATION_DOMAIN=court-interpreter-scheduling-dev.silver.devops.bcgov
-ALLOW_LIST=
 TAG_NAME=dev
 MIN_REPLICAS=3
 MAX_REPLICAS=6

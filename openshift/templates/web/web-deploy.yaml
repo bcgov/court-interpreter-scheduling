@@ -192,6 +192,7 @@ objects:
       scaleTargetRef:
         kind: DeploymentConfig
         name: ${NAME}
+        apiVersion: apps.openshift.io/v1
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -204,7 +205,6 @@ objects:
     stringData:
       AdditionalRealIpFromRules: ${AdditionalRealIpFromRules}
       REAL_IP_FROM: ${REAL_IP_FROM}
-      allow-list: ${ALLOW_LIST}
     type: Opaque
 parameters:
   - description: The name assigned to all of the openshift objects defined in this template. It is also the name of runtime image you want.
@@ -273,10 +273,6 @@ parameters:
     displayName: Application Domain
     name: APPLICATION_DOMAIN
     value: court-interpreter-scheduling-dev.silver.devops.bcgov
-  - description: The allow list containing all of the trusted source IPs.
-    displayName: Allow List
-    name: ALLOW_LIST
-    required: false
   - description: The timeout for the route.
     displayName: Route Timeout
     name: ROUTE_TIMEOUT
