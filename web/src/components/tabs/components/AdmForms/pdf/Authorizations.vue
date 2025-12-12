@@ -41,7 +41,7 @@
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
-                    <th class="">Qualified Receiver</th>                                              
+                    <th class="">Qualified Receiver (Print Name)</th>                                              
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
@@ -52,7 +52,7 @@
                     <td />
                     <td class="">
                         I certify this is a true statement of disbursements made a entitled as a result of 
-                        travel on government business as have not been and will not be</td>                                              
+                        travel on government business as have not been and will not be reimbursed by any other party</td>                                              
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
@@ -68,12 +68,10 @@
 
                 <tr style="font-size:8pt;height:0.7rem;line-height:0.7rem;" >
                     <td />
-                    <td class="" style="font-size:7pt"> reimbursed by any other party</td>                                             
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
-                    <th class="" style="line-height:1rem;">Print Name</th>                                              
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>
