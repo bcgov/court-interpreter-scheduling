@@ -334,7 +334,7 @@ objects:
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
-              terminationMessagePath: /prod/termination-log
+              terminationMessagePath: /${TAG_NAME}/termination-log
               terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
           restartPolicy: Always
