@@ -1,3 +1,4 @@
+#!/bin/bash
 _includeFile=$(type -p overrides.inc)
 # Import ocFunctions.inc for getSecret
 _ocFunctions=$(type -p ocFunctions.inc)
@@ -15,11 +16,13 @@ fi
 # ========================================================================================
 
 if createOperation; then
-  readParameter "ALLOW_LIST - Please enter the list of trusted IP addresses that should be allowed to access the application's route (as a space delimited list of IP addresses):" "ALLOW_LIST" "" "false"
+  readParameter "REAL_IP_FROM - Please provide it" REAL_IP_FROM "" "false"
+  readParameter "AdditionalRealIpFromRules - Please provide it" AdditionalRealIpFromRules "" "false"
 else
   # Get ALLOW_LIST from secret
   printStatusMsg "Getting allow list from secret ...\n"
-  writeParameter "ALLOW_LIST" "$(getSecret "${NAME}" "allow-list")" "false"
+  writeParameter "REAL_IP_FROM" "prompt_skipped" "false"
+  writeParameter "AdditionalRealIpFromRules" "prompt_skipped" "false"
 fi
 
 SPECIALDEPLOYPARMS="--param-file=${_overrideParamFile}"

@@ -1,3 +1,4 @@
+#!/bin/bash
 _includeFile=$(type -p overrides.inc)
 # Import ocFunctions.inc for getSecret
 _ocFunctions=$(type -p ocFunctions.inc)
@@ -15,8 +16,6 @@ fi
 if createOperation; then
   # Ask the user to supply the sensitive parameters ...
   readParameter "DATA_SECURITY_KEY - Please provide the encryption key for the application environment.  If left blank, a 32 character long base64 encoded value will be randomly generated using openssl:" DATA_SECURITY_KEY $(generateKey 32) "false"
-  readParameter "OIDC_RP_PROVIDER_ENDPOINT - Please provide the url for the OIDC RP Provider.  The default is a blank string." OIDC_RP_PROVIDER_ENDPOINT "" "false"
-  parseHostnameParameter "OIDC_RP_PROVIDER_ENDPOINT" "OIDC_RP_HOST"
   readParameter "OIDC_RP_CLIENT_SECRET - Please provide the OIDC RP Client Secret.  The default is a blank string." OIDC_RP_CLIENT_SECRET "" "false"
 
   # Get the eFiling settings
@@ -48,13 +47,11 @@ if createOperation; then
   readParameter "EMAIL_SERVICE_CLIENT_ID - Please provide it" EMAIL_SERVICE_CLIENT_ID "" "false"
   readParameter "EMAIL_SERVICE_CLIENT_SECRET - Please provide it" EMAIL_SERVICE_CLIENT_SECRET "" "false"
   readParameter "RECIPIENT_EMAILS - Please provide it" RECIPIENT_EMAILS "" "false"
-
-  readParameter "SITEMINDER_LOGOFF_URL - Please provide the SiteMinder Logoff URL for the application environment.  The default is a blank string." SITEMINDER_LOGOFF_URL "" "false"
+  readParameter "ADM_RECIPIENT_EMAILS - Please provide it" ADM_RECIPIENT_EMAILS "" "false"
+  readParameter "JWT_SECRET_KEY - Please provide it" JWT_SECRET_KEY "" "false"
 else
   # Secrets are removed from the configurations during update operations ...
-  printStatusMsg "Update operation detected ...\nSkipping the prompts for DATA_SECURITY_KEY, OIDC_RP_PROVIDER_ENDPOINT, OIDC_RP_CLIENT_SECRET, EFILING_HUB_KEYCLOAK_BASE_URL, EFILING_HUB_KEYCLOAK_CLIENT_ID, EFILING_HUB_KEYCLOAK_SECRET, and SITEMINDER_LOGOFF_URL secrets ... \n"
   writeParameter "DATA_SECURITY_KEY" "prompt_skipped" "false"
-  writeParameter "OIDC_RP_PROVIDER_ENDPOINT" "prompt_skipped" "false"
   writeParameter "OIDC_RP_CLIENT_SECRET" "prompt_skipped" "false"
 
   writeParameter "EFILING_HUB_KEYCLOAK_BASE_URL" "prompt_skipped" "false"
@@ -85,12 +82,9 @@ else
   writeParameter "EMAIL_SERVICE_CLIENT_ID" "prompt_skipped" "false"
   writeParameter "EMAIL_SERVICE_CLIENT_SECRET" "prompt_skipped" "false"
   writeParameter "RECIPIENT_EMAILS" "prompt_skipped" "false"
+  writeParameter "ADM_RECIPIENT_EMAILS" "prompt_skipped" "false"
+  writeParameter "JWT_SECRET_KEY" "prompt_skipped" "false"
 
-  writeParameter "SITEMINDER_LOGOFF_URL" "prompt_skipped" "false"
-
-  # Get OIDC_RP_HOST from secret
-  printStatusMsg "Getting OIDC_RP_HOST for the ExternalNetwork definition from secret ...\n"
-  writeParameter "OIDC_RP_HOST" $(getSecret "${NAME}" "oidc-rp-host") "false"
 fi
 
 SPECIALDEPLOYPARMS="--param-file=${_overrideParamFile}"
