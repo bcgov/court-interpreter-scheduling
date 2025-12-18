@@ -514,9 +514,7 @@ export default class InterpreterBookingFields extends Vue {
     }
 
     public handleTrackingCleared() {
-        // Force update of tabs when tracking is cleared
         this.updateTab++;
-        this.$forceUpdate();
     }
 
     public toggleAllExportItems(checked){

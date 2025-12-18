@@ -675,9 +675,7 @@ export default class EditBookingFields extends Vue {
     }
 
     public handleTrackingCleared() {
-        // Force update of tabs when tracking is cleared
         this.updateTab++;
-        this.$forceUpdate();
     }
     
     public getBookingStates(tmpId){

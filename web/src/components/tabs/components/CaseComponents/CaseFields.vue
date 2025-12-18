@@ -36,8 +36,7 @@
                     <b-form-input
                         id="file-number"
                         @focus="confirmFieldEdit('file', $event)"
-                        @blur="handleFieldBlur"
-                        @input="checkStates(); handleFieldInput('file')"
+                        @input="checkStates()"
                         :disabled="disableEdit" 
                         :state="caseStates.file"                                        
                         v-model="bookingCase.file">
@@ -52,8 +51,7 @@
                     <b-form-input
                         id="case-name"
                         @focus="confirmFieldEdit('caseName', $event)"
-                        @blur="handleFieldBlur"
-                        @input="checkStates(); handleFieldInput('caseName')" 
+                        @input="checkStates()" 
                         :disabled="disableEdit" 
                         :state="caseStates.caseName"                                        
                         v-model="bookingCase.caseName">
@@ -68,8 +66,6 @@
                     <b-form-input 
                         :state="caseStates.room"
                         @focus="confirmFieldEdit('room', $event)"
-                        @blur="handleFieldBlur"
-                        @input="handleFieldInput('room')"
                         :disabled="disableEdit"
                         id="room"                                         
                         v-model="bookingCase.room">
@@ -121,8 +117,7 @@
                         :disabled="disableEdit"                    
                         :state="caseStates.caseType"
                         @click.native="confirmFieldEdit('caseType', $event)"
-                        @blur.native="handleFieldBlur"
-                        @change="bookingCase.courtClass=''; handleFieldInput('caseType')"
+                        @change="bookingCase.courtClass=''"
                         id="case-type"                                         
                         v-model="bookingCase.caseType">
                     </b-form-select>
@@ -138,8 +133,7 @@
                         :disabled="disableEdit"
                         :state="caseStates.courtLevel"
                         @click.native="confirmFieldEdit('courtLevel', $event)"
-                        @blur.native="handleFieldBlur"
-                        @change="checkStates(); handleFieldInput('courtLevel')"
+                        @change="checkStates()"
                         id="court-level"                                         
                         v-model="bookingCase.courtLevel">
                     </b-form-select>
@@ -155,8 +149,6 @@
                         :disabled="disableEdit"
                         :state="caseStates.courtClass"
                         @click.native="confirmFieldEdit('courtClass', $event)"
-                        @blur.native="handleFieldBlur"
-                        @change="handleFieldInput('courtClass')"
                         id="court-class"                                         
                         v-model="bookingCase.courtClass">
                     </b-form-select>
@@ -207,8 +199,7 @@
                         :options="reasonCodeClassOptions"                          
                         :state="caseStates.reason"
                         @click.native="confirmFieldEdit('reason', $event)"
-                        @blur.native="handleFieldBlur"
-                        @input="checkStates(); handleFieldInput('reason')"                                   
+                        @input="checkStates()"                                   
                         v-model="bookingCase.reason">
                     </b-form-select>
                 </b-form-group>
@@ -438,9 +429,6 @@ export default class CaseFields extends Vue {
     reasonCodeClassOptions
     bookingInterpretationModeOptions
 
-    // Track original values from search to detect manual changes
-    originalSearchValues: any = null;
-    watchersEnabled = false;
     editConfirmed = false;
     pendingFieldChange: string | null = null;
     pendingFieldLabel: string = '';
@@ -473,73 +461,9 @@ export default class CaseFields extends Vue {
             );
         }
         
-        if (this.bookingCase.fromSearch) {
-            this.originalSearchValues = {
-                file: this.bookingCase.file,
-                caseName: this.bookingCase.caseName,
-                room: this.bookingCase.room,
-                caseType: this.bookingCase.caseType,
-                courtLevel: this.bookingCase.courtLevel,
-                courtClass: this.bookingCase.courtClass,
-                reason: this.bookingCase.reason
-            };
-        }
-        
         this.dataReady = true
         if (!this.bookingCase.remoteLocationId && !this.disableEdit) {
             this.bookingCase.remoteLocationId = this.registry.id
-        }
-        
-        this.$nextTick(() => {
-            this.watchersEnabled = true;
-        });
-    }
-
-    @Watch('bookingCase.file')
-    onFileChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('file', newVal);
-    }
-
-    @Watch('bookingCase.caseName')
-    onCaseNameChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('caseName', newVal);
-    }
-
-    @Watch('bookingCase.room')
-    onRoomChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('room', newVal);
-    }
-
-    @Watch('bookingCase.caseType')
-    onCaseTypeChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('caseType', newVal);
-    }
-
-    @Watch('bookingCase.courtLevel')
-    onCourtLevelChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('courtLevel', newVal);
-    }
-
-    @Watch('bookingCase.courtClass')
-    onCourtClassChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('courtClass', newVal);
-    }
-
-    @Watch('bookingCase.reason')
-    onReasonChanged(newVal: string, oldVal: string) {
-        this.checkAndClearTracking('reason', newVal);
-    }
-
-    private checkAndClearTracking(fieldName: string, newValue: any) {
-        if (!this.watchersEnabled || !this.bookingCase.fromSearch || !this.originalSearchValues) {
-            return;
-        }
-
-        if (this.editConfirmed && this.originalSearchValues[fieldName] !== newValue) {
-            this.clearTrackingFields();
-        }
-        else if (!this.editConfirmed && this.originalSearchValues[fieldName] !== newValue) {
-            this.clearTrackingFields();
         }
     }
 
@@ -547,14 +471,7 @@ export default class CaseFields extends Vue {
         Vue.set(this.bookingCase, 'physicalFileId', null);
         Vue.set(this.bookingCase, 'appearanceId', null);
         Vue.set(this.bookingCase, 'fromSearch', false);
-        
-        this.originalSearchValues = null;
-        this.editConfirmed = false;
-        this.pendingFieldChange = null;
-        
         this.$emit('tracking-cleared');
-        
-        //this.$forceUpdate();
     }
 
     public confirmFieldEdit(fieldName: string, event?: any) {
@@ -593,6 +510,7 @@ export default class CaseFields extends Vue {
     }
 
     public handleConfirmEdit() {
+        this.clearTrackingFields();
         this.editConfirmed = true;
         this.showConfirmModal = false;
         
@@ -608,44 +526,6 @@ export default class CaseFields extends Vue {
         this.pendingFieldChange = null;
         this.pendingFieldElement = null;
         this.editConfirmed = false;
-    }
-
-    public handleFieldBlur() {
-        Vue.nextTick(() => {
-            this.editConfirmed = false;
-        });
-    }
-
-    public handleFieldInput(fieldName: string) {
-        if (!this.bookingCase.fromSearch) {
-            return;
-        }
-        
-        if (!this.originalSearchValues) {
-            this.originalSearchValues = {
-                file: this.bookingCase.file,
-                caseName: this.bookingCase.caseName,
-                room: this.bookingCase.room,
-                caseType: this.bookingCase.caseType,
-                courtLevel: this.bookingCase.courtLevel,
-                courtClass: this.bookingCase.courtClass,
-                reason: this.bookingCase.reason
-            };
-            return;
-        }
-        
-        Vue.nextTick(() => {
-            if (!this.originalSearchValues) {
-                return;
-            }
-            
-            const currentValue = this.bookingCase[fieldName];
-            const originalValue = this.originalSearchValues[fieldName];
-            
-            if (originalValue !== currentValue) {
-                this.clearTrackingFields();
-            }
-        });
     }
 
     public addRemoteLocation(checked){
