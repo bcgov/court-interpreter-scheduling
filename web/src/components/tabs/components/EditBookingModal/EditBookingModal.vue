@@ -820,6 +820,12 @@ export default class EditBookingModal extends Vue {
         if (filledData.caseType && !currentCase.caseType) {
             currentCase.caseType = filledData.caseType;
         }
+
+        if (filledData.fromSearch) {
+            currentCase.physicalFileId = filledData.physicalFileId;
+            currentCase.appearanceId = filledData.appearanceId;
+            currentCase.fromSearch = true;
+        }
         
         this.showSearchResults = false;
     }

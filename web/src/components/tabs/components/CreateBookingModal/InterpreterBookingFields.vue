@@ -84,8 +84,11 @@
                                 <b-icon-x-square style="transform:translate(-2px,-5px)" variant="white" scale="0.75"/>
                             </b-button>
                         </b-col>
-                        <b-col cols="10" class="text-left m-0 p-0">
-                            <b>{{caseTab.file|truncate-text(12)}}</b>
+                        <b-col cols="10" class="text-left m-0 p-0" style="display: flex; align-items: center; white-space: nowrap;">
+                            <b style="overflow: hidden; text-overflow: ellipsis;">{{caseTab.file|truncate-text(12)}}</b>
+                            <b-badge v-if="caseTab.fromSearch" variant="success" class="ml-1" style="font-size:0.55rem; flex-shrink: 0;" v-b-tooltip.hover title="This case was populated from JUSTIN/CEIS search">
+                                <b-icon-search scale="0.6" /> Linked
+                            </b-badge>
                         </b-col>                        
                     </b-row>
                     <b-row class="m-0">
@@ -99,6 +102,7 @@
                 </template>
                 <case-fields 
                     @checkStates="checkStates"
+                    @tracking-cleared="handleTrackingCleared"
                     :languages="languages" 
                     :bookingCase="caseTab" 
                     :caseStates="getBookingStates(caseTab.tmpId)" 
@@ -507,6 +511,12 @@ export default class InterpreterBookingFields extends Vue {
 
     public checkStates(){
         this.$emit('checkStates')
+    }
+
+    public handleTrackingCleared() {
+        // Force update of tabs when tracking is cleared
+        this.updateTab++;
+        this.$forceUpdate();
     }
 
     public toggleAllExportItems(checked){

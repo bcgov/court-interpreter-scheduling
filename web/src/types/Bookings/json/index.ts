@@ -35,6 +35,10 @@ export interface bookingCaseInfoType { //OK
     requestedBy: string;
     methodOfAppearance: string;
     antcpStartTime: string;
+    
+    physicalFileId?: string;
+    appearanceId?: string;
+    fromSearch?: boolean;
 }
 
 export interface bookingInfoType { //OK

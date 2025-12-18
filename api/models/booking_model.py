@@ -132,6 +132,9 @@ class BookingCasesModel(Base):
        
     anticipated_start_time = Column(String, unique=False, index=False, nullable=True)
     
+    physical_file_id = Column(String, unique=False, index=False, nullable=True)
+    appearance_id = Column(String, unique=False, index=False, nullable=True)
+    
     method_of_appearance = Column(
         ENUM(BookingMethodOfAppearanceEnum, name='booking_method_of_appearance', values_callable=lambda obj: [e.value for e in obj]),
         nullable=False,

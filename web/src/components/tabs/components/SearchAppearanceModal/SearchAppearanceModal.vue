@@ -802,7 +802,10 @@ export default class SearchAppearanceModal extends Vue {
             caseName: selectedParticipantData.fullNm || '',
             room: this.selectedAppearance?.courtRoomCd || '',
             reason: this.selectedAppearance?.appearanceReasonCd || '',
-            caseType: this.filterCaseType // Include the case type from filter
+            caseType: this.filterCaseType, // Include the case type from filter
+            physicalFileId: this.selectedAppearance ? selectedFile.physicalFileId : null,
+            appearanceId: this.selectedAppearance ? this.selectedAppearance.appearanceId : null,
+            fromSearch: !!this.selectedAppearance // Flag to indicate this was filled from search
         };
         this.$emit('case-filled', caseData);
         this.closeModal();
