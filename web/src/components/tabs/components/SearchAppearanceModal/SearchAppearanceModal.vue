@@ -795,6 +795,7 @@ export default class SearchAppearanceModal extends Vue {
         const selectedFile = this.selectedParticipant.file;
         const selectedParticipantData = this.selectedParticipant.participant;
 
+        const isCriminal = this.filterCaseType === 'Criminal';
         const caseData = {
             file: selectedFile.fileNumberTxt,
             courtClass: selectedFile.courtClassCd,
@@ -802,7 +803,11 @@ export default class SearchAppearanceModal extends Vue {
             caseName: selectedParticipantData.fullNm || '',
             room: this.selectedAppearance?.courtRoomCd || '',
             reason: this.selectedAppearance?.appearanceReasonCd || '',
-            caseType: this.filterCaseType // Include the case type from filter
+            caseType: this.filterCaseType,
+            justinNo: (this.selectedAppearance && isCriminal) ? (selectedFile.mdocJustinNo || null) : null,
+            physicalFileId: (this.selectedAppearance && !isCriminal) ? (selectedFile.physicalFileId || null) : null,
+            appearanceId: this.selectedAppearance ? this.selectedAppearance.appearanceId : null,
+            fromSearch: !!this.selectedAppearance
         };
         this.$emit('case-filled', caseData);
         this.closeModal();

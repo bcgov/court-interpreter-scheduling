@@ -806,8 +806,6 @@ export default class EditBookingModal extends Vue {
         
         const currentTab = this.allBookingDatesTimes[this.tabIndex - 1];
         const currentCase = currentTab.booking.cases[this.selectedCaseIndex];
-        console.log('currentTab', currentTab);
-        console.log('currentCase', currentCase);
         // Update the current case with the filled data
         currentCase.file = filledData.file;
         currentCase.courtClass = filledData.courtClass;
@@ -819,6 +817,13 @@ export default class EditBookingModal extends Vue {
         // Set case type from the search if not already set
         if (filledData.caseType && !currentCase.caseType) {
             currentCase.caseType = filledData.caseType;
+        }
+
+        if (filledData.fromSearch) {
+            currentCase.justinNo = filledData.justinNo;
+            currentCase.physicalFileId = filledData.physicalFileId;
+            currentCase.appearanceId = filledData.appearanceId;
+            currentCase.fromSearch = true;
         }
         
         this.showSearchResults = false;

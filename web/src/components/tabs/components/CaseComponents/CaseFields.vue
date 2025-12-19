@@ -3,6 +3,29 @@
         <!-- {{caseStates}} -->
         <!-- {{bookingStatus}} -->
         <!-- {{bookingCase}} -->
+        
+        <!-- Confirmation Modal for editing linked fields -->
+        <b-modal 
+            v-model="showConfirmModal" 
+            title="Edit Linked Case" 
+            header-bg-variant="warning"
+            header-text-variant="dark"
+            @ok="handleConfirmEdit"
+            @cancel="handleCancelEdit"
+            ok-title="Yes, Edit Field"
+            cancel-title="Cancel">
+            <p class="my-3">
+                <b-icon-exclamation-triangle-fill variant="warning" scale="1.5" class="mr-2" />
+                <strong>This case is linked to JUSTIN/CEIS search data.</strong>
+            </p>
+            <p>
+                Editing the <strong>{{ pendingFieldLabel }}</strong> field will remove the link and clear the tracking IDs.
+            </p>
+            <p class="mb-0">
+                Do you want to continue?
+            </p>
+        </b-modal>
+        
 <!-- <ROW - 1> -->
         <b-row style="margin:0 -0.5rem;">
             <b-col cols="2">
@@ -12,6 +35,7 @@
                     label-for="file-number">
                     <b-form-input
                         id="file-number"
+                        @focus="confirmFieldEdit('file', $event)"
                         @input="checkStates()"
                         :disabled="disableEdit" 
                         :state="caseStates.file"                                        
@@ -26,6 +50,7 @@
                     label-for="case-name">
                     <b-form-input
                         id="case-name"
+                        @focus="confirmFieldEdit('caseName', $event)"
                         @input="checkStates()" 
                         :disabled="disableEdit" 
                         :state="caseStates.caseName"                                        
@@ -40,6 +65,7 @@
                     label-for="room">
                     <b-form-input 
                         :state="caseStates.room"
+                        @focus="confirmFieldEdit('room', $event)"
                         :disabled="disableEdit"
                         id="room"                                         
                         v-model="bookingCase.room">
@@ -90,7 +116,8 @@
                         :options="caseTypeOptions"
                         :disabled="disableEdit"                    
                         :state="caseStates.caseType"
-                        @change="bookingCase.courtClass='';"
+                        @click.native="confirmFieldEdit('caseType', $event)"
+                        @change="bookingCase.courtClass=''"
                         id="case-type"                                         
                         v-model="bookingCase.caseType">
                     </b-form-select>
@@ -105,6 +132,7 @@
                         :options="courtLevelOptions"
                         :disabled="disableEdit"
                         :state="caseStates.courtLevel"
+                        @click.native="confirmFieldEdit('courtLevel', $event)"
                         @change="checkStates()"
                         id="court-level"                                         
                         v-model="bookingCase.courtLevel">
@@ -120,6 +148,7 @@
                         :options="bookingCase.caseType=='Civil'? civilCourtClassOptions: criminalCourtClassOptions"
                         :disabled="disableEdit"
                         :state="caseStates.courtClass"
+                        @click.native="confirmFieldEdit('courtClass', $event)"
                         id="court-class"                                         
                         v-model="bookingCase.courtClass">
                     </b-form-select>
@@ -169,6 +198,7 @@
                         :disabled="disableEdit"
                         :options="reasonCodeClassOptions"                          
                         :state="caseStates.reason"
+                        @click.native="confirmFieldEdit('reason', $event)"
                         @input="checkStates()"                                   
                         v-model="bookingCase.reason">
                     </b-form-select>
@@ -343,7 +373,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
 
 import {bookingCaseInfoType } from '@/types/Bookings/json';
@@ -399,6 +429,12 @@ export default class CaseFields extends Vue {
     reasonCodeClassOptions
     bookingInterpretationModeOptions
 
+    editConfirmed = false;
+    pendingFieldChange: string | null = null;
+    pendingFieldLabel: string = '';
+    showConfirmModal = false;
+    pendingFieldElement: any = null;
+
     created(){
         this.interpretForOptions=interpretForOptions        
         this.requestOptions=requestOptions 
@@ -417,10 +453,81 @@ export default class CaseFields extends Vue {
         this.vanCourtLocations = this.courtLocations.filter(court => court.shortDescription=="2040" || court.shortDescription=="2042")        
 
         this.remoteLocation = (this.bookingCase.remoteLocationId && this.bookingCase.remoteLocationId !=this.registry.id) ? true: false
+        
+        if (!this.bookingCase.fromSearch) {
+            this.bookingCase.fromSearch = !!(
+                this.bookingCase.justinNo ||
+                this.bookingCase.physicalFileId || 
+                this.bookingCase.appearanceId
+            );
+        }
+        
         this.dataReady = true
         if (!this.bookingCase.remoteLocationId && !this.disableEdit) {
             this.bookingCase.remoteLocationId = this.registry.id
         }
+    }
+
+    private clearTrackingFields() {
+        Vue.set(this.bookingCase, 'justinNo', null);
+        Vue.set(this.bookingCase, 'physicalFileId', null);
+        Vue.set(this.bookingCase, 'appearanceId', null);
+        Vue.set(this.bookingCase, 'fromSearch', false);
+        this.$emit('tracking-cleared');
+    }
+
+    public confirmFieldEdit(fieldName: string, event?: any) {
+        if (!this.bookingCase.fromSearch || this.editConfirmed) {
+            return true;
+        }
+
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        this.pendingFieldChange = fieldName;
+        this.pendingFieldElement = event?.target;
+        this.pendingFieldLabel = this.getFieldLabel(fieldName);
+        this.showConfirmModal = true;
+        
+        if (event?.target) {
+            event.target.blur();
+        }
+
+        return false;
+    }
+
+    private getFieldLabel(fieldName: string): string {
+        const labels: Record<string, string> = {
+            'file': 'Court File Number',
+            'caseName': 'Case Name',
+            'room': 'Court Room',
+            'caseType': 'Case Type',
+            'courtLevel': 'Court Level',
+            'courtClass': 'Court Class',
+            'reason': 'Reason Code'
+        };
+        return labels[fieldName] || fieldName;
+    }
+
+    public handleConfirmEdit() {
+        this.clearTrackingFields();
+        this.editConfirmed = true;
+        this.showConfirmModal = false;
+        
+        Vue.nextTick(() => {
+            if (this.pendingFieldElement) {
+                this.pendingFieldElement.focus();
+            }
+        });
+    }
+
+    public handleCancelEdit() {
+        this.showConfirmModal = false;
+        this.pendingFieldChange = null;
+        this.pendingFieldElement = null;
+        this.editConfirmed = false;
     }
 
     public addRemoteLocation(checked){
