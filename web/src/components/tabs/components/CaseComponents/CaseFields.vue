@@ -456,6 +456,7 @@ export default class CaseFields extends Vue {
         
         if (!this.bookingCase.fromSearch) {
             this.bookingCase.fromSearch = !!(
+                this.bookingCase.justinNo ||
                 this.bookingCase.physicalFileId || 
                 this.bookingCase.appearanceId
             );
@@ -468,6 +469,7 @@ export default class CaseFields extends Vue {
     }
 
     private clearTrackingFields() {
+        Vue.set(this.bookingCase, 'justinNo', null);
         Vue.set(this.bookingCase, 'physicalFileId', null);
         Vue.set(this.bookingCase, 'appearanceId', null);
         Vue.set(this.bookingCase, 'fromSearch', false);

@@ -132,6 +132,7 @@ class BookingCasesModel(Base):
        
     anticipated_start_time = Column(String, unique=False, index=False, nullable=True)
     
+    justin_no = Column(String, unique=False, index=False, nullable=True)
     physical_file_id = Column(String, unique=False, index=False, nullable=True)
     appearance_id = Column(String, unique=False, index=False, nullable=True)
     

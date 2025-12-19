@@ -483,6 +483,7 @@ export default class InterpreterBookingModal extends Vue {
         }
         
         if (filledData.fromSearch) {
+            currentCase.justinNo = filledData.justinNo;
             currentCase.physicalFileId = filledData.physicalFileId;
             currentCase.appearanceId = filledData.appearanceId;
             currentCase.fromSearch = true;
