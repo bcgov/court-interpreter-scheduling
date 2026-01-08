@@ -52,7 +52,7 @@
                     <td />
                     <td class="">
                         I certify this is a true statement of disbursements made a entitled as a result of 
-                        travel on government business as have not been and will not be reimbursed by any other party</td>                                              
+                        travel on government business as have not been and will not be reimbursed by any other party.</td>                                              
                     <td class=""></td>
                     <td class=""></td>
                     <td class=""></td>

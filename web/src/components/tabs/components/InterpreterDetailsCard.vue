@@ -44,7 +44,7 @@
                             <scheduling-conflict-popup :bookings="interpreter.booking" :bookingDates="bookingDates" :searchLocation="searchLocation"/>
                     </b-popover>
             </div>
-            <b-button variant="transparent" class="border-0 ml-3" @click="showInterpreterDetailsWindow = true">
+            <b-button variant="transparent" class="border-0 ml-3" @click="extractInterpreterDetails(); showInterpreterDetailsWindow = true">
                 <b class="text-primary">
                     More Details
                 </b>
@@ -110,7 +110,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import * as _ from 'underscore';
 import { interpreterInfoType } from '@/types/Interpreters/json';
 import { bookingDateTimesInfoType } from '@/types/Bookings/json';
@@ -154,6 +154,11 @@ export default class InterpreterDetailsCard extends Vue {
 
     interpreterDetails =[]
 
+    @Watch('interpreter')
+    onInterpreterChanged() {
+        this.extractInterpreterDetails();
+    }
+
     mounted(){
         this.dataLoaded = false;        
         this.extractInterpreterDetails()
@@ -189,6 +194,7 @@ export default class InterpreterDetailsCard extends Vue {
 
 
     public bookInterpreter(){        
+        this.extractInterpreterDetails();
         this.showBookingWindow = true;                
     }
 
@@ -199,7 +205,8 @@ export default class InterpreterDetailsCard extends Vue {
     }
     
     public closeBookingWindow(){
-        this.showBookingWindow = false; 
+        this.showBookingWindow = false;
+        this.interpreterDetails = [];
     }
 }
 </script>
