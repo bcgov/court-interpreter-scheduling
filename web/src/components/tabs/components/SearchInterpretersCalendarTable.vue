@@ -31,6 +31,7 @@
 
                     <template v-slot:cell(interpreter)="data" >                    
                         <interpreter-details-card 
+                            :key="data.item.id"
                             :interpreter="data.item"
                             :bookingDates="bookingDates"
                             :searchLocation="searchLocation"
