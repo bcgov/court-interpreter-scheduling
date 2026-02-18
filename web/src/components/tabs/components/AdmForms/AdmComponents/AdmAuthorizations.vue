@@ -79,8 +79,7 @@
                     </b-form-input>
                 </b-form-group>
                 <div style="margin-top:-1rem; font-size:9.75pt;">
-                    I certify this is a true statement of disbursements made a entitled as a result of 
-                    travel on government business as have not been and will not be reimbursed by any other party.
+                    I certify this is a true statement of disbursements made and/or allowances to which I am entitled as a result of travel on government business as detailed above and for which I have not been and will not be reimbursed by any other party.
                 </div>            
             </b-col>            
             
