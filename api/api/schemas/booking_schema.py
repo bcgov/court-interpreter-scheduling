@@ -224,7 +224,7 @@ class BookingSearchRequestSchema(BaseModel):
     file: Optional[str]
     interpreter: Optional[str]
     isStartFromToday: Optional[bool]
-    locationId: Optional[int]
+    locationIds: Optional[List[int]]
     
 
     
