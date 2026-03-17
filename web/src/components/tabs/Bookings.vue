@@ -10,21 +10,66 @@
                         class="labels"              
                         label="Court Location" 
                         label-for="location">
-                        <b-form-select 
-                            id="location" 
-                            @change="searchAgain(true)"                           
-                            style="display:inline"                            
-                            v-model="location">
-                            <b-form-select-option v-if="userRole.includes('super-admin')" :value="alllocations">
-                                --- All Locations ---
-                            </b-form-select-option> 
-                            <b-form-select-option
-                                v-for="courtLocation in courtLocations" 
+                        <b-dropdown
+                            id="location"
+                            ref="locationDropdown"
+                            :text="getDropdownText"
+                            variant="outline-secondary"
+                            class="location-dropdown w-100"
+                            menu-class="location-dropdown-menu"
+                            no-caret>
+                            <template #button-content>
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                    <span class="flex-grow-1 text-left">{{ getDropdownText }}</span>
+                                    <b-icon icon="chevron-down"></b-icon>
+                                </div>
+                            </template>
+                            
+                            <!-- All Locations option for super-admin -->
+                            <b-dropdown-item
+                                @click="toggleAllLocations"
+                                :active="isAllLocationsSelected">
+                                <b-form-checkbox
+                                    :checked="isAllLocationsSelected"
+                                    @click.native.stop
+                                    @change="toggleAllLocations">
+                                    --- All Locations ---
+                                </b-form-checkbox>
+                            </b-dropdown-item>
+                            
+                            <b-dropdown-divider></b-dropdown-divider>
+                            
+                            <!-- Individual location options -->
+                            <b-dropdown-item
+                                v-for="courtLocation in sortedCourtLocations"
                                 :key="courtLocation.id"
-                                :value="courtLocation">
-                                    {{courtLocation.name}}
-                            </b-form-select-option>
-                        </b-form-select> 
+                                @click="toggleLocation(courtLocation.id)"
+                                :active="isLocationSelected(courtLocation.id)">
+                                <b-form-checkbox
+                                    :checked="isLocationSelected(courtLocation.id)"
+                                    @click.native.stop
+                                    @change="toggleLocation(courtLocation.id)">
+                                    {{ courtLocation.name }}
+                                </b-form-checkbox>
+                            </b-dropdown-item>
+                        </b-dropdown>
+                        
+                        <!-- Display selected locations as tags -->
+                        <div v-if="displayedSelectedLocations.length > 0" class="selected-locations-tags mt-2">
+                            <b-badge
+                                v-for="location in displayedSelectedLocations"
+                                :key="location.id"
+                                variant="primary"
+                                pill
+                                class="mr-2 mb-1 location-tag">
+                                {{ location.name }}
+                                <b-icon
+                                    icon="x"
+                                    class="ml-1"
+                                    style="cursor: pointer;"
+                                    @click="removeLocation(location.id)"></b-icon>
+                            </b-badge>
+                        </div>
                     </b-form-group>
                 </b-col>
                 <b-col cols="4">
@@ -67,7 +112,7 @@
                 <b-col cols="4 mt-2">
                     <booking-date-range-picker 
                         :key="update"
-                        :locationTimezone="location.timezone"
+                        :locationTimezone="getFirstSelectedLocationTimezone"
                         :bookingRange="dates" 
                         @datesAdded="addBookingDates"/>
                 </b-col>
@@ -92,7 +137,7 @@
         <booking-table 
             v-if="dataLoaded" 
             :bookings="bookings" 
-            :searchLocation="location"
+            :searchLocation="getFirstSelectedLocationObject"
             @find="find" 
             :searching="searching" />
     
@@ -160,7 +205,7 @@ export default class BookingsPage extends Vue {
     searching = false;
     dataReady = false;
     
-    location = {} as locationsInfoType;
+    selectedLocations: number[] = [];  // Array of location IDs
 
     alllocations: locationsInfoType = {
         id:null, 
@@ -189,7 +234,11 @@ export default class BookingsPage extends Vue {
     
     @Watch('userLocation')
     defaultLocationChanged(){
-        this.location = this.userLocation?.name?this.userLocation:{} as locationsInfoType;
+        if (this.userLocation?.id) {
+            this.selectedLocations = [this.userLocation.id];
+        } else if (this.courtLocations.length > 0) {
+            this.selectedLocations = [this.courtLocations[0].id];
+        }
         this.find()
     }
    
@@ -198,6 +247,22 @@ export default class BookingsPage extends Vue {
         this.dates = {startDate:moment().toISOString(), endDate:moment().toISOString()};
         this.extractInfo();
         this.focusSearchButton()
+    }
+
+    get getFirstSelectedLocationObject(): locationsInfoType {
+        // Return the first selected location object for backward compatibility
+        if (this.selectedLocations.length > 0 && this.selectedLocations[0] !== null) {
+            return this.courtLocations.find(loc => loc.id === this.selectedLocations[0]) || ({} as locationsInfoType);
+        }
+        return {} as locationsInfoType;
+    }
+
+    get getFirstSelectedLocationTimezone(): string {
+        if (this.selectedLocations.length > 0 && this.selectedLocations[0] !== null) {
+            const location = this.courtLocations.find(loc => loc.id === this.selectedLocations[0]);
+            return location?.timezone || 'America/Vancouver';
+        }
+        return 'America/Vancouver';
     }
 
     public extractInfo(){      
@@ -209,15 +274,20 @@ export default class BookingsPage extends Vue {
         this.dataLoaded = true;
         this.searching = true;
         this.bookings = [];
-        const timezone = this.location?.timezone?? 'America/Vancouver' 
+        
+        // Get timezone from first selected location, or default
+        const timezone = this.getFirstSelectedLocationTimezone 
         const startDate = moment(this.dates.startDate).tz(timezone).startOf('day')
         const endDate = moment(this.dates.endDate).tz(timezone).endOf('day')
 
+        // Filter out null values (which represent "All Locations")
+        const locationIds = this.selectedLocations.filter(id => id !== null);
+        
         const body = {
-            "file":this.courtFileNumber?this.courtFileNumber:'',
-            "interpreter":this.interpreterName?this.interpreterName:'',  
-            "dates": [{startDate: startDate, endDate: endDate}],                           
-            "locationId":this.location.id?this.location.id:null                
+            "file": this.courtFileNumber ? this.courtFileNumber : '',
+            "interpreter": this.interpreterName ? this.interpreterName : '',  
+            "dates": [{startDate: startDate, endDate: endDate}],
+            "locationIds": locationIds.length > 0 ? locationIds : null  // Send null if "All Locations" or none selected              
         }
 
         this.$http.post('/booking/search', body)
@@ -284,7 +354,14 @@ export default class BookingsPage extends Vue {
                 const languages = _.sortBy(response.data,'name')               
                 this.UpdateLanguages(languages);                
             }
-            this.location = this.userLocation?.name? this.userLocation : this.courtLocations[0]//({} as locationsInfoType);
+            
+            // Initialize selectedLocations with user's location or first location
+            if (this.userLocation?.id) {
+                this.selectedLocations = [this.userLocation.id];
+            } else if (this.courtLocations.length > 0) {
+                this.selectedLocations = [this.courtLocations[0].id];
+            }
+            
             this.dataReady = true;
             this.find()
         },(err) => {
@@ -294,6 +371,114 @@ export default class BookingsPage extends Vue {
 
     get sortedCourtLocations(){
         return _.sortBy(this.courtLocations,'name')
+    }
+
+    // Computed property for dropdown text
+    get getDropdownText(): string {
+        if (this.isAllLocationsSelected) {
+            return '--- All Locations ---';
+        }
+        const count = this.selectedLocations.filter(id => id !== null).length;
+        if (count === 0) {
+            return 'Select locations...';
+        } else if (count === 1) {
+            const location = this.courtLocations.find(loc => loc.id === this.selectedLocations[0]);
+            return location ? location.name : 'Select locations...';
+        } else {
+            return `${count} locations selected`;
+        }
+    }
+
+    // Check if "All Locations" is selected
+    get isAllLocationsSelected(): boolean {
+        return this.selectedLocations.includes(null);
+    }
+
+    // Get location objects for displaying as tags
+    get displayedSelectedLocations(): locationsInfoType[] {
+        if (this.isAllLocationsSelected) {
+            return [{
+                id: null,
+                name: '--- All Locations ---',
+                addressLine1: null,
+                addressLine2: null,
+                city: null,
+                createdAt: '',
+                latitude: null,
+                locationCode: '',
+                longitude: null,
+                timezone: 'America/Vancouver',
+                postalCode: null,
+                shortDescription: '',
+                updatedAt: ''
+            }];
+        }
+        return this.selectedLocations
+            .filter(id => id !== null)
+            .map(id => this.courtLocations.find(loc => loc.id === id))
+            .filter(loc => loc !== undefined) as locationsInfoType[];
+    }
+
+    // Check if a specific location is selected
+    public isLocationSelected(locationId: number): boolean {
+        return this.selectedLocations.includes(locationId);
+    }
+
+    // Toggle a single location
+    public toggleLocation(locationId: number): void {
+        const index = this.selectedLocations.indexOf(locationId);
+        if (index > -1) {
+            // Remove this location
+            this.selectedLocations.splice(index, 1);
+        } else {
+            // Remove "All Locations" if it was selected
+            const nullIndex = this.selectedLocations.indexOf(null);
+            if (nullIndex > -1) {
+                this.selectedLocations.splice(nullIndex, 1);
+            }
+            // Add this location
+            this.selectedLocations.push(locationId);
+        }
+        this.searchAgain(true);
+    }
+
+    // Toggle "All Locations"
+    public toggleAllLocations(): void {
+        if (this.isAllLocationsSelected) {
+            // If "All Locations" is currently selected, deselect it
+            const nullIndex = this.selectedLocations.indexOf(null);
+            if (nullIndex > -1) {
+                this.selectedLocations.splice(nullIndex, 1);
+            }
+            // Default to user location or first location
+            if (this.userLocation?.id) {
+                this.selectedLocations = [this.userLocation.id];
+            } else if (this.courtLocations.length > 0) {
+                this.selectedLocations = [this.courtLocations[0].id];
+            }
+        } else {
+            // Select "All Locations" and clear all other selections
+            this.selectedLocations = [null];
+        }
+        this.searchAgain(true);
+    }
+
+    // Remove a location from the selection
+    public removeLocation(locationId: number | null): void {
+        const index = this.selectedLocations.indexOf(locationId);
+        if (index > -1) {
+            this.selectedLocations.splice(index, 1);
+        }
+        
+        // If no locations are selected, default to user location or first location
+        if (this.selectedLocations.length === 0) {
+            if (this.userLocation?.id) {
+                this.selectedLocations = [this.userLocation.id];
+            } else if (this.courtLocations.length > 0) {
+                this.selectedLocations = [this.courtLocations[0].id];
+            }
+        }
+        this.searchAgain(true);
     }
 
     public addBookingDates(dateRange){
@@ -330,6 +515,77 @@ export default class BookingsPage extends Vue {
 
     .input-line {
         font-size: 16px; font-weight:300;
+    }
+
+    // Multi-select dropdown styles
+    .location-dropdown {
+        ::v-deep .btn {
+            width: 100%;
+            text-align: left;
+            background-color: white;
+            border: 1px solid #ced4da;
+            color: #495057;
+            padding: 0.375rem 0.75rem;
+            font-size: 16px;
+            font-weight: 300;
+
+            &:hover, &:focus, &:active {
+                background-color: #f8f9fa;
+                border-color: #80bdff;
+                color: #495057;
+            }
+        }
+    }
+
+    ::v-deep .location-dropdown-menu {
+        max-height: 400px;
+        overflow-y: auto;
+        width: 100%;
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+
+            &:hover {
+                background-color: #f8f9fa;
+            }
+
+            &.active {
+                background-color: transparent;
+                color: inherit;
+            }
+
+            .custom-control-label {
+                cursor: pointer;
+                user-select: none;
+            }
+        }
+    }
+
+    // Selected locations as tags
+    .selected-locations-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .location-tag {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            background-color: #003366;
+            color: white;
+
+            .b-icon {
+                font-size: 16px;
+                cursor: pointer;
+                margin-left: 0.5rem;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+        }
     }
 
 </style>

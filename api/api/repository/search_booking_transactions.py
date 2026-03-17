@@ -15,7 +15,9 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
     bookings = db.query(BookingModel).join(BookingDatesModel)
 
     bookings = apply_file_number(bookings, request.file)
-    bookings = apply_location(bookings, request.locationId, db, username)    
+    
+    bookings = apply_location(bookings, request.locationIds, db, username)    
+    
     bookings = apply_interpreter(bookings, request.interpreter, db)
 
     bookings = apply_dates(bookings, request.dates)
@@ -30,10 +32,24 @@ def apply_file_number(bookings, file_number):
         return bookings
 
 
-def apply_location(bookings, location_id, db, username):
-    if location_id and location_id>0:
-        return bookings.where(BookingModel.location_id==location_id)
-    elif check_user_roles(['super-admin'], username, db):
+def apply_location(bookings, location_ids, db, username):
+    """
+    Filter bookings by location(s).
+    
+    Args:
+        bookings: Query object
+        location_ids: List of location IDs, or None to show all (super-admin only)
+        db: Database session
+        username: Username for role checking
+    
+    Returns:
+        Filtered bookings query
+    """
+    if location_ids and len(location_ids) > 0:
+        # Filter by the provided location ID(s)
+        return bookings.where(BookingModel.location_id.in_(location_ids))
+    elif location_ids is None:
+        # Super-admin can see all locations
         return bookings
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Search Location must be defined.")
