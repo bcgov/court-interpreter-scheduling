@@ -329,10 +329,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
-      const morningHours = Math.min(
-        2.5,
-        Math.max(2.5, sessionHours[recordDate].Morning)
-      );
+      const morningHours = (keyMorning === "CART" || keyMorning === "OldCART") ? 3 : 2.5;
       totalHours[keyMorning] = totalHours[keyMorning] + morningHours;
     }
     if (
@@ -355,10 +352,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
-      const afternoonHours = Math.min(
-        2.5,
-        Math.max(2.5, sessionHours[recordDate].Afternoon)
-      );
+      const afternoonHours = (keyAfternoon === "CART" || keyAfternoon === "OldCART") ? 3 : 2.5;
       totalHours[keyAfternoon] = totalHours[keyAfternoon] + afternoonHours;
     }
 
@@ -368,6 +362,10 @@ function getTotalHours(booking, cancelledDates, timezone) {
     ////console.log(record.date.slice(0,10))
     ////console.log(higherRateLanguage.valueChangedDate.slice(0,10))
   }
+  // CART: cap at 5.5 hrs (½ day = 3, full day / 2+ ½ days = 5.5)
+  if (totalHours.CART > 5.5) totalHours.CART = 5.5;
+  if (totalHours.OldCART > 5.5) totalHours.OldCART = 5.5;
+
   //console.log(totalHours)
   return totalHours;
 }
