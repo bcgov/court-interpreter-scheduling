@@ -17,6 +17,7 @@
                             variant="outline-secondary"
                             class="location-dropdown w-100"
                             menu-class="location-dropdown-menu"
+                            @hidden="clearLocationSearch"
                             no-caret>
                             <template #button-content>
                                 <div class="d-flex justify-content-between align-items-center w-100">
@@ -25,9 +26,19 @@
                                 </div>
                             </template>
                             
+                            <div class="px-3 pt-2 pb-1">
+                                <b-form-input
+                                    v-model.trim="locationSearchTerm"
+                                    placeholder="Search locations..."
+                                    autocomplete="off"
+                                    @click.stop
+                                    @keydown.stop
+                                />
+                            </div>
+
                             <!-- All Locations option for super-admin -->
-                            <b-dropdown-item
-                                @click="toggleAllLocations"
+                            <b-dropdown-item-button
+                                @click.stop.prevent="toggleAllLocations"
                                 :active="isAllLocationsSelected">
                                 <b-form-checkbox
                                     :checked="isAllLocationsSelected"
@@ -35,15 +46,15 @@
                                     @change="toggleAllLocations">
                                     --- All Locations ---
                                 </b-form-checkbox>
-                            </b-dropdown-item>
+                            </b-dropdown-item-button>
                             
                             <b-dropdown-divider></b-dropdown-divider>
                             
                             <!-- Individual location options -->
-                            <b-dropdown-item
-                                v-for="courtLocation in sortedCourtLocations"
+                            <b-dropdown-item-button
+                                v-for="courtLocation in filteredCourtLocations"
                                 :key="courtLocation.id"
-                                @click="toggleLocation(courtLocation.id)"
+                                @click.stop.prevent="toggleLocation(courtLocation.id)"
                                 :active="isLocationSelected(courtLocation.id)">
                                 <b-form-checkbox
                                     :checked="isLocationSelected(courtLocation.id)"
@@ -51,7 +62,14 @@
                                     @change="toggleLocation(courtLocation.id)">
                                     {{ courtLocation.name }}
                                 </b-form-checkbox>
-                            </b-dropdown-item>
+                            </b-dropdown-item-button>
+
+                            <div
+                                v-if="filteredCourtLocations.length === 0"
+                                class="px-3 py-2 text-muted small"
+                            >
+                                No matching locations
+                            </div>
                         </b-dropdown>
                         
                         <!-- Display selected locations as tags -->
@@ -121,6 +139,7 @@
                 <b-col cols="4">
                     <b-button
                         name="search"
+                        type="button"
                         @keyup.enter="find()"
                         style="margin-top: 0.6rem; padding: 0.25rem 2rem; width: 100%;" 
                         :disabled="searching"
@@ -206,6 +225,7 @@ export default class BookingsPage extends Vue {
     dataReady = false;
     
     selectedLocations: number[] = [];  // Array of location IDs
+    locationSearchTerm = '';
 
     alllocations: locationsInfoType = {
         id:null, 
@@ -373,6 +393,17 @@ export default class BookingsPage extends Vue {
         return _.sortBy(this.courtLocations,'name')
     }
 
+    get filteredCourtLocations(){
+        const term = this.locationSearchTerm.trim().toLowerCase();
+        if (!term) {
+            return this.sortedCourtLocations;
+        }
+        return this.sortedCourtLocations.filter((location) => {
+            const haystack = `${location.name || ''} ${location.locationCode || ''} ${location.shortDescription || ''}`.toLowerCase();
+            return haystack.includes(term);
+        });
+    }
+
     // Computed property for dropdown text
     get getDropdownText(): string {
         if (this.isAllLocationsSelected) {
@@ -502,6 +533,10 @@ export default class BookingsPage extends Vue {
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
+    }
+
+    public clearLocationSearch(): void {
+        this.locationSearchTerm = '';
     }
 
 }
