@@ -26,8 +26,24 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
 
 def apply_file_number(bookings, file_number):
-    if file_number is not None and len(file_number)>0:
-        return bookings.join(BookingCasesModel).where(func.lower(BookingCasesModel.file) == func.lower(file_number.strip()))
+    if file_number is not None and len(file_number) > 0:
+        # Normalize search term: strip separators (spaces, dashes, colons) so that
+        # "F123", "F 123", and "F-123" all match a stored value like "F-123456"
+        normalized_search = re.sub(r'[\s\-:]', '', file_number.strip()).lower()
+        if not normalized_search:
+            return bookings
+        # Normalize the stored column the same way via chained SQL REPLACE calls
+        normalized_col = func.replace(
+            func.replace(
+                func.replace(
+                    func.lower(BookingCasesModel.file),
+                    '-', ''
+                ),
+                ':', ''
+            ),
+            ' ', ''
+        )
+        return bookings.join(BookingCasesModel).where(normalized_col.contains(normalized_search))
     else:
         return bookings
 
