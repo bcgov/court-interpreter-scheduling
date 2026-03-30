@@ -7,6 +7,8 @@ import { holidaysInfoType, rateJsonInfoType } from "@/types/Common";
 import moment from "moment-timezone";
 import * as _ from "underscore";
 
+// Main entry point: determines which cancelled dates qualify for a cancellation fee,
+// calculates total hours and fee based on language rate tiers.
 export function cancellationCalculation(booking, gstRate?) {
   //console.log(booking.dates)
 
@@ -14,14 +16,18 @@ export function cancellationCalculation(booking, gstRate?) {
   const dates = booking.dates.map((date) => date.date);
   const sortedDates = _.sortBy(dates);
   const assignmentStart = sortedDates[0];
+  // Get unique assignment days (used to determine short-notice threshold)
   const assignmentDays = getAssignmentDays(dates, timezone);
 
+  // Filter cancelled dates that qualify for a cancellation fee
   const cancelledDates = [];
   for (const record of booking.dates) {
     //console.log(record)
     //console.log(record.cancellationDate)
     //console.log(record.date)
 
+    // Skip records that don't qualify:
+    // - Not cancelled, no reason given, interpreter-initiated, or explicitly no fee
     if (
       record.status != "Cancelled" ||
       // record.date <= record.cancellationDate ||
@@ -37,6 +43,10 @@ export function cancellationCalculation(booking, gstRate?) {
       timezone
     );
     //console.log(daysBetween)
+    // Short-notice check: fee applies if cancelled with insufficient business days' notice
+    // >10 day assignments: less than 3 business days' notice
+    // <=10 day assignments: less than 2 business days' notice
+    // Note: cancellations logged AFTER the assignment start also qualify (daysBetween=0)
     if (
       (assignmentDays.length > 10 && daysBetween.length < 3) ||
       (assignmentDays.length <= 10 && daysBetween.length < 2)
@@ -77,14 +87,18 @@ export function cancellationCalculation(booking, gstRate?) {
 //______________________________________
 //______________________________________
 
+// Calculates the cancellation fee from the accumulated hours per language type.
+// Finds the best (highest) rate among cancelled languages, applies tiered hour caps,
+// and computes subtotal + GST.
 function getTotalCancellations(
   totalHours: totalInterpretingHoursInfoType,
   booking,
   gstRate
 ) {
+  // Sum all cancelled hours and collect which language types had cancellations
   let totalCancelledHr = 0;
-  const cancelledLaguagesType = [];
-  const cancelledLaguagesName = [];
+  const cancelledLaguagesType = []; // e.g. ["CART"], ["SPKL2"] — without "Old" prefix
+  const cancelledLaguagesName = []; // e.g. ["OldCART"], ["SPKL2"] — with "Old" prefix if applicable
   for (const langItemHoursKey of Object.keys(totalHours)) {
     if (totalHours[langItemHoursKey] > 0) {
       const langkey = langItemHoursKey.replace("Old", "");
@@ -93,6 +107,7 @@ function getTotalCancellations(
       totalCancelledHr += totalHours[langItemHoursKey];
     }
   }
+  // Sort rates highest-to-lowest to find the best (most expensive) rate
   const rates: rateJsonInfoType[] = store.state.Common.rates;
   const sortedRates = _.chain(rates)
     .sortBy("name")
@@ -100,9 +115,11 @@ function getTotalCancellations(
     .sortBy("value")
     .reverse()
     .value();
+  // Find the first (highest-value) rate that matches a cancelled language type
   const bestRateIndex = sortedRates.findIndex((rate) =>
     cancelledLaguagesType.includes(rate.name)
   );
+  // Use current rate value, or previousValue if the cancellation predates the rate change
   const bestRate = cancelledLaguagesName.includes(
     sortedRates[bestRateIndex].name
   )
@@ -115,24 +132,28 @@ function getTotalCancellations(
   //console.log(bestRate)
 
   const isCart = cancelledLaguagesType.includes("CART");
-  const halfday = 2.5;
-  const twodays = 2 * 5;
-  const fivedays = 5 * 5;
-  const tendays = 10 * 5;
-  const fifteendays = 15 * 5;
+  // Tier thresholds: each day = 5 hours (morning 2.5h + afternoon 2.5h)
+  const halfday = 2.5;   // 1 half-day slot
+  const twodays = 2 * 5;     // 10h
+  const fivedays = 5 * 5;    // 25h
+  const tendays = 10 * 5;    // 50h
+  const fifteendays = 15 * 5; // 75h
 
+  // Apply tiered hour caps based on total cancelled hours.
+  // CART has different rules for small cancellations (½ day → 3h, up to 2 days → 5.5h).
+  // Non-CART: up to 2 days uses actual hours; above that, both use the same caps.
   let cancellationFee = 0;
   let totalCancelledHrMax = 0;
-  if (isCart && totalCancelledHr <= halfday) totalCancelledHrMax = 3;
-  else if (isCart && totalCancelledHr <= twodays) totalCancelledHrMax = 5.5;
-  else if (totalCancelledHr <= twodays) totalCancelledHrMax = totalCancelledHr;
+  if (isCart && totalCancelledHr <= halfday) totalCancelledHrMax = 3;        // CART ½ day: 3h paid
+  else if (isCart && totalCancelledHr < twodays) totalCancelledHrMax = 5.5;  // CART up to (but not including) 2 full days: 5.5h paid
+  else if (totalCancelledHr <= twodays) totalCancelledHrMax = totalCancelledHr; // Non-CART up to 2 days: actual hours
   else if (totalCancelledHr > twodays && totalCancelledHr <= fivedays)
-    totalCancelledHrMax = 10;
+    totalCancelledHrMax = 10;   // 2-5 days: 10h
   else if (totalCancelledHr > fivedays && totalCancelledHr <= tendays)
-    totalCancelledHrMax = 15;
+    totalCancelledHrMax = 15;   // 6-10 days: 15h
   else if (totalCancelledHr > tendays && totalCancelledHr <= fifteendays)
-    totalCancelledHrMax = 20;
-  else if (totalCancelledHr > fifteendays) totalCancelledHrMax = 25;
+    totalCancelledHrMax = 20;   // 11-15 days: 20h
+  else if (totalCancelledHr > fifteendays) totalCancelledHrMax = 25; // 16+ days: 25h
 
   cancellationFee = bestRate * totalCancelledHrMax;
 
@@ -167,6 +188,10 @@ function getTotalCancellations(
     };
 }
 
+// Accumulates cancellation hours per language type (e.g. SPKL2, OldCART).
+// Each cancelled date is split into morning (before 1 PM) and afternoon (1 PM onward).
+// Each half-day slot is always counted as exactly 2.5 hours (the half-day minimum).
+// The highest-rate language per half-day determines which bucket the hours go into.
 function getTotalHours(booking, cancelledDates, timezone) {
   const rates: rateJsonInfoType[] = store.state.Common.rates;
 
@@ -211,12 +236,13 @@ function getTotalHours(booking, cancelledDates, timezone) {
   //console.log(sortedRateNames.length-1)
   //console.log(languageHistory)
 
+  // Accumulate raw session hours and track the highest-rate language per half-day per date
   const sessionHours = {};
   const recordDateTemplate = {
-    Morning: 0,
-    Afternoon: 0,
-    minLevelMorning: MAX_INX,
-    minLevelAfternoon: MAX_INX,
+    Morning: 0,        // Raw morning hours for this date
+    Afternoon: 0,      // Raw afternoon hours for this date
+    minLevelMorning: MAX_INX,   // Best (lowest index = highest rate) language for morning
+    minLevelAfternoon: MAX_INX, // Best (lowest index = highest rate) language for afternoon
   };
 
   for (const record of cancelledDates) {
@@ -234,6 +260,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
 
     //console.log(record)
 
+    // Determine language type/level for each case, considering historical level changes
     const dateLanguagesType: number[] = [];
     for (const cancelCase of record.cases) {
       const langItem = cancelCase.language;
@@ -263,13 +290,16 @@ function getTotalHours(booking, cancelledDates, timezone) {
           : languageHistoryRev[indexLanguageHistoryRev].level;
       }
 
+      // Classify language: CART (no level), ASL+level, or SPKL+level
       let languageType = "";
       if (langItem.languageName.includes("CART")) languageType = "CART";
       else if (langItem.languageName.includes("ASL"))
         languageType = "ASL" + languageLevel;
       else languageType = "SPKL" + languageLevel;
+      // Store the index in the sorted (highest-to-lowest rate) list
       dateLanguagesType.push(sortedRateNames.indexOf(languageType));
     }
+    // Lowest index = highest rate language for this record
     const highestLanguageIndex = Math.min(...dateLanguagesType);
     //console.log(highestLanguageIndex)
 
@@ -280,22 +310,23 @@ function getTotalHours(booking, cancelledDates, timezone) {
     // //console.log(start.format())
     // //console.log(end.format())
     // //console.log(sessionDuration(start, end))
+    // Split session into morning/afternoon based on 1 PM boundary
     if (end <= mid) {
-      //'Morning'
+      // Entire session is in the morning slot
       sessionHours[recordDate].Morning += sessionDuration(start, end);
       sessionHours[recordDate].minLevelMorning = Math.min(
         sessionHours[recordDate].minLevelMorning,
         highestLanguageIndex
       );
     } else if (start >= mid) {
-      //'Afternoon'
+      // Entire session is in the afternoon slot
       sessionHours[recordDate].Afternoon += sessionDuration(start, end);
       sessionHours[recordDate].minLevelAfternoon = Math.min(
         sessionHours[recordDate].minLevelAfternoon,
         highestLanguageIndex
       );
     } else if (start < mid && end > mid) {
-      //'FullDay'
+      // Session spans both slots — split at 1 PM
       sessionHours[recordDate].Morning += sessionDuration(start, mid);
       sessionHours[recordDate].Afternoon += sessionDuration(mid, end);
       sessionHours[recordDate].minLevelMorning = Math.min(
@@ -311,6 +342,8 @@ function getTotalHours(booking, cancelledDates, timezone) {
 
   //console.log(sessionHours)
 
+  // Convert raw session hours into language-bucketed totals.
+  // Each half-day with any hours is counted as exactly 2.5h (half-day minimum/cap).
   for (const recordDate of Object.keys(sessionHours)) {
     // //console.log(recordDate)
     if (
@@ -333,6 +366,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
+      // Always 2.5h — min(2.5, max(2.5, x)) clamps any value to exactly 2.5
       const morningHours = Math.min(2.5,Math.max(2.5, sessionHours[recordDate].Morning));
       totalHours[keyMorning] = totalHours[keyMorning] + morningHours;
     }
@@ -356,6 +390,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
+      // Always 2.5h — same half-day clamp as morning
       const afternoonHours = Math.min(2.5,Math.max(2.5, sessionHours[recordDate].Afternoon));
       totalHours[keyAfternoon] = totalHours[keyAfternoon] + afternoonHours;
     }
@@ -370,6 +405,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
   return totalHours;
 }
 
+// Returns unique assignment dates (used to count total assignment days for notice threshold)
 function getAssignmentDays(dates, timezone) {
   const assignmentDays = [];
   for (const day of dates) {
@@ -380,6 +416,9 @@ function getAssignmentDays(dates, timezone) {
   return assignmentDays;
 }
 
+// Counts business days (excluding weekends and holidays) between the cancellation date
+// and the assignment start date. Returns an array of those business days.
+// If cancellation is on or after the start date, returns empty array (0 business days).
 function getDaysBetweenCancellationAndAssignment(
   assignmentStart,
   cancelDate,
@@ -433,6 +472,9 @@ function sessionDuration(start, end) {
   return totalHour;
 }
 
+// Determines the totalHours bucket key for a given date and language rate.
+// Returns the language type name (e.g. "SPKL2") or prefixed with "Old" if the
+// cancellation date predates a rate change (to use the previous rate value).
 function getTotalHoursKey(
   recordDate,
   rates,
