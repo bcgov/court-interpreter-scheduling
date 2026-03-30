@@ -114,6 +114,8 @@ function getTotalCancellations(
   //console.log(bestRateIndex)
   //console.log(bestRate)
 
+  const isCart = cancelledLaguagesType.includes("CART");
+  const halfday = 2.5;
   const twodays = 2 * 5;
   const fivedays = 5 * 5;
   const tendays = 10 * 5;
@@ -121,7 +123,9 @@ function getTotalCancellations(
 
   let cancellationFee = 0;
   let totalCancelledHrMax = 0;
-  if (totalCancelledHr <= twodays) totalCancelledHrMax = totalCancelledHr;
+  if (isCart && totalCancelledHr <= halfday) totalCancelledHrMax = 3;
+  else if (isCart && totalCancelledHr <= twodays) totalCancelledHrMax = 5.5;
+  else if (totalCancelledHr <= twodays) totalCancelledHrMax = totalCancelledHr;
   else if (totalCancelledHr > twodays && totalCancelledHr <= fivedays)
     totalCancelledHrMax = 10;
   else if (totalCancelledHr > fivedays && totalCancelledHr <= tendays)
@@ -329,7 +333,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
-      const morningHours = (keyMorning === "CART" || keyMorning === "OldCART") ? 3 : 2.5;
+      const morningHours = Math.min(2.5,Math.max(2.5, sessionHours[recordDate].Morning));
       totalHours[keyMorning] = totalHours[keyMorning] + morningHours;
     }
     if (
@@ -352,7 +356,7 @@ function getTotalHours(booking, cancelledDates, timezone) {
         continue; // Skip this recordDate entirely
       }
 
-      const afternoonHours = (keyAfternoon === "CART" || keyAfternoon === "OldCART") ? 3 : 2.5;
+      const afternoonHours = Math.min(2.5,Math.max(2.5, sessionHours[recordDate].Afternoon));
       totalHours[keyAfternoon] = totalHours[keyAfternoon] + afternoonHours;
     }
 
@@ -362,10 +366,6 @@ function getTotalHours(booking, cancelledDates, timezone) {
     ////console.log(record.date.slice(0,10))
     ////console.log(higherRateLanguage.valueChangedDate.slice(0,10))
   }
-  // CART: cap at 5.5 hrs (½ day = 3, full day / 2+ ½ days = 5.5)
-  if (totalHours.CART > 5.5) totalHours.CART = 5.5;
-  if (totalHours.OldCART > 5.5) totalHours.OldCART = 5.5;
-
   //console.log(totalHours)
   return totalHours;
 }
