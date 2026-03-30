@@ -24,7 +24,7 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     return bookings.all()
 
-
+# strip all non-numeric characters from both the user input and the stored court file number before performing a substring match
 def apply_file_number(bookings, file_number):
     if file_number is not None and len(file_number) > 0:
         normalized_search = re.sub(r'[^0-9]', '', file_number.strip())
