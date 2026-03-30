@@ -27,12 +27,11 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
 def apply_file_number(bookings, file_number):
     if file_number is not None and len(file_number) > 0:
-        search_term = file_number.strip().lower()
-        if not search_term:
+        normalized_search = re.sub(r'[^0-9]', '', file_number.strip())
+        if not normalized_search:
             return bookings
-        return bookings.join(BookingCasesModel).where(
-            func.lower(BookingCasesModel.file).contains(search_term)
-        )
+        normalized_col = func.regexp_replace(BookingCasesModel.file, '[^0-9]', '', 'g')
+        return bookings.join(BookingCasesModel).where(normalized_col.contains(normalized_search))
     else:
         return bookings
 
