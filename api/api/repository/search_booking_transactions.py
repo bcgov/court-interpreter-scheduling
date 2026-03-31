@@ -29,24 +29,33 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     return results
 
-# Extract the longest consecutive sequence of digits (the file number) from user input, then substring-match against stored file numbers
 def apply_file_number(bookings, file_number):
-    if file_number is not None and len(file_number) > 0:
-        
-        stripped = file_number.strip('-')
-        all_digit_groups = re.findall(r'\d+', stripped)
-
-        if not all_digit_groups:
-            return bookings, None
-
-        # The file number is always the LONGEST digit sequence
-        longest_digit_sequence = max(all_digit_groups, key=len)
-        
-        return bookings.join(BookingCasesModel).where(
-            BookingCasesModel.file.contains(longest_digit_sequence)
-        ), longest_digit_sequence
-    else:
+    if not file_number:
         return bookings, None
+
+    # Extract file number, position based parsing.
+    # Format: [<prefix>-]<filenumber>[-<suffix>][-<suffix>]
+    parts = [p for p in re.split(r'[-\s]+', file_number.strip('- ')) if p]
+
+    # Remove suffix segments from the end.
+    while len(parts) > 1 and re.fullmatch(r'[a-zA-Z]+|\d{1,2}|\d+[a-zA-Z]+', parts[-1]):
+        parts.pop()
+
+    # Remove prefix segments from the start.
+    while len(parts) > 1 and re.fullmatch(r'[a-zA-Z]+', parts[0]):
+        parts.pop(0)
+    if len(parts) > 1 and re.fullmatch(r'\d+', parts[0]):
+        parts.pop(0)
+
+    # Trim any stray non-numeric characters from both ends.
+    filenumber = re.sub(r'^\D+|\D+$', '', parts[0]) or None
+
+    if not filenumber:
+        return bookings, None
+
+    return bookings.join(BookingCasesModel).where(
+        BookingCasesModel.file.contains(filenumber)
+    ), filenumber
 
 
 def apply_location(bookings, location_ids, db, username):

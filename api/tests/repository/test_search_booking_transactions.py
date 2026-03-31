@@ -18,15 +18,21 @@ class TestApplyFileNumberExtraction:
     """Test that apply_file_number extracts the longest digit sequence and filters correctly."""
 
     @pytest.mark.parametrize("file_input, expected_digits", [
-        ("A-1234-4-c", "1234"),
-        ("A12344c",    "12344"),
-        ("1234",       "1234"),
-        ("1234-2-c",   "1234"),
-        ("12-13456-3-C", "13456"),
-        ("1234 c",     "1234"),
-        ("A 1234-c",   "1234"),
-        ("A1234-c",    "1234"),
-        ("12 13456 3C", "13456"),
+        ("A-1234-4-c",          "1234"),
+        ("A12344c",             "12344"),
+        ("1234",                "1234"),
+        ("1234-2-c",            "1234"),
+        ("12-13456-3-C",        "13456"),
+        ("1234 c",              "1234"),
+        ("A 1234-c",            "1234"),
+        ("A1234-c",             "1234"),
+        ("12 13456 3C",         "13456"),
+        ("121212121-1345-3C",   "1345"),
+        ("12121212-1234-c",     "1234"),
+        ("12121212-1234-1212-c","1234"),
+        ("12121212 1234 1212 c","1234"),
+        ("12121212 1234 1212","1234"),
+        ("12 1234 1c","1234"),
     ])
     def test_extracts_longest_digit_sequence(self, mock_bookings, file_input, expected_digits):
         result, digits = apply_file_number(mock_bookings, file_input)
