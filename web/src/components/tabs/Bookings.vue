@@ -157,6 +157,7 @@
             v-if="dataLoaded" 
             :bookings="bookings" 
             :searchLocation="getFirstSelectedLocationObject"
+            :searchErrorMessage="searchErrorMessage"
             @find="find" 
             :searching="searching" />
     
@@ -250,6 +251,7 @@ export default class BookingsPage extends Vue {
    
     interpreter = {} as interpreterInfoType;
     bookings: bookingSearchResultInfoType[] = [];  
+    searchErrorMessage = '';
 
     
     @Watch('userLocation')
@@ -315,9 +317,11 @@ export default class BookingsPage extends Vue {
             if(response?.data){                     
                 this.bookings = response.data;                            
             }
+            this.searchErrorMessage = '';
             this.searching = false;
             
         },(err) => {
+            this.searchErrorMessage = err?.response?.data?.detail || '';
             this.searching = false;
         });        
         

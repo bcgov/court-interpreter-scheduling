@@ -5,7 +5,7 @@
         <div v-else> 
 
             <b-card no-body border-variant="white" bg-variant="white" v-if="!bookings.length">
-                <span class="text-muted ml-4 mb-5">No records found.</span>
+                <span class="text-muted ml-4 mb-5">{{ searchErrorMessage || 'No records found.' }}</span>
             </b-card>      
 
             <b-card v-else class="home-content border-white p-0" body-class="pt-0">
@@ -277,6 +277,9 @@ export default class BookingTable extends Vue {
 
     @Prop({required: true})
     public searchLocation!: locationsInfoType;
+
+    @Prop({default: ''})
+    public searchErrorMessage!: string;
 
     @commonState.State
     public courtLocations!: locationsInfoType[];
