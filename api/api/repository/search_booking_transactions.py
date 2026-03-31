@@ -14,7 +14,7 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     bookings = db.query(BookingModel).join(BookingDatesModel)
 
-    bookings = apply_file_number(bookings, request.file)
+    bookings, file_search_digits = apply_file_number(bookings, request.file)
     
     bookings = apply_location(bookings, request.locationIds, db, username)    
     
@@ -22,18 +22,31 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     bookings = apply_dates(bookings, request.dates)
 
-    return bookings.all()
+    results = bookings.all()
 
-# strip all non-numeric characters from both the user input and the stored court file number before performing a substring match
+    if not results and file_search_digits:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No bookings found with file number: {file_search_digits}")
+
+    return results
+
+# Extract the longest consecutive sequence of digits (the file number) from user input, then substring-match against stored file numbers
 def apply_file_number(bookings, file_number):
     if file_number is not None and len(file_number) > 0:
-        normalized_search = re.sub(r'[^0-9]', '', file_number.strip())
-        if not normalized_search:
-            return bookings
-        normalized_col = func.regexp_replace(BookingCasesModel.file, '[^0-9]', '', 'g')
-        return bookings.join(BookingCasesModel).where(normalized_col.contains(normalized_search))
+        
+        stripped = file_number.strip('-')
+        all_digit_groups = re.findall(r'\d+', stripped)
+
+        if not all_digit_groups:
+            return bookings, None
+
+        # The file number is always the LONGEST digit sequence
+        longest_digit_sequence = max(all_digit_groups, key=len)
+        
+        return bookings.join(BookingCasesModel).where(
+            BookingCasesModel.file.contains(longest_digit_sequence)
+        ), longest_digit_sequence
     else:
-        return bookings
+        return bookings, None
 
 
 def apply_location(bookings, location_ids, db, username):
