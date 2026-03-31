@@ -51,7 +51,10 @@ def apply_file_number(bookings, file_number):
     filenumber = re.sub(r'^\D+|\D+$', '', parts[0]) or None
 
     if not filenumber:
-        return bookings, None
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"No bookings found with file number: {file_number}, Please enter the court file number without prefixes and suffixes."
+        )
 
     return bookings.join(BookingCasesModel).where(
         BookingCasesModel.file.contains(filenumber)

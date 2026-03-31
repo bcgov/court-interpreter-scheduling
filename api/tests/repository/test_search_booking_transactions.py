@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
+from fastapi import HTTPException
 
 from api.repository.search_booking_transactions import apply_file_number
 from models.booking_model import BookingCasesModel
@@ -58,9 +59,15 @@ class TestApplyFileNumberPassthrough:
         mock_bookings.join.assert_not_called()
         mock_bookings.where.assert_not_called()
 
-    def test_no_digits_returns_bookings_unchanged(self, mock_bookings):
-        result, digits = apply_file_number(mock_bookings, "---ABC---")
+    @pytest.mark.parametrize("file_input", [
+        "---ABC---",
+        "alkdjfa;kdjf",
+        "abc def",
+    ])
+    def test_no_digits_raises_400(self, mock_bookings, file_input):
+        with pytest.raises(HTTPException) as exc_info:
+            apply_file_number(mock_bookings, file_input)
 
-        assert result is mock_bookings
-        assert digits is None
+        assert exc_info.value.status_code == 400
+        assert "without prefixes and suffixes" in exc_info.value.detail
         mock_bookings.join.assert_not_called()
