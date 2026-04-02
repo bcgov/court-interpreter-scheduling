@@ -16,6 +16,12 @@
  * Every cancelled half-day slot counts as exactly 2.5 hours.
  */
 
+// moment-timezone CJS interop for ts-jest
+jest.mock("moment-timezone", () => {
+  const actual = jest.requireActual("moment-timezone");
+  return { __esModule: true, default: actual };
+});
+
 import { cancellationCalculation } from
   "@/components/tabs/components/AdmForms/AdmCalculations/CancellationCalculation";
 
