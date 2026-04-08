@@ -2,7 +2,7 @@
 import re
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import case, func
 from .user_transactions import check_user_roles
 from models.interpreter_model import InterpreterModel
 from models.booking_model import BookingCasesModel, BookingDatesModel, BookingModel
@@ -14,7 +14,7 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     bookings = db.query(BookingModel).join(BookingDatesModel)
 
-    bookings, file_search_digits = apply_file_number(bookings, request.file)
+    bookings = apply_file_number(bookings, request.file)
     
     bookings = apply_location(bookings, request.locationIds, db, username)    
     
@@ -22,43 +22,43 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
     bookings = apply_dates(bookings, request.dates)
 
-    results = bookings.all()
+    return bookings.all()
 
-    if not results and file_search_digits:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No bookings found with file number: {file_search_digits}")
-
-    return results
 
 def apply_file_number(bookings, file_number):
-    if not file_number:
-        return bookings, None
-
-    # Extract file number, position based parsing.
-    # Format: [<prefix>-]<filenumber>[-<suffix>][-<suffix>]
-    parts = [p for p in re.split(r'[-\s]+', file_number.strip('- ')) if p]
-
-    # Remove suffix segments from the end.
-    while len(parts) > 1 and re.fullmatch(r'[a-zA-Z]+|\d{1,2}|\d+[a-zA-Z]+', parts[-1]):
-        parts.pop()
-
-    # Remove prefix segments from the start.
-    while len(parts) > 1 and re.fullmatch(r'[a-zA-Z]+', parts[0]):
-        parts.pop(0)
-    if len(parts) > 1 and re.fullmatch(r'\d+', parts[0]):
-        parts.pop(0)
-
-    # Trim any stray non-numeric characters from both ends.
-    filenumber = re.sub(r'^\D+|\D+$', '', parts[0]) or None
-
-    if not filenumber:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"No bookings found with file number: {file_number}, Please enter the court file number without prefixes and suffixes."
+    if file_number is not None and len(file_number) > 0:
+        return bookings.join(BookingCasesModel).where(
+            _file_number_sql_expr(BookingCasesModel.file, file_number)
         )
+    return bookings
 
-    return bookings.join(BookingCasesModel).where(
-        BookingCasesModel.file.contains(filenumber)
-    ), filenumber
+
+def _file_number_sql_expr(file_col, file_number):
+    """Returns a SQLAlchemy boolean expression that matches file_number against a stored file string."""
+
+    # Step 1: Strip the location prefix if present
+    # Some files are stored as "<location_id>: <file_number>", e.g. "3531:  112583-1K".
+    # We only want the part after the colon, trimmed of leading spaces.
+    # Files without a colon (e.g. "12-1234-c") are passed through unchanged.
+    
+    colon_pos = func.strpos(file_col, ':')
+    normalized = case(
+        (file_col.like('%:%'), func.ltrim(func.substr(file_col, colon_pos + 1))),
+        else_=file_col,
+    )
+
+    # Step 2: Match file_number at the start of the first significant (≥5-digit) run.
+    # The pattern skips any leading non-digit characters and any short (1–4 digit)
+    
+    min_file_digits = 5
+    extra_needed = max(0, min_file_digits - len(file_number))
+    prefix_skip = r'^[^0-9]*(?:[0-9]{1,4}[^0-9]+)*'
+    if extra_needed > 0:
+        pattern = f'{prefix_skip}{re.escape(file_number)}[0-9]{{{extra_needed},}}'
+    else:
+        pattern = f'{prefix_skip}{re.escape(file_number)}'
+    return normalized.regexp_match(pattern)
+
 
 
 def apply_location(bookings, location_ids, db, username):

@@ -111,11 +111,22 @@
 
                     <b-form-group
                         class="labels"                
-                        label="Court File Number" 
                         label-for="file-number">
+                        <template #label>
+                            Court File Number
+                            <b-icon
+                                icon="info-circle-fill"
+                                v-b-tooltip.hover.top
+                                title="Enter only the file number without the prefix, sequence number and/or type reference."
+                                style="cursor: pointer; margin-left: 4px; color: #17a2b8;">
+                            </b-icon>
+                        </template>
                         <b-form-input                             
                             class="input-line"
                             id="file-number"
+                            inputmode="numeric"
+                            placeholder="e.g. 12345"
+                            @keypress="onFileNumberKeypress"
                             @input="searchAgain(null)"
                             @change="searchAgain(true)"                                         
                             v-model="courtFileNumber">
@@ -157,7 +168,6 @@
             v-if="dataLoaded" 
             :bookings="bookings" 
             :searchLocation="getFirstSelectedLocationObject"
-            :searchErrorMessage="searchErrorMessage"
             @find="find" 
             :searching="searching" />
     
@@ -251,7 +261,6 @@ export default class BookingsPage extends Vue {
    
     interpreter = {} as interpreterInfoType;
     bookings: bookingSearchResultInfoType[] = [];  
-    searchErrorMessage = '';
 
     
     @Watch('userLocation')
@@ -317,11 +326,9 @@ export default class BookingsPage extends Vue {
             if(response?.data){                     
                 this.bookings = response.data;                            
             }
-            this.searchErrorMessage = '';
             this.searching = false;
             
         },(err) => {
-            this.searchErrorMessage = err?.response?.data?.detail || '';
             this.searching = false;
         });        
         
@@ -537,6 +544,12 @@ export default class BookingsPage extends Vue {
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
+    }
+
+    public onFileNumberKeypress(event: KeyboardEvent): void {
+        if (!/^\d$/.test(event.key)) {
+            event.preventDefault();
+        }
     }
 
     public clearLocationSearch(): void {
