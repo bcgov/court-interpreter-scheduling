@@ -125,12 +125,16 @@
                             class="input-line"
                             id="file-number"
                             inputmode="numeric"
-                            placeholder="e.g. 12345"
+                            placeholder="e.g. 1234"
+                            :state="courtFileNumber.length > 0 && courtFileNumber.length < 4 ? false : null"
                             @keypress="onFileNumberKeypress"
-                            @input="searchAgain(null)"
-                            @change="searchAgain(true)"                                         
+                            @input="onFileNumberInput"
+                            @change="onFileNumberChange"                                         
                             v-model="courtFileNumber">
                         </b-form-input>
+                        <b-form-invalid-feedback>
+                            Please enter at least 4 digits.
+                        </b-form-invalid-feedback>
                     </b-form-group>                    
                    
                 </b-col>
@@ -302,6 +306,7 @@ export default class BookingsPage extends Vue {
 
 
     public find(){
+        if (this.courtFileNumber.length > 0 && this.courtFileNumber.length < 4) return;
         this.dataLoaded = true;
         this.searching = true;
         this.bookings = [];
@@ -549,6 +554,18 @@ export default class BookingsPage extends Vue {
     public onFileNumberKeypress(event: KeyboardEvent): void {
         if (!/^\d$/.test(event.key)) {
             event.preventDefault();
+        }
+    }
+
+    public onFileNumberInput(): void {
+        if (this.courtFileNumber.length === 0 || this.courtFileNumber.length >= 4) {
+            this.searchAgain(null);
+        }
+    }
+
+    public onFileNumberChange(): void {
+        if (this.courtFileNumber.length === 0 || this.courtFileNumber.length >= 4) {
+            this.searchAgain(true);
         }
     }
 

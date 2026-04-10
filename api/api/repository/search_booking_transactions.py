@@ -27,39 +27,11 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
 def apply_file_number(bookings, file_number):
     if file_number is not None and len(file_number) > 0:
-        return bookings.join(BookingCasesModel).where(
-            _file_number_sql_expr(BookingCasesModel.file, file_number)
-        )
+        if len(file_number) < 4:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File number must be at least 4 characters long.")
+        return bookings.join(BookingCasesModel).where(BookingCasesModel.file.contains(file_number))
     return bookings
-
-
-def _file_number_sql_expr(file_col, file_number):
-    """Returns a SQLAlchemy boolean expression that matches file_number against a stored file string."""
-
-    # Step 1: Strip the location prefix if present
-    # Some files are stored as "<location_id>: <file_number>", e.g. "3531:  112583-1K".
-    # We only want the part after the colon, trimmed of leading spaces.
-    # Files without a colon (e.g. "12-1234-c") are passed through unchanged.
     
-    colon_pos = func.strpos(file_col, ':')
-    normalized = case(
-        (file_col.like('%:%'), func.ltrim(func.substr(file_col, colon_pos + 1))),
-        else_=file_col,
-    )
-
-    # Step 2: Match file_number at the start of the first significant (≥5-digit) run.
-    # The pattern skips any leading non-digit characters and any short (1–4 digit)
-    
-    min_file_digits = 5
-    extra_needed = max(0, min_file_digits - len(file_number))
-    prefix_skip = r'^[^0-9]*(?:[0-9]{1,4}[^0-9]+)*'
-    if extra_needed > 0:
-        pattern = f'{prefix_skip}{re.escape(file_number)}[0-9]{{{extra_needed},}}'
-    else:
-        pattern = f'{prefix_skip}{re.escape(file_number)}'
-    return normalized.regexp_match(pattern)
-
-
 
 def apply_location(bookings, location_ids, db, username):
     """
