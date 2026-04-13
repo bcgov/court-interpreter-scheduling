@@ -22,3 +22,6 @@ pydantic>=1.4.0,<2
 # Util
 setuptools>=65.5.1
 
+# Testing
+pytest>=7.0
+

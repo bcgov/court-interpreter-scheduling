@@ -111,15 +111,30 @@
 
                     <b-form-group
                         class="labels"                
-                        label="Court File Number" 
                         label-for="file-number">
+                        <template #label>
+                            Court File Number
+                            <b-icon
+                                icon="info-circle-fill"
+                                v-b-tooltip.hover.top
+                                title="Enter only the file number without the prefix, sequence number and/or type reference."
+                                style="cursor: pointer; margin-left: 4px; color: #17a2b8;">
+                            </b-icon>
+                        </template>
                         <b-form-input                             
                             class="input-line"
                             id="file-number"
-                            @input="searchAgain(null)"
-                            @change="searchAgain(true)"                                         
+                            inputmode="numeric"
+                            placeholder="e.g. 1234"
+                            :state="courtFileNumber.length > 0 && courtFileNumber.length < 4 ? false : null"
+                            @keypress="onFileNumberKeypress"
+                            @input="onFileNumberInput"
+                            @change="onFileNumberChange"                                         
                             v-model="courtFileNumber">
                         </b-form-input>
+                        <b-form-invalid-feedback>
+                            Please enter at least 4 digits.
+                        </b-form-invalid-feedback>
                     </b-form-group>                    
                    
                 </b-col>
@@ -291,6 +306,7 @@ export default class BookingsPage extends Vue {
 
 
     public find(){
+        if (this.courtFileNumber.length > 0 && this.courtFileNumber.length < 4) return;
         this.dataLoaded = true;
         this.searching = true;
         this.bookings = [];
@@ -533,6 +549,24 @@ export default class BookingsPage extends Vue {
             const el = document.getElementsByName("search")[0];
             if(el) el.focus();
         })        
+    }
+
+    public onFileNumberKeypress(event: KeyboardEvent): void {
+        if (!/^\d$/.test(event.key)) {
+            event.preventDefault();
+        }
+    }
+
+    public onFileNumberInput(): void {
+        if (this.courtFileNumber.length === 0 || this.courtFileNumber.length >= 4) {
+            this.searchAgain(null);
+        }
+    }
+
+    public onFileNumberChange(): void {
+        if (this.courtFileNumber.length === 0 || this.courtFileNumber.length >= 4) {
+            this.searchAgain(true);
+        }
     }
 
     public clearLocationSearch(): void {

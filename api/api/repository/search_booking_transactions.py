@@ -2,7 +2,7 @@
 import re
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import case, func
 from .user_transactions import check_user_roles
 from models.interpreter_model import InterpreterModel
 from models.booking_model import BookingCasesModel, BookingDatesModel, BookingModel
@@ -26,11 +26,12 @@ def search_booking(request: BookingSearchRequestSchema, db: Session, username):
 
 
 def apply_file_number(bookings, file_number):
-    if file_number is not None and len(file_number)>0:
-        return bookings.join(BookingCasesModel).where(func.lower(BookingCasesModel.file) == func.lower(file_number.strip()))
-    else:
-        return bookings
-
+    if file_number is not None and len(file_number) > 0:
+        if len(file_number) < 4:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File number must be at least 4 characters long.")
+        return bookings.join(BookingCasesModel).where(BookingCasesModel.file.contains(file_number))
+    return bookings
+    
 
 def apply_location(bookings, location_ids, db, username):
     """
