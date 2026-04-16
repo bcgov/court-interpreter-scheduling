@@ -290,3 +290,75 @@ describe("TotalInterpretingHours — Booking with an exceeded sessions (dailyInt
     expect(result![0].total).toBe(340);   
   });
 });
+
+// ── Booking 1 — Bug reproduction ──────────────
+//
+// Real production booking: Level 2, Feb 13 – Apr 6, 2025
+// Location: Vancouver Law Courts (America/Vancouver)
+//
+// Bug report: invoice shows 173.5h; correct value is 176h.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const exampleBooking = require("./example_booking_1.json");
+
+const FARSI_LANG = {
+  id: 270,
+  languageId: 23,
+  level: 2,
+  languageName: "Farsi (Persian)",
+  commentOnLevel: null,
+};
+
+const booking10020 = {
+  ...exampleBooking,
+  interpreter: {
+    ...exampleBooking.interpreter,
+    languageHistory: null,
+  },
+  dates: exampleBooking.dates.map((d: any) => ({
+    ...d,
+    cases: d.status === "Booked" ? [{ language: { ...FARSI_LANG } }] : d.cases,
+  })),
+};
+
+describe("TotalInterpretingHours — Booking 10020 (bug reproduction: 173.5h vs 176h)", () => {
+
+  test("precondition: booked and cancelled sessions count", () => {
+    const booked = booking10020.dates.filter((d: any) => d.status === "Booked");
+    const cancelled = booking10020.dates.filter((d: any) => d.status === "Cancelled");
+    expect(booked.length + cancelled.length).toBe(booking10020.dates.length);
+    expect(booked.length).toBeGreaterThan(0);
+    expect(cancelled.length).toBeGreaterThan(0);
+  });
+
+  test("total interpreting hours should be 176h under SPKL2 (correct value after fix)", () => {
+    const result = getTotalInterpretingHours(booking10020);
+    // console.log("SPKL2 hours:", result.totalHours.SPKL2);
+    expect(result.totalHours.SPKL2).toBe(176);
+  });
+
+  test("no other language-type hours should be present", () => {
+    const result = getTotalInterpretingHours(booking10020);
+    expect(result.totalHours.SPKL1).toBe(0);
+    expect(result.totalHours.SPKL3).toBe(0);
+    expect(result.totalHours.SPKL4).toBe(0);
+    expect(result.totalHours.ASL1).toBe(0);
+    expect(result.totalHours.ASL2).toBe(0);
+    expect(result.totalHours.CART).toBe(0);
+    expect(result.totalHours.OldSPKL2).toBe(0);
+  });
+
+  test("dailyInterpretingHours should contain entries for sessions exceeding daily threshold", () => {
+    const result = getTotalInterpretingHours(booking10020);
+    expect(result.dailyInterpretingHours).not.toBeNull();
+
+    const dates = result.dailyInterpretingHours!.map((d: any) => d.date).sort();
+    expect(dates).toEqual([
+      "2025-02-13",
+      "2025-03-28",
+      "2025-03-30",
+      "2025-03-31",
+      "2025-04-01",
+      "2025-04-02",
+    ]);
+  });
+});
