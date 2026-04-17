@@ -326,4 +326,39 @@ describe("CancellationCalculation — CART cancellation fee examples", () => {
     expect(result.bestRate).toBe(40);
     expect(result.subtotalFees).toBe(600);
   });
+
+  /**
+   * Example Booking 2 — 11-day booking (Mandarin SPKL1 @ $40/h), 9 half-days cancelled
+   *
+   * Assignment dates (11 unique days, >10 → short-notice threshold is <3 biz days):
+   *   Feb 19, 23–27, Mar 2–6, 2026
+   *
+   * Cancelled slots (all on Mar 6, 2026 — after assignment start Feb 19 → 0 biz days → qualifies):
+   *   Feb 24 PM, Feb 25 AM+PM, Feb 26 AM+PM, Feb 27 AM+PM, Mar 6 AM+PM  →  9 half-days
+   *
+   * Calculation:
+   *   9 × 2.5h = 22.5h cancelled
+   *   Language: Mandarin level 1 → SPKL1 
+   *   Tier: 22.5h > 10h (twodays) and ≤ 25h (fivedays) → totalCancelledHrMax = 10h
+   *   Fee: 10 × $40 = $400
+   */
+  test("Booking 2: 11-day Mandarin SPKL1, 9 half-days cancelled → 10h × $40 = $400", () => {
+    // Extend the booking with fields the calculation function requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const raw = require("./example_booking_2.json");
+    const booking = {
+      ...raw,
+      interpreter: {
+        gst: null,
+        languageHistory: [],
+      },
+      admDetail: { calculations: { gst: { gstRate: "0.05" } } },
+    };
+
+    const result = cancellationCalculation(booking, "0.05");
+
+    expect(result.totalHours).toBe(10);
+    expect(result.bestRate).toBe(40);
+    expect(result.subtotalFees).toBe(400);
+  });
 });
