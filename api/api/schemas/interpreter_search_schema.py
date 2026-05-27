@@ -18,8 +18,7 @@ class CrcDateRangeSchema(BaseModel):
     endDate: Optional[str]
     startDate: Optional[str]
 
-
-class InterpreterSearchRequestSchema(BaseModel):    
+class BaseInterpreterSearchSchema(BaseModel):    
     languageId:  Optional[int]
     level: Optional[List[str]]
     city: Optional[str]
@@ -31,6 +30,8 @@ class InterpreterSearchRequestSchema(BaseModel):
     courtAddr: Optional[str]
     distanceLimit: Optional[bool]
     location: Optional[LocationSchema]
+
+class InterpreterSearchRequestSchema(BaseInterpreterSearchSchema):    
     limit: Optional[int]
     page: Optional[int]
     # sort: Optional[str]
@@ -46,6 +47,6 @@ class InterpreterSearchResponseSchema(InterpreterBase):
     court_distance: Optional[int] = Field(alias="courtDistance")    
 
 
-class InterpreterDataInExcelRequestSchema(BaseModel):
-    ids: List[int]
+class InterpreterDataInExcelRequestSchema(BaseInterpreterSearchSchema):
+    pass
 
