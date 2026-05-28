@@ -439,11 +439,16 @@ export default class EditBookingFields extends Vue {
 
     @Watch('booking.cancellationReason')
     extractCancellation(){
-        if(this.booking.cancellationReason){
-            const cancelParts = this.booking.cancellationReason.split(' (')
-            this.cancellationBy = cancelParts[0]
-            this.cancellationReason = '('+cancelParts[1]
+        const cancellationReason = this.booking.cancellationReason ? this.booking.cancellationReason.trim() : ''
+        if(!cancellationReason){
+            this.cancellationBy = ''
+            this.cancellationReason = ''
+            return
         }
+
+        const cancelParts = cancellationReason.split(' (')
+        this.cancellationBy = cancelParts[0] ? cancelParts[0].trim() : ''
+        this.cancellationReason = cancelParts[1] ? '(' + cancelParts[1].trim() : ''
     }
 
     @Watch('tabIndex')

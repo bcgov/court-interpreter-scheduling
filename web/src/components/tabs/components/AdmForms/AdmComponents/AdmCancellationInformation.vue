@@ -8,21 +8,21 @@
             sort-by="recordDate"
             >
             <template v-slot:cell(recordDate)="data" >
-                <span>{{data.value|iso-date}}</span>
+                <span>{{data.value ? (data.value|iso-date) : ''}}</span>
             </template>
 
             <template v-slot:cell(time)="data" >
-                <div style="font-size:10.5pt;">{{data.value}}</div>
+                <div style="font-size:10.5pt;">{{data.value ? data.value : ''}}</div>
             </template>
 
             <template v-slot:cell(cancellationDate)="data" >
-                <span>{{data.value|beautify-date-simple}}</span>
+                <span>{{data.value ? (data.value|beautify-date-simple) : ''}}</span>
             </template>
 
             <template v-slot:cell(comment)="data" >
                 <div style="font-size:10pt; line-height:1rem;">
-                    <div>{{data.item.cancellationComment}}</div>
-                    <div>{{data.item.comment}}</div>                
+                    <div>{{data.item.cancellationComment ? data.item.cancellationComment : ''}}</div>
+                    <div>{{data.item.comment ? data.item.comment : ''}}</div>                
                 </div>
             </template>
 
@@ -92,8 +92,14 @@ export default class AdmCancellationInformation extends Vue {
             }
             const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
             record.recordDate = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
-            record.cancelledBy = date.cancellationReason?.split('(')[0]
-            record.cancelReason = date.cancellationReason?.split('(')[1].replace(')','')
+            const cancellationReason = date.cancellationReason ? date.cancellationReason.trim() : ''
+            if (cancellationReason) {
+                record.cancelledBy = cancellationReason.split('(')[0]
+                record.cancelReason = cancellationReason.split('(')[1] ? cancellationReason.split('(')[1].replace(')','') : ''
+            } else {
+                record.cancelledBy = ''
+                record.cancelReason = ''
+            }
             record.registryWarning = (date.registry && date.locationId!=this.booking.location_id)
             // record.reasonCd = date.reason?.includes('OTHER__')? 'Other' :date.reason;        
             record.time = date.startTime + ' - '+ date.finishTime
