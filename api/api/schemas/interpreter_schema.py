@@ -45,7 +45,7 @@ class InterpreterCreateModifyRequestSchema(InterpreterBase):
     crc_check_date: Optional[datetime] = Field(alias="criminalRecordCheckDate")
     completed_training: Optional[bool] = False
     admin_comment: Optional[str] = Field("", alias="adminComments")
-    crc_comment: Optional[str] = Field(None, alias="criminalRecordCheck")
+    crc_comment: Optional[str] = Field(None, alias="criminalRecordCheckComment")
     contract_comment: Optional[str] = None
 
 
