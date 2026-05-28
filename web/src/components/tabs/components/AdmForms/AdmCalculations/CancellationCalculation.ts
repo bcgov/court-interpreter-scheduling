@@ -155,6 +155,7 @@ function getTotalCancellations(
     totalCancelledHrMax = 20;   // 11-15 days: 20h
   else if (totalCancelledHr > fifteendays) totalCancelledHrMax = 25; // 16+ days: 25h
 
+  //The + 0.0001 is typically added as a small floating-point correction to avoid JavaScript precision issues during currency calculations
   cancellationFee = Number((totalCancelledHrMax * Number(bestRate) + 0.0001));
 
   const gstNumber = booking?.interpreter?.gst;
