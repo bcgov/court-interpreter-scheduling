@@ -950,9 +950,15 @@ export default class DirectoryPage extends Vue {
             "Content-Type": "application/json",
             }
         }
-
-        const body = {            
-            "ids":this.interpreters.map(interpreter=>interpreter.id)
+        const language = this.languages.filter(lang => lang.name==this.language);
+        const body = {
+            "name":this.name,
+            "active":this.active,
+            "languageId":language.length==1? language[0].id :null,
+            "level":this.level,
+            "city":'',
+            "keywords":this.keyword,
+            "criminalRecordCheck":this.crcExpiryDate,
         }
         
         this.$http.post('/interpreter/download-data-in-excel',body, options)
