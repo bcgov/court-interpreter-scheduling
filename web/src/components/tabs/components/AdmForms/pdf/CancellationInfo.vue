@@ -36,7 +36,7 @@
                         <td  />
                         <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancelledBy}}</div></td>
                         <td  />
-                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancellationDate|beautify-date-simple}}</div></td>
+                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{ record.cancellationDate ? (record.cancellationDate|beautify-date-simple) : '' }}</div></td>
                         <td  />
                         <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancelReason}}</div></td>
                         <td  />
@@ -142,8 +142,15 @@ export default class CancellationInfo extends Vue {
                 continue; 
             } 
             const dateTZ = moment(date.date).tz(this.booking.location.timezone).format('YYYY-MM-DD');
-            record.cancelledBy = date.cancellationReason.split('(')[0]
-            record.cancelReason = date.cancellationReason.split('(')[1].replace(')','')
+            const cancellationReason = date.cancellationReason ? date.cancellationReason.trim() : ''
+            if (cancellationReason) {
+                const [cancelledBy = '', reasonPart = ''] = cancellationReason.split('(')
+                record.cancelledBy = cancelledBy.trim()
+                record.cancelReason = reasonPart.replace(')','').trim()
+            } else {
+                record.cancelledBy = ''
+                record.cancelReason = ''
+            }
             record.cancellationFee = (bookingRecordsApproved && date.cancellationFee)? date.cancellationFee : '0.00'
             record.date = moment(dateTZ+' '+date.startTime,'YYYY-MM-DD HH:mm A' ).format()
                    

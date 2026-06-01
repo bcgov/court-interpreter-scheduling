@@ -115,6 +115,14 @@
             <template v-slot:modal-title>
                 <h2 class="my-2">Reason For Cancellation</h2>
             </template>
+            <template v-slot:modal-header-close>
+                <b-button
+                   variant="outline-white" 
+                   class="text-primary close-button"
+                   @click="confirmCancel(false)"
+                   >&times;</b-button
+                >
+            </template>
             <b-row class="my-4">  
                 <div style="width:3%;" />            
                 <div style="width:62%;" >
@@ -555,7 +563,7 @@ export default class EditBookingModal extends Vue {
 
 
 
-    public closeBookingWindow(){
+    public closeBookingWindow(){       
         this.$emit('close')        
     }
 
@@ -894,6 +902,16 @@ export default class EditBookingModal extends Vue {
         font-weight: 600;
         color: rgb(63, 98, 133);
         
+    }
+
+    .close-button {
+        background-color: transparent !important;
+        color: white;
+        border: white;
+        font-weight: 700;
+        font-size: 2rem;
+        padding-top: 0;
+        margin-top: 0;
     }
 
     @media (min-width: 992px){
