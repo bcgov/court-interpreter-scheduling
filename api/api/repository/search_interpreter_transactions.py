@@ -8,7 +8,6 @@ from models.language_model import InterpreterLanguageModel
 from models.booking_model import BookingDatesModel, BookingModel
 from api.schemas.interpreter_search_schema import InterpreterSearchRequestSchema, InterpreterSearchResponseSchema
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from api.schemas.pagination_schema import PaginatedResponse
 
 from api.repository.user_transactions import check_user_roles
@@ -99,9 +98,9 @@ def apply_crc_date(interpreter, crc_date):
     ):
         return interpreter
     
-    start_date = datetime.fromisoformat(crc_date.startDate)
-    end_date = datetime.fromisoformat(crc_date.endDate)
-    return interpreter.where(InterpreterModel.crc_check_date >= (start_date  - relativedelta(years=5)), InterpreterModel.crc_check_date <= end_date - relativedelta(years=5))
+    start_date = crc_date.startDate
+    end_date = crc_date.endDate
+    return interpreter.where(InterpreterModel.crc_check_date >= start_date, InterpreterModel.crc_check_date <= end_date)
     
 
 def apply_keyword(interpreter, keywords):
