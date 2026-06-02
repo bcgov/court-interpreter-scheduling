@@ -52,7 +52,7 @@
   "devDependencies": {
     "@cypress/skip-test": "^2.6.1",
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "^28.1.8",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
     "@vue/cli-plugin-babel": "^4.5.19",
@@ -65,11 +65,11 @@
     "deepmerge": "^4.2.2",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
-    "jest": "^30.3.0",
+    "jest": "^28.1.3",
     "raw-loader": "^4.0.2",
     "sass": "^1.25.0",
     "sass-loader": "^10.5.2",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "^28.0.8",
     "typescript": "4.3.5",
     "vue-cli-plugin-vuetify": "~2.0.9",
     "vue-template-compiler": "^2.7.8"
