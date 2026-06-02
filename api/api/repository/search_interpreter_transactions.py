@@ -16,18 +16,6 @@ from models.booking_enums import BookingStatusEnum, BookingPeriodEnum
 
 def search_Interpreter(request: InterpreterSearchRequestSchema, db: Session, username, response_schema):
 
-    
-    all_interpreters, total_count_of_filtered_interpreters = fetch_interpreters(request, db, username)
-
-    return PaginatedResponse(
-        total=total_count_of_filtered_interpreters,
-        items=[response_schema.from_orm(interpreter) for interpreter in all_interpreters],
-        page=request.page,
-        limit=request.limit
-    )
-
-def fetch_interpreters(request: InterpreterSearchRequestSchema, db: Session, username):
-
     if not check_user_roles(['cis-admin','super-admin'],username,db):
         request.active = True
 
@@ -50,17 +38,19 @@ def fetch_interpreters(request: InterpreterSearchRequestSchema, db: Session, use
     # apply sorting
     # interpreter = apply_sorting(interpreter, request.sort)
     # apply pagination
-    fields_set = getattr(request, 'model_fields_set', getattr(request, '__fields_set__', set()))
-    
-    if 'limit' in fields_set and 'page' in fields_set and request.limit is not None and request.page is not None:
-        interpreter = apply_pagination(interpreter, request.limit, request.page)
+    interpreter = apply_pagination(interpreter, request.limit, request.page)
 
     # run query to get data
     all_interpreters = interpreter.all()
 
-    return add_court_info(all_interpreters, request.location, db), total_count_of_filtered_interpreters
+    all_interpreters = add_court_info(all_interpreters, request.location, db)
 
-   
+    return PaginatedResponse(
+        total=total_count_of_filtered_interpreters,
+        items=[response_schema.from_orm(interpreter) for interpreter in all_interpreters],
+        page=request.page,
+        limit=request.limit
+    )
 
 def apply_pagination(interpreter, limit, page): 
     if limit is not None and page is not None: 
