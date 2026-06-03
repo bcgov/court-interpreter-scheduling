@@ -543,11 +543,11 @@ export default class AdmPaymentDetails extends Vue {
         }
 
         //_______cancellation
-        if(Number(admDetail?.calculations?.cancellation?.totalHours) != Number(this.form.cancellationTotalHours)){
+        if(Number(this.form.cancellationTotalHours)){
             const bestRate = admDetail?.calculations?.cancellation?.bestRate?? 0;
             const totalCancelledHr = this.form.cancellationTotalHours?? 0;            
             const gstRate = this.form.gstNumber? Number(gst.gstRate) : 0;
-            const subtotal =  Number(bestRate)*Number(totalCancelledHr)
+            const subtotal =  Number(bestRate)*Number(totalCancelledHr) + 0.0001;// add a small number to avoid js floating point issue when converting to fixed 2 decimal, which will cause the total cancellation fees to be 0.01 less than it should be.
             const gstFee = subtotal*gstRate+0.0001;
             
             const totalCancellation = (subtotal + gstRate);
