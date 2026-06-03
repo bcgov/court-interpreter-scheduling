@@ -36,7 +36,7 @@
                         <td  />
                         <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancelledBy}}</div></td>
                         <td  />
-                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{ record.cancellationDate ? (record.cancellationDate|beautify-date-simple) : '' }}</div></td>
+                        <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{ record.cancellationDate | beautify-date-simple }}</div></td>
                         <td  />
                         <td  class="border-bottom text-center"><div class="answer-record" style="font-size:7pt;">{{record.cancelReason}}</div></td>
                         <td  />

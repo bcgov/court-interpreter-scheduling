@@ -8,15 +8,15 @@
             sort-by="recordDate"
             >
             <template v-slot:cell(recordDate)="data" >
-                <span>{{data.value ? (data.value|iso-date) : ''}}</span>
+                <span>{{ data.value| iso-date }}</span>
             </template>
 
             <template v-slot:cell(time)="data" >
-                <div style="font-size:10.5pt;">{{data.value ? data.value : ''}}</div>
+                <div style="font-size:10.5pt;">{{data.value}}</div>
             </template>
 
             <template v-slot:cell(cancellationDate)="data" >
-                <span>{{data.value ? (data.value|beautify-date-simple) : ''}}</span>
+                <span>{{ data.value | beautify-date-simple }}</span>
             </template>
 
             <template v-slot:cell(comment)="data" >
