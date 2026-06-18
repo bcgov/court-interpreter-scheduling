@@ -956,7 +956,6 @@ export default class DirectoryPage extends Vue {
             "active":this.active,
             "languageId":language.length==1? language[0].id :null,
             "level":this.level,
-            "city":'',
             "keywords":this.keyword,
             "criminalRecordCheck":this.crcExpiryDate,
         }
