@@ -17,6 +17,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 from api.schemas.interpreter_schema import InterpreterCreateModifyRequestSchema
+from api.repository.search_interpreter_transactions import fetch_interpreters
 
 from core.geo_coordinate_service import get_clean_address
 
@@ -251,12 +252,9 @@ def apply_address_changes(old_interpreter, interpreter_request):
 
 
 
-def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: Session):
+def get_filepath_of_excel_sheet_have_interpreters_data(interpreter_request, db: Session, username):
 
-    interpreters = db.query(InterpreterModel).filter(
-        InterpreterModel.disabled==False,
-        InterpreterModel.id.in_(interpreter_request.ids)
-    ).all()
+    interpreters, _ = fetch_interpreters(interpreter_request, db, username)
     
     csv_file = io.StringIO()
     column_names = InterpreterModel.__table__.columns.keys()
