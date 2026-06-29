@@ -592,7 +592,7 @@ export default class AdmPaymentDetails extends Vue {
     }
 
     public formatterDays(value){
-        return this.formatter(value, 4, 365)
+        return this.formatter(value, 4, 50)
     }
 
     public formatterTravelKm(value){
